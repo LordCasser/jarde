@@ -1,0 +1,44 @@
+{
+  "status": "accepted",
+  "execution": {
+    "path": "/private/tmp/jarde-seq1-focused-root-v6-20261018/execution.json",
+    "bytes": 1550154,
+    "sha256": "4eb5eb560060c3907d9c3fa2a86a6643263618c9f2131926b3f29042de567f8a"
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-seq1-focused-root-v6-20261018/candidate-cli",
+    "bytes": 63146896,
+    "sha256": "0bb89f827c1e2b6b0e215d1940299be046a7adc57866389d87e6595ba0295677"
+  },
+  "test_summaries": [
+    486,
+    4,
+    181
+  ],
+  "passing_appearances": 671,
+  "critical_tests": [
+    "build::tests::field_test_copy_tests::exact_new_proof_cost_stop_and_pre_cancel_publish_no_copy_plan",
+    "build::tests::field_test_copy_tests::real_other_receivers_non_int_fields_and_handler_rows_refuse_the_new_helper",
+    "build::tests::field_test_copy_tests::real_seq1_and_volatile_methods_have_one_saved_single_store_copy",
+    "region::statementful_loop_header_tests::canonical_edge_budget_cancel_and_deadline_stops_leave_owners_unclaimed",
+    "region::statementful_loop_header_tests::original_debug_and_no_debug_keep_gateway_and_latch_sources",
+    "region::statementful_loop_header_tests::supplemental_profiles_keep_a_direct_exit_without_a_gateway",
+    "region::statementful_loop_header_tests::unsupported_contexts_missing_facts_and_visited_gateway_refuse_without_claims",
+    "effectful_sequential_loop_headers_preserve_complete_supplemental_methods",
+    "original_sequential_loops_keep_both_statementful_headers_and_full_classes",
+    "saved_field_write_copies_cover_both_compilers_and_debug_profiles",
+    "statementful_loop_late_budget_cancellation_and_deadline_publish_no_partial_result"
+  ],
+  "source_count": 3170,
+  "source_unchanged": true,
+  "target_absent": true,
+  "archive": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-statementful-loop-headers/results/focused-root-v6/capture.tar.gz",
+    "bytes": 1096292,
+    "sha256": "54d038f1041b083a3e30ce7c2ed899946e71e84aabb02a26bfe75835dd53fb26"
+  },
+  "archive_members": 21,
+  "checker_history": [
+    "Earlier inline checker omitted the standard should-panic suffix, counted 670 names, and failed before writing acceptance. A subsequent inspection used c[test_summary_check] on cleanup and failed with KeyError. Neither was a product test failure; this reviewer checks all 671 names and raw bytes."
+  ]
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "path": "FieldWriteCopies.java",
+    "bytes": 808,
+    "sha256": "e809436b1e1cdc0232c4a2573641290f3b50f7d05a1d7cf1ea84fe95a13efd85"
+  },
+  {
+    "path": "FieldWriteCopiesDriver.java",
+    "bytes": 5309,
+    "sha256": "2e8311f2ec27aaecbabee73ab23a8056024fcbb4a1668ab8838ebffde8851d9b"
+  },
+  {
+    "path": "FieldWriteCopyRefusals.java",
+    "bytes": 934,
+    "sha256": "b79a8fa7186f9286c5e65937b673946fd7b8fbcd9d29899757e99f3877f90287"
+  },
+  {
+    "path": "README.md",
+    "bytes": 544,
+    "sha256": "d4ad1a5a2241e450cff37641348928ad3e4ca9b377654ac82f351fd780c8d7b6"
+  },
+  {
+    "path": "javac23-debug/classes/FieldWriteCopies.class",
+    "bytes": 1080,
+    "sha256": "d6c749b25249aeb91042da07eabf2091ac4efc76f6170e5401ed56dd56279c7b"
+  },
+  {
+    "path": "javac23-debug/classes/FieldWriteCopyRefusals.class",
+    "bytes": 1233,
+    "sha256": "fb2cc40be4a51bb6ea3705f62477bc023caceccf66dabb622e9cb2ed940d2195"
+  },
+  {
+    "path": "javac23-no-debug/classes/FieldWriteCopies.class",
+    "bytes": 735,
+    "sha256": "e2c2c29da2d2ff89137154c16988eb1ffba84af06e81f5936703fefcf65730cc"
+  },
+  {
+    "path": "javac23-no-debug/classes/FieldWriteCopyRefusals.class",
+    "bytes": 812,
+    "sha256": "0c4303f03ecfeb77693972174e00191172bb5b0b616abee0de764d0b050fac7d"
+  },
+  {
+    "path": "javac8-debug/classes/FieldWriteCopies.class",
+    "bytes": 1080,
+    "sha256": "378fdbe1e8bcc06b163feb34d364e7a49358f70fb645e3b37a80620e89555a1a"
+  },
+  {
+    "path": "javac8-debug/classes/FieldWriteCopyRefusals.class",
+    "bytes": 1236,
+    "sha256": "97166de7f48c7814f930b94238b772bcf7ae2cef317247b850d9a7a45c36e267"
+  },
+  {
+    "path": "javac8-no-debug/classes/FieldWriteCopies.class",
+    "bytes": 735,
+    "sha256": "13add688918d13fde41c65b6a5083c283fe43dbc62a1b34d33092d33dd4dfd42"
+  },
+  {
+    "path": "javac8-no-debug/classes/FieldWriteCopyRefusals.class",
+    "bytes": 815,
+    "sha256": "f8a67a8bf9e8348303c06611d9f61caf1e05a139026083dd36e485cdad832f3f"
+  }
+]

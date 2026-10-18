@@ -1,0 +1,31 @@
+{
+  "status": "actual-dual-JVM-verified-inputs",
+  "receipt": "/private/tmp/jarde-seq1-loop-boundary-inputs-root-v1-20261018/execution.json",
+  "review": "/private/tmp/jarde-seq1-loop-boundary-inputs-root-v1-20261018/root-review.json",
+  "classes": [
+    {
+      "path": "javac8-debug/StatementfulLoopBoundary.class",
+      "bytes": 824,
+      "sha256": "85f6a5a2384be838418c14a97ab191338969cc653c7be9cd4f5c4627122e2fce"
+    },
+    {
+      "path": "v49/StatementfulDualEntry.class",
+      "bytes": 237,
+      "sha256": "9912921af3e956866aeea03e56157e3b858e06fa4083fc29a4fc6a1b6e155df9"
+    },
+    {
+      "path": "v49/StatementfulJsrCloneHeader.class",
+      "bytes": 255,
+      "sha256": "f3dd9874b14db9c0e50aa1954c4fd932815cafeff1de63293c99e82ef9ec2fed"
+    }
+  ],
+  "census": {
+    "classes": 3,
+    "code_bodies": 8,
+    "instructions": 104,
+    "handlers": 0,
+    "branch_targets": 16,
+    "jsr": 2
+  },
+  "scope": "Whole Java methods finite cases; generated v49 inputs loaded/reflected, not executed. Reader/helper outcomes require Rust tests."
+}

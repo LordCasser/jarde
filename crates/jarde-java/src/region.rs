@@ -16755,6 +16755,11 @@ impl Walker<'_> {
             return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
         }
         if let Err(reason) = self.test_is_pure(header, test_bci, true) {
+            if let Some(region) =
+                self.statementful_loop_header(header, header_node, blocks, frame)?
+            {
+                return Ok(Some(region));
+            }
             return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
         }
         // Which way through the test iterates: the branch's own target says it, and nothing else
@@ -17043,6 +17048,519 @@ impl Walker<'_> {
             gateway_origins,
         }];
         Ok(Some((run, Some(outside))))
+    }
+
+    /// Preserves statements before one loop-header test in an endless loop body.
+    /// The candidate is reached only for this header's declared `StatementFree` refusal; it does
+    /// not change the contract of the existing pure-condition consumers.
+    fn statementful_loop_header(
+        &mut self,
+        header: &CanonicalBlockId,
+        header_node: usize,
+        blocks: &BTreeSet<usize>,
+        frame: &Frame,
+    ) -> Result<Option<Run>, StopReason> {
+        // This proof has no parent loop/arm/try/switch/monitor whose destinations or rows it could
+        // borrow. Keep the first slice at the top-level loop boundary where its owner is exact.
+        if frame.boundary.is_some()
+            || frame.if_arm.is_some()
+            || frame.scope.is_some()
+            || frame.shared_tail.is_some()
+            || !frame.loop_targets.is_empty()
+            || frame.case_entries.is_some()
+            || frame.own_try.is_some()
+            || frame.own_finally.is_some()
+            || !self.handlers.is_empty()
+            || self.own_monitor.is_some()
+            || self.method_synchronized != Some(false)
+            || self.has_reachable_explicit_monitor
+            || !self.loop_catch_terminal_owners.is_empty()
+            || !self.catch_joins.is_empty()
+            || self.fragmented.is_some()
+            || self.unclosed_tail_at.is_some()
+            || self.visited.contains(&header_node)
+            || !self.canonical.completeness().is_complete()
+            || self.code.stopped_at.is_some()
+            || self.code.exception_handler_count != 0
+            || !self.code.exception_handlers.is_empty()
+        {
+            return Ok(None);
+        }
+        let Some(loop_of) = self.view.loop_entered_at(header_node) else {
+            return Ok(None);
+        };
+        if loop_of.header() != header_node
+            || loop_of.is_irreducible()
+            || loop_of.latches().len() != 1
+            || loop_of.blocks() != blocks
+            || !blocks.contains(&header_node)
+            || self.view.id_of(header_node) != Some(header)
+        {
+            return Ok(None);
+        }
+        let latch_nodes = loop_of.latches().iter().copied().collect::<Vec<_>>();
+        let [latch_node] = latch_nodes.as_slice() else {
+            return Ok(None);
+        };
+        if *latch_node == header_node {
+            return Ok(None);
+        }
+        let Some(header_names) = self.ssa.block(header) else {
+            return Ok(None);
+        };
+        let header_instructions = header_names.instructions();
+        let Some(test_bci) = self.terminal_bci(header) else {
+            return Ok(None);
+        };
+        if header_instructions.len() < 2 {
+            return Ok(None);
+        }
+        let Some((comparison, branch_target_bci)) = self
+            .operations
+            .get(test_bci)
+            .and_then(Operation::comparison)
+        else {
+            return Ok(None);
+        };
+
+        // Only the canonical edge census is method-wide. Instruction/operand facts are already
+        // decoded and kept in BCI order, so verify the few physical transfers by binary search.
+        if self.code.instructions.len() != self.code.operands().len() {
+            return Ok(None);
+        }
+        let code = &self.code;
+        let lookup_steps =
+            usize::BITS.saturating_sub(code.instructions.len().leading_zeros()) as usize;
+        let scan_cost = blocks
+            .len()
+            .saturating_mul(6)
+            .saturating_add(header_instructions.len())
+            .saturating_add(
+                blocks
+                    .len()
+                    .saturating_mul(2)
+                    .saturating_add(8)
+                    .saturating_mul(lookup_steps),
+            );
+        poll(self.budget, Some(header.bci()))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(scan_cost).unwrap_or(u64::MAX),
+            Some(header.bci()),
+        )?;
+        if self
+            .branch_arity_proved(header, test_bci, comparison)
+            .is_err()
+        {
+            return Ok(None);
+        }
+        let instruction_index = |bci: u32| {
+            code.instructions
+                .binary_search_by_key(&bci, |instruction| instruction.bci)
+                .ok()
+        };
+        let physical_branch_target = |bci: u32| -> Option<u32> {
+            let index = instruction_index(bci)?;
+            let offset = code.operands().get(index)?.branch_offset?;
+            i64::from(bci)
+                .checked_add(i64::from(offset))
+                .and_then(|target| u32::try_from(target).ok())
+        };
+        let physical_fallthrough = |bci: u32| -> Option<u32> {
+            let index = instruction_index(bci)?;
+            bci.checked_add(code.instructions.get(index)?.width)
+        };
+        let Some(test_index) = instruction_index(test_bci) else {
+            return Ok(None);
+        };
+        let physical_test = &code.instructions[test_index];
+        let test_operands = &code.operands()[test_index];
+        if physical_test.width != 3
+            || physical_test.opcode != test_operands.effective_opcode
+            || header_instructions
+                .last()
+                .is_none_or(|instruction| instruction.opcode() != physical_test.opcode)
+            || crate::decode::comparison(physical_test.opcode, physical_test, Some(test_operands))
+                .comparison()
+                != Some((comparison, branch_target_bci))
+        {
+            return Ok(None);
+        }
+        let physical_goto = |id: &CanonicalBlockId, bci: u32| -> bool {
+            let Some(index) = instruction_index(bci) else {
+                return false;
+            };
+            let instruction = &code.instructions[index];
+            matches!(
+                (instruction.opcode, instruction.width),
+                (0xa7, 3) | (0xc8, 5)
+            ) && code.operands()[index].effective_opcode == instruction.opcode
+                && self
+                    .ssa
+                    .block(id)
+                    .and_then(|names| names.instructions().last())
+                    .is_some_and(|names| names.opcode() == instruction.opcode)
+        };
+        if physical_branch_target(test_bci) != Some(branch_target_bci) {
+            return Ok(None);
+        }
+        let Some(fallthrough_bci) = physical_fallthrough(test_bci) else {
+            return Ok(None);
+        };
+        let successors = self.view.successor_ids(header);
+        if successors.len() != 2 {
+            return Ok(None);
+        }
+        let Some(inside_entry) = successors
+            .iter()
+            .find(|id| {
+                self.view
+                    .index_of(id)
+                    .is_some_and(|node| blocks.contains(&node))
+            })
+            .cloned()
+        else {
+            return Ok(None);
+        };
+        let Some(outside_successor) = successors
+            .iter()
+            .find(|id| {
+                self.view
+                    .index_of(id)
+                    .is_some_and(|node| !blocks.contains(&node))
+            })
+            .cloned()
+        else {
+            return Ok(None);
+        };
+        if inside_entry == *header
+            || inside_entry.bci() == outside_successor.bci()
+            || branch_target_bci == fallthrough_bci
+            || ![inside_entry.bci(), outside_successor.bci()].contains(&branch_target_bci)
+            || ![inside_entry.bci(), outside_successor.bci()].contains(&fallthrough_bci)
+            || inside_entry.path() != header.path()
+            || outside_successor.path() != header.path()
+        {
+            return Ok(None);
+        }
+
+        // The one non-header part of a natural loop must be a single canonical path from the
+        // header's in-loop successor through its sole latch. Each block contributes its whole SSA
+        // block once; the latch's goto is represented by the loop's existing gateway origin.
+        let mut body_blocks = Vec::with_capacity(blocks.len().saturating_sub(1));
+        let mut seen = BTreeSet::from([header_node]);
+        let mut current = self
+            .view
+            .index_of(&inside_entry)
+            .expect("successor has a view node");
+        loop {
+            poll(
+                self.budget,
+                Some(
+                    self.view
+                        .id_of(current)
+                        .map_or(header.bci(), CanonicalBlockId::bci),
+                ),
+            )?;
+            if !blocks.contains(&current) || !seen.insert(current) {
+                return Ok(None);
+            }
+            let Some(id) = self.view.id_of(current).cloned() else {
+                return Ok(None);
+            };
+            if id.path() != header.path() || self.ssa.block(&id).is_none() {
+                return Ok(None);
+            }
+            body_blocks.push(id);
+            let next = self.view.successors(current);
+            if current == *latch_node {
+                if next != [header_node] {
+                    return Ok(None);
+                }
+                break;
+            }
+            let [successor] = next.as_slice() else {
+                return Ok(None);
+            };
+            if *successor == header_node || !blocks.contains(successor) {
+                return Ok(None);
+            }
+            current = *successor;
+        }
+        if &seen != blocks
+            || body_blocks.last().and_then(|id| self.view.index_of(id)) != Some(*latch_node)
+        {
+            return Ok(None);
+        }
+        let Some(latch) = body_blocks.last() else {
+            return Ok(None);
+        };
+        for pair in body_blocks.windows(2) {
+            let Some(from_bci) = self.terminal_bci(&pair[0]) else {
+                return Ok(None);
+            };
+            let Some(to_bci) = pair.get(1).map(CanonicalBlockId::bci) else {
+                return Ok(None);
+            };
+            if matches!(self.operations.get(from_bci), Some(Operation::Transfer))
+                || matches!(
+                    self.operations.get(from_bci),
+                    Some(
+                        Operation::Comparison { .. }
+                            | Operation::Switch { .. }
+                            | Operation::Throw
+                            | Operation::Return
+                    )
+                )
+                || physical_branch_target(from_bci).is_some()
+                || physical_fallthrough(from_bci) != Some(to_bci)
+            {
+                return Ok(None);
+            }
+        }
+        let Some(latch_bci) = self.terminal_bci(latch) else {
+            return Ok(None);
+        };
+        if !matches!(self.operations.get(latch_bci), Some(Operation::Transfer))
+            || !physical_goto(latch, latch_bci)
+            || physical_branch_target(latch_bci) != Some(header.bci())
+        {
+            return Ok(None);
+        }
+        let latch_fact = self
+            .view
+            .index_of(latch)
+            .expect("latch is in the normal-flow view");
+        if self.view.successors(latch_fact) != [header_node] {
+            return Ok(None);
+        }
+
+        // If the branch leaves through a one-instruction goto gateway, own that source explicitly:
+        // a Straight block alone emits no statement for Operation::Transfer. Other exits stay
+        // outside the loop and their source is the conditional branch itself.
+        let outside_node = self
+            .view
+            .index_of(&outside_successor)
+            .expect("successor has a view node");
+        let outside_terminal = self.terminal_bci(&outside_successor);
+        let outside_operation = outside_terminal.and_then(|bci| self.operations.get(bci));
+        let gateway = if matches!(outside_operation, Some(Operation::Transfer)) {
+            let Some(terminal_bci) = outside_terminal else {
+                return Ok(None);
+            };
+            let Some(names) = self.ssa.block(&outside_successor) else {
+                return Ok(None);
+            };
+            if names.instructions().len() != 1
+                || names.instructions()[0].bci() != terminal_bci
+                || !physical_goto(&outside_successor, terminal_bci)
+                || physical_branch_target(terminal_bci).is_none()
+            {
+                return Ok(None);
+            }
+            let next = self.view.successors(outside_node);
+            let [exit_node] = next.as_slice() else {
+                return Ok(None);
+            };
+            let Some(exit) = self.view.id_of(*exit_node).cloned() else {
+                return Ok(None);
+            };
+            if exit.path() != header.path()
+                || blocks.contains(exit_node)
+                || exit == outside_successor
+                || physical_branch_target(terminal_bci) != Some(exit.bci())
+            {
+                return Ok(None);
+            }
+            Some((
+                outside_successor.clone(),
+                outside_node,
+                terminal_bci,
+                exit,
+                *exit_node,
+            ))
+        } else {
+            None
+        };
+        let (loop_exit, loop_exit_node) = gateway.as_ref().map_or(
+            (outside_successor.clone(), outside_node),
+            |(_, _, _, exit, node)| (exit.clone(), *node),
+        );
+        if loop_exit.path() != header.path() || blocks.contains(&loop_exit_node) {
+            return Ok(None);
+        }
+
+        // Normalization can fuse an exit goto with the statements after it. That whole block
+        // stays outside this loop; only its hidden, effect-free leading transfer is attributed
+        // to the loop's exit. Moving the fused successor into the break arm would move effects.
+        let exit_prefix_origin = if gateway.is_none() {
+            let Some(names) = self.ssa.block(&outside_successor) else {
+                return Ok(None);
+            };
+            match names.instructions().first() {
+                Some(first)
+                    if matches!(self.operations.get(first.bci()), Some(Operation::Transfer)) =>
+                {
+                    let Some(next) = names.instructions().get(1) else {
+                        return Ok(None);
+                    };
+                    let Some(index) = instruction_index(first.bci()) else {
+                        return Ok(None);
+                    };
+                    let physical = &code.instructions[index];
+                    if first.bci() != outside_successor.bci()
+                        || self.visited.contains(&outside_node)
+                        || !first.reads().is_empty()
+                        || !first.writes().is_empty()
+                        || !matches!((physical.opcode, physical.width), (0xa7, 3) | (0xc8, 5))
+                        || code.operands()[index].effective_opcode != physical.opcode
+                        || first.opcode() != physical.opcode
+                        || physical_branch_target(first.bci()) != Some(next.bci())
+                        || matches!(self.operations.get(next.bci()), Some(Operation::Transfer))
+                    {
+                        return Ok(None);
+                    }
+                    Some(first.bci())
+                }
+                _ => None,
+            }
+        } else {
+            None
+        };
+
+        // There is exactly one already-walked entry into the header. No other external edge may
+        // enter the loop/gateway, and no owner may leave except through the conditional exit and
+        // its optional pure gateway.
+        let external_entries: Vec<_> = self
+            .view
+            .predecessors(header_node)
+            .into_iter()
+            .filter(|node| !blocks.contains(node))
+            .collect();
+        let [entry_node] = external_entries.as_slice() else {
+            return Ok(None);
+        };
+        let Some(entry) = self.view.id_of(*entry_node).cloned() else {
+            return Ok(None);
+        };
+        if entry.path() != header.path() || !self.visited.contains(entry_node) {
+            return Ok(None);
+        }
+        let mut owner_nodes = blocks.clone();
+        let mut owner_ids: BTreeSet<_> = blocks
+            .iter()
+            .filter_map(|node| self.view.id_of(*node).cloned())
+            .collect();
+        if owner_ids.len() != blocks.len() || owner_ids.iter().any(|id| id.path() != header.path())
+        {
+            return Ok(None);
+        }
+        if let Some((gateway_id, gateway_node, _, _, _)) = &gateway {
+            if self.visited.contains(gateway_node) || !owner_nodes.insert(*gateway_node) {
+                return Ok(None);
+            }
+            owner_ids.insert(gateway_id.clone());
+        }
+        if owner_nodes.iter().any(|node| self.visited.contains(node)) {
+            return Ok(None);
+        }
+
+        let mut expected_edges = BTreeSet::new();
+        expected_edges.insert((entry.clone(), header.clone()));
+        expected_edges.insert((header.clone(), inside_entry.clone()));
+        expected_edges.insert((header.clone(), outside_successor.clone()));
+        for pair in body_blocks.windows(2) {
+            expected_edges.insert((pair[0].clone(), pair[1].clone()));
+        }
+        expected_edges.insert((latch.clone(), header.clone()));
+        if let Some((gateway_id, _, _, exit, _)) = &gateway {
+            expected_edges.insert((gateway_id.clone(), exit.clone()));
+        }
+        let mut actual_edges = BTreeSet::new();
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(edge.from().bci()))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(edge.from().bci()),
+            )?;
+            let incident = owner_ids.contains(edge.from())
+                || owner_ids.contains(edge.to())
+                || (exit_prefix_origin.is_some() && edge.to() == &outside_successor);
+            if !incident {
+                continue;
+            }
+            if edge.kind() != CanonicalEdgeKind::Normal
+                || !expected_edges.contains(&(edge.from().clone(), edge.to().clone()))
+                || !actual_edges.insert((edge.from().clone(), edge.to().clone()))
+            {
+                return Ok(None);
+            }
+        }
+        if actual_edges != expected_edges {
+            return Ok(None);
+        }
+
+        let branch_is_fallthrough_exit = fallthrough_bci == outside_successor.bci();
+        let break_source_bci = gateway
+            .as_ref()
+            .map_or(test_bci, |(_, _, terminal_bci, _, _)| *terminal_bci);
+        let break_arm = if let Some((gateway_id, _, _, _, _)) = &gateway {
+            Region::Sequence {
+                regions: vec![
+                    Region::Straight {
+                        blocks: vec![gateway_id.clone()],
+                    },
+                    Region::LoopBreak {
+                        source_bci: break_source_bci,
+                        loop_header: header.clone(),
+                    },
+                ],
+            }
+        } else {
+            Region::LoopBreak {
+                source_bci: break_source_bci,
+                loop_header: header.clone(),
+            }
+        };
+        let empty_arm = Region::Straight { blocks: Vec::new() };
+        let (then_arm, else_arm) = if branch_is_fallthrough_exit {
+            (break_arm, empty_arm)
+        } else {
+            (empty_arm, break_arm)
+        };
+        let mut gateway_origins = vec![latch_bci];
+        gateway_origins.extend(exit_prefix_origin);
+        let loop_region = Region::Loop {
+            header: header.clone(),
+            tests: Vec::new(),
+            test_operator: None,
+            form: LoopForm::Endless,
+            for_header: None,
+            body: vec![
+                Region::If {
+                    prefix: Vec::new(),
+                    branch: header.clone(),
+                    branch_bci: test_bci,
+                    then_arm: Box::new(then_arm),
+                    else_arm: Box::new(else_arm),
+                    join: Some(inside_entry),
+                },
+                Region::Straight {
+                    blocks: body_blocks,
+                },
+            ],
+            exit: Some(loop_exit.clone()),
+            gateway_origins,
+        };
+
+        // Last poll and single claim: no earlier proof step touched walk ownership or mutable
+        // structure state, so cancellation/limits cannot publish a partially owned loop.
+        poll(self.budget, Some(header.bci()))?;
+        self.visited.extend(owner_nodes);
+        Ok(Some((vec![loop_region], Some(loop_exit))))
     }
 
     /// Proves a homogeneous short-circuit chain of header tests. A candidate chain that fails any
@@ -27468,3 +27986,7 @@ mod switch_nonlocal_completion_tests;
 #[cfg(test)]
 #[path = "region/loop_arm_return_tests.rs"]
 mod loop_arm_return_tests;
+
+#[cfg(test)]
+#[path = "region/statementful_loop_header_tests.rs"]
+mod statementful_loop_header_tests;

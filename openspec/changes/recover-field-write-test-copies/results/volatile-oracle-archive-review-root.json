@@ -1,0 +1,21 @@
+{
+  "name": "volatile-original-oracle-root-v1",
+  "archive": {
+    "path": "openspec/changes/recover-field-write-test-copies/results/volatile-original-oracle-root-v1/capture.tar.gz",
+    "bytes": 409865,
+    "sha256": "6c6773774df0eb5077d7f5594030c0ba7f79aeb16c97b3ee83b4354e7ac06c43",
+    "capture_review_path": "openspec/changes/recover-field-write-test-copies/results/volatile-original-oracle-root-v1/capture-review.json",
+    "capture_review_members_reopened": 45
+  },
+  "tar_member_count": 45,
+  "manifest_entry_count": 44,
+  "manifest_sha256": "b7a9655ef8041ba354034ccacab9e2a9134738145f5cc73a10bfb6205bed8223",
+  "checks": {
+    "archive_review_pin": "passed",
+    "unique_paths": "passed",
+    "safe_canonical_paths": "passed",
+    "regular_members_only": "passed",
+    "manifest_set_exact": "passed",
+    "member_bytes_and_sha256": "passed"
+  }
+}

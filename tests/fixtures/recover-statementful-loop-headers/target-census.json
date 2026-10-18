@@ -1,0 +1,39 @@
+{
+  "targets": 50,
+  "jsr": 0,
+  "classes": [
+    {
+      "path": "supplement/javac23-no-debug/classes/SequentialLoopEffects.class",
+      "targets": 10
+    },
+    {
+      "path": "supplement/javac23-debug/classes/SequentialLoopEffects.class",
+      "targets": 10
+    },
+    {
+      "path": "supplement/javac8-debug/classes/SequentialLoopEffects.class",
+      "targets": 10
+    },
+    {
+      "path": "supplement/javac8-no-debug/classes/SequentialLoopEffects.class",
+      "targets": 10
+    },
+    {
+      "path": "original/no-debug/classes/jadx/tests/integration/loops/TestSequentialLoops.class",
+      "targets": 0
+    },
+    {
+      "path": "original/no-debug/classes/jadx/tests/integration/loops/TestSequentialLoops$TestCls.class",
+      "targets": 5
+    },
+    {
+      "path": "original/debug/classes/jadx/tests/integration/loops/TestSequentialLoops.class",
+      "targets": 0
+    },
+    {
+      "path": "original/debug/classes/jadx/tests/integration/loops/TestSequentialLoops$TestCls.class",
+      "targets": 5
+    }
+  ],
+  "scope": "Exact decoded instruction starts from accepted class parser; count fixed branch/goto/jsr instructions, no switches present."
+}

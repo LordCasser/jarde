@@ -12299,7 +12299,14 @@ mod tests {
             // Code counts agree with this walk, including both original outer classes.
             // Proved loop-arm returns add 22 complete classes, 38 Code bodies, two catch rows
             // and 74 branch targets; independent physical Code parsing agrees with this walk.
-            (1280, 5677, 626, 3921, 12),
+            // Statementful sequential loops add eight complete classes, 20 Code bodies and
+            // 50 targets. Field-copy controls add eight classes, 36 bodies, four catch rows
+            // and 48 targets. Independent parsing counted every physical Code array; no jsr.
+            // Statementful-loop boundaries: three classes, eight Code bodies, no handlers,
+            // sixteen branch targets and two jsr instructions, independently parsed.
+            // Extra stack-copy neighbor: one complete class, four Code bodies,
+            // seventy instructions, no handlers, five branch targets and no jsr.
+            (1300, 5745, 630, 4040, 14),
             "fixture population changed: re-measure these counts"
         );
     }

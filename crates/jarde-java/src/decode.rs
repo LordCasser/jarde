@@ -608,7 +608,7 @@ fn primitive_array_of(atype: u8) -> Option<Type> {
 /// the branch's own operand names, and it is what distinguishes the arm the branch transfers to
 /// from the one control falls through to — an `ifeq` whose target is *behind* it is the condition
 /// of a loop, and no structural rule could tell that from the successor order alone.
-fn comparison(
+pub(crate) fn comparison(
     opcode: u8,
     instruction: &InstructionFact,
     operands: Option<&InstructionOperands>,

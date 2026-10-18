@@ -1,0 +1,1 @@
+Exact full source/class inputs for statementful loop header recovery. Original input compilation, original JVM oracle, generated-source compilation and tool boundaries are retained separately in baseline receipts. No generated Java is repaired. Original JADX TestSequentialLoops source and its complete outer/child debug/none classes retained.

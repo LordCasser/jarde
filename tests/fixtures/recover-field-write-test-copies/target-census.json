@@ -1,0 +1,84 @@
+{
+  "rows": [
+    {
+      "path": "javac23-debug/classes/FieldWriteCopies.class",
+      "classes": 1,
+      "code": 4,
+      "instructions": 70,
+      "handlers": 0,
+      "branch_targets": 5,
+      "jsr": 0
+    },
+    {
+      "path": "javac23-debug/classes/FieldWriteCopyRefusals.class",
+      "classes": 1,
+      "code": 5,
+      "instructions": 70,
+      "handlers": 1,
+      "branch_targets": 7,
+      "jsr": 0
+    },
+    {
+      "path": "javac23-no-debug/classes/FieldWriteCopies.class",
+      "classes": 1,
+      "code": 4,
+      "instructions": 70,
+      "handlers": 0,
+      "branch_targets": 5,
+      "jsr": 0
+    },
+    {
+      "path": "javac23-no-debug/classes/FieldWriteCopyRefusals.class",
+      "classes": 1,
+      "code": 5,
+      "instructions": 70,
+      "handlers": 1,
+      "branch_targets": 7,
+      "jsr": 0
+    },
+    {
+      "path": "javac8-debug/classes/FieldWriteCopies.class",
+      "classes": 1,
+      "code": 4,
+      "instructions": 70,
+      "handlers": 0,
+      "branch_targets": 5,
+      "jsr": 0
+    },
+    {
+      "path": "javac8-debug/classes/FieldWriteCopyRefusals.class",
+      "classes": 1,
+      "code": 5,
+      "instructions": 70,
+      "handlers": 1,
+      "branch_targets": 7,
+      "jsr": 0
+    },
+    {
+      "path": "javac8-no-debug/classes/FieldWriteCopies.class",
+      "classes": 1,
+      "code": 4,
+      "instructions": 70,
+      "handlers": 0,
+      "branch_targets": 5,
+      "jsr": 0
+    },
+    {
+      "path": "javac8-no-debug/classes/FieldWriteCopyRefusals.class",
+      "classes": 1,
+      "code": 5,
+      "instructions": 70,
+      "handlers": 1,
+      "branch_targets": 7,
+      "jsr": 0
+    }
+  ],
+  "total": {
+    "classes": 8,
+    "code": 36,
+    "instructions": 560,
+    "handlers": 4,
+    "branch_targets": 48,
+    "jsr": 0
+  }
+}

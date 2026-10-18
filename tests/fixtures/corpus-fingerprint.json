@@ -10696,6 +10696,86 @@
       "path": "tests/fixtures/recover-exception-only-finally-completion/v8/ExceptionOnlyLocal.class"
     },
     {
+      "blake3": "27fdf0bb1616dfaf888f345129b8f39d7143d1bb792407bd028ede47562552a1",
+      "bytes": 808,
+      "path": "tests/fixtures/recover-field-write-test-copies/FieldWriteCopies.java"
+    },
+    {
+      "blake3": "9a52905260d37a238b71ad21d21e143035f59b34f01cdaf4d78853ee75b2f373",
+      "bytes": 5309,
+      "path": "tests/fixtures/recover-field-write-test-copies/FieldWriteCopiesDriver.java"
+    },
+    {
+      "blake3": "103d86014340763a588f7a5bf40a62f1144cc6720035257fa95feef1a05f0a55",
+      "bytes": 934,
+      "path": "tests/fixtures/recover-field-write-test-copies/FieldWriteCopyRefusals.java"
+    },
+    {
+      "blake3": "d9f330c893f48c3f757d429181ee670a6984531ea31ab657e85c3fad5b7d645d",
+      "bytes": 2273,
+      "path": "tests/fixtures/recover-field-write-test-copies/extra-stack-copy/ExtraStackCopyDriver.java"
+    },
+    {
+      "blake3": "e3ffcc8deb6cc0668a70ee1b020c852e4d41ec2512b9e6c8963d00cd8d89d55b",
+      "bytes": 1080,
+      "path": "tests/fixtures/recover-field-write-test-copies/extra-stack-copy/FieldWriteCopies.class"
+    },
+    {
+      "blake3": "086d8a490dcd2e1c8b0a3c9f4134d7d6df735a531db92e7906ef50ea52ba2f42",
+      "bytes": 740,
+      "path": "tests/fixtures/recover-field-write-test-copies/extra-stack-copy/manifest.json"
+    },
+    {
+      "blake3": "fa5ce10c16a0b6b53abd26603cca7d6b1383301a946eaec0e62dcf3f005cc05b",
+      "bytes": 1080,
+      "path": "tests/fixtures/recover-field-write-test-copies/javac23-debug/classes/FieldWriteCopies.class"
+    },
+    {
+      "blake3": "ec36825a1c36c3b2e4c89489383c20ec745b4a9c1cc09b2b3905f6bee0e5a2e2",
+      "bytes": 1233,
+      "path": "tests/fixtures/recover-field-write-test-copies/javac23-debug/classes/FieldWriteCopyRefusals.class"
+    },
+    {
+      "blake3": "b3688b691d5cbd678ae2c0f65f63f91aa3cac02b66773cada45ac2ed8a505913",
+      "bytes": 735,
+      "path": "tests/fixtures/recover-field-write-test-copies/javac23-no-debug/classes/FieldWriteCopies.class"
+    },
+    {
+      "blake3": "97ae5b677e9499463cb1685d2256d3ccfe18c0c280a34a3b04446ad050b03e9d",
+      "bytes": 812,
+      "path": "tests/fixtures/recover-field-write-test-copies/javac23-no-debug/classes/FieldWriteCopyRefusals.class"
+    },
+    {
+      "blake3": "6e9f60e6b0adc296e49884e28fec8f0bd1817a662f457dc60b147cae84a770fe",
+      "bytes": 1080,
+      "path": "tests/fixtures/recover-field-write-test-copies/javac8-debug/classes/FieldWriteCopies.class"
+    },
+    {
+      "blake3": "2d21e50a2b5cbbe63d81e692aaa0474bdc16385c946ac33a9348119e0433de0f",
+      "bytes": 1236,
+      "path": "tests/fixtures/recover-field-write-test-copies/javac8-debug/classes/FieldWriteCopyRefusals.class"
+    },
+    {
+      "blake3": "6e74cbbe1c1a624b261af2a51459072188f83fa65fd03df178178d7878727ca2",
+      "bytes": 735,
+      "path": "tests/fixtures/recover-field-write-test-copies/javac8-no-debug/classes/FieldWriteCopies.class"
+    },
+    {
+      "blake3": "b0fe6589ef43cc8c2bd3b90e52e262db8ef4be155a6a0fb8e1b779b1fb958e74",
+      "bytes": 815,
+      "path": "tests/fixtures/recover-field-write-test-copies/javac8-no-debug/classes/FieldWriteCopyRefusals.class"
+    },
+    {
+      "blake3": "18bd43c65dcc9d365000805ea9c5f1432e9e74caa6ed9302c1a6856e6afdd0e2",
+      "bytes": 1964,
+      "path": "tests/fixtures/recover-field-write-test-copies/manifest.json"
+    },
+    {
+      "blake3": "5fe0abe2e5e6cf78a02e0240a61abbb827aea726c4240b44baa2852c50b0b4ad",
+      "bytes": 1794,
+      "path": "tests/fixtures/recover-field-write-test-copies/target-census.json"
+    },
+    {
       "blake3": "c9bfe2ed7bbc0afaa7e1f6d247cf293e939c3ec5a7e263543ea24ee43255ba98",
       "bytes": 569,
       "path": "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A$Generic.class"
@@ -12334,6 +12414,126 @@
       "blake3": "300271fb969bc3fd1e625796aaffc8132fad588e770021451fef5b1a3913351e",
       "bytes": 1177,
       "path": "tests/fixtures/recover-statement-position-news/v8/SPN.class"
+    },
+    {
+      "blake3": "c3187e6490457d81b36aac9234cfd884044e733834c74ec0c5f34802d9943ed6",
+      "bytes": 1942,
+      "path": "tests/fixtures/recover-statementful-loop-headers/boundaries/inputs/DualEntryBoundaryDriver.java"
+    },
+    {
+      "blake3": "6dcb7b8e1b9ea3f80c68b8fbec8763690c7cc7b2fa4ae1ae082e982086b5f875",
+      "bytes": 1838,
+      "path": "tests/fixtures/recover-statementful-loop-headers/boundaries/inputs/JsrCloneHeaderDriver.java"
+    },
+    {
+      "blake3": "0851dc067d63a4ae95810d13a56a9599ae84febeec3b0c6a36b7295e72260bde",
+      "bytes": 672,
+      "path": "tests/fixtures/recover-statementful-loop-headers/boundaries/inputs/StatementfulLoopBoundary.java"
+    },
+    {
+      "blake3": "8dda74b5dd5c30faf08420cd635e718b04f2e8afb2bb9f38abde1425a3b5a3cf",
+      "bytes": 2034,
+      "path": "tests/fixtures/recover-statementful-loop-headers/boundaries/inputs/StatementfulLoopBoundaryDriver.java"
+    },
+    {
+      "blake3": "9c79d0ddd14d7e901da3f288ba06b8465d5d752e13e8bed5d10350eb29fd14aa",
+      "bytes": 824,
+      "path": "tests/fixtures/recover-statementful-loop-headers/boundaries/javac8-debug/StatementfulLoopBoundary.class"
+    },
+    {
+      "blake3": "2f51c0746add24b4bf39d5158895043652810005a5e9f5232256c1e1161f5910",
+      "bytes": 1053,
+      "path": "tests/fixtures/recover-statementful-loop-headers/boundaries/manifest.json"
+    },
+    {
+      "blake3": "43855c3cde17c75b063a32421a0c47c00ec72818c08847a1d2d96e12dc5ff2aa",
+      "bytes": 237,
+      "path": "tests/fixtures/recover-statementful-loop-headers/boundaries/v49/StatementfulDualEntry.class"
+    },
+    {
+      "blake3": "e9bcd70e163577f3b6c2ce4d90003df20726134585bdfa770aa7dd1ec97328de",
+      "bytes": 255,
+      "path": "tests/fixtures/recover-statementful-loop-headers/boundaries/v49/StatementfulJsrCloneHeader.class"
+    },
+    {
+      "blake3": "fbfe1ef7fc7c80c56598b384190c1f887d898e93b659fc414e850515d33fa578",
+      "bytes": 5774,
+      "path": "tests/fixtures/recover-statementful-loop-headers/inventory.json"
+    },
+    {
+      "blake3": "4e0003d5d31f87927761211e044244ab84205778c48df4ec99dae54849ba1ba9",
+      "bytes": 666,
+      "path": "tests/fixtures/recover-statementful-loop-headers/original/TestSequentialLoops.java"
+    },
+    {
+      "blake3": "e881db3243235e57c05960582ba42cdaf9a862f55dac10b4d8502216928897fd",
+      "bytes": 2872,
+      "path": "tests/fixtures/recover-statementful-loop-headers/original/TestSequentialLoopsDriver.java"
+    },
+    {
+      "blake3": "bb94e596cbb2601c2cf5ae0973da51a103d79fdec2c0a418d6293f30416f5b9e",
+      "bytes": 686,
+      "path": "tests/fixtures/recover-statementful-loop-headers/original/debug/classes/jadx/tests/integration/loops/TestSequentialLoops$TestCls.class"
+    },
+    {
+      "blake3": "0d035594f1f8e857d621272992f3c37a9403e0bd2bf9941cdfcebfe511c87557",
+      "bytes": 1296,
+      "path": "tests/fixtures/recover-statementful-loop-headers/original/debug/classes/jadx/tests/integration/loops/TestSequentialLoops.class"
+    },
+    {
+      "blake3": "b4504ef7ead0d1bfeeb63d44c6a59e31ae6d3671b148a1ea7696f07636ff30b2",
+      "bytes": 3416,
+      "path": "tests/fixtures/recover-statementful-loop-headers/original/manifest.json"
+    },
+    {
+      "blake3": "b673225b5010ca738f80d1ef9ad7cc31392e9484526bd1920e2bc5c0273b555e",
+      "bytes": 383,
+      "path": "tests/fixtures/recover-statementful-loop-headers/original/no-debug/classes/jadx/tests/integration/loops/TestSequentialLoops$TestCls.class"
+    },
+    {
+      "blake3": "3dfdc9f85baf107cec26c3d24af8b11eda6cb0803da3a34db8cefd9e2b6cfd0c",
+      "bytes": 1069,
+      "path": "tests/fixtures/recover-statementful-loop-headers/original/no-debug/classes/jadx/tests/integration/loops/TestSequentialLoops.class"
+    },
+    {
+      "blake3": "a5c159ac1added13268f0fee4d546add507e55f51bbc1264ee37897a8718b79a",
+      "bytes": 1406,
+      "path": "tests/fixtures/recover-statementful-loop-headers/supplement/SequentialLoopEffects.java"
+    },
+    {
+      "blake3": "973909c6d59cb78e92e72ed677d6f54b3aa2caca78f6f8f7b87165c322f0bab7",
+      "bytes": 8650,
+      "path": "tests/fixtures/recover-statementful-loop-headers/supplement/SequentialLoopEffectsDriver.java"
+    },
+    {
+      "blake3": "bc32c8d541afd1f6ab972c398bc295f680238f0a76d91561fed3affed23880b6",
+      "bytes": 1408,
+      "path": "tests/fixtures/recover-statementful-loop-headers/supplement/javac23-debug/classes/SequentialLoopEffects.class"
+    },
+    {
+      "blake3": "80ccfb9c916f3abed224c8d73652e79d9752086fc4830f9416d3ddb090f01b1c",
+      "bytes": 1013,
+      "path": "tests/fixtures/recover-statementful-loop-headers/supplement/javac23-no-debug/classes/SequentialLoopEffects.class"
+    },
+    {
+      "blake3": "2924c7a6f7ba6c92f1ef7a682dda817d81c4b358a4c3291539d79f3af9685df9",
+      "bytes": 1408,
+      "path": "tests/fixtures/recover-statementful-loop-headers/supplement/javac8-debug/classes/SequentialLoopEffects.class"
+    },
+    {
+      "blake3": "0cb8338184caf76d23578d5ab58df63c6e7896e81a8dbd0f00ef8e5faf6592c4",
+      "bytes": 1013,
+      "path": "tests/fixtures/recover-statementful-loop-headers/supplement/javac8-no-debug/classes/SequentialLoopEffects.class"
+    },
+    {
+      "blake3": "bb87bb6af51a391ee5effa109e1b668282e9c6c76d3ba4e6942c5c0372423e8c",
+      "bytes": 3239,
+      "path": "tests/fixtures/recover-statementful-loop-headers/supplement/manifest.json"
+    },
+    {
+      "blake3": "fc0f165ba56fa8836427625b9428e03c5c30ea17f20d429c82105b788396e938",
+      "bytes": 1167,
+      "path": "tests/fixtures/recover-statementful-loop-headers/target-census.json"
     },
     {
       "blake3": "bb056bbf398964ea6a282ad90f35dafb7516b5b54097a1b7a4d85cc9eafedd81",

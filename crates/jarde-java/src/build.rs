@@ -10485,7 +10485,8 @@ pub(crate) struct FieldCopyCut {
     pub(crate) owned: BTreeSet<u32>,
 }
 
-/// One proved copy whose consumers are field instructions.
+/// One proved copy whose consumers are proved field operations, with an optional direct test read
+/// represented by the saved single-store chain carrier.
 #[derive(Clone, Debug)]
 pub(crate) struct FieldCopy {
     /// The BCI of the copy itself: a `dup` or a `dup_x1`.
@@ -10511,7 +10512,9 @@ pub(crate) struct FieldCopy {
 #[derive(Clone, Debug)]
 pub(crate) enum FieldCopyShape {
     /// `dup; putfield; [dup; putfield]*; putfield`: one once-evaluated value the chain's stores
-    /// share, written as one assignment per store in bytecode order.
+    /// share, written as one assignment per store in bytecode order. The proved saved single-store
+    /// `dup_x1` test-copy form uses the same carrier with one additional, directly verified compare
+    /// consumer; `stores` continues to list only field writes.
     Chain {
         /// Every store of the chain, in bytecode order: the copy's own consumers, one per copy.
         stores: Vec<u32>,
@@ -10565,14 +10568,14 @@ impl FieldCopies {
         self.cuts.get(block)
     }
 
-    /// Reads every field copy of one body: the chained field assignment's copies and the receiver
-    /// copies of the compound assignments whose operator the update rule does not present.
+    /// Reads every field copy of one body: chained field assignments, receiver copies of compound
+    /// assignments whose operator the update rule does not present, and saved copies with one
+    /// directly proved comparison consumer.
     ///
-    /// Every condition is an identity the bytecode states, and the two shapes are read from the
-    /// copies themselves: which instruction each copy's two values are consumed by, which value the
-    /// store takes, and where the source was produced. Nothing is inferred from an opcode sequence
-    /// alone — the run of instructions the chain is made of is checked against the values those
-    /// instructions really carry.
+    /// Every condition is an identity the bytecode states: which instruction each copy's values
+    /// are consumed by, which value a store takes, where the source was produced, and (for the saved
+    /// test-copy form) the exact comparison consumer. Nothing is inferred from an opcode sequence
+    /// alone — the run is checked against the values those instructions really carry.
     pub(crate) fn prove(
         ssa: &SsaTable,
         canonical: &CanonicalCfg,
@@ -10631,7 +10634,7 @@ impl FieldCopies {
                                     // writes one `dup_x1` per extra store, each inserting its copy
                                     // *under* the receiver it also moves
                                     // (`recover-instance-field-assignment-chains`).
-                                    None => instance_chain_at(
+                                    None => match instance_chain_at(
                                         ssa,
                                         operations,
                                         fields,
@@ -10639,7 +10642,19 @@ impl FieldCopies {
                                         block,
                                         index,
                                         budget,
-                                    )?,
+                                    )? {
+                                        Some(copies) => Some(copies),
+                                        None => field_test_copy_at(
+                                            ssa,
+                                            operations,
+                                            fields,
+                                            has_receiver,
+                                            block,
+                                            index,
+                                            budget,
+                                        )?
+                                        .map(|copy| vec![copy]),
+                                    },
                                 }
                             }
                         }
@@ -10869,6 +10884,282 @@ fn field_chain_at(
             })
             .collect(),
     ))
+}
+
+/// The saved `dup_x1; putfield; int-constant; if_icmp*` value copy, when all three outputs
+/// have exactly the consumers this presentation writes. The copied source is evaluated once into
+/// the existing chain binding: the upper copy feeds the field value, the moved middle value is the
+/// `this` receiver, and the lower copy feeds the direct comparison. No field read is synthesized.
+fn field_test_copy_at(
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &field::Plan,
+    has_receiver: bool,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    index: usize,
+    budget: &mut Budget,
+) -> Result<Option<FieldCopy>, StopReason> {
+    if !has_receiver {
+        return Ok(None);
+    }
+    let instructions = block.instructions();
+    let Some(copy) = instructions.get(index) else {
+        return Ok(None);
+    };
+    // Cheap shape gate before expression/effect/SSA scans. These are the only intervening
+    // instructions: the instance write, one int constant, and the block's direct comparison.
+    let (Some(store), Some(constant), Some(compare)) = (
+        instructions.get(index + 1),
+        instructions.get(index + 2),
+        instructions.get(index + 3),
+    ) else {
+        return Ok(None);
+    };
+    if copy.opcode() != OPCODE_DUP_X1
+        || !matches!(operations.get(copy.bci()), Some(Operation::Other))
+        || !matches!(
+            operations.get(constant.bci()),
+            Some(Operation::Push(ConstantValue::Int(_)))
+        )
+        || instructions.last().map(SsaInstruction::bci) != Some(compare.bci())
+        || !matches!(compare.opcode(), 0x9f..=0xa4)
+        || !matches!(
+            operations.get(compare.bci()),
+            Some(Operation::Comparison { op, .. }) if op.reads_two()
+        )
+    {
+        return Ok(None);
+    }
+    let Some((evidence, store_shape)) = fields.claim(store.bci()) else {
+        return Ok(None);
+    };
+    if store.opcode() != 0xb5
+        || evidence.access != FieldAccess::Write
+        || evidence.is_static
+        || evidence.descriptor != "I"
+        || !store_shape.writes()
+    {
+        return Ok(None);
+    }
+    let (Some((source, below)), Some(receiver), Some(store_value)) = (
+        dup_x1_operands(copy),
+        store_shape.receiver,
+        store_shape.value,
+    ) else {
+        return Ok(None);
+    };
+    let Some((below_copy, moved_receiver, copied_store_value)) = dup_x1_writes(copy, below, source)
+    else {
+        return Ok(None);
+    };
+    if moved_receiver != receiver
+        || copied_store_value != store_value
+        || below_copy == moved_receiver
+        || below_copy == copied_store_value
+        || moved_receiver == copied_store_value
+        || ssa.value(source).ty() != &Value::Int
+    {
+        return Ok(None);
+    }
+    let Some(source_bci) = definition_in_block(ssa, source, block.block()) else {
+        return Ok(None);
+    };
+    let mut source_pos = None;
+    for (position, instruction) in instructions.iter().enumerate() {
+        poll(budget, Some(instruction.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(instruction.bci()),
+        )?;
+        if instruction.bci() == source_bci {
+            source_pos = Some(position);
+            break;
+        }
+    }
+    let Some(source_pos) = source_pos else {
+        return Ok(None);
+    };
+    if source_pos >= index || source_pos + 1 != index {
+        return Ok(None);
+    }
+    let output_is = |value: ValueId, expected_bci: u32| {
+        let facts = ssa.value(value);
+        facts.replaced_by().is_none()
+            && matches!(
+                facts.def(),
+                Definition::Instruction {
+                    block: definition_block,
+                    bci,
+                } if definition_block == block.block() && *bci == expected_bci
+            )
+    };
+    if !output_is(source, source_bci)
+        || !output_is(below_copy, copy.bci())
+        || !output_is(moved_receiver, copy.bci())
+        || !output_is(copied_store_value, copy.bci())
+    {
+        return Ok(None);
+    }
+    // The moved receiver must be one actual `aload_0` output, not a same-typed alias. Meter this
+    // lookup because it scans the block and is additional work on the candidate path.
+    let Definition::Instruction {
+        block: receiver_block,
+        bci: receiver_bci,
+    } = ssa.value(below).def()
+    else {
+        return Ok(None);
+    };
+    if receiver_block != block.block()
+        || !matches!(
+            operations.get(*receiver_bci),
+            Some(Operation::Load { slot: 0 })
+        )
+        || ssa.value(below).replaced_by().is_some()
+    {
+        return Ok(None);
+    }
+    let mut receiver_load = None;
+    for instruction in instructions {
+        poll(budget, Some(instruction.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(instruction.bci()),
+        )?;
+        if instruction.bci() == *receiver_bci {
+            receiver_load = Some(instruction);
+            break;
+        }
+    }
+    let Some(receiver_load) = receiver_load else {
+        return Ok(None);
+    };
+    let Some(local_zero) = local_read(receiver_load, 0) else {
+        return Ok(None);
+    };
+    if !matches!(
+        ssa.value(local_zero).def(),
+        Definition::Entry {
+            slot: Slot::Local(0),
+            ..
+        }
+    ) {
+        return Ok(None);
+    }
+    let Some(constant_value) = one_stack_output(constant) else {
+        return Ok(None);
+    };
+    if ssa.value(constant_value.1).ty() != &Value::Int
+        || !output_is(constant_value.1, constant.bci())
+    {
+        return Ok(None);
+    }
+    let compare_operands = stack_operands(compare);
+    if compare_operands.len() != 2
+        || !compare_operands
+            .iter()
+            .any(|(_, value)| *value == below_copy)
+        || !compare_operands
+            .iter()
+            .any(|(_, value)| *value == constant_value.1)
+    {
+        return Ok(None);
+    }
+    for (value, consumer) in [
+        (source, copy.bci()),
+        (below, copy.bci()),
+        (below_copy, compare.bci()),
+        (moved_receiver, store.bci()),
+        (copied_store_value, store.bci()),
+        (constant_value.1, compare.bci()),
+    ] {
+        if !single_use_at_with_budget(ssa, value, block.block(), consumer, budget)? {
+            return Ok(None);
+        }
+    }
+    // Close the entire right-hand-side expression as an uninterrupted same-block prefix. This
+    // makes moving its one evaluation to the saved declaration at `dup_x1` preserve source order,
+    // while its SSA outputs can only feed that expression and the copy itself.
+    let source_context = ExpressionBciContext {
+        ssa,
+        operations,
+        fields,
+        block,
+        start: 0,
+        end: source_pos + 1,
+    };
+    // The expression walker uses the existing position/instruction lookup helpers, each linear in
+    // the block. At most three stack outputs per block instruction can enter the value walk, and
+    // each instruction node performs at most two such lookups; precharge that actual block bound
+    // without changing the existing helper's budget contract for its other callers.
+    let block_items = instructions.len() as u64;
+    let expression_lookup_bound = block_items.saturating_mul(block_items).saturating_mul(6);
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        expression_lookup_bound,
+        Some(copy.bci()),
+    )?;
+    let mut source_bcis = BTreeSet::new();
+    if !collect_expression_bcis(
+        &source_context,
+        source,
+        &mut source_bcis,
+        &mut BTreeSet::new(),
+        budget,
+        0,
+    )? {
+        return Ok(None);
+    }
+    source_bcis.insert(*receiver_bci);
+    let dependency_lookup_bound = block_items.saturating_mul(source_bcis.len() as u64);
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        dependency_lookup_bound,
+        Some(copy.bci()),
+    )?;
+    if !dependencies_fill_prefix(block, source_pos + 1, &source_bcis, budget)?
+        || !dependency_uses_stay_within(ssa, block, &source_bcis, copy.bci(), budget)?
+    {
+        return Ok(None);
+    }
+    // Effects facts have one row per physical instruction. Charge the real table scan and reject
+    // any handler coverage from the start of the RHS through the compare, including nested RHS
+    // operations; handler identity is never inferred from a block interval.
+    let Some(first_source_bci) = source_bcis.first().copied() else {
+        return Ok(None);
+    };
+    for effect in ssa.effects().instructions() {
+        poll(budget, Some(effect.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(effect.bci()),
+        )?;
+        if effect.block() == block.block()
+            && first_source_bci <= effect.bci()
+            && effect.bci() <= compare.bci()
+            && !effect.handlers().is_empty()
+        {
+            return Ok(None);
+        }
+    }
+    Ok(Some(FieldCopy {
+        duplicate: copy.bci(),
+        source,
+        pass_through: None,
+        moved: Some((moved_receiver, below)),
+        shape: FieldCopyShape::Chain {
+            stores: vec![store.bci()],
+            lead: true,
+            saved: true,
+        },
+    }))
 }
 
 /// The **instance** chain one `dup_x1` leads, when the run of instructions after it is one
@@ -19708,8 +19999,19 @@ impl Builder<'_> {
                 // makes is a statement of its own, and it must not be dropped just because the
                 // branch that follows it is what becomes the `if`.
                 match self.conditional_branches.get(branch_bci).cloned() {
-                    Some(ConditionalBranchPlan::Folded(_phi)) => {
+                    Some(ConditionalBranchPlan::Folded(phi)) => {
                         self.test_effects(branch, *branch_bci)?;
+                        if let Some(Err(reason)) =
+                            self.refresh_saved_field_test_fold(region, branch, *branch_bci, phi)?
+                        {
+                            self.conditional_values.remove(&phi);
+                            self.conditional_branches.insert(
+                                *branch_bci,
+                                ConditionalBranchPlan::Refused(reason.clone(), None),
+                            );
+                            let bcis = self.region_quote(region, *branch_bci);
+                            return self.fallback(bcis, &reason, *branch_bci);
+                        }
                         // The join's one consumer writes the complete conditional value. Emitting
                         // either arm here would run its producer separately and then again inside
                         // that expression.
@@ -24451,6 +24753,121 @@ impl Builder<'_> {
         Ok((branch_bci, *value))
     }
 
+    /// Rebuilds one already-folded Boolean return when its branch reads a saved field-test copy.
+    ///
+    /// The initial conditional cache is prepared before the field-copy lead publishes its local.
+    /// Only this exact, same-block `dup_x1` test-copy shape can make that cache stale; all other
+    /// folded branches keep their prepared expression unchanged.
+    fn refresh_saved_field_test_fold(
+        &mut self,
+        region: &Region,
+        branch: &CanonicalBlockId,
+        branch_bci: u32,
+        phi: ValueId,
+    ) -> Result<Option<Result<(), String>>, StopReason> {
+        let Some((_, copy)) = self.field_copies.copies.range(..branch_bci).next_back() else {
+            return Ok(None);
+        };
+        if self.block_of.get(&copy.duplicate) != Some(branch)
+            || !matches!(self.operations.get(copy.duplicate), Some(Operation::Other))
+            || !matches!(
+                &copy.shape,
+                FieldCopyShape::Chain {
+                    stores,
+                    lead: true,
+                    saved: true,
+                } if stores.len() == 1
+            )
+        {
+            return Ok(None);
+        }
+        poll(self.budget, Some(copy.duplicate))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(copy.duplicate),
+        )?;
+
+        let refusal = |reason: &str| Some(Err(reason.to_owned()));
+        let Some(cached) = self.conditional_values.get(&phi) else {
+            return Ok(refusal(
+                "the saved field-test branch has no cached conditional expression to refresh",
+            ));
+        };
+        if cached.presented != Some(Type::Boolean)
+            || self.bindings.contains_key(&phi)
+            || self.field_chain_refused.contains(&copy.duplicate)
+            || !self
+                .bindings
+                .get(&copy.source)
+                .is_some_and(|binding| binding.ty == Type::Int)
+        {
+            return Ok(refusal(
+                "the saved field-test conditional lacks its published integer source or Boolean fold",
+            ));
+        }
+        let Region::If {
+            then_arm, else_arm, ..
+        } = region
+        else {
+            return Ok(refusal(
+                "the saved field-test conditional is no longer an if region",
+            ));
+        };
+
+        let proof = match prove_conditional_value(
+            region,
+            self.canonical,
+            self.ssa,
+            self.operations,
+            self.budget,
+        )? {
+            ConditionalValueAttempt::Proved(proof) => proof,
+            ConditionalValueAttempt::Refused(_) => {
+                return Ok(refusal(
+                    "the saved field-test conditional could not be reproved without an exception row",
+                ));
+            }
+        };
+        let boolean_leaves = [proof.when_true, proof.when_false]
+            .into_iter()
+            .all(|value| {
+                self.ssa.value(value).replaced_by().is_none()
+                    && integer_constant(self.ssa, self.operations, value)
+                        .is_some_and(|number| matches!(number, 0 | 1))
+            });
+        if proof.branch != *branch
+            || proof.branch_bci != branch_bci
+            || proof.phi != phi
+            || !matches!(
+                self.operations.get(proof.consumer_bci),
+                Some(Operation::Return)
+            )
+            || self
+                .instructions
+                .get(&proof.consumer_bci)
+                .is_none_or(|instruction| instruction.opcode() != 0xac)
+            || !boolean_leaves
+        {
+            return Ok(refusal(
+                "the saved field-test conditional does not retain its Boolean return and two literal arms",
+            ));
+        }
+
+        match self.build_conditional_value(&proof, then_arm, else_arm) {
+            Ok(expression) if expression.presented == Some(Type::Boolean) => {
+                self.conditional_values.insert(phi, expression);
+                Ok(Some(Ok(())))
+            }
+            Ok(_) => Ok(refusal(
+                "the refreshed saved field-test expression changed its Boolean type",
+            )),
+            Err(ConditionalValueBuildError::Refused(reason)) => Ok(Some(Err(reason))),
+            Err(ConditionalValueBuildError::Stop(stop)) => Err(stop),
+        }
+    }
+
     /// Appends one arm's statements to a vector of its own, so the `if` can hold them.
     fn arm(
         &mut self,
@@ -26255,10 +26672,24 @@ impl Builder<'_> {
             {
                 Ok(())
             }
-            // A `dup_x1` whose copies are the receiver of one member's read and its write is a
-            // proved copy of its own (`recover-chained-field-assignment`): its text is the receiver
-            // expression its consumers are written with, so the instruction writes no statement.
-            Some(Operation::Other) if self.field_copies.owns(at) => Ok(()),
+            // A proved `dup_x1` has no statement of its own. Receiver copies supply the expression
+            // for their claimed field accesses; the saved test-copy shape declares its one RHS value
+            // here so both the write and direct comparison read the same evaluation.
+            Some(Operation::Other) if self.field_copies.owns(at) => {
+                if let Some(copy) = self.field_copies.copy_at(at).cloned()
+                    && matches!(
+                        copy.shape,
+                        FieldCopyShape::Chain {
+                            lead: true,
+                            saved: true,
+                            ..
+                        }
+                    )
+                {
+                    return self.field_chain_lead(&copy, at);
+                }
+                Ok(())
+            }
             Some(Operation::Other) | None => self.fallback(
                 vec![at],
                 format!("the instruction at BCI {at} is not part of the provable subset"),
@@ -35510,6 +35941,7 @@ pub(crate) fn spell_reference(descriptor: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    mod field_test_copy_tests;
     use crate::names::{AliasReason, SlotEvidence};
 
     #[test]

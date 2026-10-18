@@ -1,0 +1,44 @@
+[
+  {
+    "name": "focused-test-assumption-failure-root-v2",
+    "archive": {
+      "path": "openspec/changes/recover-statementful-loop-headers/results/focused-test-assumption-failure-root-v2/capture.tar.gz",
+      "bytes": 338351,
+      "sha256": "8206dc274fdad5bbcb35d20217114e0ad408409ae8e4ea798f80f45b55933d09",
+      "capture_review_path": "openspec/changes/recover-statementful-loop-headers/results/focused-test-assumption-failure-root-v2/capture-review.json",
+      "capture_review_members_reopened": 9
+    },
+    "tar_member_count": 9,
+    "manifest_entry_count": 8,
+    "manifest_sha256": "088383a30604a5c51151c420428d50a9385d5493f10013952790c20e043ccbb4",
+    "checks": {
+      "archive_review_pin": "passed",
+      "unique_paths": "passed",
+      "safe_canonical_paths": "passed",
+      "regular_members_only": "passed",
+      "manifest_set_exact": "passed",
+      "member_bytes_and_sha256": "passed"
+    }
+  },
+  {
+    "name": "focused-origin32-failure-root-v3",
+    "archive": {
+      "path": "openspec/changes/recover-statementful-loop-headers/results/focused-origin32-failure-root-v3/capture.tar.gz",
+      "bytes": 338916,
+      "sha256": "25d3a741ce9c182865ee7bf6fda787ac9655e06887f1359bab961eb4bb5fd1e3",
+      "capture_review_path": "openspec/changes/recover-statementful-loop-headers/results/focused-origin32-failure-root-v3/capture-review.json",
+      "capture_review_members_reopened": 11
+    },
+    "tar_member_count": 11,
+    "manifest_entry_count": 10,
+    "manifest_sha256": "9adcebd00e0a33049bc43d9dc393f7ee740140ad97d612ce9c7dd9f7217cc6b3",
+    "checks": {
+      "archive_review_pin": "passed",
+      "unique_paths": "passed",
+      "safe_canonical_paths": "passed",
+      "regular_members_only": "passed",
+      "manifest_set_exact": "passed",
+      "member_bytes_and_sha256": "passed"
+    }
+  }
+]

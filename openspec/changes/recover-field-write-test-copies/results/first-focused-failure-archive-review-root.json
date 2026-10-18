@@ -1,0 +1,21 @@
+{
+  "name": "first-focused-failure-root-v1",
+  "archive": {
+    "path": "openspec/changes/recover-field-write-test-copies/results/first-focused-failure-root-v1/capture.tar.gz",
+    "bytes": 545026,
+    "sha256": "e259c7ac43d4b9fe8b476177dac58ac7827011aad07d77169ed86e12f3cede0e",
+    "capture_review_path": "openspec/changes/recover-field-write-test-copies/results/first-focused-failure-root-v1/capture-review.json",
+    "capture_review_members_reopened": 11
+  },
+  "tar_member_count": 11,
+  "manifest_entry_count": 10,
+  "manifest_sha256": "e3d3d085834a820c3c2d63526adc94ba26c4ebcdb267a2323b95337fad1a9ed7",
+  "checks": {
+    "archive_review_pin": "passed",
+    "unique_paths": "passed",
+    "safe_canonical_paths": "passed",
+    "regular_members_only": "passed",
+    "manifest_set_exact": "passed",
+    "member_bytes_and_sha256": "passed"
+  }
+}

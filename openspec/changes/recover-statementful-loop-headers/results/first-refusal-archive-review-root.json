@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "archive": {
+    "name": "first-refusal-root-v2",
+    "archive": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-statementful-loop-headers/results/first-refusal-root-v2/capture.tar.gz",
+      "bytes": 1382540,
+      "sha256": "3a12f06bb52b9d141ba1579a52e51d455d634c42ce9a319c36897a957659aa55",
+      "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-statementful-loop-headers/results/first-refusal-root-v2/capture-review.json",
+      "capture_review_members_reopened": 56
+    },
+    "tar_member_count": 56,
+    "manifest_entry_count": 55,
+    "manifest_sha256": "5c1430179b3ce79b7bdc6064581f3268ab7cdca2a4f5f05f3645293eafb41d60",
+    "checks": {
+      "archive_review_pin": "passed",
+      "unique_paths": "passed",
+      "safe_canonical_paths": "passed",
+      "regular_members_only": "passed",
+      "manifest_set_exact": "passed",
+      "member_bytes_and_sha256": "passed"
+    }
+  }
+}
