@@ -1,0 +1,63 @@
+{
+  "changeName": "remove-proved-list-object-argument-wrappers",
+  "changeDir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/remove-proved-list-object-argument-wrappers",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "proposal": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/remove-proved-list-object-argument-wrappers/proposal.md"
+    ],
+    "specs": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/remove-proved-list-object-argument-wrappers/specs/java8-recovery/spec.md"
+    ],
+    "design": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/remove-proved-list-object-argument-wrappers/design.md"
+    ],
+    "tasks": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/remove-proved-list-object-argument-wrappers/tasks.md"
+    ]
+  },
+  "progress": {
+    "total": 6,
+    "complete": 6,
+    "remaining": 0
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "description": "1.1 根独立审查两版 SDK、javac8/23 debug/none 原始控制与完整 Jarde/JADX 重编译收据，确认 Integer/primitive、重载及真实 CHECKCAST 边界；以原始流、Code facts 和运行 oracle 验证，分类所有旧失败。",
+      "done": true
+    },
+    {
+      "id": "2",
+      "description": "1.2 根审查 List body 与 opaque AST 事务的最小复用设计，并以 OpenSpec strict 和实现派发记录确认范围、预算及可选缺证保留核心契约。",
+      "done": true
+    },
+    {
+      "id": "3",
+      "description": "2.1 Luna 私有补丁复用现有元素局部证明，根审查并集成精确 equals/remove 可选包装清理及 staging/final 重验证；固定 String/Integer 公开回归通过且 remove 不影响 E 推断。",
+      "done": true
+    },
+    {
+      "id": "4",
+      "description": "2.2 覆盖可选断链保留泛型/typed、未知/重载目标、真实参数 CHECKCAST、重复/错误来源、default/all/raw/map 和 Stop；根运行相关 Rust 回归、fmt、CI Clippy 与适用集成门验证。",
+      "done": true
+    },
+    {
+      "id": "5",
+      "description": "3.1 根实际比较原始完整 TestNestedLoops 与 Jarde/JADX 完整生成源码，javac8/23 重编译及双 VM oracle、CodeSource 错根控制、原始/投影事实差分均接受；对独立控制只统计成功完整类的真实运行，保留编译失败。",
+      "done": true
+    },
+    {
+      "id": "6",
+      "description": "3.2 根完成所需 workspace 回归并提交推送产品，验收实际产品自身 CI 全部 jobs/steps，绑定最终 CLI 和来源；同步主规范、账本及 handoff，strict 通过、清理 target、main 干净且与远端一致。",
+      "done": true
+    }
+  ],
+  "state": "all_done",
+  "instruction": "All tasks are complete! This change is ready to be archived.\nConsider running tests and reviewing the changes before archiving.",
+  "context": "Language: zh-CN\nAll artifacts must be written in zh-CN.\nKeep OpenSpec structural headings and SHALL/MUST keywords in English.\nProject: jarde, a pure Rust library-first JVM artifact analysis engine.\nArchitecture reference: JVM_Rust_Engine_Final_Architecture.md.\nKeep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend\nintegration are thin outward adapters that depend on jarde; the core must not\ndepend on CLI, MCP, or host/backend protocol types.\nP0-P5 and crate layering are archived within their recorded scope; 18 main specs are promoted.\nStage archival is not blanket product completion. The 2026-09-20 completion review found two\nrecovery correctness gaps (nested-expression evaluation position, fallback producer retention);\nclose-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,\nacceptance.md and the support matrix for the current status. Preserve historical archives.\nThe review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;\npreserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign\nthen found two engine defects, now tracked as bound-recovery-recursion (process abort,\nfixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,\nbeing fixed); a third change, clarify-structural-output-planes, records the read-rule\ngaps those findings exposed. optimize-demand-workloads remains an unfinished\ninvestigation program even though its O1 child bound-container-lookup is archived.\nQuery and Decompiler share readers and identities but do not start each other.\nPreserve physical origins and raw facts; distinguish symbolic references,\ndefinition resolution, dispatch, output quality, coverage and execution state.\nDo not execute target code or download target dependencies automatically.\nAll input processing, dependency expansion and output need explicit budgets.\nPrefer maintained libraries that pass our conformance gates; see dependencies.md.\nKeep the smallest complete change. Do not create speculative crates or abstractions.\nFavor long-term architecture; do not maintain backward compatibility by default.\nRecord unrelated architectural debt separately instead of expanding a change.\n",
+  "root": {
+    "path": "/Users/lordcasser/workspace/projects/jarde",
+    "source": "nearest"
+  }
+}

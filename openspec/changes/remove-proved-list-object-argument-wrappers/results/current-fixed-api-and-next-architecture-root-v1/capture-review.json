@@ -1,0 +1,13 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 87,
+  "archive_bytes": 565762,
+  "archive_sha256": "d31e53332d5aad069b81d552cd4fa6b2528734a9b578053245ea3566f4d4c7ae",
+  "source_directories": [
+    "jarde-cf11-seven-fixed-ledger-audit-luna-v1-20261018",
+    "jarde-cf11-current-fixed-api-prep-root-v1-20261018",
+    "jarde-cf11-current-fixed-api-root-v1-20261018",
+    "jarde-cf11-current-fixed-api-review-luna-v1-20261018",
+    "jarde-nested-loops2-signature-refusal-luna-v1-20261018"
+  ]
+}

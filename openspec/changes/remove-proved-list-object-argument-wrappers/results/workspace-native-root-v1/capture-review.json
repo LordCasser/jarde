@@ -1,0 +1,9 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 213,
+  "archive_bytes": 1874296,
+  "archive_sha256": "539d62cd906b0ea7664903cf950913c99362d926176d07e5c582f54aee44f51e",
+  "source_directories": [
+    "jarde-object-argument-workspace-seed1-root-v1-20261018"
+  ]
+}

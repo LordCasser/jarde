@@ -1,0 +1,9 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 58,
+  "archive_bytes": 2784704,
+  "archive_sha256": "2ae7b54e64fa96ae862ca2545715edd07a35ab71af70c52d5634dfd416576e8f",
+  "source_directories": [
+    "jarde-object-argument-own-ci-root-v1-20261018"
+  ]
+}

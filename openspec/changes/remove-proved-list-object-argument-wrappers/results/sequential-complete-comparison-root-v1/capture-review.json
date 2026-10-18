@@ -1,0 +1,11 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 196,
+  "archive_bytes": 640521,
+  "archive_sha256": "e2173df09414584e16147ded012985d0decddda7962ae19cbf3af523c93f5722",
+  "source_directories": [
+    "jarde-testsequentialloops-final-rebuild-prep-luna-v1-20261018",
+    "jarde-testsequentialloops-final-rebuild-prep-luna-v2-20261018",
+    "jarde-testsequentialloops-final-rebuild-root-v1-20261018"
+  ]
+}

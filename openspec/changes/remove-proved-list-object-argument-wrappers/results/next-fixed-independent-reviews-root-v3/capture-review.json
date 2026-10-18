@@ -1,0 +1,13 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 13,
+  "archive_bytes": 27593,
+  "archive_sha256": "bec87415bf5ed139c531588949270486c38570826264bbdd2560206e529b6961",
+  "source_directories": [
+    "jarde-cf11-sequential-current-api-independent-review-luna-v1-20261018",
+    "jarde-cf11-sequential-current-api-independent-review-luna-v2-20261018",
+    "jarde-cf11-sequential-current-api-independent-review-luna-v3-20261018",
+    "jarde-cf11-seq2-delivery-audit-luna-v1-20261018",
+    "jarde-current-change-one-seed-acceptance-review-luna-v1-20261018"
+  ]
+}

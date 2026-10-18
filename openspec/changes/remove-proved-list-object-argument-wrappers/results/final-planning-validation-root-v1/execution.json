@@ -1,0 +1,63 @@
+{
+  "status": "accepted",
+  "commands": [
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-18T15:50:47.685230+00:00",
+      "finished_at": "2026-10-18T15:50:48.304295+00:00",
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/remove-proved-list-object-argument-wrappers/results/final-planning-validation-root-v1/1.stdout.raw",
+          "bytes": 17432,
+          "sha256": "78bde261ce86be33020fb8bce2d98f8eea95f27aa1fc19eaebb3041a339752fc"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/remove-proved-list-object-argument-wrappers/results/final-planning-validation-root-v1/1.stderr.raw",
+          "bytes": 16,
+          "sha256": "5bc31df123a2e521acdd2c0d9477b367feec506471a91065d0a6b32c09089ed5"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "instructions",
+        "apply",
+        "--change",
+        "remove-proved-list-object-argument-wrappers",
+        "--json"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-18T15:50:48.304600+00:00",
+      "finished_at": "2026-10-18T15:50:48.590354+00:00",
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/remove-proved-list-object-argument-wrappers/results/final-planning-validation-root-v1/2.stdout.raw",
+          "bytes": 5286,
+          "sha256": "3c5060bb9078a630ae134effc8165895417e94842fcb0ee05703bb09e0049999"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/remove-proved-list-object-argument-wrappers/results/final-planning-validation-root-v1/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "strict_totals": {
+    "passed": 376,
+    "failed": 0
+  },
+  "apply_progress": {
+    "total": 6,
+    "complete": 6,
+    "remaining": 0
+  },
+  "main_spec_synced": true
+}
