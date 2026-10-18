@@ -1,5 +1,12 @@
 # JADX 测试驱动的 Java 恢复路线
 
+## 2026-10-18 CF-11 祖先 Iterator 声明清理产品验收
+
+实际产品 `ea2aaf042` 已推main，[自身CI39130065483](https://github.com/LordCasser/jarde/actions/runs/39130065483) 已root完整接受4jobs/52官方步骤、双seed各385目标/3768-0-98/63精确门。复用既有foreach与checkpoint，只有完整物理变量用途和真实AST祖先唯一闭合才移除空Iterator声明；缺证保留可靠循环/声明，无新IR/pass。最终广门810/0/6、两fresh native全3866具名结果相等，5154来源绑定产品。完整原始Java/生成矩阵及19case控制的真实旧边界、最终CLI同字节重绑范围见 [验收入口](../../changes/prune-proved-ancestor-iterator-declarations/results/README.md)。
+
+下一固定 `TestNestedLoops` 的equals/remove两个Object包装已由最终CLI核实仍在，仅有[静态分析/控制准备](../java-syntax-2026-10-18/cf11-object-argument-analysis-root-v1/)，没有下一实现或新JDK运行。finThrow5/5、nestedFin16/16及已交付循环片不重做。**CF-11整体仍未关闭，71单元/612测试文件计数不变。**
+
+
 ## 范围与计数
 
 基线固定为本地 JADX 提交 `2fb1b16386941660fda07e9017285aec40fcb37f`。已逐组审阅其 27 个集成测试目录的 **612/612 个 Java 文件**，并把每组文件归入语法、交叉、支撑或容错账本；证据与生产算法入口见 [控制流](control-flow.md)、[声明和类型](declarations-types.md)、[表达式与杂项](expressions-misc.md)。612 是测试文件数，不是独立特性数或成功重编数。
