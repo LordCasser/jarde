@@ -1,0 +1,51 @@
+{
+  "status": "accepted-matrix-rollup",
+  "product_candidate": "1bc104108e0bb165d0b4034659556905fd9cb3fd",
+  "CLI_SHA256": "0bb89f827c1e2b6b0e215d1940299be046a7adc57866389d87e6595ba0295677",
+  "rows": [
+    {
+      "family": "original",
+      "execution": {
+        "path": "/private/tmp/jarde-seq1-original-final-pipeline-run-root-v1-20261018/matrix/execution.json",
+        "sha256": "3cfff8ac2ffa1644a5a789f5607a6753d5f27091438243b94ed435bdc4b3e552"
+      },
+      "compile_attempts": 24,
+      "successful_compiles": 22,
+      "rebuilt_VM_runs": 44,
+      "case_lines_per_run": 6,
+      "rebuilt_case_lines": 264,
+      "Jarde_rebuilt_case_lines": 192,
+      "JADX_rebuilt_case_lines": 72
+    },
+    {
+      "family": "supplement",
+      "execution": {
+        "path": "/private/tmp/jarde-seq1-supplement-final-matrix-root-v1-20261018/execution.json",
+        "sha256": "ddcca8d714e0782d9f39af496873a131fea7de66e6b53c81a03a623f1f52fd28"
+      },
+      "compile_attempts": 48,
+      "successful_compiles": 48,
+      "rebuilt_VM_runs": 96,
+      "case_lines_per_run": 11,
+      "rebuilt_case_lines": 1056,
+      "Jarde_rebuilt_case_lines": 704,
+      "JADX_rebuilt_case_lines": 352
+    },
+    {
+      "family": "volatile",
+      "execution": {
+        "path": "/private/tmp/jarde-field-copy-matrix-root-v1-20261018/execution.json",
+        "sha256": "c77dc34e208126ff2e2018a4b2833f2e11a2f29c3f6e33a50e9f93c7d5056fc1"
+      },
+      "compile_attempts": 48,
+      "successful_compiles": 48,
+      "rebuilt_VM_runs": 96,
+      "case_lines_per_run": 10,
+      "rebuilt_case_lines": 960,
+      "Jarde_rebuilt_case_lines": 640,
+      "JADX_rebuilt_case_lines": 320
+    }
+  ],
+  "scope": "All three complete-source captures independently reviewed and archived. Two JADX outer javac8/framework-major55 compile failures have no runtime. Counts exclude 192 original-oracle case appearances and structural controls. Native seeds and CI are not accepted here.",
+  "checker_preparation_history": "First aggregation attempt used exit_code for original compilation cells; actual schema uses compile_exit_code. It raised KeyError before writing any acceptance; corrected from actual records."
+}

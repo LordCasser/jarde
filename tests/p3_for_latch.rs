@@ -904,50 +904,55 @@ fn local_assignment_of_a_shared_condition_call_remains_a_structured_while() {
     let body = recovered_body(method);
     assert_eq!(default_body.text, body.text);
     assert_eq!(default_body.source_map, body.source_map);
-    assert_eq!(body.quality, Quality::Fallback, "{}", method.text);
-    assert_eq!(
-        body.content,
-        RecoveryContent::ExplanationOnly,
+    assert_structured_for(method, body);
+    assert_eq!(default_body.representation, body.representation);
+    assert_eq!(default_body.quality, body.quality);
+    assert_eq!(default_body.content, body.content);
+    assert_eq!(default_body.fallbacks, body.fallbacks);
+    assert_eq!(method.text.matches("while (").count(), 1, "{}", method.text);
+    assert!(!method.text.contains("for ("), "{}", method.text);
+    let loop_at = method
+        .text
+        .find("while (true) {")
+        .expect("the original loop remains a while");
+    let tick_at = method
+        .text
+        .find("tick();")
+        .expect("the per-iteration effect remains explicit");
+    let branch_at = method
+        .text
+        .find("if (i >= limit()) {")
+        .expect("the loop exit test remains explicit");
+    let limit_at = method
+        .text
+        .find("limit()")
+        .expect("the shared condition call remains explicit");
+    assert!(
+        loop_at < tick_at && tick_at < branch_at && branch_at < limit_at,
         "{}",
         method.text
     );
-    assert_eq!(body.syntax_status, SyntaxStatus::NotJava, "{}", method.text);
+    assert_eq!(method.text.matches("tick();").count(), 1, "{}", method.text);
+    assert_eq!(method.text.matches("limit()").count(), 1, "{}", method.text);
     assert_eq!(
-        body.fallbacks,
-        vec![
-            "jre_region_unmet_precondition",
-            "jre_region_uncovered_blocks"
-        ]
-    );
-    assert!(!method.text.contains("for ("), "{}", method.text);
-    assert!(
-        body.text.contains("@bytecode 0 4 14 17 27"),
+        method.text.matches("i = i + 1;").count(),
+        1,
         "{}",
-        body.text
+        method.text
     );
-    let unmet = body
-        .regions
-        .iter()
-        .find(|region| region.bci == 4)
-        .expect("loop test block keeps its exact fallback boundary");
-    assert_eq!(unmet.blocks, vec![4]);
-    assert_eq!(unmet.code, Some("jre_region_unmet_precondition"));
-    assert_eq!(unmet.rule.as_ref().map(|rule| rule.rule()), Some("loop"));
-    assert!(!unmet.structured);
-    let uncovered = body
-        .regions
-        .iter()
-        .find(|region| region.bci == 14)
-        .expect("uncovered blocks keep their exact fallback boundary");
-    assert_eq!(uncovered.blocks, vec![14, 17]);
-    assert_eq!(uncovered.code, Some("jre_region_uncovered_blocks"));
-    assert!(!uncovered.structured);
-    for bci in [0, 4, 14, 17, 27] {
-        assert!(
-            !body.source_map.of_bci(bci).is_empty(),
-            "the existing fallback source anchor at BCI {bci} remains usable"
-        );
-    }
+    assert_eq!(
+        method.text.matches("sum = sum + i;").count(),
+        1,
+        "{}",
+        method.text
+    );
+    assert_physical_method_coverage(
+        CONDITION_REFUSALS,
+        "sumWithLeadingTickAndBreak",
+        "()I",
+        method,
+        body,
+    );
 }
 
 #[test]

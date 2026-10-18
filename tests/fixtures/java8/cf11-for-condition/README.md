@@ -2,7 +2,7 @@
 
 五份 class 是 root 实际 JDK23 --release8 -proc:none -g 编译字节，source 原样保留；对照 Runner 与完整 raw 在 recover-proved-for-condition-expressions/results/controls-baseline-root-v1 和固定 cf11-testnestedloops2-baseline-root-v1。
 
-Effects/Reads 正例和 AssignedCallBound 的 baseline 行为及来源完整。LeadingTickAndBreak 的既有 fallback 不可编译，且缺12个physical来源；它只作拒绝边界反例，缺口独立记账，不能冒称可靠 Java 正文或完整来源。固定 NestedLoops2 的 raw List 签名投影独立于循环形态。
+Effects/Reads 正例和 AssignedCallBound 的 baseline 行为及来源完整。旧版 LeadingTickAndBreak 的 fallback 不可编译，且缺12个physical来源；该历史拒绝记录保留在上述 baseline 中。`recover-statementful-loop-headers` 现以既有 Endless Loop、If.test_effects 与 LoopBreak 恢复该完整方法，不投影成 counted-for。最终 CLI 对双 javac 输入、default/all 的五个方法均恢复 Structured Java，包含所有物理 BCI；生成整类源码原样重编的16次 Jarde 双 JVM 运行、192条返回/计数观察与原类一致，JADX另8次运行96条亦一致。完整51命令/102 raw与独立核验见该 change 的 `results/legacy-leading-tick-final-matrix-root-v1`。固定 NestedLoops2 的 raw List 签名投影独立于循环形态。
 
 ```json
 [
