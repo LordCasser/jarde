@@ -164,3 +164,7 @@ bafb 产品自身 CI 38119159950 已实际独立验收四job/52step、双seed各
 2026-10-18续：固定TestSequentialLoops最新56 CLI已实际完整对照接受，8API结构化/25BCI全map，70命令/24编译22成功/44VM264case同原、1错根拒绝。Jarde16完整编译全成功；2JADXbundle/JDK8旧major55框架边界不运行。现有statementful loop header已解决旧fallback，无需新增机制。产品096a764dc本地workspace3770/0/98已接受，自身CI尚待，不增加CF11整项计数。
 
 2026-10-18交付：Object包装leaf6/6，产品096a764dc自身CI39138950945完整接受4jobs/52step、两seed各385目标/3770-0-98、65精确门；本地fresh3770/0/98及20门、源码并集5154绑定通过。其余五组固定输入当前56实际32API（NL2/NL4为同SHA归档leaf类）、16对default/all/全部方法BCI map闭合，无本轮新VM声明。当前真实下一缺口是NL2泛型声明：VoidBody返回门与List.get(I)Object合同缺失，仍raw List+物理String cast；已静态分析最小复用，无下一Spec/实现。CF11保持partial，不增加71/612整项数。最终证据入口remove-proved-list-object-argument-wrappers/results。
+
+### 2026-10-19 NL2 indexed List 参数声明，5/6验收检查点
+
+固定完整TestNestedLoops2及独立控制的最终CLI90b30ad…1f64c已实际恢复精确List<String>与原boolean/void/int/long结果；真实cast、get次数/异常时序和raw方法/map保持。Jarde32次完整源码编译/64VM832case同原，JADX重复get事件与非法转换编译失败分别保留。实现复用完整body census/SSA/opaque AST事务，修旧固定Stack0 receiver假设，无新IR/pass/solver。相关广门578/0、fmt/CI Clippy/MSRV通过；fresh workspace、产品提交与自身CI尚待，不提前交付。见[本片证据](../../changes/recover-proved-indexed-list-parameter-signatures/results/README.md)。CF11保持partial，71单元/612测试文件计数不变。

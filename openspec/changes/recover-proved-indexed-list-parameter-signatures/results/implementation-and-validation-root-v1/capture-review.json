@@ -1,0 +1,28 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 83,
+  "archive_bytes": 2942302,
+  "archive_sha256": "11bfa247b6e17551a719bf2f38b59c001bd37afdc9c92621161a98739fa76064",
+  "source_directories": [
+    "jarde-indexed-list-signatures-impl-luna-v2-20261019",
+    "jarde-indexed-list-signatures-impl-luna-v3-20261019",
+    "jarde-indexed-list-signatures-impl-review-luna-v2-20261019",
+    "jarde-indexed-list-signatures-focused-prep-root-v1-20261019",
+    "jarde-indexed-list-signatures-focused-prep-root-v2-20261019",
+    "jarde-indexed-list-signatures-focused-prep-root-v3-20261019",
+    "jarde-indexed-list-signatures-diagnostic-prep-root-v1-20261019",
+    "jarde-indexed-list-signatures-focused-root-v1-20261019",
+    "jarde-indexed-list-signatures-focused-root-v2-20261019",
+    "jarde-indexed-list-signatures-focused-root-v3-20261019",
+    "jarde-indexed-list-signatures-diagnostic-root-v1-20261019",
+    "jarde-indexed-list-signatures-broad-prep-root-v1-20261019",
+    "jarde-indexed-list-signatures-broad-prep-root-v2-20261019",
+    "jarde-indexed-list-signatures-broad-root-v1-20261019",
+    "jarde-indexed-list-signatures-broad-root-v2-20261019"
+  ],
+  "excluded": [
+    "candidate-cli",
+    "__pycache__",
+    "*.pyc"
+  ]
+}

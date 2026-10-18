@@ -11,6 +11,12 @@ const UPSTREAM: &[u8] = include_bytes!("fixtures/java8/cf11/UpstreamNestedLoops4
 const CONTROLS: &[u8] = include_bytes!("fixtures/java8/cf11/NestedLoopSideExitControls.class");
 const UPSTREAM_NESTED2: &[u8] =
     include_bytes!("fixtures/java8/cf11-for-condition/UpstreamNestedLoops2.class");
+const INDEXED_LIST_CONTROLS_DEBUG: &[u8] = include_bytes!(
+    "fixtures/java8/indexed-list-parameters/debug/NestedLoops2GenericControls.class"
+);
+const INDEXED_LIST_CONTROLS_NO_DEBUG: &[u8] = include_bytes!(
+    "fixtures/java8/indexed-list-parameters/no-debug/NestedLoops2GenericControls.class"
+);
 const CONDITION_EFFECTS: &[u8] =
     include_bytes!("fixtures/java8/cf11-for-condition/ForConditionEffects.class");
 
@@ -52,6 +58,45 @@ fn class_source(bytes: &[u8], class: &str, all: bool) -> ClassSourceReport {
             &mut budget,
         )
         .expect("single-class source request answers")
+    {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("one complete class-source report is expected: {other:?}"),
+    }
+}
+
+fn class_source_pure_essential(bytes: &[u8], class: &str) -> ClassSourceReport {
+    let engine = Engine::new();
+    let mut budget = task_budget(&[]).expect("bounded task defaults");
+    let snapshot = engine
+        .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
+        .expect("frozen class opens");
+    match engine
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request(&snapshot, class),
+            &RecoveryEvidenceRequest::essential(),
+            &mut budget,
+        )
+        .expect("single-class essential source request answers")
+    {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("one complete pure-essential report is expected: {other:?}"),
+    }
+}
+
+fn class_source_default(bytes: &[u8], class: &str) -> ClassSourceReport {
+    let engine = Engine::new();
+    let mut budget = task_budget(&[]).expect("bounded task defaults");
+    let snapshot = engine
+        .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
+        .expect("frozen class opens");
+    match engine
+        .class_source(
+            slice::from_ref(&snapshot),
+            &request(&snapshot, class),
+            &mut budget,
+        )
+        .expect("single-class default source request answers")
     {
         OperationOutcome::Performed(report) => report,
         other => panic!("one complete class-source report is expected: {other:?}"),
@@ -411,15 +456,19 @@ fn assert_no_partial_body(outcome: OperationOutcome<ClassSourceReport>) {
 
 #[test]
 fn upstream_nested_loops2_keeps_outer_for_around_inner_while() {
-    let default = class_source(UPSTREAM_NESTED2, "cf11/UpstreamNestedLoops2", false);
+    let default = class_source_default(UPSTREAM_NESTED2, "cf11/UpstreamNestedLoops2");
+    let essential = class_source(UPSTREAM_NESTED2, "cf11/UpstreamNestedLoops2", false);
     let all = class_source(UPSTREAM_NESTED2, "cf11/UpstreamNestedLoops2", true);
     assert_eq!(
         default.text, all.text,
         "class source is evidence-independent"
     );
+    assert_eq!(essential.text, all.text, "essential and all source agree");
     let default_method = method(&default, "test", "(Ljava/util/List;)Z");
+    let essential_method = method(&essential, "test", "(Ljava/util/List;)Z");
     let all_method = method(&all, "test", "(Ljava/util/List;)Z");
     assert_same_body_and_map(default_method, all_method);
+    assert_same_body_and_map(essential_method, all_method);
     let body = assert_structured(all_method);
     assert_eq!(
         all_method.text.matches("for (").count(),
@@ -428,6 +477,16 @@ fn upstream_nested_loops2_keeps_outer_for_around_inner_while() {
         all_method.text
     );
     assert!(all_method.text.contains("for ("), "{}", all_method.text);
+    assert!(
+        all_method.text.contains("java.util.List<java.lang.String>"),
+        "the exact Signature element type is restored for the primitive-result method: {}",
+        all_method.text
+    );
+    assert!(
+        all_method.text.contains("list.get(i)") && all_method.text.contains("(java.lang.String)"),
+        "the physical element cast stays at the indexed get use: {}",
+        all_method.text
+    );
     assert!(
         all_method.text.contains("list.size()"),
         "{}",
@@ -500,4 +559,148 @@ fn a_for_condition_public_late_stop_reports_dimension_usage_and_location() {
         )
         .expect("pre-cancellation is returned as an operation outcome");
     assert_precancel(stopped);
+}
+
+#[test]
+fn indexed_list_parameter_signatures_require_exact_direct_get_cast_evidence() {
+    const CLASS: &str = "jadx/tests/integration/loops/NestedLoops2GenericControls";
+    const METHODS: [(&str, &str, bool); 9] = [
+        ("voidGetCastString", "(Ljava/util/List;)V", true),
+        ("fixedBoundBoolean", "(Ljava/util/List;)Z", true),
+        ("primitiveInt", "(Ljava/util/List;)I", true),
+        ("primitiveLong", "(Ljava/util/List;)J", true),
+        ("legalWrongCast", "(Ljava/util/List;)I", false),
+        ("reassignAndEscape", "(Ljava/util/List;)I", false),
+        ("rawList", "(Ljava/util/List;)I", false),
+        ("wildcardList", "(Ljava/util/List;)I", false),
+        (
+            "referenceResult",
+            "(Ljava/util/List;)Ljava/lang/Object;",
+            false,
+        ),
+    ];
+
+    let default = class_source_default(INDEXED_LIST_CONTROLS_DEBUG, CLASS);
+    let essential_with_map = class_source(INDEXED_LIST_CONTROLS_DEBUG, CLASS, false);
+    let pure_essential = class_source_pure_essential(INDEXED_LIST_CONTROLS_DEBUG, CLASS);
+    let all = class_source(INDEXED_LIST_CONTROLS_DEBUG, CLASS, true);
+    let no_debug = class_source_default(INDEXED_LIST_CONTROLS_NO_DEBUG, CLASS);
+    assert_eq!(default.text, all.text);
+    assert_eq!(essential_with_map.text, all.text);
+    assert_eq!(pure_essential.text, all.text);
+
+    for (name, descriptor, should_restore) in METHODS {
+        let default_method = method(&default, name, descriptor);
+        let mapped_method = method(&essential_with_map, name, descriptor);
+        let pure_method = method(&pure_essential, name, descriptor);
+        let all_method = method(&all, name, descriptor);
+        assert_same_body_and_map(default_method, all_method);
+        assert_same_body_and_map(mapped_method, all_method);
+        assert_eq!(pure_method.text, all_method.text);
+        assert_eq!(
+            recovered(pure_method)
+                .evidence
+                .state(RecoveryEvidenceKind::SourceMap),
+            EvidenceState::NotRequested
+        );
+        assert_structured(all_method);
+        let no_debug_method = method(&no_debug, name, descriptor);
+        assert_structured(no_debug_method);
+        if should_restore {
+            assert!(
+                all_method.text.contains("java.util.List<java.lang.String>"),
+                "the exact primitive/void Signature is restored for {name}: {}",
+                all_method.text
+            );
+            assert!(
+                no_debug_method
+                    .text
+                    .contains("java.util.List<java.lang.String>"),
+                "the same exact Signature is restored without debug locals for {name}: {}",
+                no_debug_method.text
+            );
+        } else {
+            assert!(
+                !all_method.text.contains("java.util.List<java.lang.String>"),
+                "unproved list uses must not select List<String> for {name}: {}",
+                all_method.text
+            );
+            assert!(
+                !no_debug_method
+                    .text
+                    .contains("java.util.List<java.lang.String>"),
+                "unproved list uses remain erased without debug locals for {name}: {}",
+                no_debug_method.text
+            );
+        }
+    }
+
+    let void_body = recovered(method(&all, "voidGetCastString", "(Ljava/util/List;)V"));
+    assert!(void_body.text.contains("values.get(i)"));
+    assert!(void_body.text.contains("(java.lang.String)"));
+    let int_body = recovered(method(&all, "primitiveInt", "(Ljava/util/List;)I"));
+    assert!(int_body.text.contains("values.get(i)"));
+    assert!(int_body.text.contains("(java.lang.String)"));
+    let long_body = recovered(method(&all, "primitiveLong", "(Ljava/util/List;)J"));
+    assert!(long_body.text.contains("values.get(i)"));
+    assert!(long_body.text.contains("(java.lang.String)"));
+    let wrong_cast = recovered(method(&all, "legalWrongCast", "(Ljava/util/List;)I"));
+    assert!(wrong_cast.text.contains("(java.lang.Integer)"));
+}
+
+#[test]
+fn indexed_list_parameter_primitive_result_must_match_signature_exactly() {
+    const CLASS: &str = "jadx/tests/integration/loops/NestedLoops2GenericControls";
+    for (method_name, signature_result, wrong_result, descriptor) in [
+        ("fixedBoundBoolean", b'Z', b'I', "(Ljava/util/List;)Z"),
+        ("primitiveInt", b'I', b'J', "(Ljava/util/List;)I"),
+        ("primitiveLong", b'J', b'I', "(Ljava/util/List;)J"),
+    ] {
+        let mut signature = b"(Ljava/util/List<Ljava/lang/String;>;)".to_vec();
+        signature.push(signature_result);
+        let mut malformed = INDEXED_LIST_CONTROLS_DEBUG.to_vec();
+        let needle = signature.as_slice();
+        let matches = malformed
+            .windows(needle.len())
+            .enumerate()
+            .filter_map(|(index, window)| (window == needle).then_some(index))
+            .collect::<Vec<_>>();
+        assert_eq!(matches.len(), 1, "the method has one exact Signature Utf8");
+        malformed[matches[0] + needle.len() - 1] = wrong_result;
+
+        let report = class_source_default(&malformed, CLASS);
+        let target = method(&report, method_name, descriptor);
+        assert_structured(target);
+        assert!(
+            !target.text.contains("java.util.List<java.lang.String>"),
+            "a {signature_result} descriptor result cannot use a {wrong_result} Signature: {}",
+            target.text
+        );
+        assert!(
+            method(&report, "voidGetCastString", "(Ljava/util/List;)V")
+                .text
+                .contains("java.util.List<java.lang.String>"),
+            "one malformed Signature does not withdraw an independent method"
+        );
+    }
+
+    // Change only this method's physical descriptor return byte. Its Signature stays Z while
+    // the descriptor says I, and both opcodes share ireturn, so this guards exact type evidence.
+    let mut descriptor_mismatch = INDEXED_LIST_CONTROLS_DEBUG.to_vec();
+    let descriptor = b"(Ljava/util/List;)Z";
+    let positions = descriptor_mismatch
+        .windows(descriptor.len())
+        .enumerate()
+        .filter_map(|(index, window)| (window == descriptor).then_some(index))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        positions.len(),
+        1,
+        "only fixedBoundBoolean has this descriptor"
+    );
+    descriptor_mismatch[positions[0] + descriptor.len() - 1] = b'I';
+    let report = class_source_default(&descriptor_mismatch, CLASS);
+    let target = method(&report, "fixedBoundBoolean", "(Ljava/util/List;)I");
+    assert_structured(target);
+    assert!(!target.text.contains("java.util.List<java.lang.String>"));
 }

@@ -1,0 +1,49 @@
+{
+  "schema": "indexed-list-private-implementation-dispatch-v1",
+  "recorded_at_utc": "2026-10-18T16:14:17.144972+00:00",
+  "base_head": "3f888afb17a4b86af49354528ac64d9db4e3dfb0",
+  "implementation_agent": "/root/typed_foreach_impl",
+  "preparation_agent": "/root/typed_foreach_api_tests",
+  "adversarial_agent": "/root/nl_baseline_audit",
+  "dispatch": "Actual collaboration.followup_task calls issued this turn; private implementation starts after reading all four current OpenSpec artifacts.",
+  "shared_mutation_authority": "root only",
+  "private_restrictions": [
+    "no shared source writes",
+    "no Git/network/Cargo/JDK/Jarde/JADX execution"
+  ],
+  "integration_gate": "Root must independently accept task 1.1 actual full-source and separate controls baselines before integrating or building candidate code.",
+  "root_architecture_decisions": [
+    "No new IR/pass/solver/request carrier.",
+    "Retain precise physical primitive/void return and old method-type-variable void-only admission.",
+    "Signature selects E; original get SSA unique use must be real c0 cast(E); opaque query proves exact Cast(E, Call) direct child.",
+    "Do not restrict cast to a local assignment/store: retained cast preserves type context for direct get(i).length() as well.",
+    "Retain physical cast, staged/final revalidation, budgets and Stop propagation."
+  ],
+  "copied_evidence": [
+    {
+      "source": "/private/tmp/jarde-nested-loops2-signature-architecture-review-luna-v1-20261018/README.md",
+      "copy": "architecture-review.md",
+      "bytes": 9942,
+      "sha256": "07d3b63d8940a022e77215df6f0f7bcd533dbf961bfc384253722bb76b4df58b"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-signature-architecture-review-luna-v1-20261018/pins-v2.json",
+      "copy": "architecture-source-pins.json",
+      "bytes": 1033,
+      "sha256": "8b749d89d058cc33d801c14a9cf3e3def09e1ebd53895018a7d936c58a467f8d"
+    },
+    {
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-audit-luna-v1-20261018/README.md",
+      "copy": "baseline-static-review.md",
+      "bytes": 6989,
+      "sha256": "090845f0a869a28d0a12a47e806906469ce1e1dd953737e67c6f6a78f34e65fd"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-signature-refusal-luna-v1-20261018/README.md",
+      "copy": "gap-analysis.md",
+      "bytes": 7730,
+      "sha256": "e4d4ac4568bfa52cdaf01b8cb7266a05034ab63d5d538b474d18e2d14fdad68e"
+    }
+  ],
+  "actual_execution_claim": "Planning/static review and dispatch only. No new baseline/toolchain or candidate test has run."
+}

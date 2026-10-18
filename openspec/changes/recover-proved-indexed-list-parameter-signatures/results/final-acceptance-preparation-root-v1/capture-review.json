@@ -1,0 +1,14 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 10,
+  "archive_bytes": 23826,
+  "archive_sha256": "948be69f60c3865208d9b05d935fc066a8836a79eff96a1d95a348f5ba8a7e4a",
+  "source_directories": [
+    "jarde-indexed-list-signatures-final-acceptance-prep-luna-v3-20261019"
+  ],
+  "excluded": [
+    "candidate-cli",
+    "__pycache__",
+    "*.pyc"
+  ]
+}

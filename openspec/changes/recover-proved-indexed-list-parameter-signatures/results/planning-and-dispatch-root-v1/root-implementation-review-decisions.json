@@ -1,0 +1,39 @@
+{
+  "status": "private_v1_not_integrated_root_requested_corrections",
+  "evidence_copies": [
+    {
+      "source": "/private/tmp/jarde-indexed-list-use-adversarial-review-luna-v1-20261019/README.md",
+      "copy": "get-use-adversarial-review.md",
+      "sha256": "7931929aab373b7a1b5f4982d4074504ce479fba821fec948cc00d9db59df65e",
+      "bytes": 5430
+    },
+    {
+      "source": "/private/tmp/jarde-indexed-list-signatures-impl-review-luna-v1-20261019/review.md",
+      "copy": "implementation-v1-review.md",
+      "sha256": "eca994e7672fe1b66b83e822736c72abccb01639728036ff1d55367c8dea6338",
+      "bytes": 5511
+    },
+    {
+      "source": "/private/tmp/jarde-indexed-list-signatures-impl-review-luna-v1-20261019/errata.md",
+      "copy": "implementation-v1-review-errata.md",
+      "sha256": "0baa25fb723dc1788911fd9cc3cc7015adc202b4a5bad5e7dd483755de678085",
+      "bytes": 986
+    },
+    {
+      "source": "/private/tmp/jarde-controls-v1-void-throw-analysis-luna-v1-20261019/README.md",
+      "copy": "separate-void-throw-debt.md",
+      "sha256": "acfd8a1cc9f592221738dfaef6ef02fdee49745a8fa132a1a232c5285b5f2910",
+      "bytes": 6914
+    }
+  ],
+  "corrections": [
+    "Revert primitive admission accidentally inserted into generic_method_declaration; this path remains void-only for CompleteBody.",
+    "Ordinary gate must compare candidate primitive enum, parsed Signature and physical descriptor result exactly.",
+    "Reuse parameter_types for List formal prefilter.",
+    "Batch the narrow direct Cast(Call) AST query with per-node/container poll and charge before work; reuse same-run retained unique c0 opcode and Direct cast provenance.",
+    "Use full matching SSA fact for the cast input and get result; keep real cast and stage/final revalidation."
+  ],
+  "no_new_cast_target_record": "Existing decoder reads CP Class into CheckCast operation; builder produces a direct Cast of that type, retained opcode identifies physical c0. Duplicate target carrier would add no evidence.",
+  "withdrawn_finding": "Reader ClassTypeSegment.binary_name is cumulative; last() preserves outer$inner. No selector restriction or new nested-type debt based on the incorrect v1 review finding.",
+  "separate_debt": "The actual controls v1 explicit null-throw loop has no handler rows and quotes uncovered block27/throw36. Keep failure; future independent loop/if ownership analysis, not the already delivered finThrow/nestedFin handler mechanism."
+}

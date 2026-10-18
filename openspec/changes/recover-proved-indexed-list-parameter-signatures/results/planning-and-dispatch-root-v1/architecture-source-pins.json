@@ -1,0 +1,17 @@
+{
+  "kind": "read-only-source-and-raw-input-pins",
+  "workspace": "/Users/lordcasser/workspace/projects/jarde",
+  "files": {
+    "src/facade.rs": "3c788a41bf1eb836006d12368a2ec37a48b90d9b4d9873754285c5d06aff4d77",
+    "src/class_source.rs": "ad8e176f5ebfef4a68d563f7d22699449982d4fa0c0ad9c09a5ecacd75a4780f",
+    "crates/jarde-java/src/report.rs": "7f95ecec71e05b6a167d721bbe657660d55c646966e3638764c042b3b66272fb",
+    "crates/jarde-java/src/build.rs": "d22ee8f1c40d0a98a174e759904a6a97313b85728bb3056d4aeba18ca8704df9",
+    "crates/jarde-java/src/decode.rs": "d4164badbc241d8911730eff30b0e55b4b0061bf6dd3b1e2282b57834374160f",
+    "crates/jarde-reader/src/classfile.rs": "5ee53c4384eb981dce3862a19c7e29b2ded82de4f7a56d38f7d3f1c18603691df2"
+  },
+  "raw_api_sample": {
+    "path": "/private/tmp/jarde-cf11-current-fixed-api-root-v1-20261018/raw/1.stdout.raw",
+    "sha256": "56f3b6a54a0c3fa682d2dff3d416dec7c57d7513432aa1d7349526ee713ba114"
+  },
+  "limits": "Static review only. No toolchain, CLI, network, or shared-file writes."
+}

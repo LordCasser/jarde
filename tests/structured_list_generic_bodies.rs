@@ -1889,16 +1889,27 @@ fn typed_list_foreach_element_heads_preserve_bindings_and_raw_origins() {
         .with_kind(RecoveryEvidenceKind::SourceMap)
         .with_kind(RecoveryEvidenceKind::RegionDetails)
         .with_kind(RecoveryEvidenceKind::NameDetails);
-    let essential = match report_with(
+    let mapped = match report_with(
         TYPED_LIST_FOREACH,
         class_name,
         Some(&essential_with_map),
         &mut task_budget(&[]).unwrap(),
     ) {
         OperationOutcome::Performed(report) => report,
-        other => panic!("essential-evidence typed foreach class completes: {other:?}"),
+        other => panic!("mapped essential typed foreach class completes: {other:?}"),
+    };
+    let pure_essential_request = RecoveryEvidenceRequest::essential();
+    let essential = match report_with(
+        TYPED_LIST_FOREACH,
+        class_name,
+        Some(&pure_essential_request),
+        &mut task_budget(&[]).unwrap(),
+    ) {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("pure essential typed foreach class completes: {other:?}"),
     };
     assert_eq!(default.text, all.text);
+    assert_eq!(default.text, mapped.text);
     assert_eq!(default.text, essential.text);
 
     let facts = class_facts(TYPED_LIST_FOREACH, &mut task_budget(&[]).unwrap()).unwrap();
@@ -1911,18 +1922,28 @@ fn typed_list_foreach_element_heads_preserve_bindings_and_raw_origins() {
     ] {
         let d = method(&default, name);
         let a = method(&all, name);
+        let m = method(&mapped, name);
         let e = method(&essential, name);
         assert_eq!(d.text, a.text, "{}", d.text);
+        assert_eq!(d.text, m.text, "{}", d.text);
         assert_eq!(d.text, e.text, "{}", d.text);
         let raw = raw_body(d);
         let raw_all = raw_body(a);
+        let raw_mapped = raw_body(m);
         let raw_essential = raw_body(e);
         assert_eq!(raw.text, raw_all.text, "{}", d.text);
+        assert_eq!(raw.text, raw_mapped.text, "{}", d.text);
         assert_eq!(raw.text, raw_essential.text, "{}", d.text);
         assert_eq!(raw.representation, Representation::Java, "{}", d.text);
         assert_eq!(raw.quality, Quality::Structured, "{}", d.text);
         assert_eq!(raw.source_map, raw_all.source_map);
-        assert_eq!(raw.source_map, raw_essential.source_map);
+        assert_eq!(raw.source_map, raw_mapped.source_map);
+        assert_eq!(
+            raw_essential
+                .evidence
+                .state(RecoveryEvidenceKind::SourceMap),
+            EvidenceState::NotRequested
+        );
         assert_eq!(
             raw_essential
                 .evidence

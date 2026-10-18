@@ -1,0 +1,7 @@
+# 下一独立控制的静态定位补充
+
+当前generic片实现期间，root只读复核了已冻结控制v1的显式null-throw循环。没有新增OpenSpec或生产修改。实际原始/生成失败与Luna分析已在同目录separate-void-throw-debt.md及controls归档保存。
+
+region.rs::loop_terminal_returns（当前19865起）只为自然循环外的terminal Return叶建立证书，明确将athrow留给guard/loop-jump分类。其前置还要求比较或switch来源、候选不在自然集/normal exit外、无后继、唯一精确正常前驱及无其它outgoing边。loop主体Frame同时接收terminal_returns与handler相关terminal_bodies；tail-latch的no-join If分支（当前16507附近）也显式核Return，不能将任意terminal改称返回。
+
+这些源码事实解释了为何不能把已交付的finThrow/nestedFin handler清理证书直接用于没有异常表行的block27；也不能只将Return判断放宽为athrow便宣称所有权已闭合。下一次应先取本方法同次IR/Frame/Region的第一次拒绝，确认普通guard/If的throw叶在哪个scope边界被排除，再复用现有Throw表示及正常边/唯一入口/覆盖事务。当前尚未实测该内部首拒位置，不据此承诺新机制或实施方案。

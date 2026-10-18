@@ -1,0 +1,29 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 573,
+  "archive_bytes": 3834271,
+  "archive_sha256": "60a0cbddf1ce871924c6c6ad76817b74201f596abe284bb91eb86813d3f38581",
+  "source_directories": [
+    "jarde-testnestedloops2-final-cli-prep-luna-v4-20261019",
+    "jarde-testnestedloops2-final-cli-prep-luna-v6-20261019",
+    "jarde-testnestedloops2-final-cli-bundle-root-v1-20261019",
+    "jarde-indexed-list-signatures-final-run-prep-root-v1-20261019",
+    "jarde-indexed-list-signatures-final-run-root-v1-20261019",
+    "jarde-testnestedloops2-final-primary-root-v1-20261019",
+    "jarde-testnestedloops2-final-primary-generated-root-v1-20261019",
+    "jarde-testnestedloops2-final-controls-v2-root-v1-20261019",
+    "jarde-testnestedloops2-final-controls-generated-v2-root-v1-20261019",
+    "jarde-testnestedloops2-final-controls-review-prep-root-v1-20261019",
+    "jarde-testnestedloops2-final-controls-review-root-v1-20261019",
+    "jarde-testnestedloops2-final-additional-reviews-root-v1-20261019",
+    "jarde-testnestedloops2-final-api-review-prep-root-v1-20261019",
+    "jarde-testnestedloops2-final-api-review-prep-root-v2-20261019",
+    "jarde-testnestedloops2-final-api-review-root-v2-20261019",
+    "jarde-indexed-list-signatures-final-comparison-acceptance-root-v1-20261019"
+  ],
+  "excluded": [
+    "candidate-cli",
+    "__pycache__",
+    "*.pyc"
+  ]
+}

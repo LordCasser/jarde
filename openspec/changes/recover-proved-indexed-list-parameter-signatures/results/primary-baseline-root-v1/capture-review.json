@@ -1,0 +1,1650 @@
+{
+  "status": "all_members_reopened_and_live_bytes_equal",
+  "archive": {
+    "path": "openspec/changes/recover-proved-indexed-list-parameter-signatures/results/primary-baseline-root-v1/capture.tar.gz",
+    "bytes": 1754018,
+    "sha256": "34b5192221b3a4e0fe976b0504494d2681f4c4d0dbc0aa196e53db826ded9cb8"
+  },
+  "members": [
+    {
+      "member": "jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/README.md",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/README.md",
+      "bytes": 4120,
+      "sha256": "ebedabdc99f65cdd42a5b6c2d2e6fff1b1355c8ca1c9ddd4fd95e696591892c7"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/SHA256SUMS",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/SHA256SUMS",
+      "bytes": 579,
+      "sha256": "d84e03c4603d32111faa890dc7fdd89ed22bdd28c5e3e9d14bafaafa0c473fd5"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/collect_baseline.py",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/collect_baseline.py",
+      "bytes": 32566,
+      "sha256": "f972c43bed5cb4fd12d5e6b1db8804e0706a4387630a8ad935f2a2ff920af8bf"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/collect_generated_matrix.py",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/collect_generated_matrix.py",
+      "bytes": 27736,
+      "sha256": "6c693e1e129155004862b7e1279b024ce7c55b5b5ef7d1e99d9ac8afdb109b5c"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/controls/src/jadx/tests/integration/loops/NestedLoops2GenericControls.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/controls/src/jadx/tests/integration/loops/NestedLoops2GenericControls.java",
+      "bytes": 2325,
+      "sha256": "b39f610887e560eb8c7631727e9ea2cf2510518e182f608f9b1caab9a54a42b1"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/driver/TestNestedLoops2Driver.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/driver/TestNestedLoops2Driver.java",
+      "bytes": 5637,
+      "sha256": "8c6cac9925421ef55358a3ab6fbe578ad1ad28c5364667befe279ae25c69afdd"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/prep-pins.json",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-prep-root-v1-20261019/prep-pins.json",
+      "bytes": 3949,
+      "sha256": "8b5cfbf67734e0b86f869eaa16d261ef9e2f20adc666957b41c50b1c043b8c39"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/collector.py",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/collector.py",
+      "bytes": 32566,
+      "sha256": "f972c43bed5cb4fd12d5e6b1db8804e0706a4387630a8ad935f2a2ff920af8bf"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 1022,
+      "sha256": "b9cc4db11c6e952acd1ff9beb5618a48a73e2452d924be5030777be842b266f6"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestNestedLoops2.class",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestNestedLoops2.class",
+      "bytes": 1212,
+      "sha256": "1ec5b61e15f7348bb8685535261016b1b5b8d5aad45db4a9f3e436b26621b1ee"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/debug-full-classes.jar",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/debug-full-classes.jar",
+      "bytes": 2628,
+      "sha256": "336fbe5650d779a6095576877b41125b3274464f67f5ee885ce07b0a9055c616"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$Case.class",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$Case.class",
+      "bytes": 695,
+      "sha256": "96b3e58840e72fc913b1abd3205796471e18a1fe04798dd4f0dbf21948dd300f"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$Observation.class",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$Observation.class",
+      "bytes": 563,
+      "sha256": "0f38a237afc522872aff334fa3a259d0384dd0786182b300ecc2c0633ba55e35"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$RecordingList.class",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$RecordingList.class",
+      "bytes": 2305,
+      "sha256": "f1a814fcf578c61a69391eb3c6f91af0b796ad9478f9552586914f51178205b6"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver.class",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver.class",
+      "bytes": 6693,
+      "sha256": "5cb0c2d39acba43d934905054e27756d5d4a6815100c791da8518e26bad9da64"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/driver-source/TestNestedLoops2Driver.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/driver-source/TestNestedLoops2Driver.java",
+      "bytes": 5637,
+      "sha256": "8c6cac9925421ef55358a3ab6fbe578ad1ad28c5364667befe279ae25c69afdd"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/execution.json",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/execution.json",
+      "bytes": 5515607,
+      "sha256": "342dbc438f372f39d5b6dc1df7414ac6d0523e1e333e37cd92a805cd9b050543"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jadx/debug/default/sources/jadx/tests/integration/loops/TestNestedLoops2.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jadx/debug/default/sources/jadx/tests/integration/loops/TestNestedLoops2.java",
+      "bytes": 1017,
+      "sha256": "5d1f4005d976270bf66cbecd77b8c036cbda3fd6d7c73590e98ac491fc7cfed0"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jadx/no-debug/default/sources/jadx/tests/integration/loops/TestNestedLoops2.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jadx/no-debug/default/sources/jadx/tests/integration/loops/TestNestedLoops2.java",
+      "bytes": 997,
+      "sha256": "b4810d4953f1843bfa099e5786e7a2078f07a518520ca11f53e9edf3972328f9"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/bundle-child/all/report.json",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/bundle-child/all/report.json",
+      "bytes": 55364,
+      "sha256": "3a67c31a69a90976615e8de86adffedc0062ee4508ebaf6bd81c85a5d1f2fb7b"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/bundle-child/all/whole-source.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/bundle-child/all/whole-source.java",
+      "bytes": 1572,
+      "sha256": "d11ad4efd87b3dc8a3e69fed6d040a6f5fdcd0284ba09677807d1e0ad15bfd0d"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/bundle-child/default/report.json",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/bundle-child/default/report.json",
+      "bytes": 53971,
+      "sha256": "02f502587e04a74d1ac4e1b0c9ac43cb59fcf792f8ca288d11ba89077fc4a00d"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/bundle-child/default/whole-source.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/bundle-child/default/whole-source.java",
+      "bytes": 1572,
+      "sha256": "d11ad4efd87b3dc8a3e69fed6d040a6f5fdcd0284ba09677807d1e0ad15bfd0d"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/child/all/report.json",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/child/all/report.json",
+      "bytes": 39641,
+      "sha256": "f2bce1ee27943687d3a1d04f73d46bd4a2ce5c625d86de275f0286f28f54aab1"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/child/all/whole-source.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/child/all/whole-source.java",
+      "bytes": 1572,
+      "sha256": "d11ad4efd87b3dc8a3e69fed6d040a6f5fdcd0284ba09677807d1e0ad15bfd0d"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/child/default/report.json",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/child/default/report.json",
+      "bytes": 38257,
+      "sha256": "be5de6ef4f843feafb7b438f628fa08bb37c394104e4fdf7a934666f50c0c09c"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/child/default/whole-source.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/debug/child/default/whole-source.java",
+      "bytes": 1572,
+      "sha256": "d11ad4efd87b3dc8a3e69fed6d040a6f5fdcd0284ba09677807d1e0ad15bfd0d"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/report.json",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/report.json",
+      "bytes": 55524,
+      "sha256": "09f86e987058d319917e7adc1ca88d3eef5efd4544b0a845aa7fc981dfa8c757"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/whole-source.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/whole-source.java",
+      "bytes": 1647,
+      "sha256": "9ad6763b720a1a91dbcd462633b8c3857df5628be92c0fcbcecc3fb02a49cb92"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/report.json",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/report.json",
+      "bytes": 54131,
+      "sha256": "0d190edad9f5aaf9fc9dc1868b062d645bc03c94f169384654da2937054ffda4"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/whole-source.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/whole-source.java",
+      "bytes": 1647,
+      "sha256": "9ad6763b720a1a91dbcd462633b8c3857df5628be92c0fcbcecc3fb02a49cb92"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/child/all/report.json",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/child/all/report.json",
+      "bytes": 39796,
+      "sha256": "13d681e80a635fb4d9f5b86e513a0d7d275445c9479fb624b3300a1a9b7fad36"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/child/all/whole-source.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/child/all/whole-source.java",
+      "bytes": 1647,
+      "sha256": "9ad6763b720a1a91dbcd462633b8c3857df5628be92c0fcbcecc3fb02a49cb92"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/child/default/report.json",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/child/default/report.json",
+      "bytes": 38403,
+      "sha256": "2fecbfad31db84db01ad248dbba42991e76bc8ec7629956626335ec0dac08997"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/child/default/whole-source.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde/no-debug/child/default/whole-source.java",
+      "bytes": 1647,
+      "sha256": "9ad6763b720a1a91dbcd462633b8c3857df5628be92c0fcbcecc3fb02a49cb92"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "bytes": 265,
+      "sha256": "73d1bedf469b7bb87d6fc860b12660fd6f4834d022f72c88b6c093e98ce312ca"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 604,
+      "sha256": "6ef4a8c7073e141610786281939a765be424e59684eb96579a3a76cdec75bc95"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops2.class",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops2.class",
+      "bytes": 995,
+      "sha256": "ee7f7ef33a2d8dc0ebdabe1c3f37fef17794a809951602838f1f5b52bb7a0963"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/no-debug-full-classes.jar",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/no-debug-full-classes.jar",
+      "bytes": 1993,
+      "sha256": "73ffd2c7afd58f663bb2e6da077205a0a4b526d8c46f18aa85c7b84ea6355050"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 497,
+      "sha256": "1a810bf15a5ba8310c65f1200c27b93c49124d260ef465ddeea893afd939a0d3"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/10.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/10.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/10.stdout.raw",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/11.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/11.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/11.stdout.raw",
+      "bytes": 38257,
+      "sha256": "be5de6ef4f843feafb7b438f628fa08bb37c394104e4fdf7a934666f50c0c09c"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/12.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/12.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/12.stdout.raw",
+      "bytes": 39641,
+      "sha256": "f2bce1ee27943687d3a1d04f73d46bd4a2ce5c625d86de275f0286f28f54aab1"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/13.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/13.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/13.stdout.raw",
+      "bytes": 53971,
+      "sha256": "02f502587e04a74d1ac4e1b0c9ac43cb59fcf792f8ca288d11ba89077fc4a00d"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/14.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/14.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/14.stdout.raw",
+      "bytes": 55364,
+      "sha256": "3a67c31a69a90976615e8de86adffedc0062ee4508ebaf6bd81c85a5d1f2fb7b"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/15.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/15.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/15.stdout.raw",
+      "bytes": 38403,
+      "sha256": "2fecbfad31db84db01ad248dbba42991e76bc8ec7629956626335ec0dac08997"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/16.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/16.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/16.stdout.raw",
+      "bytes": 39796,
+      "sha256": "13d681e80a635fb4d9f5b86e513a0d7d275445c9479fb624b3300a1a9b7fad36"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/17.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/17.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/17.stdout.raw",
+      "bytes": 54131,
+      "sha256": "0d190edad9f5aaf9fc9dc1868b062d645bc03c94f169384654da2937054ffda4"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/18.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/18.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/18.stdout.raw",
+      "bytes": 55524,
+      "sha256": "09f86e987058d319917e7adc1ca88d3eef5efd4544b0a845aa7fc981dfa8c757"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/19.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/19.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/19.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/20.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/20.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/20.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/3.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/5.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/5.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/5.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/6.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/6.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/6.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/7.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/7.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/7.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/8.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/8.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/8.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/9.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/9.stderr.raw",
+      "bytes": 322,
+      "sha256": "e30d3b41553c8efa7a5c4b7160d62e17724eec7ed43adb30b1ab898836e61a63"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/9.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-full-baseline-root-v1-20261019/source/jadx/tests/integration/loops/TestNestedLoops2.java",
+      "source": "/private/tmp/jarde-testnestedloops2-full-baseline-root-v1-20261019/source/jadx/tests/integration/loops/TestNestedLoops2.java",
+      "bytes": 693,
+      "sha256": "795ea73a0acfc5695f9e67c456746919f889d52026695f406d88f9693469b6db"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/collector.py",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/collector.py",
+      "bytes": 27736,
+      "sha256": "6c693e1e129155004862b7e1279b024ce7c55b5b5ef7d1e99d9ac8afdb109b5c"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 1022,
+      "sha256": "fe7646273cb77652cd93a411f8a3baed93e935f8c9664c10dd8d3b3416deb682"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2.class",
+      "bytes": 1200,
+      "sha256": "2143d3e29e019bff6585546fecfc616d8fdfe46301024dec4e1b06cf2ae2a51e"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle-child-all/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle-child-all/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 798,
+      "sha256": "9f09bedc0c83a8c94ecfe5d0c0828dd8743d871cf8989763e35f18f7d0b940e3"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle-child-all/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle-child-all/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 801,
+      "sha256": "f430267871b43542225eddb95121f5d675450bd6ffb08fdf55be767642d187a0"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle-child-default/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle-child-default/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 798,
+      "sha256": "9f09bedc0c83a8c94ecfe5d0c0828dd8743d871cf8989763e35f18f7d0b940e3"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle-child-default/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-bundle-child-default/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 801,
+      "sha256": "f430267871b43542225eddb95121f5d675450bd6ffb08fdf55be767642d187a0"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-child-all/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-child-all/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 798,
+      "sha256": "9f09bedc0c83a8c94ecfe5d0c0828dd8743d871cf8989763e35f18f7d0b940e3"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-child-all/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-child-all/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 801,
+      "sha256": "f430267871b43542225eddb95121f5d675450bd6ffb08fdf55be767642d187a0"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-child-default/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-child-default/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 798,
+      "sha256": "9f09bedc0c83a8c94ecfe5d0c0828dd8743d871cf8989763e35f18f7d0b940e3"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-child-default/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/debug-child-default/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 801,
+      "sha256": "f430267871b43542225eddb95121f5d675450bd6ffb08fdf55be767642d187a0"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 593,
+      "sha256": "357de156b0e14312ad2595238bd033745eb72b2fab53b40bba98ee186a0bb0a5"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2.class",
+      "bytes": 995,
+      "sha256": "ee7f7ef33a2d8dc0ebdabe1c3f37fef17794a809951602838f1f5b52bb7a0963"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle-child-all/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle-child-all/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 450,
+      "sha256": "49086e19bc6ae4b5de285b2f165ebc3cde7c320ec0954b63ebc5ce1a9e80391c"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle-child-all/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle-child-all/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 453,
+      "sha256": "c3b54935ed0d270f8bc1adff74a059f2509893546ad3b71207de4630868d4cb3"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle-child-default/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle-child-default/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 450,
+      "sha256": "49086e19bc6ae4b5de285b2f165ebc3cde7c320ec0954b63ebc5ce1a9e80391c"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle-child-default/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-bundle-child-default/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 453,
+      "sha256": "c3b54935ed0d270f8bc1adff74a059f2509893546ad3b71207de4630868d4cb3"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-child-all/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-child-all/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 450,
+      "sha256": "49086e19bc6ae4b5de285b2f165ebc3cde7c320ec0954b63ebc5ce1a9e80391c"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-child-all/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-child-all/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 453,
+      "sha256": "c3b54935ed0d270f8bc1adff74a059f2509893546ad3b71207de4630868d4cb3"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-child-default/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-child-default/javac23/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 450,
+      "sha256": "49086e19bc6ae4b5de285b2f165ebc3cde7c320ec0954b63ebc5ce1a9e80391c"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-child-default/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/compiled/no-debug-child-default/javac8/classes/jadx/tests/integration/loops/TestNestedLoops2$TestCls.class",
+      "bytes": 453,
+      "sha256": "c3b54935ed0d270f8bc1adff74a059f2509893546ad3b71207de4630868d4cb3"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$Case.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$Case.class",
+      "bytes": 695,
+      "sha256": "96b3e58840e72fc913b1abd3205796471e18a1fe04798dd4f0dbf21948dd300f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$Observation.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$Observation.class",
+      "bytes": 563,
+      "sha256": "0f38a237afc522872aff334fa3a259d0384dd0786182b300ecc2c0633ba55e35"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$RecordingList.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver$RecordingList.class",
+      "bytes": 2305,
+      "sha256": "f1a814fcf578c61a69391eb3c6f91af0b796ad9478f9552586914f51178205b6"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver.class",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/driver-classes/TestNestedLoops2Driver.class",
+      "bytes": 6693,
+      "sha256": "5cb0c2d39acba43d934905054e27756d5d4a6815100c791da8518e26bad9da64"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/driver-source/TestNestedLoops2Driver.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/driver-source/TestNestedLoops2Driver.java",
+      "bytes": 5637,
+      "sha256": "8c6cac9925421ef55358a3ab6fbe578ad1ad28c5364667befe279ae25c69afdd"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/execution.json",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/execution.json",
+      "bytes": 4905428,
+      "sha256": "a06dbf76e1dd80f2dfcf429e7675415a182f407e4aeb1cad2f8ebffd4ae5942e"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "bytes": 265,
+      "sha256": "73d1bedf469b7bb87d6fc860b12660fd6f4834d022f72c88b6c093e98ce312ca"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/10.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/10.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/10.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/11.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/11.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/11.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/12.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/12.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/12.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/13.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/13.stderr.raw",
+      "bytes": 358,
+      "sha256": "978b6c36eea32e55b5c9182be82598e23573bf443d7e3ed4325157c0fa097e46"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/13.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/13.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/14.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/14.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/14.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/15.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/15.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/15.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/16.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/16.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/16.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/17.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/17.stderr.raw",
+      "bytes": 359,
+      "sha256": "c19ad744621b5f24913acc533aa704fd3a7273a0cc623ff39b73cd0e3027b6e4"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/17.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/17.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/18.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/18.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/18.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/19.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/19.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/19.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/20.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/20.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/20.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/21.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/21.stderr.raw",
+      "bytes": 369,
+      "sha256": "51c7511f151859b6083ef43a76090467bd97c6e3b187952adb9e3933234eea56"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/21.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/21.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/22.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/22.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/22.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/22.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/23.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/23.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/23.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/24.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/24.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/24.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/24.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/25.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/25.stderr.raw",
+      "bytes": 370,
+      "sha256": "fcf490dfb1f3f451c8df71ae638b586b6d8bbe572fe427a2688eb6a41329770f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/25.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/25.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/26.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/26.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/26.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/27.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/27.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/27.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/27.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/28.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/28.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/28.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/28.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/29.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/29.stderr.raw",
+      "bytes": 365,
+      "sha256": "7aadfac9f7bdf87b95e4f57f9217135a84763a47a0ca77dc786bb19471001749"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/29.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/29.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/3.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/30.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/30.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/30.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/30.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/31.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/31.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/31.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/31.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/32.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/32.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/32.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/32.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/33.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/33.stderr.raw",
+      "bytes": 366,
+      "sha256": "838e09d1e784ccb72f8471a787c3d07d417b2158e7038b8794b8c42e367226f3"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/33.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/33.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/34.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/34.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/34.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/34.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/35.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/35.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/35.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/35.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/36.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/36.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/36.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/36.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/37.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/37.stderr.raw",
+      "bytes": 365,
+      "sha256": "b1980d2c736cddc4642af4e37eebfd167864eb9fd1aa92d1607dcfa12072a957"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/37.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/37.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/38.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/38.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/38.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/38.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/39.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/39.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/39.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/39.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/4.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/40.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/40.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/40.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/40.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/41.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/41.stderr.raw",
+      "bytes": 366,
+      "sha256": "14f4e80d9fb959264a4a11c216018b8148fe33ba25cd1983fff491b8756b09ed"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/41.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/41.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/42.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/42.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/42.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/42.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/43.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/43.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/43.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/43.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/44.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/44.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/44.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/44.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/45.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/45.stderr.raw",
+      "bytes": 361,
+      "sha256": "46da9d8a76805edebf5d10f66f9786e1fc3d1394cddf27025a51153ed01f5203"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/45.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/45.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/46.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/46.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/46.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/46.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/47.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/47.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/47.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/47.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/48.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/48.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/48.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/48.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/49.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/49.stderr.raw",
+      "bytes": 362,
+      "sha256": "c6809880121c7373dafe1f5074610ef80bc4cdcda771fc441d65afa56d511875"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/49.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/49.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/5.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/5.stderr.raw",
+      "bytes": 362,
+      "sha256": "031ea72ceeceffb37ff7a753ed21b76c5d81cebfb1aba929e59614fbdb43929e"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/5.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/50.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/50.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/50.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/50.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/51.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/51.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/51.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/51.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/52.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/52.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/52.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/52.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/53.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/53.stderr.raw",
+      "bytes": 372,
+      "sha256": "ded9dea7ff1fb6085f212b27de380efabefb37f89562a48d046b650d060efcdb"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/53.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/53.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/54.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/54.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/54.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/54.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/55.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/55.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/55.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/55.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/56.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/56.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/56.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/56.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/57.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/57.stderr.raw",
+      "bytes": 373,
+      "sha256": "4b65b1c120106467423cf78e4d3dde5829ea5d5cd15585c7d6fcc017c8d88732"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/57.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/57.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/58.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/58.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/58.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/58.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/59.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/59.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/59.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/59.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/6.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/6.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/6.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/60.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/60.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/60.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/60.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/61.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/61.stderr.raw",
+      "bytes": 368,
+      "sha256": "9f5eceb4f31ade3ec7b4edd5b018a63eb810120195fe8ad243fc115ecd273933"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/61.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/61.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/62.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/62.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/62.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/62.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/63.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/63.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/63.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/63.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/64.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/64.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/64.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/64.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/65.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/65.stderr.raw",
+      "bytes": 369,
+      "sha256": "9ac2c9c646fa2adb1f0e08db168662bbc19f0f6b700dea747948199bb951b41c"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/65.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/65.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/66.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/66.stderr.raw",
+      "bytes": 516,
+      "sha256": "b8177544432c503d368d75802ada8e4131ac7d4ebd796d586a212db4d0d7b59c"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/66.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/66.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/67.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/67.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/67.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/67.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/68.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/68.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/68.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/68.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/69.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/69.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/69.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/69.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/7.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/7.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/7.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/70.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/70.stderr.raw",
+      "bytes": 356,
+      "sha256": "6a437d12ef7078b1ad73c36222e0d574cbc7983d7221160c50c2be573f60c587"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/70.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/70.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/71.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/71.stderr.raw",
+      "bytes": 519,
+      "sha256": "b88c283546e71050387e028c016bc03539033e8d5b72bc6ad221531dc602b41d"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/71.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/71.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/72.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/72.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/72.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/72.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/73.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/73.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/73.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/73.stdout.raw",
+      "bytes": 1056,
+      "sha256": "f79d602217ebbea39e6e1da36027e4b1b36902ea982ff3961fbb48ffaa5096ed"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/74.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/74.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/74.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/74.stdout.raw",
+      "bytes": 1056,
+      "sha256": "f79d602217ebbea39e6e1da36027e4b1b36902ea982ff3961fbb48ffaa5096ed"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/75.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/75.stderr.raw",
+      "bytes": 359,
+      "sha256": "de03d9b70422c46340867a429f5885708d3938e26a04dd2ae217f9aa7c825ae7"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/75.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/75.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/8.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/8.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/8.stdout.raw",
+      "bytes": 930,
+      "sha256": "6244ad97101a71be92e4699bbda1d5fc4153b0fd7c8dcccfc2a0a3f8942ccd6f"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/9.stderr.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/9.stderr.raw",
+      "bytes": 363,
+      "sha256": "b108fff56cb8ca8845d6d419dd70c2b0b09038f03380c35ee03af16b2bf2b251"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/9.stdout.raw",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/debug-bundle/jadx/tests/integration/loops/TestNestedLoops2.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/debug-bundle/jadx/tests/integration/loops/TestNestedLoops2.java",
+      "bytes": 1017,
+      "sha256": "5d1f4005d976270bf66cbecd77b8c036cbda3fd6d7c73590e98ac491fc7cfed0"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/debug-bundle-child-all/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/debug-bundle-child-all/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "bytes": 1572,
+      "sha256": "d11ad4efd87b3dc8a3e69fed6d040a6f5fdcd0284ba09677807d1e0ad15bfd0d"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/debug-bundle-child-default/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/debug-bundle-child-default/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "bytes": 1572,
+      "sha256": "d11ad4efd87b3dc8a3e69fed6d040a6f5fdcd0284ba09677807d1e0ad15bfd0d"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/debug-child-all/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/debug-child-all/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "bytes": 1572,
+      "sha256": "d11ad4efd87b3dc8a3e69fed6d040a6f5fdcd0284ba09677807d1e0ad15bfd0d"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/debug-child-default/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/debug-child-default/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "bytes": 1572,
+      "sha256": "d11ad4efd87b3dc8a3e69fed6d040a6f5fdcd0284ba09677807d1e0ad15bfd0d"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/no-debug-bundle/jadx/tests/integration/loops/TestNestedLoops2.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/no-debug-bundle/jadx/tests/integration/loops/TestNestedLoops2.java",
+      "bytes": 997,
+      "sha256": "b4810d4953f1843bfa099e5786e7a2078f07a518520ca11f53e9edf3972328f9"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/no-debug-bundle-child-all/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/no-debug-bundle-child-all/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "bytes": 1647,
+      "sha256": "9ad6763b720a1a91dbcd462633b8c3857df5628be92c0fcbcecc3fb02a49cb92"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/no-debug-bundle-child-default/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/no-debug-bundle-child-default/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "bytes": 1647,
+      "sha256": "9ad6763b720a1a91dbcd462633b8c3857df5628be92c0fcbcecc3fb02a49cb92"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/no-debug-child-all/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/no-debug-child-all/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "bytes": 1647,
+      "sha256": "9ad6763b720a1a91dbcd462633b8c3857df5628be92c0fcbcecc3fb02a49cb92"
+    },
+    {
+      "member": "jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/no-debug-child-default/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "source": "/private/tmp/jarde-testnestedloops2-generated-baseline-root-v1-20261019/sources/no-debug-child-default/jadx/tests/integration/loops/TestNestedLoops2$TestCls.java",
+      "bytes": 1647,
+      "sha256": "9ad6763b720a1a91dbcd462633b8c3857df5628be92c0fcbcecc3fb02a49cb92"
+    },
+    {
+      "member": "jarde-testnestedloops2-acceptance-prep-root-v1-20261019/README.md",
+      "source": "/private/tmp/jarde-testnestedloops2-acceptance-prep-root-v1-20261019/README.md",
+      "bytes": 1649,
+      "sha256": "7b05d2883655e7ea30f0ac223068bcc489e59039e6e4f4cd54da181b6b6fe2cd"
+    },
+    {
+      "member": "jarde-testnestedloops2-acceptance-prep-root-v1-20261019/pins.json",
+      "source": "/private/tmp/jarde-testnestedloops2-acceptance-prep-root-v1-20261019/pins.json",
+      "bytes": 232,
+      "sha256": "7aab788ac7390678753ae5140fb9c3ba738a212c723ba7f044b2571e479c6df0"
+    },
+    {
+      "member": "jarde-testnestedloops2-acceptance-prep-root-v1-20261019/root-adaptation.json",
+      "source": "/private/tmp/jarde-testnestedloops2-acceptance-prep-root-v1-20261019/root-adaptation.json",
+      "bytes": 1252,
+      "sha256": "897636fe3881656b2bd466a12817d588603b964c1526227c0a203526c12eef64"
+    },
+    {
+      "member": "jarde-testnestedloops2-acceptance-prep-root-v1-20261019/verify_nestedloops2.py",
+      "source": "/private/tmp/jarde-testnestedloops2-acceptance-prep-root-v1-20261019/verify_nestedloops2.py",
+      "bytes": 51354,
+      "sha256": "8059435aacb8585f3bf4c7251dc9b6f127fc8bae23a12ae178a5572f4f55fd34"
+    },
+    {
+      "member": "jarde-testnestedloops2-acceptance-root-v1-20261019/review.json",
+      "source": "/private/tmp/jarde-testnestedloops2-acceptance-root-v1-20261019/review.json",
+      "bytes": 3683,
+      "sha256": "072f07f14039fec2a940aa32beb3c7f5625b2a663b4599c4501d3f1d016b9882"
+    }
+  ],
+  "primary_review_status": "review_complete",
+  "semantic_classification": "Jarde 16 complete compiles/32 JVM/320 cases same as original. JADX no-debug generated class repeats get: two JVMs each four event differences; returns/exceptions unchanged in these probes. Two JADX full outer-source JDK8 major55 boundary failures retained."
+}
