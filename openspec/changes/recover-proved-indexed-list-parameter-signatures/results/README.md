@@ -26,3 +26,13 @@ JADX1.5.6在完整固定上游的no-debug输出将get移进inner while条件。�
 独立checker的helper缺参、旧template遗漏、success marker原来在method内部而refusal在header外等准备/实际错误均保留；root仅改匹配真实schema/精确标记位置，未改生成源码、driver、oracle或放宽raw/map一致性。最终control checker root-v1、API delta root-v2及原始Java/class/driver/JDK/oracle binder实际exit0。三个新归档666成员全部root逐字复开；含两个基线共1378成员。
 
 `final-acceptance-preparation-root-v1`仅为下一阶段native/CI准备，不称已运行。保留14源码/9fixture库存，所有旧门+七个新门，官方ZIP须每step独立成员齐全，不能aggregate拼造。
+
+## 2026-10-19 fresh workspace 暴露的 Iterable 预期修正
+
+产品 b7d53e50 的第一次 fresh seed1 在 batch40 的 `subtype_owners_project_and_extra_next_or_iterator_escape_refuse` 真实失败：旧断言要求 `listOwner(List<String>)` 仍为 Object foreach。实际新的精确 primitive/完整体证明已允许该方法输出 String foreach。不是生产语义失败；失败运行保持 failed，后续三个同批目标未执行，不能把已有通过的批拼成完整通过。该产品自身 CI 尚未接受。
+
+Luna 私有 v1 硬编码参数名 values 被 root 拒绝；v2 改为不绑定名称，root进一步删除冗余 header 解析，仅要求精确 int/List<String> 前缀。Collection 的 Object/cast 预期及额外消费/iterator逃逸拒绝不变。独立 driver 增加 list=3/listEmpty=0/listNull=NullPointerException，Rust先核原始 oracle 三行，再将完整恢复类重编运行与原始类完整 stdout 对照。
+
+实际 guarded focused：语料再生成1通过、语料校验5通过/1旧忽略、Iterable整目标5通过/0失败；只有预定manifest由生成器改变。最终不变源 CI Clippy及CLI构建通过，3198来源恒同，exactclean/target absent。最终CLI 63809216B/SHA90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c 与原完整矩阵CLI逐字相同；832case仍由完全相同的实际可执行文件绑定，不冒称新跑VM。相对原广门构建只有test/driver/manifest三个文件变化，生产源码未动。
+
+收据和失败归档 `listowner-regression-correction-root-v1` 全成员root逐字复开。下一步重新提交产品并验其自身CI、fresh完整workspace；3.2仍未勾选。
