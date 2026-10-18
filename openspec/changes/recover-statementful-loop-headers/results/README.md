@@ -1,5 +1,7 @@
 # Seq1循环头恢复：证据入口
 
+当前产品 **ee013adb35711366d0aff2f774ee633b34c06082** 已完成验收：父8/8、字段复制子5/5。自身[CI39100001965](https://github.com/LordCasser/jarde/actions/runs/39100001965)4jobs/52步骤成功；双native和自身CI两seed均各385目标、3754通过/0失败/98既有忽略。以下按阶段保留历史候选、失败与当时的待验收状态；最终状态以本段和文末产品验收为准。文档关闭提交是该产品的后继，不冒称自身运行过该产品CI。
+
 原始基线、旧38命令完整源码矩阵及当前八API重放见`openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-*`，三个包225成员已root独立接受并复开；不冒称本轮重跑JDK。
 
 - `first-refusal-root-v2`：56成员，真实Reader/SSA首拒、完整默认Frame/natural/Store5诊断，临时源码恢复，root独立接受40条含历史/诊断/build/wrapper raw与8API恒同；SHA256 `3a12f06bb52b9d141ba1579a52e51d455d634c42ce9a319c36897a957659aa55`。
@@ -48,3 +50,26 @@
 `copy-admission-api-replay-root-v1`：56实际CLI命令/112原始流，原始8、补充16、volatile16、LeadingTick4，共44正向单元。逐份完整生成Java及所有递归非usage JSON与旧0bb报告相等，含完整方法身份/质量/来源/诊断。旧双JDK矩阵只因**同一生成Java字节**而复用，未重跑或冒称新JDK运行。另12 API录入两个编译器×三旧复制控制×default/all，整Java与方法质量/fallback/map/诊断模式一致；原参数目标、guardIfFirst和MultiCopy仍fallback，未将负控冒称全BCI。root独立脚本核全部raw/input/report/source/CLI及前后source/external闭包。341成员/2486800B/SHA256 `f1d6555a8daad531f984a8410df244c93af6ae86c356c3f546a206656599caf2`。
 
 父任务6/8；新产品尚待两轮fresh native v3与自身CI。两个历史failed seed及cancelled CI保持失败，不能用focused/broad/API重放替代完整工作区验收。
+
+
+## 新候选 ee013：两轮 fresh native 已独立验收，自身CI待终态
+
+产品 `ee013adb35711366d0aff2f774ee633b34c06082` 已推送。`workspace-seed1-root-v3`、`workspace-seed2-root-v3` 均真实从空target开始、101批覆盖385个metadata目标，3754通过/0失败/98既有忽略；两轮5140来源同且未变、逐target计数同、50精确关键门各一次通过。独立checker将原始harness按实际stderr Running身份绑定，保留collector旧artifact顺序表并记录其差异，不混改框架。每轮104命令/208raw，默认栈/5GiB余量/target1GiB/每秒guard及finally exact clean均核，target不存在。
+
+`workspace-acceptance-root-v3` 保存完整双seed checker和源码绑定：最新broad构建3187、native每轮5140、并集5147来源逐Git blob/bytes/mode绑定本产品，CLI仍为aabf；含限定静态架构复审和实际全量OpenSpec strict371/0，不替代自身CI。seed1归档213成员/1406175B/SHA `a76af409a77c1b7351d0bf6dffa2a68193eb8d1d5b9167e4c80b3728c33038be`；seed2归档213成员/1406011B/SHA `153a1e6ca09cc62e47939f6f54025b78057b5a2c79bb69e9d17d08d3b18724ec`。
+
+父7/8、子4/5。自身[CI39100001965](https://github.com/LordCasser/jarde/actions/runs/39100001965)尚在第二seed；待成功终态、官方日志ZIP/41门/来源核验后才关闭交付任务。历史两个failed native与cancelled CI继续保持原状态。
+
+
+## 最终产品自身CI与交付
+
+`own-product-ci-root-v1`：280成员/3563884B/SHA256 `7d9cfbb76ada2fd2786faf7c2547b6dc573236ff734c77932ae738780a16b6d7`，root已逐字复开。实际123采集命令加两次官方ZIP请求，共125命令/250原始流，22源码与95动态fixture文件绑定产品，四job/52 API步骤成功。两seed各385 targets/3754通过/0失败/98忽略，逐target计数恒同、41关键门各一次；含Clippy/MSRV、JDK额外整类对照、examples/层级/规范及fuzz等实际步骤。
+
+官方ZIP有59成员、51份独立step文件，缺step10独立文件；原v1验收拒绝和第二次逐字相同下载均保留。官方aggregate完整保留step10：仅剥离timestamp/BOM以同相邻9/11唯一payload定位，再对原始body核API时间区间、产品workflow完整命令、实际jvm_bytecode_oracle executable及具名1通过/0失败/0忽略。未改官方raw或跳过该门。v2默认模式通过及其优化模式assert缺口保留；v3改显式校验，独立正例/13负控与真实python -O改名反例均接受/拒绝符合预期，root最终完整v3 verifier实际accepted。两个相同proof行是既有API/工作区parser各读取一次同证书，不是两个缺失步骤或两次oracle运行。此为私有证据适配，未改产品Rust或CI workflow。
+
+`workspace-acceptance-root-v3`：9成员/586319B/SHA256 `d768291570c1c086b48033677cad74b9e5e988f162ac39b80236217ae8160efe`。两fresh native完整来源与最新CLI构建并集5147逐Git blob/bytes/mode绑定同一产品，50关键门各轮一次。最终CLI aabf与44 API完整非usage JSON/整Java对照已接受；同Java字节的132编译/260 rebuilt VM/2568 case矩阵只计原执行，未冒称新JDK重跑。
+
+父8/8、子5/5，本片不增加CF11或71单元/612测试文件整体完成数。下一固定Seq2仍未运行，准备v5与收窄后的JADX静态备忘已分开保存在全局evidence；不预判缺陷或新增机制。关闭记录之后核实际干净main/远端/辅助checkout与target absent，终态收据外置于 `/private/tmp/jarde-statementful-loop-final-head-root-v1-20261018/execution.json`。
+
+
+最终关闭门 `final-delivery-root-v1`：20成员/9967B/SHA `ad0cfaa2608b3bb7ae4492f5a67d8c7822c7c22b6e65d57a5d0bff3161dae1fc`，实际OpenSpec apply父all_done8/8、子all_done5/5，全量strict371/0，5147来源字节/模式仍同，target absent。此包明确是文档提交前关闭门，不冒称提交后HEAD干净。`all-archives-root-review-v5.json`实际逐字复开父/子32归档3428成员；下一固定Seq2未执行prep/静态3包21成员分开核验，不算语法完成或runtime。

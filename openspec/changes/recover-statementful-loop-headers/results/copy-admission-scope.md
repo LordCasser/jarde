@@ -2,7 +2,7 @@
 
 command75是实际回归：结构闭合不保证复制表达式可呈现。参数目标和MultiCopy的原完整拒绝文本必须保留，本片不通过修改快照扩大表达式赋值契约。现修复只把既有Builder完整局部赋值证明共享给新region消费者，并与既有region目标槽准入联合使用。
 
-本轮真实Reader定向已观察（完整guard仍待终态）：参数目标header11、dup15/store16/compare18，写入Local(0)且该槽来自参数entry；MultiCopy header17，dup21/store22之后还有dup23，branch24读取Value20/21，而首dup另一副本是Value17，不能当作原store/test配对。两编译器腿事实相同。region粗store_dance本身就因该直接测试值身份拒绝这个MultiCopy；早期Luna“粗门单独会漏本MultiCopy”的静态推论不成立。它一般不检查全部单用事实，故复用完整同块/定义/替换/唯一use证书仍是组合契约，不能说本例动态证明了所有单用边界。
+本轮真实Reader定向及798项广门已终态通过，root核原始记录接受：实际观察：参数目标header11、dup15/store16/compare18，写入Local(0)且该槽来自参数entry；MultiCopy header17，dup21/store22之后还有dup23，branch24读取Value20/21，而首dup另一副本是Value17，不能当作原store/test配对。两编译器腿事实相同。region粗store_dance本身就因该直接测试值身份拒绝这个MultiCopy；早期Luna“粗门单独会漏本MultiCopy”的静态推论不成立。它一般不检查全部单用事实，故复用完整同块/定义/替换/唯一use证书仍是组合契约，不能说本例动态证明了所有单用边界。
 
 Seq1 header23的真实dup26/store27写Local(4)，作为明确的direct proof-context正例通过新consumer；正常纯条件路径仍走原契约，不冒称它在普通恢复中调用了新helper。完整direct proof消耗277 AnalysisSteps，实际limit86在dup26新计费处停止且未claim；此数字是该上下文的观察，不是通用预算表或固定产品限额。
 

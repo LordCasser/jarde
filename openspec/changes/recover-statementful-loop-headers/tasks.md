@@ -12,5 +12,5 @@
 ## 3. 完整验收与交付
 
 - [x] 3.1 root冻结最终CLI并接受原始与补充全部完整方法/字段/来源，生成Java原样双编译器重编、双VM隔离classpath/CodeSource对真实原oracle核返回/ledger/异常身份及同实例累计状态；JADX差异、失败和major55工具边界单列，不能删方法或修生成源码。
-- [ ] 3.2 实际通过fmt、CI同款Clippy、MSRV1.88、Reader、标准指纹/P5及两个fresh workspace seed，root核全target/具名门/来源、默认栈/5GiB余量/target1GiB/每秒guard/finally exact clean；真实计费变化说明后验收，不改旧预算来通过。
-- [ ] 3.3 提交推送产品并root独立接受自身CI，归档逐字复开；实际更新tasks/handoff，提交推送交付记录，核HEAD/远端/干净main与target absent，不增加CF11或71/612整体完成数。
+- [x] 3.2 实际通过fmt、CI同款Clippy、MSRV1.88、Reader、标准指纹/P5及两个fresh workspace seed，root核全target/具名门/来源、默认栈/5GiB余量/target1GiB/每秒guard/finally exact clean；真实计费变化说明后验收，不改旧预算来通过。
+- [x] 3.3 提交推送产品并root独立接受自身CI，归档逐字复开；实际更新tasks/handoff，提交推送交付记录，核HEAD/远端/干净main与target absent，不增加CF11或71/612整体完成数。
