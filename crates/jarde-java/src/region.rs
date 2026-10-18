@@ -17208,6 +17208,116 @@ impl Walker<'_> {
         let Some(fallthrough_bci) = physical_fallthrough(test_bci) else {
             return Ok(None);
         };
+
+        // Statement effects do not excuse an unproved expression copy. Keep the existing local
+        // target gate and reuse the builder's full source/store/test single-use proof before this
+        // new consumer can own the header. Other copy families are not admitted by this check.
+        let Some(test_instruction) = header_instructions
+            .last()
+            .filter(|instruction| instruction.bci() == test_bci)
+        else {
+            return Ok(None);
+        };
+        let header_len = header_instructions.len();
+        poll(self.budget, Some(test_bci))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(header_len).unwrap_or(u64::MAX),
+            Some(test_bci),
+        )?;
+        let entry_slots = self
+            .ssa
+            .blocks()
+            .first()
+            .map_or(0, |entry| entry.entry().len());
+        let effects_len = self.ssa.effects().instructions().len();
+        let vector_work = |length: usize| {
+            let levels = usize::BITS.saturating_sub(length.max(1).leading_zeros()) as usize;
+            length.saturating_mul(levels.saturating_add(1))
+        };
+        for (position, duplicate) in header_instructions.iter().enumerate() {
+            if !matches!(
+                self.operations.get(duplicate.bci()),
+                Some(Operation::Duplicate)
+            ) {
+                continue;
+            }
+            if duplicate.opcode() != 0x59 {
+                return Ok(None);
+            }
+            let store = header_instructions.get(position.saturating_add(1));
+            let gate_cost = header_len
+                .saturating_mul(3)
+                .saturating_add(entry_slots)
+                .saturating_add(test_instruction.reads().len().saturating_mul(2))
+                .saturating_add(duplicate.writes().len())
+                .saturating_add(store.map_or(0, |instruction| {
+                    instruction
+                        .writes()
+                        .len()
+                        .saturating_add(vector_work(instruction.reads().len()))
+                }));
+            poll(self.budget, Some(duplicate.bci()))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(gate_cost).unwrap_or(u64::MAX),
+                Some(duplicate.bci()),
+            )?;
+            if !self.unobservable_store_dance_part(header, duplicate)
+                && !self.store_dance_part(header, test_bci, duplicate)
+            {
+                return Ok(None);
+            }
+            let Some(store) = store else {
+                return Ok(None);
+            };
+            poll(self.budget, Some(test_bci))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(test_instruction.reads().len()).unwrap_or(u64::MAX),
+                Some(test_bci),
+            )?;
+            let mut assignment_proved = false;
+            for (slot, tested) in test_instruction.reads() {
+                if !matches!(slot, Slot::Stack(_)) {
+                    continue;
+                }
+                let proof_cost = header_len
+                    .saturating_mul(3)
+                    .saturating_add(effects_len)
+                    .saturating_add(vector_work(duplicate.reads().len()))
+                    .saturating_add(vector_work(duplicate.writes().len()))
+                    .saturating_add(vector_work(store.reads().len()))
+                    .saturating_add(test_instruction.reads().len())
+                    .saturating_add(16);
+                poll(self.budget, Some(duplicate.bci()))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(proof_cost).unwrap_or(u64::MAX),
+                    Some(duplicate.bci()),
+                )?;
+                if crate::build::local_assignment_at(
+                    self.ssa,
+                    self.operations,
+                    header,
+                    duplicate.bci(),
+                    *tested,
+                    test_bci,
+                )
+                .is_some()
+                {
+                    assignment_proved = true;
+                    break;
+                }
+            }
+            if !assignment_proved {
+                return Ok(None);
+            }
+        }
         let successors = self.view.successor_ids(header);
         if successors.len() != 2 {
             return Ok(None);

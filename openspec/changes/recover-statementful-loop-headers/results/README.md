@@ -32,3 +32,19 @@
 `legacy-final-gates-root-v1`：15成员/344789B/SHA `a950c8aeaad7604b9af98d810ce20fdc56ccb6a858463fbdeb8e70d9293b02de`。仅旧test后半改为Structured while/no for/效果顺序和全物理来源，AssignedCallBound断言原样保留；fixture README注明历史。fmt、12 p3_for_latch、5标准指纹检查通过（1标准ignored），CLI与所有已接受矩阵0bb字节恒同。新build source_before==after，包含改后的test/README；exact clean/target absent。17通过出现，不与其他广门相加当不同测试数。须以此最新build绑定后续产品和两fresh native源码，不能用旧build的旧test闭包替代。
 
 当前四组完整三方矩阵合计66源码格/132次原样重编，其中130成功、两次旧JADX outer javac8 major55边界无runtime；260 rebuilt VM/2568case同原（Jarde1728/JADX840）。各原JVM240case另计。两fresh native和新产品自身CI仍待接受，tasks维持parent5/7 child4/5。
+
+
+第二次完整seed实际失败而非旧快照应更新：`workspace-copy-refusal-failure-root-v1` 160成员/1240048B/SHA `132f081c9dc4e1d223a64d4257ab5aab600e0556eb95f436c51550fa2b02eea3`。73完整批后command75，第74批的旧 `recover_loop_test_copy_store` 参数目标与MultiCopy拒绝控制被新路径改为带quoted比较的部分Endless while，两个public断言真实失败，77cmd/154raw，source恒同/guard/exact clean。原完整拒绝snapshots不改，新增task2.3收紧复制准入，2.2重新打开，parent4/8。此失败不是完整seed通过。
+
+`cancelled-copy-refusal-candidate-ci-root-v1` 9成员/345483B/SHA `69f084fd9d751d00457faa583e0b1c37d5aadb63b3e38b7135a0a72a181ffad5`：5a自身CI39097292812实际cancelled，supply-chain/fuzz/MSRV成功、stable取消；3实际API/ZIP命令6raw，双API job结论一致，官方45个ZIP成员可读。不作为CI通过。Gate修复后需新build/新candidate/两个fresh seed及自身CI；此前0bb的完整正向矩阵仍是历史有效Java证据，须将最终CLI的全部源码/来源重新绑定，不能拿未验收候选交付。
+
+
+## 头部复制准入修复：已接受本地门，完整 workspace/自身 CI 待验收
+
+`copy-admission-focused-root-v1`：29/0/1，两个真实 Reader 新测试、旧公开拒绝与 Seq1/LeadingTick 门。新 CLI 63164416B / SHA256 `aabf62fe373876d176e6001bf3ed1fd84f80d2169ff5e787c4095c5d253c63d9`；20成员逐字复开。实际改动与 proof-context 边界见 `copy-admission-scope.md`，未更改旧负控快照。
+
+`copy-admission-broad-gates-root-v1`：18命令/36raw，fmt、CI Clippy、MSRV1.88、Java lib493、Reader181、公开复制/LeadingTick/Seq1、八P5 104/0/5、CLI。合计798通过/0失败/6既有忽略。3187来源逐字不变、默认栈、资源守卫、finally exact clean，target不存在；CLI与focused逐字相同。独立reviewer核每条真实harness与两新增Reader各一次。41成员/402470B/SHA256 `7a57344570e37ebe972abbfee8f30c039bf53ff5c87342396a0b717a5e84b3b3`。
+
+`copy-admission-api-replay-root-v1`：56实际CLI命令/112原始流，原始8、补充16、volatile16、LeadingTick4，共44正向单元。逐份完整生成Java及所有递归非usage JSON与旧0bb报告相等，含完整方法身份/质量/来源/诊断。旧双JDK矩阵只因**同一生成Java字节**而复用，未重跑或冒称新JDK运行。另12 API录入两个编译器×三旧复制控制×default/all，整Java与方法质量/fallback/map/诊断模式一致；原参数目标、guardIfFirst和MultiCopy仍fallback，未将负控冒称全BCI。root独立脚本核全部raw/input/report/source/CLI及前后source/external闭包。341成员/2486800B/SHA256 `f1d6555a8daad531f984a8410df244c93af6ae86c356c3f546a206656599caf2`。
+
+父任务6/8；新产品尚待两轮fresh native v3与自身CI。两个历史failed seed及cancelled CI保持失败，不能用focused/broad/API重放替代完整工作区验收。

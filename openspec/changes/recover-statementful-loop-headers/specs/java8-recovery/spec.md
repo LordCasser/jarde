@@ -24,6 +24,10 @@
 - **WHEN** 原有条件表达式证明足以恢复while、for或do-while
 - **THEN** 头部语句消费者不得放宽纯条件约束或改变已有正确投影，不能通过把条件中未证明的效果当作纯值隐藏
 
+#### Scenario: Unproved header copies keep their existing refusal boundary
+- **WHEN** 新头部消费者遇到 `dup`，既有局部赋值形状无法证明同块源值、store副本及test副本各有其唯一消费者，或既有表达式准入拒绝目标参数槽
+- **THEN** 本候选在claim前拒绝并保留原reason及可靠降级；两个编译器腿的parameterTarget和MultiCopy完整拒绝文本保持，不能更新快照接受缺少有效条件的部分while；已证明local copy、普通头部赋值/调用和独立字段dup_x1证明保持原契约
+
 #### Scenario: Proof work retains real execution stops
 - **WHEN** 新增闭合扫描或输出过程中预算耗尽、取消或期限到达
 - **THEN** 原停止原因及真实用量保持，不被当作无模式继续尝试，不发布部分正文、证书或source map

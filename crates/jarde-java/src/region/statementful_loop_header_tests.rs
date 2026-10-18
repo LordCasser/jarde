@@ -1011,3 +1011,362 @@ fn actual_jsr_clone_bci23_can_be_used_only_as_a_cross_context_negative() {
         },
     );
 }
+
+const COPY_CONTROLS_V8: &[u8] = include_bytes!(
+    "../../../../tests/fixtures/recover-loop-test-copy-store/v8/ProbeControls.class"
+);
+const COPY_CONTROLS_JAVAC8: &[u8] = include_bytes!(
+    "../../../../tests/fixtures/recover-loop-test-copy-store/v8-javac8/ProbeControls.class"
+);
+const MULTI_COPY_V8: &[u8] =
+    include_bytes!("../../../../tests/fixtures/recover-loop-test-copy-store/v8/MultiCopy.class");
+const MULTI_COPY_JAVAC8: &[u8] = include_bytes!(
+    "../../../../tests/fixtures/recover-loop-test-copy-store/v8-javac8/MultiCopy.class"
+);
+
+/// Find only real natural-loop headers whose own terminal is a comparison and whose header SSA
+/// contains an adjacent decoded `dup; store` pair. This discovers the Reader's facts; it does not
+/// prescribe how many SSA uses the duplicate must have.
+fn copy_test_headers<'a>(
+    view: &'a NormalFlowView,
+    ssa: &'a SsaTable,
+    operations: &Operations,
+) -> Vec<(&'a CanonicalBlockId, &'a BTreeSet<usize>, usize)> {
+    let mut candidates = Vec::new();
+    for node in 0..view.len() {
+        let Some(natural) = view.loop_entered_at(node) else {
+            continue;
+        };
+        if natural.header() != node {
+            continue;
+        }
+        let Some(header) = view.id_of(node) else {
+            continue;
+        };
+        let Some(names) = ssa.block(header) else {
+            continue;
+        };
+        let Some(test) = names.instructions().last() else {
+            continue;
+        };
+        if operations
+            .get(test.bci())
+            .and_then(Operation::comparison)
+            .is_none()
+        {
+            continue;
+        }
+        let adjacent_copy_store = names.instructions().windows(2).any(|pair| {
+            matches!(operations.get(pair[0].bci()), Some(Operation::Duplicate))
+                && matches!(operations.get(pair[1].bci()), Some(Operation::Store { .. }))
+        });
+        if adjacent_copy_store {
+            candidates.push((header, natural.blocks(), node));
+        }
+    }
+    candidates
+}
+
+fn print_copy_test_facts(
+    label: &str,
+    header: &CanonicalBlockId,
+    blocks: &BTreeSet<usize>,
+    node: usize,
+    view: &NormalFlowView,
+    ssa: &SsaTable,
+    operations: &Operations,
+) {
+    let mut block_ids = blocks
+        .iter()
+        .filter_map(|node| view.id_of(*node).cloned())
+        .collect::<Vec<_>>();
+    block_ids.sort();
+    let latches = view
+        .loop_entered_at(node)
+        .expect("candidate is a real natural loop")
+        .latches()
+        .iter()
+        .filter_map(|node| view.id_of(*node).cloned())
+        .collect::<Vec<_>>();
+    eprintln!("copy-refusal {label}: header={header:?} natural={block_ids:?} latches={latches:?}");
+    let names = ssa.block(header).expect("candidate header has SSA");
+    for instruction in names.instructions() {
+        eprintln!(
+            "copy-refusal {label}: bci={} opcode=0x{:02x} operation={:?} reads={:?} writes={:?}",
+            instruction.bci(),
+            instruction.opcode(),
+            operations.get(instruction.bci()),
+            instruction.reads(),
+            instruction.writes(),
+        );
+        for (_, value_id) in instruction.reads().iter().chain(instruction.writes()) {
+            let value = ssa.value(*value_id);
+            eprintln!(
+                "copy-refusal {label}: value={value_id:?} def={:?} uses={:?} replaced={:?}",
+                value.def(),
+                value.uses(),
+                value.replaced_by(),
+            );
+        }
+    }
+}
+
+fn assert_copy_header_refuses_without_claim(
+    bytes: &[u8],
+    method_name: &[u8],
+    descriptor: &[u8],
+    label: &str,
+) {
+    with_method(
+        bytes,
+        method_name,
+        descriptor,
+        |canonical, ssa, code, pool, view, operations| {
+            assert!(
+                canonical.completeness().is_complete(),
+                "{label}: full canonical graph"
+            );
+            assert!(code.stopped_at.is_none(), "{label}: complete physical Code");
+            assert_eq!(
+                code.instructions.len(),
+                code.operands().len(),
+                "{label}: physical facts"
+            );
+            assert_eq!(
+                code.exception_handler_count, 0,
+                "{label}: this is the no-handler parameter/copy control"
+            );
+            let candidates = copy_test_headers(view, ssa, operations);
+            assert!(
+                !candidates.is_empty(),
+                "{label}: Reader found the real loop-test copy candidate"
+            );
+            let chains =
+                crate::concat::plan(ssa, operations, &crate::build::FieldCopies::default());
+            let sites = crate::init::Sites::empty();
+            for (header, blocks, node) in candidates {
+                print_copy_test_facts(label, header, blocks, node, view, ssa, operations);
+                let entry = entry_node(view, node, blocks);
+                let mut budget = proof_budget(1 << 20);
+                let mut walker = make_walker(
+                    canonical,
+                    view,
+                    ssa,
+                    code,
+                    pool,
+                    operations,
+                    &chains,
+                    &sites,
+                    &mut budget,
+                );
+                walker.visited.insert(entry);
+                let before = (
+                    walker.visited.clone(),
+                    walker.catch_joins.clone(),
+                    format!("{:?}", walker.loop_catch_terminal_owners),
+                    format!("{:?}", walker.fragmented),
+                    walker.unclosed_tail_at,
+                    walker.excluded_edge_nodes.clone(),
+                    walker.depth,
+                );
+                let result =
+                    walker.statementful_loop_header(header, node, blocks, &Frame::default());
+                assert!(
+                    matches!(result, Ok(None)),
+                    "{label}: the full Reader candidate is refused before any claim: {result:?}"
+                );
+                let after = (
+                    walker.visited.clone(),
+                    walker.catch_joins.clone(),
+                    format!("{:?}", walker.loop_catch_terminal_owners),
+                    format!("{:?}", walker.fragmented),
+                    walker.unclosed_tail_at,
+                    walker.excluded_edge_nodes.clone(),
+                    walker.depth,
+                );
+                assert_eq!(
+                    after, before,
+                    "{label}: refusal leaves walker state unchanged"
+                );
+            }
+        },
+    );
+}
+
+#[test]
+fn actual_parameter_and_multi_copy_loop_test_candidates_refuse_without_claims() {
+    for (bytes, label) in [
+        (COPY_CONTROLS_V8, "ProbeControls javac23 parameterTarget"),
+        (COPY_CONTROLS_JAVAC8, "ProbeControls javac8 parameterTarget"),
+    ] {
+        assert_copy_header_refuses_without_claim(
+            bytes,
+            b"parameterTarget",
+            b"(ILjava/lang/String;)I",
+            label,
+        );
+    }
+    for (bytes, label) in [
+        (MULTI_COPY_V8, "MultiCopy javac23 readAll"),
+        (MULTI_COPY_JAVAC8, "MultiCopy javac8 readAll"),
+    ] {
+        assert_copy_header_refuses_without_claim(
+            bytes,
+            b"readAll",
+            b"(Ljava/lang/String;)Ljava/lang/String;",
+            label,
+        );
+    }
+}
+
+#[test]
+fn real_sequential_loop_copy_candidate_accepts_and_stops_atomically() {
+    with_method(
+        ORIGINAL_DEBUG,
+        b"test",
+        b"(II)I",
+        |canonical, ssa, code, pool, view, operations| {
+            assert!(canonical.completeness().is_complete());
+            let (header, blocks, node) = loop_at(view, 23);
+            print_copy_test_facts(
+                "Seq1 header23 direct proof-context positive",
+                header,
+                blocks,
+                node,
+                view,
+                ssa,
+                operations,
+            );
+            let names = ssa.block(header).expect("real header has SSA");
+            assert!(
+                names.instructions().windows(2).any(|pair| {
+                    matches!(operations.get(pair[0].bci()), Some(Operation::Duplicate))
+                        && matches!(operations.get(pair[1].bci()), Some(Operation::Store { .. }))
+                }),
+                "the exact Reader candidate contains its actual adjacent dup/store pair"
+            );
+            let entry = entry_node(view, node, blocks);
+            let chains =
+                crate::concat::plan(ssa, operations, &crate::build::FieldCopies::default());
+            let sites = crate::init::Sites::empty();
+
+            // This deliberately exercises the private consumer directly. Ordinary pure-condition
+            // recovery does not need to call this helper; it remains on the existing path.
+            let mut full_budget = proof_budget(u64::MAX);
+            let mut full = make_walker(
+                canonical,
+                view,
+                ssa,
+                code,
+                pool,
+                operations,
+                &chains,
+                &sites,
+                &mut full_budget,
+            );
+            full.visited.insert(entry);
+            let full_result = full
+                .statementful_loop_header(header, node, blocks, &Frame::default())
+                .expect("the complete real candidate finishes");
+            assert!(
+                full_result.is_some(),
+                "the proved local assignment candidate is admitted"
+            );
+            let cost = full.budget.usage().analysis_steps;
+            assert!(cost > 0);
+
+            let duplicate_bcis = names
+                .instructions()
+                .iter()
+                .filter(|instruction| {
+                    matches!(
+                        operations.get(instruction.bci()),
+                        Some(Operation::Duplicate)
+                    )
+                })
+                .map(|instruction| instruction.bci())
+                .collect::<BTreeSet<_>>();
+            let mut copy_stop = None;
+            for limit in 0..cost {
+                let mut budget = proof_budget(limit);
+                let mut stopped = make_walker(
+                    canonical,
+                    view,
+                    ssa,
+                    code,
+                    pool,
+                    operations,
+                    &chains,
+                    &sites,
+                    &mut budget,
+                );
+                stopped.visited.insert(entry);
+                let result =
+                    stopped.statementful_loop_header(header, node, blocks, &Frame::default());
+                if matches!(&result, Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps, at: Some(at), ..
+                }) if duplicate_bcis.contains(at))
+                {
+                    assert_eq!(stopped.visited, BTreeSet::from([entry]));
+                    assert!(stopped.catch_joins.is_empty());
+                    assert!(stopped.loop_catch_terminal_owners.is_empty());
+                    assert!(stopped.fragmented.is_none());
+                    assert_eq!(stopped.unclosed_tail_at, None);
+                    copy_stop = Some(limit);
+                    break;
+                }
+            }
+            assert!(
+                copy_stop.is_some(),
+                "a real budget stop reaches the new copy-proof charge"
+            );
+            eprintln!(
+                "copy-refusal Seq1 direct proof-context: complete_cost={cost} copy_stop_limit={copy_stop:?}"
+            );
+
+            let mut limited_budget = proof_budget(cost - 1);
+            let mut limited = make_walker(
+                canonical,
+                view,
+                ssa,
+                code,
+                pool,
+                operations,
+                &chains,
+                &sites,
+                &mut limited_budget,
+            );
+            limited.visited.insert(entry);
+            let before = (
+                limited.visited.clone(),
+                limited.catch_joins.clone(),
+                format!("{:?}", limited.loop_catch_terminal_owners),
+                format!("{:?}", limited.fragmented),
+                limited.unclosed_tail_at,
+                limited.excluded_edge_nodes.clone(),
+                limited.depth,
+            );
+            let result = limited.statementful_loop_header(header, node, blocks, &Frame::default());
+            assert!(
+                matches!(
+                    result,
+                    Err(StopReason::Budget {
+                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        ..
+                    })
+                ),
+                "one less than the measured complete proof cost stops: {result:?}"
+            );
+            let after = (
+                limited.visited.clone(),
+                limited.catch_joins.clone(),
+                format!("{:?}", limited.loop_catch_terminal_owners),
+                format!("{:?}", limited.fragmented),
+                limited.unclosed_tail_at,
+                limited.excluded_edge_nodes.clone(),
+                limited.depth,
+            );
+            assert_eq!(after, before, "the budget stop publishes no partial claim");
+        },
+    );
+}
