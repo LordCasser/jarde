@@ -2,17 +2,23 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
-## 2026-10-18 当前：TestNestedLoops5 已定位，OpenSpec apply 2/8
+## 2026-10-18 当前：TestNestedLoops5 最小实现已通过定向验收（5/8）
 
-使用`recover-proved-loop-arm-returns`（spec-driven）；proposal/design/delta/tasks已生成、strict通过，原始基线及首拒三归档284成员已root独立复开。生产Rust当前仍同755fd产品，尚未集成候选。Luna在私有目录并行准备实现/内部对抗、公开API测试及补充独立验收，root独占共享编辑/Git/工具链。
+`recover-proved-loop-arm-returns`，main基点9b1a9e87e，仍在当前聊天推进。finThrow5/5、nestedFin16/16等旧产品已交付，不重复实现。当前工作区未提交；完整对照、广门、两fresh seed和产品自身CI尚未关闭，不能称交付。
 
-实际首拒已完成八请求，完整Code/canonical/normal/SSA/effects可查新change results/first-refusal-root-v1：branch9的forward join准确为37，prefix14闭合；child16已恢复完整Loop，natural{16,21,31}、return叶29、ForHeader init15/update31/slot3、gateway34、normal exit/next37均已证明。`loop_arm_join_source`返回None；按实际AST与当前源码，其仅容许joinSome分支、纯natural所有者、缺returnset的latch调用和无后继一律拒绝都不能消费已有return叶。最小修复复用loop_terminal_returns和implicit_tail_latch_origin，要求准确natural∪return owner/完整canonical边/唯一入口出口与既有scope/clone/claim/source边界，不新增公共AST/Frame字段/pass/solver。
+原始NL5两profile完整outer+child三方法、A/B双javac/debug-none完整类的旧Jarde/JADX基线均已root独立接受。原始28命令/56raw及旧矩阵42命令/84raw；补充65命令/130raw及旧矩阵97命令/194raw。旧Jarde原始8个javac23及A/B32编译均缺return；JADX原始4个javac23和A/B16编译成功，隔离运行同各自真实原oracle。NL5 check依赖major55框架，Java8边界单列。五基线归档729成员的baseline-archive-review-root.json保持冻结，供最终API引用。
 
-诊断目录`/private/tmp/jarde-testnestedloops5-first-refusal-root-v1-20261018`已root独立接受：八公开JSON非usage完全同基线，临时region源码完整恢复，target absent。诊断CLI只用于取证，不能当产品。Luna未执行草稿的offset@18/19与block9/terminal11 gate错误在root编译前修正，错误稿明确保留而非编造失败运行。
+root已集成并审查Luna最小候选：只改loop_arm_join_source，精确natural∪同Frame已证明return叶、原canonical唯一入口/普通出口、准确ForHeader和物理gateway、原Stop传播。implicit_tail_latch_origin保持755fd原样。完整实际region树确认原child16尾If/gateway34、A child30与B child31尾Straight/gateway96，十输入均有ForHeader，因此已删除CompoundIf扩展，不需要新机制。
 
-补充A/B原始采集`/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018`实际65命令/130raw：双javac8/23×debug/none的8target、16原VM48case各同A/B原oracle、16Jarde run fallback/constructor structured、8JADX提取成功。三调用均在同实例上先早返回0、正常完成10、再在已有尾部效果后返回0；效果trace与累计字段来自真实JVM，未手算期望。独立审查及全源码矩阵仍待，task1.3未勾。最终fixture计划布局在design/派发说明，尚未复制进共享tests以维持旧基线source closure可审。
+`/private/tmp/jarde-loop-arm-focused-root-v8-20261018`实际fmt、479 Java库（含7新Reader内部门）、3公开、4旧循环臂控制、181 Reader全通过，共667通过出现/0失败；root-review.json已独立复核raw/3134来源/CLI/default stack/exact clean。CLI63070624B/SHA09dda40069dc362bc59f141a7d82c8cdcaee8b64072d304ec1ba848bdc14da25，仅候选。公开门核完整方法、BLAKE3身份、全物理BCI/UTF8、SourceMap-only/all文本map及late-budget无source/map。内部变形是明确同BCI proof-context，不冒称有效完整JVM/全SSA；真实jsr clone作异域context，异常边界用新合法catch-return类并以预算确认到达canonical扫描。
 
-下一步：接受补充baseline与旧完整矩阵，复制精确class/Java fixtures、运行公开预期RED，再root审读集成Luna局部候选并做完整对照。全部收尾含fmt/Clippy/MSRV/reader/标准指纹/P5/双fresh workspace/自身CI；本片不增加CF-11/71/612整体计数。
+共享夹具22class/6Java/3manifest/3README，独立物理增量38Code/2handlers/74targets/0jsr，Reader实测1280/5677/626/3921/12。标准指纹已经原入口再生：旧2356逐项不变，仅新增本项31，总2387，其他字段不变。v8后仅内部Frame初始化风格修正；最新来源需由后续广门重新绑定。
+
+广门v1因新测试5处field_reassign_with_default失败，raw和exact clean保留于results/gates-failed-root-v1。v2通过CI原样Clippy后，Homebrew cargo不支持+1.88.0入口，尚未编译MSRV项目；源码不变/target清空。v3绝对rustup入口的MSRV1.88及479库已通过，P5第五目标因未开all-features为0tests被runner正确拒绝；v4启用all-features八P5实际104/0/5，CLI build成功且与v8逐字同，root重核全部当前3134来源、raw/守卫/exact clean后接受组合本地门（results/gates-final-root-v4）。当前11归档879成员复开审计见all-archives-root-review-v1.json，后续新增包不含于此。
+
+最终API私有prep冻结v5：`/private/tmp/jarde-loop-arm-api-capture-prep-luna-v5-20261018`，24请求/56方法配置，root已读collector/reviewer/helper并纠正归档关闭生命周期；尚未执行。最终36源格/72重编collector冻结v2：`/private/tmp/jarde-testnestedloops5-final-rebuild-prep-luna-v2-20261018`，root已全面审读，Luna另准备独立reviewer，尚未执行。workspace checker prep v1保留旧19关键门并新增本项10，总29；root已读diff与原逻辑。root独占共享编辑/Git/Cargo/JDK/JADX/CLI/网络，Luna仅私有/只读，不改冻结目录。
+
+下一固定TestSequentialLoops仅基线已接受：`/private/tmp/jarde-testsequentialloops-baseline-run-root-v1-20261018`及独立review-root-v1，24命令/48raw、四VM六有限case同原oracle、major55/CodeSource负控；旧八target fallback、map7/25，ctor3/3。重编matrix prep尚未完全审读/执行，不先新增机制或记完成。持续71/612和CF11整体计数不变。
 
 ## 2026-10-18 当前：TestNestedLoops3 已完成产品验收（7/7）
 

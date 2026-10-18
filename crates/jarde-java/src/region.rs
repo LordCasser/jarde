@@ -7062,7 +7062,22 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        if exit != join || !body.iter().all(closed_body) {
+        let final_return_latch = matches!(
+            body.last(),
+            Some(Region::If {
+                join: None,
+                then_arm,
+                else_arm,
+                ..
+            }) if matches!(then_arm.as_ref(), Region::Straight { .. })
+                && matches!(else_arm.as_ref(), Region::Straight { .. })
+        );
+        let body_is_closed = match (body.split_last(), final_return_latch) {
+            (Some((_, prefix)), true) => prefix.iter().all(closed_body),
+            (_, false) => body.iter().all(closed_body),
+            (None, true) => false,
+        };
+        if exit != join || !body_is_closed {
             return Ok(None);
         }
         let Some(header_node) = self.view.index_of(header) else {
@@ -7078,7 +7093,7 @@ impl Walker<'_> {
             .filter_map(|block| self.view.index_of(block))
             .collect();
         if owners.len() != blocks.len()
-            || owner_nodes != *natural_loop.blocks()
+            || owner_nodes.len() != owners.len()
             || owners.iter().any(|block| {
                 block.path() != branch.path()
                     || (entry_source == branch
@@ -7094,11 +7109,67 @@ impl Walker<'_> {
         {
             return Ok(None);
         }
+        let needs_terminal_returns = final_return_latch || owner_nodes != *natural_loop.blocks();
+        let terminal_returns = if needs_terminal_returns {
+            let Some(join_node) = self.view.index_of(join) else {
+                return Ok(None);
+            };
+            self.loop_terminal_returns(natural_loop.blocks(), Some(join_node), frame)?
+        } else {
+            BTreeSet::new()
+        };
+        if final_return_latch && terminal_returns.is_empty() {
+            return Ok(None);
+        }
+        let owner_scan_work = natural_loop
+            .blocks()
+            .len()
+            .saturating_add(terminal_returns.len())
+            .saturating_add(owner_nodes.len());
+        if needs_terminal_returns {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(owner_scan_work).unwrap_or(u64::MAX),
+                Some(header.bci()),
+            )?;
+            for node in &terminal_returns {
+                let Some(id) = self.view.id_of(*node) else {
+                    return Ok(None);
+                };
+                poll(self.budget, Some(id.bci()))?;
+                if natural_loop.blocks().contains(node) || !owner_nodes.contains(node) {
+                    return Ok(None);
+                }
+            }
+            for node in natural_loop.blocks() {
+                let Some(id) = self.view.id_of(*node) else {
+                    return Ok(None);
+                };
+                poll(self.budget, Some(id.bci()))?;
+                if !owner_nodes.contains(node) {
+                    return Ok(None);
+                }
+            }
+            for node in &owner_nodes {
+                let Some(id) = self.view.id_of(*node) else {
+                    return Ok(None);
+                };
+                poll(self.budget, Some(id.bci()))?;
+                if !natural_loop.blocks().contains(node) && !terminal_returns.contains(node) {
+                    return Ok(None);
+                }
+            }
+        }
         let allowed_latch_origin = if gateway_origins.is_empty() {
-            true
+            terminal_returns.is_empty()
         } else if *form == LoopForm::While && gateway_origins.len() == 1 {
-            self.implicit_tail_latch_origin(header_node, body, for_header.as_ref(), None)?
-                == gateway_origins.first().copied()
+            self.implicit_tail_latch_origin(
+                header_node,
+                body,
+                for_header.as_ref(),
+                needs_terminal_returns.then_some(&terminal_returns),
+            )? == gateway_origins.first().copied()
         } else {
             false
         };
@@ -7140,7 +7211,12 @@ impl Walker<'_> {
         }
         for block in &owners {
             poll(self.budget, Some(block.bci()))?;
-            if self.view.successor_ids(block).is_empty() {
+            if self.view.successor_ids(block).is_empty()
+                && self
+                    .view
+                    .index_of(block)
+                    .is_none_or(|node| !terminal_returns.contains(&node))
+            {
                 return Ok(None);
             }
         }
@@ -27388,3 +27464,7 @@ mod protected_prefix_loop_tests;
 #[cfg(test)]
 #[path = "region/switch_nonlocal_completion_tests.rs"]
 mod switch_nonlocal_completion_tests;
+
+#[cfg(test)]
+#[path = "region/loop_arm_return_tests.rs"]
+mod loop_arm_return_tests;

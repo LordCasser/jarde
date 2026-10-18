@@ -12006,6 +12006,161 @@
       "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/source/driver/RetryFixtureDriver.java"
     },
     {
+      "blake3": "fa0301849771eca7d054a86bab05e6963952cec6c190544a4a9988ab69fa40dd",
+      "bytes": 366,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/boundary/LoopArmExceptionBoundary.java"
+    },
+    {
+      "blake3": "8a816b331f308b81e44f64b9383dcfe27946df3d11fa0957fffdfec126d8003e",
+      "bytes": 277,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/boundary/javac23/LoopArmExceptionBoundary.class"
+    },
+    {
+      "blake3": "ba134fe822a1a4ab046cba18686e6fb05089a18a9f4783f280dc9eae514abf9e",
+      "bytes": 280,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/boundary/javac8/LoopArmExceptionBoundary.class"
+    },
+    {
+      "blake3": "f573e1c81ede8e01b0251027035dee5628a190f628d8422cd69147d7cb15af93",
+      "bytes": 1079,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/boundary/manifest.json"
+    },
+    {
+      "blake3": "7092dfb5ea958704d76d0ab2fe15bda0592778a00dba10883f47bb3919be57a7",
+      "bytes": 756,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/original/TestNestedLoops5.java"
+    },
+    {
+      "blake3": "dec6c30e30318af5df375a56037d65a1f53691c4ba7f0bfef05230c3fa0cf9a6",
+      "bytes": 2882,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/original/TestNestedLoops5Driver.java"
+    },
+    {
+      "blake3": "4710826ededb5e9fad48fd02a0ccc323f5849334fc2c1828f67faf21ace26dd2",
+      "bytes": 967,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/original/debug/classes/jadx/tests/integration/loops/TestNestedLoops5$TestCls.class"
+    },
+    {
+      "blake3": "78c339af4a46728aae098cb6d6d429d67e5ff4f96cb8bc8eb13dacafe9193c35",
+      "bytes": 1188,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/original/debug/classes/jadx/tests/integration/loops/TestNestedLoops5.class"
+    },
+    {
+      "blake3": "49e219868d5f08a97df5217309b8c0223a13409a36d961302d304781b27bcc74",
+      "bytes": 3220,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/original/manifest.json"
+    },
+    {
+      "blake3": "1b89177f4c79b404d02314f5585c2f19cded16b041fe19b7cad8187d7ead1367",
+      "bytes": 640,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/original/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops5$TestCls.class"
+    },
+    {
+      "blake3": "69ff24d973dfa66dfeba156130ed4696ff6ca39b886493167667bb8267eb1e3b",
+      "bytes": 975,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/original/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops5.class"
+    },
+    {
+      "blake3": "458540117702e10a5b66024e842b8f70789da4a0fe8e0d1afb9bb1caeea21190",
+      "bytes": 1053,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/A/javac23/debug/classes/NestedReturnA$TestCls.class"
+    },
+    {
+      "blake3": "d6d4c4cc8abe6c081d6a8e5f20348fcfd8b34c9275627de4df3901f46081e688",
+      "bytes": 332,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/A/javac23/debug/classes/NestedReturnA.class"
+    },
+    {
+      "blake3": "acc832bf5ba5bae0868a477006ec24ef5b0d3490cd8bce3e34ed4fe8febc39bb",
+      "bytes": 587,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/A/javac23/no-debug/classes/NestedReturnA$TestCls.class"
+    },
+    {
+      "blake3": "c1cc2ee184e0086340e0f599dfd41ee4113dd7672c7128bc6a92850ee9b90079",
+      "bytes": 196,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/A/javac23/no-debug/classes/NestedReturnA.class"
+    },
+    {
+      "blake3": "f24abe7446ed034c4333e1f0e8985979d9e3acc66971a736fbf6162b065149f8",
+      "bytes": 1053,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/A/javac8/debug/classes/NestedReturnA$TestCls.class"
+    },
+    {
+      "blake3": "9f416c5afa5aba76007e27fdb7b8abbd00d839ed3c31d0fd899302ae5c5df431",
+      "bytes": 332,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/A/javac8/debug/classes/NestedReturnA.class"
+    },
+    {
+      "blake3": "ae89c3d638500bbf693d0da728564fb020c60dd67e65e63fda61db7ac946ff62",
+      "bytes": 587,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/A/javac8/no-debug/classes/NestedReturnA$TestCls.class"
+    },
+    {
+      "blake3": "6c828f1eff839c9ac40be41b73164473e7dd53a9172a504356b89befa12fd9b6",
+      "bytes": 196,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/A/javac8/no-debug/classes/NestedReturnA.class"
+    },
+    {
+      "blake3": "e731e56f6dc6e8cc3fed79ca3d045dc8336e06b4b4f7c3d02a91fc742aa369fe",
+      "bytes": 1053,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/B/javac23/debug/classes/NestedReturnB$TestCls.class"
+    },
+    {
+      "blake3": "d638c073a4161b73a377c8fb83eb60eb27037219369c5b842e15ff2dd12e16aa",
+      "bytes": 332,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/B/javac23/debug/classes/NestedReturnB.class"
+    },
+    {
+      "blake3": "6ccfba210584a15c055b3932259b431c032d6bb73d441bde5ee49459f77eb7cb",
+      "bytes": 587,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/B/javac23/no-debug/classes/NestedReturnB$TestCls.class"
+    },
+    {
+      "blake3": "9a70ff88dfaf8972722f929a7a5a97c084a0a58fd04b48daadb8f11d07eeb015",
+      "bytes": 196,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/B/javac23/no-debug/classes/NestedReturnB.class"
+    },
+    {
+      "blake3": "7f08dab7521bb3343f1270153f91221115593dab497de46a1d11f898aa25158d",
+      "bytes": 1053,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/B/javac8/debug/classes/NestedReturnB$TestCls.class"
+    },
+    {
+      "blake3": "686ff670bc9b1b31d9406f0a4c22a121874a060ff9e5f5e6e3c2faab76bff2d2",
+      "bytes": 332,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/B/javac8/debug/classes/NestedReturnB.class"
+    },
+    {
+      "blake3": "30750aae93a955b6c6300c2f9fedb94efda90d6cdbdd0134e84df0000f5c298f",
+      "bytes": 587,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/B/javac8/no-debug/classes/NestedReturnB$TestCls.class"
+    },
+    {
+      "blake3": "b8cc0bad80487941a0b2be97bc4098631f111538fcfe14d961fb49371a347fc3",
+      "bytes": 196,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/B/javac8/no-debug/classes/NestedReturnB.class"
+    },
+    {
+      "blake3": "27e9bcef7a7314ba280358b3ed7c471d4c44b34939c96fca8906d61aeda44d90",
+      "bytes": 1152,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/NestedReturnA.java"
+    },
+    {
+      "blake3": "a8bb1a429f8537c21e6ba9bb76d4231fa706da509be1e983d3756a1442eb320e",
+      "bytes": 1151,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/NestedReturnB.java"
+    },
+    {
+      "blake3": "09da41fb70077bf1e6256981474b94d58561bffdfa5b51f0e7856d32f7a9908a",
+      "bytes": 3709,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/ParameterizedNestedReturnDriver.java"
+    },
+    {
+      "blake3": "4c7494033079efd56a8758f9c0b35446e5912e5bec0cd7fa46672be8b9320695",
+      "bytes": 9271,
+      "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/manifest.json"
+    },
+    {
       "blake3": "43f6aded70421d741fd808a46fea086217231120c616a754c74dc650a9f16fe0",
       "bytes": 898,
       "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/BRN.java"

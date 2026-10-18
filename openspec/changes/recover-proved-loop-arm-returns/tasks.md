@@ -2,12 +2,12 @@
 
 - [x] 1.1 持久化完整原始TestNestedLoops5、debug/no-debug全Code及28命令基线/42命令整类矩阵；root独立核三方法/全物理BCI、default-all、双VM原oracle、JADX成功和Java8框架边界，原失败不混算通过。
 - [x] 1.2 归档八实际首拒请求、完整canonical/normal/SSA/effects、child ForHeader/return29/gateway34及消费者拒绝；root核非usage JSON不变、源码完全恢复、target absent并接受本局部设计。
-- [ ] 1.3 完成A/B双javac/debug-none原始及旧JADX/Jarde全源码对照；root独立核全部方法/字段、同实例真实早返回与尾部效果oracle、来源及编译/运行结果，并保存未执行草稿或采集失败的真实范围。
+- [x] 1.3 完成A/B双javac/debug-none原始及旧JADX/Jarde全源码对照；root独立核全部方法/字段、同实例真实早返回与尾部效果oracle、来源及编译/运行结果，并保存未执行草稿或采集失败的真实范围。
 
 ## 2. 证明与实现
 
-- [ ] 2.1 Luna按design准备私有候选，root审查集成精确natural加return叶的循环臂所有权与既有latch消费；实际测试确认原形和A/B结构化、正常join与方法完成分离、全部goto/BCI来源，无新公共类型或全局solver。
-- [ ] 2.2 增加Reader驱动真实候选的共享/错/缺叶、额外入口/出口、非Normal/clone、错误latch/重复claim和预算/取消/期限对抗门；实际内部与公开测试验证拒绝、proof归属不变及真实Stop无部分source/map。
+- [x] 2.1 Luna按design准备私有候选，root审查集成精确natural加return叶的循环臂所有权与既有latch消费；实际测试确认原形和A/B结构化、正常join与方法完成分离、全部goto/BCI来源，无新公共类型或全局solver。
+- [x] 2.2 增加Reader驱动真实候选的共享/错/缺叶、额外入口/出口、非Normal/clone、错误latch/重复claim和预算/取消/期限对抗门；实际内部与公开测试验证拒绝、proof归属不变及真实Stop无部分source/map。
 
 ## 3. 完整验收与交付
 

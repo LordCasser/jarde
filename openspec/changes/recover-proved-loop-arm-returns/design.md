@@ -4,7 +4,7 @@
 
 首拒是`continue_prefixed_loop_arm`读完child后，`loop_arm_join_source`返回None。按同一日志AST和原函数，首先不满足仅接受If(join=Some)的closed_body；随后纯natural所有者、ForHeader却传None的latch证据，以及拒绝所有无后继块的末端门也都不容纳已证明的return。这些是同一消费契约缺口，不是新循环发现或SSA求解问题。
 
-原始基线28命令/56raw及矩阵42命令/84raw已root接受；Jarde八javac23缺return，八javac8及JADX四javac8为真实框架major55边界。JADX四javac23完整重编成功，8core双VM运行24case及4check23case同原。原样本return0在固定范围不可达，所以另用A/B完整类的六调用观察真实早返回、先前尾部效果及累计状态；补充采集现65命令/130raw终态，原16VM48case分别同A/B各自oracle、16Jarde的run均fallback；独立审查及全源码矩阵尚待，不能倒填成功。
+原始基线28命令/56raw及矩阵42命令/84raw已root接受；Jarde八javac23缺return，八javac8及JADX四javac8为真实框架major55边界。JADX四javac23完整重编成功，8core双VM运行24case及4check23case同原。原样本return0在固定范围不可达，所以另用A/B完整类的六调用观察真实早返回、先前尾部效果及累计状态；补充采集现65命令/130raw终态，原16VM48case分别同A/B各自oracle、16Jarde的run均fallback；该基线与全源码旧矩阵已root独立接受：旧Jarde32次编译全部缺return，JADX16次成功及32双VM运行96case同各自原oracle；这些历史结果不代替新产品验收。
 
 ## Goals / Non-Goals
 
@@ -15,7 +15,7 @@
 ## Decisions
 
 1. **复用现有证明而非引入新证书体系。** 在`loop_arm_join_source`中使用当前child自然集、准确normal join与同一Frame调用`loop_terminal_returns`；额外owner必须恰是其证明的return叶，不能把任意owner超集视为闭合。保留旧无额外owner路径，新增扫描/复制先charge并poll，真实Stop原样传播。helper证明只读Walker归属状态，不新增事务机制。
-2. **将方法完成传给既有latch消费者。** child已有ForHeader时，把准确return集合传给`implicit_tail_latch_origin`，再与`gateway_origins`物理BCI逐字相等；不清空gateway、不改goto来源、不放宽update+transfer和唯一latch门。若补充类已读取为等价CompoundIf返回/latch形状，只能在相同准确return证据下复用这一有界两臂证明，不引入新模式发现器。
+2. **将方法完成传给既有latch消费者。** child已有ForHeader时，把准确return集合传给`implicit_tail_latch_origin`，再与`gateway_origins`物理BCI逐字相等；不清空gateway、不改goto来源、不放宽update+transfer和唯一latch门。完整region树实际确认：原始child16末尾If/gateway34，A child30、B child31末尾均Straight/gateway96，十输入均有ForHeader。因此不需要新增CompoundIf/latch形状；保留既有helper原样，仅让消费者传入准确return集合。
 3. **结构与图闭合同时成立。** 仅允许现有Straight/Sequence/If/CompoundIf语句组合；无join分支须由同次return完成证据闭合，不能单凭`join=None`接受。完整owner multiset必须无重复、等于natural∪return叶，全部已被同次walk持有且在父scope/同clone path内。所有incident canonical边仅为Normal：唯一外来入口entry_source→header、唯一普通出口source→join，其余均内部。无后继owner只能是准确证明的return叶。原prefix/tail边闭合、唯一claim与最终overlap/coverage门保持。
 4. **不复制JADX的宽容重写。** 已读本地LoopRegionMaker.process对loop条件出口建立stack边界后递归makeRegion(body)的职责划分；原JADX输出确实保留两层循环和早return。本片使用Jarde既有不可变facts/AST与严格owner模型，不引入ADDED_TO_REGION或processed-block容错重写。现有Rust标准库集合与Runtime足够，无新增库或许可变化；原JADX测试来源按本地Apache-2.0记录，不复制其生产实现。
 5. **层次边界。** Reader/classfile解析、Java8 major/校验、JDK选择和隔离运行分别取证；恢复层不通过修输入、删check方法或重写生成Java掩盖问题。原始check真实调用JadxAssertions且依赖major55，Java8失败单列；JVM23完整check与双VM核心方法分开比较。default/all只比较实际正文/质量/fallback/物理来源，允许usage和可选证据不同。

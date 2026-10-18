@@ -1,0 +1,197 @@
+{
+  "schema": "proved-loop-arm-return-fixtures-v1",
+  "files": [
+    {
+      "path": "supplemental/NestedReturnA.java",
+      "bytes": 1152,
+      "sha256": "83c188629524a04e6a43334ffd972cb9286aeb9cbf01831655a7bf5ab22b338a",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-prep-root-v2-20261018/NestedReturnA.java",
+        "bytes": 1152,
+        "sha256": "83c188629524a04e6a43334ffd972cb9286aeb9cbf01831655a7bf5ab22b338a"
+      }
+    },
+    {
+      "path": "supplemental/NestedReturnB.java",
+      "bytes": 1151,
+      "sha256": "fd4ed17dacf148a9d8bee8c673055821375041a5923291ac65f6752ad121a540",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-prep-root-v2-20261018/NestedReturnB.java",
+        "bytes": 1151,
+        "sha256": "fd4ed17dacf148a9d8bee8c673055821375041a5923291ac65f6752ad121a540"
+      }
+    },
+    {
+      "path": "supplemental/ParameterizedNestedReturnDriver.java",
+      "bytes": 3709,
+      "sha256": "abf7e5557e63c3f8c2d78d9720c3c84a333bded91817aaa7d6125fed61e0ea60",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-prep-root-v2-20261018/ParameterizedNestedReturnDriver.java",
+        "bytes": 3709,
+        "sha256": "abf7e5557e63c3f8c2d78d9720c3c84a333bded91817aaa7d6125fed61e0ea60"
+      }
+    },
+    {
+      "path": "supplemental/A/javac8/debug/classes/NestedReturnA$TestCls.class",
+      "bytes": 1053,
+      "sha256": "6a85fffb2fa087c32bf784488cc5e1e56dbb49cee83701a5360cbe27c3038c41",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/A/javac8/debug/NestedReturnA$TestCls.class",
+        "bytes": 1053,
+        "sha256": "6a85fffb2fa087c32bf784488cc5e1e56dbb49cee83701a5360cbe27c3038c41"
+      }
+    },
+    {
+      "path": "supplemental/A/javac8/debug/classes/NestedReturnA.class",
+      "bytes": 332,
+      "sha256": "811e0f9340d832ecdf03fa342d57d4a5bb92e28e3ec4b3d1ddde63ba5dec0330",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/A/javac8/debug/NestedReturnA.class",
+        "bytes": 332,
+        "sha256": "811e0f9340d832ecdf03fa342d57d4a5bb92e28e3ec4b3d1ddde63ba5dec0330"
+      }
+    },
+    {
+      "path": "supplemental/A/javac8/no-debug/classes/NestedReturnA$TestCls.class",
+      "bytes": 587,
+      "sha256": "c365372d6774822007ec9b296a5dea8cfe3ebfec8c93810adfccc27fa12b4b38",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/A/javac8/no-debug/NestedReturnA$TestCls.class",
+        "bytes": 587,
+        "sha256": "c365372d6774822007ec9b296a5dea8cfe3ebfec8c93810adfccc27fa12b4b38"
+      }
+    },
+    {
+      "path": "supplemental/A/javac8/no-debug/classes/NestedReturnA.class",
+      "bytes": 196,
+      "sha256": "fc39713b5436d9114b75f9d68da412a8eb871280a99768724b21ed608e51d2d5",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/A/javac8/no-debug/NestedReturnA.class",
+        "bytes": 196,
+        "sha256": "fc39713b5436d9114b75f9d68da412a8eb871280a99768724b21ed608e51d2d5"
+      }
+    },
+    {
+      "path": "supplemental/A/javac23/debug/classes/NestedReturnA$TestCls.class",
+      "bytes": 1053,
+      "sha256": "638b29c45a4fc6c01bd5c8fa62ebf9c365c7400dbd3f0e70ea3fd1984f5f7261",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/A/javac23/debug/NestedReturnA$TestCls.class",
+        "bytes": 1053,
+        "sha256": "638b29c45a4fc6c01bd5c8fa62ebf9c365c7400dbd3f0e70ea3fd1984f5f7261"
+      }
+    },
+    {
+      "path": "supplemental/A/javac23/debug/classes/NestedReturnA.class",
+      "bytes": 332,
+      "sha256": "2408fec84a41a4f78640c26ee9d929a48138c49fd6910e07e5bb11bf63d7516c",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/A/javac23/debug/NestedReturnA.class",
+        "bytes": 332,
+        "sha256": "2408fec84a41a4f78640c26ee9d929a48138c49fd6910e07e5bb11bf63d7516c"
+      }
+    },
+    {
+      "path": "supplemental/A/javac23/no-debug/classes/NestedReturnA$TestCls.class",
+      "bytes": 587,
+      "sha256": "043f010923a6ddadd90cdcaef5aae63250662cedd765dc96e6cf45593dd230c7",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/A/javac23/no-debug/NestedReturnA$TestCls.class",
+        "bytes": 587,
+        "sha256": "043f010923a6ddadd90cdcaef5aae63250662cedd765dc96e6cf45593dd230c7"
+      }
+    },
+    {
+      "path": "supplemental/A/javac23/no-debug/classes/NestedReturnA.class",
+      "bytes": 196,
+      "sha256": "f02f2c4979d69c567f1ec7dcd5becd7c7c715826e60e44a7637044db6a3fcc45",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/A/javac23/no-debug/NestedReturnA.class",
+        "bytes": 196,
+        "sha256": "f02f2c4979d69c567f1ec7dcd5becd7c7c715826e60e44a7637044db6a3fcc45"
+      }
+    },
+    {
+      "path": "supplemental/B/javac8/debug/classes/NestedReturnB$TestCls.class",
+      "bytes": 1053,
+      "sha256": "2b31a3b5645fa31e15677847ddff6ec209ba9300d7b1170ab3d08be663c31e9b",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/B/javac8/debug/NestedReturnB$TestCls.class",
+        "bytes": 1053,
+        "sha256": "2b31a3b5645fa31e15677847ddff6ec209ba9300d7b1170ab3d08be663c31e9b"
+      }
+    },
+    {
+      "path": "supplemental/B/javac8/debug/classes/NestedReturnB.class",
+      "bytes": 332,
+      "sha256": "2f4f99d9f56c3009faa1d9fd1eb7ab35af3c9c9fa8b0961a1a9a129463ce33b1",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/B/javac8/debug/NestedReturnB.class",
+        "bytes": 332,
+        "sha256": "2f4f99d9f56c3009faa1d9fd1eb7ab35af3c9c9fa8b0961a1a9a129463ce33b1"
+      }
+    },
+    {
+      "path": "supplemental/B/javac8/no-debug/classes/NestedReturnB$TestCls.class",
+      "bytes": 587,
+      "sha256": "b86635029ebcd16e0b57f4a66357b56770e9712834adbed465b2b452541d2a4a",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/B/javac8/no-debug/NestedReturnB$TestCls.class",
+        "bytes": 587,
+        "sha256": "b86635029ebcd16e0b57f4a66357b56770e9712834adbed465b2b452541d2a4a"
+      }
+    },
+    {
+      "path": "supplemental/B/javac8/no-debug/classes/NestedReturnB.class",
+      "bytes": 196,
+      "sha256": "1a73db2d925cf5a4dd8a8ffb7a6ff33662c6cdd53e67f82e3340bd50d2199254",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/B/javac8/no-debug/NestedReturnB.class",
+        "bytes": 196,
+        "sha256": "1a73db2d925cf5a4dd8a8ffb7a6ff33662c6cdd53e67f82e3340bd50d2199254"
+      }
+    },
+    {
+      "path": "supplemental/B/javac23/debug/classes/NestedReturnB$TestCls.class",
+      "bytes": 1053,
+      "sha256": "bc85c188c2fe661771084ad1ffa33589fc77d5add8eff5cec0a01362c06473ad",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/B/javac23/debug/NestedReturnB$TestCls.class",
+        "bytes": 1053,
+        "sha256": "bc85c188c2fe661771084ad1ffa33589fc77d5add8eff5cec0a01362c06473ad"
+      }
+    },
+    {
+      "path": "supplemental/B/javac23/debug/classes/NestedReturnB.class",
+      "bytes": 332,
+      "sha256": "13b43e5ff64239a3dffdc4328bf1325c8d3cabea001081f6b1652ec03bfe6cd9",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/B/javac23/debug/NestedReturnB.class",
+        "bytes": 332,
+        "sha256": "13b43e5ff64239a3dffdc4328bf1325c8d3cabea001081f6b1652ec03bfe6cd9"
+      }
+    },
+    {
+      "path": "supplemental/B/javac23/no-debug/classes/NestedReturnB$TestCls.class",
+      "bytes": 587,
+      "sha256": "9da505ca008b008d4424a80a79780b7a361f79d642206ad2ec968b6c04cc12ed",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/B/javac23/no-debug/NestedReturnB$TestCls.class",
+        "bytes": 587,
+        "sha256": "9da505ca008b008d4424a80a79780b7a361f79d642206ad2ec968b6c04cc12ed"
+      }
+    },
+    {
+      "path": "supplemental/B/javac23/no-debug/classes/NestedReturnB.class",
+      "bytes": 196,
+      "sha256": "4a0c0dd2b5114a0771f7a9946187a0f5a8d7374cad6e2ada2d9471fb2d709a49",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018/classes/B/javac23/no-debug/NestedReturnB.class",
+        "bytes": 196,
+        "sha256": "4a0c0dd2b5114a0771f7a9946187a0f5a8d7374cad6e2ada2d9471fb2d709a49"
+      }
+    }
+  ],
+  "baseline_product": "755fd2c84ecbe204d03f0ff608d3a711a1bea494",
+  "note": "Exact whole classes and Java sources from root-reviewed original baseline; original NL5 source is local JADX Apache-2.0 test. Driver inputs are observed, not hardcoded expected outputs."
+}
