@@ -11,5 +11,5 @@
 ## 3. 完整对照与交付
 
 - [x] 3.1 冻结最终CLI，核原始与补充完整类全部方法身份/BCI/UTF8来源、各公开配置、原类五个及补充类七个非目标投影；双javac8/23原样重编、双JVM隔离driver结果逐字同原oracle，保留全部失败raw。
-- [ ] 3.2 完成fmt、CI同款Clippy、MSRV、reader、标准指纹/P5和两个fresh workspace seed；root核来源闭包、真实具名门、默认栈/资源守卫/finally exact clean与target absent。
-- [ ] 3.3 更新证据、handoff及实际任务状态，提交推送产品并接受其自身CI；最后核真实HEAD/远端/clean主线与无活动target，本片不增加71/612总体计数。
+- [x] 3.2 完成fmt、CI同款Clippy、MSRV、reader、标准指纹/P5和两个fresh workspace seed；root核来源闭包、真实具名门、默认栈/资源守卫/finally exact clean与target absent。
+- [x] 3.3 更新证据、handoff及实际任务状态，提交推送产品并接受其自身CI；最后核真实HEAD/远端/clean主线与无活动target，本片不增加71/612总体计数。
