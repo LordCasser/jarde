@@ -63,3 +63,9 @@ Jarde 现有相关回归：`CARGO_TARGET_DIR=/tmp/jarde-cf11-target CARGO_INCREM
 四固定输入的loop恢复、泛型声明和构造器条件值分开记账；持续目标与整个CF11/71/612完成数不变。
 
 2026-10-12：for-condition窄片9/9，产品02ecd63ff自身CI38154998619四jobs/52steps/双seed各360目标3461-0-97已独立验收，见[产品验收](../../../changes/recover-proved-for-condition-expressions/results/own-product-ci-clean-root-v1/README.md)。[TestNestedLoops实际入口诊断](../../java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v2/README.md)确认outer Assign入口拒绝、inner后续闭包拒绝仍待精确定位；走Engine真实facts，源码恢复且clean。此片不是整个CF11完成。
+
+## 2026-10-18 Seq2 当前产品复核
+
+上表是10月12日历史结果。固定原始 `TestSequentialLoops2` 已按[完整基线](../../java-syntax-2026-10-18/cf11-sequential-loops2-baseline-root-v1/README.md)和[完整生成源矩阵](../../java-syntax-2026-10-18/cf11-sequential-loops2-generated-matrix-root-v2/README.md)由root独立接受：当前 ee013 产品8请求均3方法Structured/无fallback/全BCI，Jarde16完整编译、64运行512case同原；JADX2完整编译/8运行64case同原，另2个javac8外层框架major55边界无runtime。default原短表与configured128控制分开，未手修源码。此输入现有路径已覆盖，无需新机制；不增加CF11/71/612整体完成数。
+
+下一固定 `TestNestedLoops` 已有历史行为窄片，仍需按当前真实输出核typed foreach/泛型呈现。当前源码和永久测试已支持iterator声明/初始化分离，旧BCI13/42拒绝不代表当前首拒。先采完整原始外层/child输入及当前API/Builder证据，再决定OpenSpec；不重做已交付的NL3/NL5/Seq1或凭空探索新机制。
