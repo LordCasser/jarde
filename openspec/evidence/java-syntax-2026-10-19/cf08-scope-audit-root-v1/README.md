@@ -1,0 +1,7 @@
+# CF08 下一固定单元：仅范围审计
+
+root已读四个完整Java测试与两个Smali输入，并审查Luna私有memo。TestNotIndexedLoop既有验收覆盖提取出的独立fixture与九个有效拒绝控制，不能改称原始完整嵌套类；下一步先补完整原始类的三方证据，避免重做已交付构造/虚调用机制。其deleteOnExit观察应置于空临时cwd，不创建真实f/h文件。
+
+TestEndlessLoop三个Java目标按this恒等关系不会结束；timeout只能表明给定时限未完成，不能证明等价或非终止。TestEndlessLoop2与TestMultiEntryLoop是Smali/DEX输入，前者禁用生成编译；编译Java外层不代表覆盖这些目标。若用JVM等价fixture，必须单列输入，不为这份范围审计新增DEX入口或执行管线。
+
+本轮只有只读来源审计，没有新CLI/JDK/JADX运行、实现任务或产品结论。capture.tar.gz保存原始来源快照、旧证据、两版memo与修正diff、许可；库存与root逐字复开见inventory.json及capture-review.json。CF08保持部分覆盖，71/612计数不变。

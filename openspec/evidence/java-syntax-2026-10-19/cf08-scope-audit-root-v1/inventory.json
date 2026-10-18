@@ -1,0 +1,171 @@
+{
+  "status": "root_accepted_static_scope_audit_only",
+  "members": [
+    {
+      "path": "audit-v1/README.md",
+      "bytes": 3715,
+      "sha256": "8fb214d16b93bcc60005c4470105f1c963a6c44f5776d51233507b988617b455"
+    },
+    {
+      "path": "audit-v1/pins.json",
+      "bytes": 6327,
+      "sha256": "d5b7a97b41bea6286c3f2bee551395767ba08d85b1f038362d39f374b19b91e1"
+    },
+    {
+      "path": "audit-v2/README-v1-to-v2.diff",
+      "bytes": 1759,
+      "sha256": "a236b9e1c9ab62a42e4d692effcf592635ee524059d385a7059d9d6610fe9bf9"
+    },
+    {
+      "path": "audit-v2/README.md",
+      "bytes": 4085,
+      "sha256": "0951b7f8edaa84a6afa7ee5ec4ca17799fed8a919c599b6901a14b168ef525a1"
+    },
+    {
+      "path": "audit-v2/pins.json",
+      "bytes": 6327,
+      "sha256": "d5b7a97b41bea6286c3f2bee551395767ba08d85b1f038362d39f374b19b91e1"
+    },
+    {
+      "path": "jadx/JADX-LICENSE",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "path": "jadx/JADX-NOTICE",
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365"
+    },
+    {
+      "path": "jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestEndlessLoop.java",
+      "bytes": 598,
+      "sha256": "a8b077628d7d84d1dd69e51ae2cf0de62210b3f0753461f2c85b0fca829b5df5"
+    },
+    {
+      "path": "jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestEndlessLoop2.java",
+      "bytes": 420,
+      "sha256": "1b967881e6f833d1a30e7425a2afb386e149cf73745247df348bb7b6831d298e"
+    },
+    {
+      "path": "jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestMultiEntryLoop.java",
+      "bytes": 353,
+      "sha256": "17b9f250a1b32e368b4c8c69b4ec660c9722cf2aee3eb8bd1a6fd63fbc866e74"
+    },
+    {
+      "path": "jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNotIndexedLoop.java",
+      "bytes": 1491,
+      "sha256": "dc08e939d5d5ab12c2f4a89e11b266a7e9592ca6289e700241a5eca2f29980b5"
+    },
+    {
+      "path": "jadx/jadx-core/src/test/smali/loops/TestEndlessLoop2.smali",
+      "bytes": 2511,
+      "sha256": "aa3f096d1c923a9d2207fa447344a01586471b1d59f482c48a28083b3b2703e3"
+    },
+    {
+      "path": "jadx/jadx-core/src/test/smali/loops/TestMultiEntryLoop.smali",
+      "bytes": 975,
+      "sha256": "6bc3bd8342295941d26c924abc6b3930e3a223303a1b524cbeeb9e448250e1c5"
+    },
+    {
+      "path": "jarde/openspec/evidence/jadx-feature-inventory-2026-09-27/control-flow.md",
+      "bytes": 66494,
+      "sha256": "f3a737fc22c4b5ff85c39b7a00e486084b163904f9a89877392bc4d683d441f2"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/baseline/summary.json",
+      "bytes": 3658,
+      "sha256": "ce5fce278e1c89bd1b12b9512f74c74cf786e6bda1bd8ff24ec2dad40b8a06df"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/constructor-predicate-accepted/report.md",
+      "bytes": 2751,
+      "sha256": "7bd97f77e93a4a919399074827de816ac3cbe5c18bbe513b3e058445ea26d8ab"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/constructor-predicate-accepted/source/jadx/cf08/NotIndexedLoop.java",
+      "bytes": 771,
+      "sha256": "b034f9d1a5dfa2ab830e61c3238aa7f4c1d931fa9f30f87a6fddd21b305fddd8"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/constructor-predicate-accepted/source/jarde/cf08/NotIndexedLoop.java",
+      "bytes": 1868,
+      "sha256": "d404e11abe4089e1e613be1b6ccf925c281536cd1593a6a77826be2c95d66c31"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/constructor-predicate-accepted/summary.json",
+      "bytes": 3481,
+      "sha256": "725c68da3278ae8eaf0d931107450bfca56e9d584cd3c233d44def8d666c8420"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/constructor-predicate-root-acceptance-2026-09-28.md",
+      "bytes": 2472,
+      "sha256": "8479c5917d88b8133966a774628658fe926fb8bdaeeb73f9f2a74c111a4d166e"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/effectful-after/root-acceptance-2026-09-27.md",
+      "bytes": 1249,
+      "sha256": "92cf4319a18a209d4c1392e676f6464991f1d430de689de1f70eee7703d33af7"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/input/cf08/NotIndexedLoop.java",
+      "bytes": 533,
+      "sha256": "508c2640dcf1ef594fb491f3cbc30d8d2a9b758aaab8dd928fa8e36aa080965d"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/input/cf08/Runner.java",
+      "bytes": 455,
+      "sha256": "5b5d0b871bcd4c6a703bc18621be8cdd77d560cbc36f2bd0414aa3a5d95cc290"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/input/simple/cf08/EndlessInts.java",
+      "bytes": 313,
+      "sha256": "e657d1e5571cd3bf2ebd64f2b6d0ffdc761bb738b94143488fbb83abbc46778a"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/input/simple/cf08/Runner.java",
+      "bytes": 220,
+      "sha256": "a5b6116f520666bcb6877614992ac60d0e06ad1ad551d854571d5a93b25e1995"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/nested-effectful-after/root-acceptance-2026-09-28.md",
+      "bytes": 2128,
+      "sha256": "795d287e723cdb78db986b7d74a3d9e10247ea1515c4c1c3983b0bccbc96a289"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/remaining-gap-architecture-2026-09-27.md",
+      "bytes": 1824,
+      "sha256": "5c811c1dcf1f4ac0f95b27ca9738151b859ccc9fac4da53fa511d593353f33a2"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/replay.py",
+      "bytes": 6348,
+      "sha256": "7f3c88815d99dc2eb005a9c297a86ff9e1fe894aa8b1f38f61a3df8322943832"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/report.md",
+      "bytes": 7129,
+      "sha256": "e35754b2723a94d3633d37f62cdb6437ea1a70b283fb36e7d12d7d899557d8c7"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/root-acceptance-2026-09-27.md",
+      "bytes": 1555,
+      "sha256": "2f5de76bf5355990be410f016143116b2df130306e65f343fd763f8b0c33b243"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/simple-after/summary.json",
+      "bytes": 3481,
+      "sha256": "4202f6d0e1bdaa11c9de65ea3cb969e1bfff5d7c5627e9374388af94c1e63006"
+    },
+    {
+      "path": "jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/two-level-if-after/root-acceptance-2026-09-28.md",
+      "bytes": 1939,
+      "sha256": "bf772316268c02bb481432756c311ebb7f5a5dfcf610e924cc092c2216bab8be"
+    },
+    {
+      "path": "jarde/tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoop.class",
+      "bytes": 565,
+      "sha256": "b1e6bd92f8fe92e726e7a2a95461327dd3f7abe65ee7f451f1225777ed7ea6d4"
+    }
+  ],
+  "member_count": 33
+}

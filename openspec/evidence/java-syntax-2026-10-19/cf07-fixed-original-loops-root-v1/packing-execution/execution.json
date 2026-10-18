@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.15/bin/python3.15",
+    "-B",
+    "/private/tmp/jarde-cf07-fixed-original-loops-archive-prep-luna-v2-20261019/pack_evidence.py"
+  ],
+  "program": {
+    "path": "/private/tmp/jarde-cf07-fixed-original-loops-archive-prep-luna-v2-20261019/pack_evidence.py",
+    "bytes": 12481,
+    "sha256": "c4557f94f0a04bf7994e2a48420afb75d332c88046623d7c3252d63bc05ecf01"
+  },
+  "exit_code": 0,
+  "stdout": {
+    "path": "/private/tmp/jarde-cf07-fixed-original-loops-archive-execution-root-v1-20261019/stdout.raw",
+    "bytes": 555,
+    "sha256": "1de8c7f805dd998eab554daa400238764e6a1b751798f889101802a75dc5dd29"
+  },
+  "stderr": {
+    "path": "/private/tmp/jarde-cf07-fixed-original-loops-archive-execution-root-v1-20261019/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

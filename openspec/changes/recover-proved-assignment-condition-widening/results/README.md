@@ -1,6 +1,6 @@
 # 已证条件赋值扩大转换：证据入口
 
-当前5/6；Spec/设计strict1/1，Luna生产与公开测试私有实现已按本change派发，最小生产门与测试已集成，定向消费者和公开流水线已接受。不能把静态准备或原始类VM当生成类验收。
+当前6/6。实际产品 **ef4fbef5d9443a2d7e835712f81a22bbfed5cd50** 已推main，[自身CI39161113865](https://github.com/LordCasser/jarde/actions/runs/39161113865) 已由root完整接受。Luna按本OpenSpec私有实现、root架构复审与完整对照均已完成；持续goal保持active。下文3/6、4/6、5/6段落保留当时的证据与真实失败，不作为当前状态。
 
 `baseline-and-diagnosis-root-v1/capture-review.json`：345成员全部root与现场字节复开，归档SHA d5653a082bbda9e65c91b7a16b23e644e49806c22de48da3c7d7e7eec94bf05a。完整上游原始4VM16case仅false/位置保持；Jarde16整类编译缺return失败/零JardeVM，JADX两JDK23整类编译4VM16case同原，2JDK8框架major55失败不运行。临时诊断CLI只定位Char→Int被exact门拒绝，非usage输出同产品，源精确恢复，不作为产品接受。
 
@@ -27,3 +27,17 @@ broad-root-v1真实540通过/0失败/5既有忽略及CI Clippy通过，随后MSR
 最终96e CLI实际四矩阵204命令全部采集并由root与独立reviewer v9接受；4756唯一来源/产物pins逐字复开。上游8 API与控制8 API的test(C)Z全部fallback→structured，其余方法raw文本/来源不变；default/all一致，explicit essential由公开fixture测试核真实不请求map合同。Jarde共32整类编译/64VM/320场景观察：上游128、动态控制192，返回/char65535/位置恢复/调用次数/事件/自然越界均同原。全部生成38次成功编译，其中JADX6次、12VM64场景同原，另2次上游JDK8框架major55失败不运行；原始12VM64场景单独统计。全部成功生成树都有自己的物理方法/字段/Code库存和错CodeSource负控制，未借原target或修剪源码。
 
 `implementation-and-scoped-validation-root-v1`保存254证据+1库存成员，SHA6cee1e29a086b21b3d640fe867aa40114eeb8d99c5f31a3bbb8a301c8fad93a4；`final-complete-comparison-root-v1`保存最终矩阵、完整原始流、root验收及checker历次修正。root/v6正式review失败与v4单项Python NameError、schema更正均保留，checker修正不重跑矩阵。主java8规范已同步一requirement/五scenario；fresh workspace/本产品提交自身CI尚待，3.2不勾。
+
+## Fresh workspace 与自身 CI：6/6
+
+真正fresh本地workspace共386目标/101批，3780通过/0失败/98旧忽略，34精确门各一次；默认stack、5GiB/target1GiB每秒守卫与finally exactclean，5166来源不变。3213构建与5166 native来源并集5173按实际Git blob/模式/live bytes绑定产品ef4，最终CLI96e/63809504B逐字同完整生成对照CLI。没有拼接旧成功片段冒充fresh。
+
+产品自身CI完整4jobs/52独立官方API步骤成功，全部52 ZIP per-step成员齐全，零aggregate重建。实际47采集命令、18source/23fixture绑定产品；两seed各386目标、3780-0-98、79精确门各一次。root另从完整running区块重开全部3878具名结果并逐目标比较，两轮完全相同。首次附加检查错误地按当前stderr Running头归属交错stdout，导致两个ignore误归四个相邻target，真实AssertionError与诊断已保留；仅暴露既有完整区块parser的具名结果后通过，不重跑CI。closure pack v1的tarfile模块API静态错误在执行前退回，v2修正并保留旧版。v2首次实际打包又因误将workspace_summary_count按101批检查而提前失败；实际字段为386个target summary，v3仅将该门改为386，101批/386目标/所有实质验收门保留。两个失败与私有修订均归档，未重跑测试或CI。
+
+最终native/CI收据、原始流、官方ZIP、完整具名矩阵、source/fixture、Git绑定、严格校验与实际脚本保存在`final-native-and-own-ci-root-v1`；root逐成员对原始字节复开见其capture-review.json。关闭文档的后继提交不冒称另跑产品CI。主规范已同步一requirement/五scenario，固定账本与handoff已更新；本叶子完成不增加CF07/CF11/71单元/612文件整项计数。
+
+同CLI随后完成[四个固定完整Java原始类](../../../evidence/java-syntax-2026-10-19/cf07-fixed-original-loops-root-v1/README.md)：Jarde64整类编译/128VM/768观察同原，现有机制足够，无新代码或Spec。Condition5 Smali test1/外层JUnit断言不混称已执行；旧组合LoopCases证据保持原范围。下一CF08仅[输入范围审计](../../../evidence/java-syntax-2026-10-19/cf08-scope-audit-root-v1/README.md)，先补NotIndexed完整原始类，不重做已交付机制。
+
+最终关闭校验实际strict378/0、主规范18/18、apply all_done6/6。关闭提交推送后的clean-main/远端一致与全部辅助worktree核验，见外置 `/private/tmp/jarde-assignment-condition-widening-final-clean-main-root-v1-20261019/execution.json`。
+
+最终native/CI归档388份证据+1库存共389成员，root逐成员与原始字节复开，SHA256 `c993920dc005eb45639907ddae1cac9dd49076bd4394101f509cad199d18edf9`；归档README是关闭前的6/6验收快照，后续索引只补此实际归档信息。

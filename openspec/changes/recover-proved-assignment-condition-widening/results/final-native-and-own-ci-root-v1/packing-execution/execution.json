@@ -1,0 +1,53 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.15/bin/python3.15",
+    "-B",
+    "/private/tmp/jarde-assignment-condition-widening-native-own-ci-closure-prep-luna-v3-20261019/pack-native-own-ci.py",
+    "--native-execution-dir",
+    "/private/tmp/jarde-assignment-condition-widening-workspace-seed1-root-v1-20261019",
+    "--native-acceptance-dir",
+    "/private/tmp/jarde-assignment-condition-widening-native-acceptance-root-v1-20261019",
+    "--ci-collection-dir",
+    "/private/tmp/jarde-assignment-condition-widening-own-ci-root-v1-20261019",
+    "--ci-acceptance-dir",
+    "/private/tmp/jarde-assignment-condition-widening-own-ci-acceptance-root-v1-20261019",
+    "--tooling-dir",
+    "/private/tmp/jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019",
+    "--results-readme",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-assignment-condition-widening/results/README.md",
+    "--out",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-assignment-condition-widening/results/final-native-and-own-ci-root-v1/capture.tar.gz",
+    "--extra-dir",
+    "pack-v1=/private/tmp/jarde-assignment-condition-widening-native-own-ci-closure-prep-luna-v1-20261019",
+    "--extra-dir",
+    "pack-v2=/private/tmp/jarde-assignment-condition-widening-native-own-ci-closure-prep-luna-v2-20261019",
+    "--extra-dir",
+    "native-wrapper=/private/tmp/jarde-assignment-condition-widening-native-acceptance-execution-root-v1-20261019",
+    "--extra-dir",
+    "live-recheck=/private/tmp/jarde-assignment-condition-widening-root-live-recheck-v1-20261019",
+    "--extra-dir",
+    "closing-spec=/private/tmp/jarde-assignment-condition-widening-closing-spec-root-v1-20261019",
+    "--extra-dir",
+    "product-proof=/private/tmp/jarde-assignment-condition-widening-product-spec-root-v1-20261019",
+    "--extra-dir",
+    "pack-v3=/private/tmp/jarde-assignment-condition-widening-native-own-ci-closure-prep-luna-v3-20261019",
+    "--extra-dir",
+    "pack-first-failure=/private/tmp/jarde-assignment-condition-widening-closure-archive-execution-root-v1-20261019"
+  ],
+  "program": {
+    "path": "/private/tmp/jarde-assignment-condition-widening-native-own-ci-closure-prep-luna-v3-20261019/pack-native-own-ci.py",
+    "bytes": 13394,
+    "sha256": "77408eb0ef52e08d5978faef7ff13570b0ce32b224a602d58b8ca84023fc2efb"
+  },
+  "exit_code": 0,
+  "stdout": {
+    "path": "/private/tmp/jarde-assignment-condition-widening-closure-archive-execution-root-v2-20261019/stdout.raw",
+    "bytes": 672,
+    "sha256": "aa5aaf5cb6683969d0eb35cd1a52b0042a284f6ab2abd0b26e1b84a3ecf27c58"
+  },
+  "stderr": {
+    "path": "/private/tmp/jarde-assignment-condition-widening-closure-archive-execution-root-v2-20261019/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

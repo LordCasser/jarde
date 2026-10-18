@@ -1,0 +1,54 @@
+{
+  "status": "root_reopened_all_six_archives_against_recorded_hashes_and_per_member_inventories",
+  "archives": [
+    {
+      "archive": "openspec/changes/recover-proved-assignment-condition-widening/results/baseline-and-diagnosis-root-v1/capture.tar.gz",
+      "bytes": 5604002,
+      "sha256": "d5653a082bbda9e65c91b7a16b23e644e49806c22de48da3c7d7e7eec94bf05a",
+      "total_members": 345,
+      "inventory_authority": "existing root external original-byte review"
+    },
+    {
+      "archive": "openspec/changes/recover-proved-assignment-condition-widening/results/final-complete-comparison-root-v1/capture.tar.gz",
+      "bytes": 3299456,
+      "sha256": "54084723e48166ce218fe1817752329d70955a7663fc2571f7f7167ad6b46fdf",
+      "total_members": 638,
+      "inventory_authority": "embedded per-file inventory"
+    },
+    {
+      "archive": "openspec/changes/recover-proved-assignment-condition-widening/results/final-native-and-own-ci-root-v1/capture.tar.gz",
+      "bytes": 4962185,
+      "sha256": "c993920dc005eb45639907ddae1cac9dd49076bd4394101f509cad199d18edf9",
+      "total_members": 389,
+      "inventory_authority": "embedded per-file inventory"
+    },
+    {
+      "archive": "openspec/changes/recover-proved-assignment-condition-widening/results/implementation-and-scoped-validation-root-v1/capture.tar.gz",
+      "bytes": 6454230,
+      "sha256": "6cee1e29a086b21b3d640fe867aa40114eeb8d99c5f31a3bbb8a301c8fad93a4",
+      "total_members": 255,
+      "inventory_authority": "embedded per-file inventory"
+    },
+    {
+      "archive": "openspec/evidence/java-syntax-2026-10-19/cf07-fixed-original-loops-root-v1/capture.tar.gz",
+      "bytes": 7283569,
+      "sha256": "8f7352d804ac30dbc0dca4473512fb329989ac0c9159556b2f673d83bc983111",
+      "total_members": 1249,
+      "inventory_authority": "embedded per-file inventory"
+    },
+    {
+      "archive": "openspec/evidence/java-syntax-2026-10-19/cf08-scope-audit-root-v1/capture.tar.gz",
+      "bytes": 51310,
+      "sha256": "f8ee0cb8576de02b3603ec06b4e84e02d5a3a6480bae5e9c9a62e561fb9fde5d",
+      "total_members": 34,
+      "inventory_authority": "embedded per-file inventory"
+    }
+  ],
+  "archive_count": 6,
+  "total_members": 2910,
+  "earlier_actual_audit_error": {
+    "error": "AssertionError: baseline-and-diagnosis-root-v1 missing embedded inventory",
+    "cause": "Root extra audit assumed a uniform embedded-inventory schema; first archive uses original external capture-review.json with all345 file pins.",
+    "correction": "Use existing external authority for first archive, additionally reopen each original live source; keep all other embedded gates. No toolchain rerun."
+  }
+}
