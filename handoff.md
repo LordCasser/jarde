@@ -1,10 +1,10 @@
-## 2026-10-19 最新检查点：indexed List 本地完整验收通过，自身 CI 已完整接受，主线关闭接续
+## 2026-10-19 最新检查点：indexed List 6/6 已交付，下一 CF07 条件赋值
 
-本节优先。finThrow5/5、nestedFin16/16及前片均已交付，勿重做。当前 `recover-proved-indexed-list-parameter-signatures` 仍5/6，实际产品 **5bd65ef2f36999c3d0a3b4477a412a0ef532c956** 已推main；自身 **CI39153653464** 已root验收全部4jobs/52独立官方step，两seed各385目标/3777-0-98且全部具名结果相同，76精确门各轮一次。b7的Iterable旧预期、e727的两处lambda诊断旧预期和reader库存失败都保留在results归档。
+本节优先。finThrow5/5、nestedFin16/16及前片均已交付，勿重做。当前 `recover-proved-indexed-list-parameter-signatures` 已6/6，实际产品 **5bd65ef2f36999c3d0a3b4477a412a0ef532c956** 已推main；自身 **CI39153653464** 已root验收全部4jobs/52独立官方step，两seed各385目标/3777-0-98且全部具名结果相同，76精确门各轮一次。b7的Iterable旧预期、e727的两处lambda诊断旧预期和reader库存失败都保留在results归档。
 
 fresh native v3真实385目标/101批/**3777通过/0失败/98旧忽略**，31精确门各一次；3198构建、5151native来源并集5158按Git blob/模式/当前bytes绑定5bd。独立验收 `/private/tmp/jarde-indexed-list-signatures-native-acceptance-root-v4-20261019/review.json` 与 `product-binding.json`；验证wrapper v3误分类reader lib的失败保留，v8只修分类后重新核收据，未重跑测试。target已exactclean且不存在，无Cargo待续。
 
-最终CLI90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c/63809216B与已验收完整64VM832case矩阵逐字相同，不冒称新VM运行。实际官方ZIP/17source/9fixture与全部门已收；v8 fixture库存清单顺序的真实前置失败保留，root v9只交换两行，所有实质检查不变。最终405成员归档逐字复开见results/final-native-and-own-ci-root-v1。接续同步账本、strict/apply与干净main关闭3.2。产品后的文档提交不能冒称另跑产品CI。持续goal active，CF11/71/612整项计数不变。
+最终CLI90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c/63809216B与已验收完整64VM832case矩阵逐字相同，不冒称新VM运行。实际官方ZIP/17source/9fixture与全部门已收；v8 fixture库存清单顺序的真实前置失败保留，root v9只交换两行，所有实质检查不变。最终405成员归档逐字复开见results/final-native-and-own-ci-root-v1。strict377/0及全部任务完成；检查点e06cdb6ab已实际核干净main/远端一致、仅main分支、14aux detached-clean-main祖先且所有target absent。最终关闭文档后的实际HEAD收据以 `/private/tmp/jarde-indexed-list-signatures-final-clean-main-root-v1-20261019/execution.json` 为准，接续先核Git。产品后的文档提交不能冒称另跑产品CI。持续goal active，CF11/71/612整项计数不变。
 
 下一固定 **CF07 TestLoopConditionInvoke** 已实际完成基线与完整生成对照：原始4VM16case均false（next恒0，不能证明命中分支）；当前Jarde16次整类重编因缺return失败/零JardeVM，JADX2次JDK23重编4VM16case同原，2次JDK8框架major55失败不运行。两次临时诊断均已精确恢复共享源码，最终build.rs SHA d22ee8f1c40d0a98a174e759904a6a97313b85728bb3056d4aeba18ca8704df9。实际两profile均证明assignment目标int、RHS Some(Char)/next()，被exact equality拒绝；非usage诊断输出完全同产品。现有region均structured，无需新region机制。root已审现有widens，下一最小方案为保留strict已知类型与exact equality，仅加合法Byte/Short/Char→Int；RHS一次/源类型/LocalAssign及origin/publication/rollback不变，不引入meeting_position对unknown/reference/narrowing的宽松规则。动态控制与Spec尚待，新feature未实现。
 

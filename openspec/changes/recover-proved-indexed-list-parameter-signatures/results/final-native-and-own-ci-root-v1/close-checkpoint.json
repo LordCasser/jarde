@@ -1,0 +1,419 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "fetch",
+        "--prune",
+        "origin"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "e06cdb6ab0167e00a31ef02bcceff82efdb1e093\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "origin/main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "e06cdb6ab0167e00a31ef02bcceff82efdb1e093\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "main\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--format=%(refname:short)"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "main\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "worktree /Users/lordcasser/workspace/projects/jarde\nHEAD e06cdb6ab0167e00a31ef02bcceff82efdb1e093\nbranch refs/heads/main\n\nworktree /Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde\nHEAD 698a219ec580819e12af487c4c8a3771e9baaa85\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "status": "accepted_clean_main_checkpoint",
+  "head": "e06cdb6ab0167e00a31ef02bcceff82efdb1e093",
+  "product": "5bd65ef2f36999c3d0a3b4477a412a0ef532c956",
+  "bound_source_union": 5158,
+  "cli": {
+    "path": "/private/tmp/jarde-indexed-list-signatures-reader-and-remainder-root-v1-20261019/candidate-cli",
+    "bytes": 63809216,
+    "sha256": "90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c"
+  },
+  "worktrees": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde",
+      "head": "e06cdb6ab0167e00a31ef02bcceff82efdb1e093",
+      "detached": false,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "clean": true,
+      "main_ancestor": true,
+      "target_exists": false
+    }
+  ],
+  "time": "2026-10-18T19:07:11.677145+00:00",
+  "strict": {
+    "argv": [
+      "openspec",
+      "validate",
+      "--all",
+      "--strict",
+      "--json"
+    ],
+    "exit_code": 0,
+    "raw_sha256": "052c93f6d0a23c74b603f26a35188041eb8c0bccac508a0cc4ae5f90d7cc0049",
+    "summary": {
+      "totals": {
+        "items": 377,
+        "passed": 377,
+        "failed": 0
+      },
+      "byType": {
+        "change": {
+          "items": 359,
+          "passed": 359,
+          "failed": 0
+        },
+        "spec": {
+          "items": 18,
+          "passed": 18,
+          "failed": 0
+        }
+      }
+    }
+  },
+  "apply": {
+    "state": "all_done",
+    "progress": {
+      "total": 6,
+      "complete": 6,
+      "remaining": 0
+    },
+    "raw_sha256": "bb7b3a17e8d7e72052088b85fecd225b39958e95f83d8932ac158a1fd37e6f09"
+  }
+}
