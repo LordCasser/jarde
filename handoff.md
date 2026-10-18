@@ -1,3 +1,29 @@
+## 2026-10-18 最新：bulk独立修复已过822门和20API，新产品/native/自身CI待验
+
+此节优先。typed foreach候选b78b34ed6已推，其第一fresh native因既有bulk计数区间错位失败，不能算通过；失败与源pins/exactclean已完整保留。独立 `align-bulk-class-task-execution-interval` 修复仅将现有Entered guard移到run_class_task入口、gate/delay/入口panic之前，加一条注释；不改gate/timeout/阈值/assert/调度/模型，无新机制。
+
+该独立change现3/4；typed change现5/7。root广门v4实际26命令/822通过/0失败/6旧忽略，bulk16测试+4精确重叠复跑、CI Clippy/MSRV/Java496/Reader181/P5全部通过，构建3190来源不变、fingerprint2429不变、exactclean/target absent。新最终CLI `/private/tmp/jarde-typed-foreach-bulk-interval-broad-root-v4-20261018/candidate-cli`，63405424B/SHA **85ca6e7d36c0edeb72f7f6a3c33c405f203028fb21d128522f0b0a3a92e1cf78**。实际20同argv API/40raw独立接受全部非usage JSON/whole/projected/raw/map逐字同d130，3301来源和冻结产物pins前后闭合。未重跑JDK，仅精确相同完整Java绑定原始36JVM/288case与控制Jarde48JVM/912case；旧JADX8类型错误编译失败及outer框架边界不掩盖。
+
+下一步单独提交/推送bulk修复，让其自身CI与本地两个fresh native并行。native输出需fresh seed1-root-v2和seed2-root-v2；5350648285461741569/1570，既有workspace_runner，默认stack/5GiB/target1GiB守卫/每秒检查/exactclean。当前尚未开始新native或接受新CI。旧CI39111223906只属于b78候选，不是修复后自身CI。root独占共享修改/Git/Rust/JDK/CLI/网络，工具本地串行，Rust运行中不得改源/跑网络。
+
+验收工具已root审v3差异，位于 `/private/tmp/jarde-typed-foreach-own-ci-prep-luna-v3-20261018`：12源码含bulk.rs/3fixture/54CI关键门；native wrapper9门/385目标基线，完整源/逐target具名结果动态derive，无passing总数硬编码。产品binder `/private/tmp/jarde-typed-foreach-product-bind-prep-root-v1-20261018/bind_product.py`适用本轮allowed_source_changes=[]。证据归档见两个change的results/README；bulk当前5包188成员已全部root逐字复开。v3 runner一命令4binary收尾拒绝单列保留，v4拆单目标后完整通过，未改写旧失败。
+
+finThrow5/5、nestedFin16/16、父finally7/7早已交付，勿重做。后续原名foreach头仅有私有分析（已纳入bulk tools归档），没有Spec/实现；当前合成名字/原copy仍保留，不冒称整个上游黄金/CF11/71单元完成。全局goal active，须两fresh native+实际产品自身CI+strict/干净main全部验收后才关这两叶子。
+
+## 2026-10-18 最新阻断：fresh native发现旧bulk计数区间错位，独立OpenSpec修复中
+
+此节优先。已推候选 **b78b34ed6ee908309de4f85d771adcab8ee24133**，自身CI39111223906仍进行中/未验收。typed foreach已通过最终802/0/6广门和16bd CLI的20API与完整Java矩阵绑定；但第一fresh native在第三测试批command4真实失败，不能算成功seed。target已exactclean且源pins未变。失败为bulk_recovery_lifecycle的真实gate/worker重叠已证2，公开concurrent_classes_high_water却为1。失败原始收据和root复核完整保存在 `openspec/changes/align-bulk-class-task-execution-interval/results/native-failure-root-v1`（19成员/ada99433…），不是typed语法或Java对照失败。
+
+独立change `align-bulk-class-task-execution-interval` 已strict/apply ready，1/4。root已审Luna最小patch并应用到src/bulk.rs：将唯一Entered guard移动至run_class_task体入口、panics_at/gate/delay之前，仍使用既有mutex/RAII，worker和serial共用；不改ClassGate、timeout、阈值、旧assert、调度、重量表或公共模型，无新机制。编译前fmtcheck终态通过。
+
+当前正在root串行执行 `/private/tmp/jarde-typed-foreach-bulk-interval-broad-root-v4-20261018`，包括分开的4个bulk目标、4次精确真实重叠回放及原fmt/CI Clippy/MSRV/Java/Reader/P5/CLI全门（v3的4 bulk共16测试已全通过，但清理helper要求单目标，因一个命令4binary真实拒绝；已exactclean并另存runner-contract-failure-root-v3/8成员，不算完整广门通过）；runner为既有run_validation，默认stack/5GiB/target1GiB守卫/exact clean。任务1.2须等真实focused通过才勾。Rust期间不得改源或执行JDK/CLI/网络/Git mutation。
+
+随后新CLI以既有 replay-prep-root-v3 和 review-prep-root-v3 重放20API（fresh输出v2）并逐字比较除usage外全部JSON/whole/projected/raw/map，明确未重跑JDK；成功后typed task3.1重新勾，当前暂4/7。bulk/typed两项待新最终CLI、两fresh native、单独修复提交/自身新CI全部接受后收口，不重试掩盖旧native失败。旧b78 CI不得冒称新修复产品CI。
+
+新版验收工具 `/private/tmp/jarde-typed-foreach-own-ci-prep-luna-v3-20261018` 已静态准备，collector/verifier同步12源码含bulk.rs/3fixture/54关键门，native wrapper9关键门/385目标基线，尚未执行；root仍须审diff。原native seed1 v1失败后新两轮从fresh v2目录开始；仍用workspace_runner两个固定seed。root负责所有共享/工具链/Git/网络，Luna仅私有。
+
+原名foreach头下一片仅有私有分析 `/private/tmp/jarde-foreach-original-bindings-root-analysis-v2-20261018`，没有规划或实现。Atlas report.rs缓存includeCode字节范围过旧，全部字段已按当前源手动核，不引用其dataflow完整性；工具债务独立。finThrow5/5、nestedFin16/16、父finally7/7早已交付，不重做。全局goal active、CF11/71/612计数不增加。
+
 ## 2026-10-18 最新：最终 typed foreach CLI 已通过广门及20API重绑，native/自身CI待验收
 
 此节优先于下方历史。finThrow5/5、nestedFin16/16、父finally7/7已交付，勿重做；持续goal active。当前 `recover-typed-list-foreach-elements` **5/7**：最终代码、来源/计费审查、完整原始/控制矩阵与hardened CLI重绑已接受，余两fresh native和实际产品CI/交付关闭。

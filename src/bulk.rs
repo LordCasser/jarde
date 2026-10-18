@@ -1832,6 +1832,8 @@ fn run_class_task(
     budget: &mut Budget,
     out: &mut dyn ResultConsumer,
 ) -> ClassEnding {
+    // Count the whole class task, including preparation wait and every early return or unwind.
+    let _entered = operation.registry.enter();
     if operation.faults.panics_at(class_ordinal) {
         // A test-only fault: the class task panics where a real one would if something inside it
         // did, so the lifecycle around a panicking worker is exercised rather than described.
@@ -1839,7 +1841,6 @@ fn run_class_task(
     }
     operation.faults.arrive_at_gate();
     operation.faults.delay_before_prepare();
-    let _entered = operation.registry.enter();
     let mut methods = 0_u64;
     let mut class_execution: Option<ExecutionReport> = None;
     let read = match read_class(operation, class, budget) {
