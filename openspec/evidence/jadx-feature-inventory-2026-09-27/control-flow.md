@@ -1,5 +1,9 @@
 # JADX control-flow syntax inventory
 
+## 2026-10-19 CF-08：NotIndexed 原始完整类对照接受
+
+[新证据](../java-syntax-2026-10-19/cf08-notindexed-original-root-v1/README.md)补齐未裁剪的上游外层/目标类，保留 check()；8 API/24 方法均 structured。实际71命令，Jarde8次成功整类编译/16VM80观察、JADX2次成功/4VM20观察均同原始；10次JDK8框架 major55/52 编译失败保留且不运行，原始4VM20观察另计。空 cwd 与 parentless/CodeSource 隔离通过。driver未执行 check/JUnit，现有机制足够，没有新实现；Object实参展示cast单列质量债务。CF08保持部分覆盖，71/612计数不变。EndlessLoop 的原始/API审计已通过；生成源码18编译成功，但collector变量遮蔽漏17组验证，正准备只补缺失VM，不把它称完整验收。Smali原输入与独立构造JVM双入口control严格分开。
+
 ## 2026-10-19 CF-07 条件赋值扩大转换，最终对照已接受
 
 固定TestLoopConditionInvoke已用现有widens修复char→int条件赋值拒绝，无新恢复机制；16 API全部结构化，完整Jarde32次编译/64VM/320case与原始一致。主规范已同步，产品ef4已推，fresh386目标/3780-0-98与自身CI39161113865全部4jobs/52步骤/双seed/79精确门已接受；不增加CF-07或71/612整项计数。详见[本片验收](../../changes/recover-proved-assignment-condition-widening/results/README.md)。其余四固定Java原始类已[完整对照接受](../java-syntax-2026-10-19/cf07-fixed-original-loops-root-v1/README.md)：Jarde64编译/128VM/768观察全同原始，无新机制。Condition5 Smali test1与外层JUnit文本断言未执行。下一CF08先按[输入范围审计](../java-syntax-2026-10-19/cf08-scope-audit-root-v1/README.md)补NotIndexed完整原始类证据。

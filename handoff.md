@@ -1,3 +1,15 @@
+## 2026-10-19 当前推进：CF08 原始 NotIndexed 完整验收
+
+本节优先；finThrow5/5、nestedFin16/16、indexed List6/6与条件赋值扩大转换6/6均已交付，勿重做。持续goal active；产品仍ef4fbef5、CLI96e534b0，自身CI及fresh验收见下方。当前仅证据文档变化，没有新生产代码/Spec，不增加CF08或71/612整项完成数。
+
+新入口 `openspec/evidence/java-syntax-2026-10-19/cf08-notindexed-original-root-v1/README.md`：完整上游原始外层/目标类保留check()，8API/24structured；实际71命令，Jarde8成功编译/16VM80观察、JADX2成功/4VM20观察均同原，10次JDK8框架major55/52失败不运行，原始4VM20另计。空cwd/parentless/错根控制闭合；check/JUnit未调用。283payload+1内嵌库存归档已root逐字复开，SHA c1c77c4a6613af2ba121529ab7c6bc8224a458a958ae1402839c09808dcc64a4。历史auditor/备忘错误和更正保留，正式root收据才是权威。普通equals(Object)展示cast单列债务，不为此改descriptor通用规则。
+
+下一Endless：完整baseline20命令/8API32structured及4构造观察已root审计接受，收据02557fcf…；原生成receipt27be145c…实际24命令、18编译成功/2JADX旧框架失败，但新增loop-Code比较覆盖了physical parser变量，后17成功target classfacts为harness AttributeError，仅首格2VM/1错根完成。Luna正在私有准备只重新解析已有class并补17target×2VM+17错根的resume；不重编、不重跑首格、不伪称fresh矩阵。真正不终止的三方法从不调用；Code/limits/rows/access静态比对与构造VM分开，classfile parser不保留StackMap，不冒称frames字节相同。v1 auditor require初始化顺序实际失败已留raw，v2只移一行且root通过。
+
+同时Luna准备CF08独立双入口JVM control（不是原Smali等价）：19B SCC双入口4/7，12有限值含int溢出。Jarde已有irreducible整方法拒绝，JADX有两种块复制算法；尚未实际执行此control，不据静态阅读立实现Spec。root已拒绝collector草稿SHA笔误、classattrs游标错误、无界VM与不完整生成源码矩阵；需最终冻结审查后串行运行再裁决。禁止挪用CanonicalBlockId.path（语义仅jsr调用栈）伪造普通循环clone身份。
+
+root独占共享/Git/网络/工具链，Luna仅私有/只读；所有Python用-B，已精确清理一次trial引入的共享compare.pyc。无Cargo/target；Cargo门仍5GiB/target1GiB/defaultstack/每秒guard/finally exactclean。接续先核实际进程/收据和Git，不重跑已成功门、不创建工作树。
+
 ## 2026-10-19 当前推进：CF07 条件赋值扩大转换，6/6
 
 本节是当前状态；下方保留历史检查点，勿据其重做已交付项。finThrow5/5、nestedFin16/16及indexed List6/6已完成。当前 `recover-proved-assignment-condition-widening` 6/6，实际产品 **ef4fbef5d9443a2d7e835712f81a22bbfed5cd50** 已推main；本地fresh及自身CI39161113865全部4jobs/52独立官方步骤已root完整接受。两seed各386目标/3780-0-98、79精确门各一次，全部3878具名结果逐目标一致。持续goal active，CF07/CF11/71/612整项计数不增。
