@@ -12297,7 +12297,9 @@ mod tests {
             // Prefixed exceptional retry adds 20 complete original/supplement/neighbor classes:
             // 144 Code bodies, 18 handler rows and 206 targets; no jsr. Independent decoded
             // Code counts agree with this walk, including both original outer classes.
-            (1258, 5639, 624, 3847, 12),
+            // Proved loop-arm returns add 22 complete classes, 38 Code bodies, two catch rows
+            // and 74 branch targets; independent physical Code parsing agrees with this walk.
+            (1280, 5677, 626, 3921, 12),
             "fixture population changed: re-measure these counts"
         );
     }

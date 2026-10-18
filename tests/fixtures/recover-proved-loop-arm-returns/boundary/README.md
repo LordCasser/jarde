@@ -1,0 +1,3 @@
+# 精确异常边界
+
+catch直接return的最小有效Java循环，避免handler的普通回边成为额外入口。两完整class均major52，javac8 source/target8及javac23 release8 -g:none；源字节与输出pin见manifest。root独立核9命令/18raw、4双VM运行16case同原oracle及两错误CodeSource拒绝。独立driver和命令在OpenSpec boundary归档保留。本输入只用于Reader真实canonical Exception incident拒绝，不声称catch运行或新反编译语义恢复。

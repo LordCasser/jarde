@@ -1,0 +1,67 @@
+{
+  "schema": "proved-loop-arm-return-fixtures-v1",
+  "files": [
+    {
+      "path": "original/TestNestedLoops5.java",
+      "bytes": 756,
+      "sha256": "0be29d145607e1be1d1426305739e6879d76defc8472dff7f6e82fcec0d83b6d",
+      "origin": {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNestedLoops5.java",
+        "bytes": 756,
+        "sha256": "0be29d145607e1be1d1426305739e6879d76defc8472dff7f6e82fcec0d83b6d"
+      }
+    },
+    {
+      "path": "original/TestNestedLoops5Driver.java",
+      "bytes": 2882,
+      "sha256": "9036a4c9047ecb3a32aa2697b89bcbcccf6b50eaee807cbbc9152a92e79bb660",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-baseline-run-root-v3-20261018/driver-source/TestNestedLoops5Driver.java",
+        "bytes": 2882,
+        "sha256": "9036a4c9047ecb3a32aa2697b89bcbcccf6b50eaee807cbbc9152a92e79bb660"
+      }
+    },
+    {
+      "path": "original/debug/classes/jadx/tests/integration/loops/TestNestedLoops5$TestCls.class",
+      "bytes": 967,
+      "sha256": "ca0f0794a73265223845148d6d319bc1cb50a80e1433724556c04afcb144ce39",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-baseline-run-root-v3-20261018/debug/classes/jadx/tests/integration/loops/TestNestedLoops5$TestCls.class",
+        "bytes": 967,
+        "sha256": "ca0f0794a73265223845148d6d319bc1cb50a80e1433724556c04afcb144ce39"
+      }
+    },
+    {
+      "path": "original/debug/classes/jadx/tests/integration/loops/TestNestedLoops5.class",
+      "bytes": 1188,
+      "sha256": "b31c6501258b70a6046dc4b5326c00dcf1eb54fc8b463152ea60904c4b1d7228",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-baseline-run-root-v3-20261018/debug/classes/jadx/tests/integration/loops/TestNestedLoops5.class",
+        "bytes": 1188,
+        "sha256": "b31c6501258b70a6046dc4b5326c00dcf1eb54fc8b463152ea60904c4b1d7228"
+      }
+    },
+    {
+      "path": "original/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops5$TestCls.class",
+      "bytes": 640,
+      "sha256": "34154832cdf310f98aa5653f15a3314e8d925265d8c01116dc37f6ae8936b6a4",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-baseline-run-root-v3-20261018/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops5$TestCls.class",
+        "bytes": 640,
+        "sha256": "34154832cdf310f98aa5653f15a3314e8d925265d8c01116dc37f6ae8936b6a4"
+      }
+    },
+    {
+      "path": "original/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops5.class",
+      "bytes": 975,
+      "sha256": "334fe74250bafd330ac08f7bceac52c0984af1c98cb669aa8ba5facdd0785734",
+      "origin": {
+        "path": "/private/tmp/jarde-testnestedloops5-baseline-run-root-v3-20261018/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops5.class",
+        "bytes": 975,
+        "sha256": "334fe74250bafd330ac08f7bceac52c0984af1c98cb669aa8ba5facdd0785734"
+      }
+    }
+  ],
+  "baseline_product": "755fd2c84ecbe204d03f0ff608d3a711a1bea494",
+  "note": "Exact whole classes and Java sources from root-reviewed original baseline; original NL5 source is local JADX Apache-2.0 test. Driver inputs are observed, not hardcoded expected outputs."
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "loop-arm-exception-reader-boundary-v1",
+  "source_sha256": "9d4edf45e2122d8675146b5c47233bc0a259c00e5c4e56c993488a1b794dc09b",
+  "files": [
+    {
+      "path": "javac8/LoopArmExceptionBoundary.class",
+      "origin": {
+        "path": "/private/tmp/jarde-loop-arm-exception-boundary-run-root-v1-20261018/javac8/classes/LoopArmExceptionBoundary.class",
+        "bytes": 280,
+        "sha256": "99ff65609cd63266f602f15e04874824013bbbd806aee8be74d50c0690e060cc"
+      }
+    },
+    {
+      "path": "javac23/LoopArmExceptionBoundary.class",
+      "origin": {
+        "path": "/private/tmp/jarde-loop-arm-exception-boundary-run-root-v1-20261018/javac23/classes/LoopArmExceptionBoundary.class",
+        "bytes": 277,
+        "sha256": "b8bbe6969afa2b73eee92d419697d034d752bc5b7bbe6a1c150cad25b9aa4628"
+      }
+    }
+  ],
+  "original_observed_oracle": "CASE 0 result=5\nCASE 1 result=8\nCASE 2 result=7\nCASE 3 result=9\n",
+  "scope": "Both javac8/23 full classes verified on two JVMs; Reader proof boundary only, not decompiler semantic acceptance or catch execution."
+}
