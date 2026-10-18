@@ -1,3 +1,23 @@
+## 2026-10-18 最新交付：祖先 Iterator 声明清理 7/7
+
+本节优先。finThrow5/5、nestedFin16/16、父finally7/7及typed/原名foreach前片均已交付，勿重做。当前 `prune-proved-ancestor-iterator-declarations` **7/7**；持续goal active，仍按JADX71单元/612测试账本推进，不因叶子关闭全局目标或增加CF11完成数。
+
+实际产品 **ea2aaf042ba91572727abb48c4b6ae8db3ca93a8** 已推，自身 **CI39130065483** root完整接受4jobs/52全部官方API step、两seed各385目标/3768通过/0失败/98旧忽略、63精确门各一次；官方ZIP全部52独立step成员齐全，无aggregate重建。后续提交只记录文档，不冒称另跑产品CI。
+
+最终CLI `/private/tmp/jarde-ancestor-iterator-broad-root-v3-20261018/candidate-cli`，63623984B/SHA **26eb321d0810a54328f7880483c6c5a5c2033c2ad747f7b177a51e723e96af52**。最终广门810/0/6、fmt/CI Clippy/MSRV1.88通过；两fresh native实际各385目标/101批/3768-0-98，18门各一次、全部3866具名结果逐target同。构建3194/native5147并集5154按Git blob/bytes/mode绑定ea2a。目标target已exactclean，无Cargo/JDK/CLI待续。
+
+root/Luna仅复用既有foreach/slot/SSA和checkpoint，增加成功消费者窄关联与最终真实祖先声明唯一核验；同变量其它SSA值、额外读写、缺证/重复/兄弟/错来源均保留原声明和可靠循环，不建新IR/pass/solver。末审空arm/catch计费缺口已v8补齐并全跑，Stop不发布半完成方法。
+
+完整原始Java4VM32case、生成20编译18成功/2旧JADX框架JDK8边界、36VM288case/18wrong-root均实际接受。19case控制仍有24Jarde旧拒绝整类编译失败/零JardeVM、JADX16VM304case仅catch控制不匹配，不能当runtime通过。最终26eb实际20同argv API全部非usage JSON/whole/projected/raw/map等60e1，physical class bytes绑定完整矩阵；明确复用相同Java字节，26eb未重跑JDK。主规范同步、strict375/0和apply all_done最终结果见results关闭记录；所有真实失败与被替代checker均保留。
+
+最终strict375/0、apply7/7 all_done；本片及下一静态分析25归档/2039成员已root全部逐字复开（results/all-archives-root-review-v2.json）。
+
+检查点 **1665f548fd6c16c1346173ffe5f7cb2e13418048** 已实际核远端==本地干净main，仅main分支，14aux detached-clean-main祖先/无target，5154来源及CLI恒同。最后关闭文档推送后，以外置 `/private/tmp/jarde-ancestor-iterator-final-clean-main-root-v1-20261018/execution.json` 的实际HEAD/终态为准；接续先重核Git。结果总入口 `openspec/changes/prune-proved-ancestor-iterator-declarations/results/README.md`。
+
+**下一固定TestNestedLoops equals/remove Object参数包装**：最终真实26eb已确认仍在，add(E)无包装，不重做。仅静态分析及3个私有控制类准备，无新OpenSpec/实施/新JDK运行。持久 `openspec/evidence/java-syntax-2026-10-18/cf11-object-argument-analysis-root-v1`（34成员/de450ebc…）含JADX六源码、root架构约束与Luna原/更正版本：先证明确切调用选择，再用既有opaque AST exact wrapper/removals事务；现有add物理cast→store→load证明可提取复用，remove参数不能推断List<E>，可选清理缺证不能让可靠泛型/typed能力降级，不在descriptor-only Builder入口做通用Object擦除。Integer拆箱反例已撤回；primitive同值/自定义equals重载/真实参数CHECKCAST控制准备v2尚未编译，须root先核全源/driver和javac8/23实际descriptor/oracle，再写Spec派Luna实现、root完整对照验收。
+
+root独占共享/Git/工具链/网络，Luna只私有/只读。资源守卫仍defaultstack/至少5GiB/target1GiB每秒检查/exactclean；本地工具串行，Cargo运行时禁源码/Gitmutation/JDK/CLI/network。
+
 ## 2026-10-18 当前验收：祖先 Iterator 产品及自身CI通过，6/7待主线关闭
 
 本节优先。finThrow5/5、nestedFin16/16、父finally7/7及前片foreach均已交付，勿重做。当前 `prune-proved-ancestor-iterator-declarations` 6/7：实际产品 **ea2aaf042ba91572727abb48c4b6ae8db3ca93a8** 已推；自身 **CI39130065483** 已root完整接受4jobs/52官方step/63精确门，全部52独立ZIP step成员齐全，无aggregate补造。
