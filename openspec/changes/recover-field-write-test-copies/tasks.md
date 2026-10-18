@@ -10,4 +10,4 @@
 ## 3. 完整验收
 
 - [x] 3.1 root以最终CLI对完整原始与补充Java原样双javac重编、双VM隔离运行，对原oracle核返回/ledger/异常身份/同实例状态，JADX与所有边界单列；与父change共享同一实际capture时明确引用，不能重复计数。
-- [ ] 3.2 root实际接受广门、两个fresh seed及产品自身CI，保持旧P5预算，核默认stack、5GiB/target1GiB守卫/finally clean；证据归档复开、tasks/handoff真实更新并提交推送到干净main。
+- [x] 3.2 root实际接受广门、两个fresh seed及产品自身CI，保持旧P5预算，核默认stack、5GiB/target1GiB守卫/finally clean；证据归档复开、tasks/handoff真实更新并提交推送到干净main。

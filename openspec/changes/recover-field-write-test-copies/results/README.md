@@ -1,5 +1,7 @@
 # 字段写后比较：真实记录
 
+当前已5/5验收，组合产品ee013adb35711366d0aff2f774ee633b34c06082已推送，自身CI39100001965由root完整核验4job/52步骤成功。最终广门798/0/6、双fresh native各385target/3754/0/98、CLI aabf完整44正向API重放与共享Java矩阵、来源并集5147及官方日志补证均引用父 `recover-statementful-loop-headers/results/README.md`，不重复计数。以下为按阶段保留的原始失败/实施记录。
+
 `first-focused-failure-root-v1`保留父循环片首次实际测试，11归档成员，545026B，SHA256 `e259c7ac43d4b9fe8b476177dac58ac7827011aad07d77169ed86e12f3cede0e`。root独立复核6raw、源码前后恒同、默认栈/guard、finally clean，再逐字复开归档；含当次region.rs和公开测试完整快照。fmt通过，Rust编译成功，原始整方法1通过、补充和Stop的完整正例前置2失败。BCI61 dup_x1为Other；尚无新CLI，尚未验证late-budget。只接受为真实失败记录，不是产品通过。
 
 完整旧补充119命令/238raw、32旧Jarde缺return/16JADX成功与32 rebuilt VM352case验收引用父change `recover-statementful-loop-headers/results/supplement-baseline-root-v1`，不在此重复计数或声称重跑。原始基线和Reader首拒见父change索引。
