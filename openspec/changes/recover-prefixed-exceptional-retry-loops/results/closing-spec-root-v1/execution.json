@@ -1,0 +1,72 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "openspec",
+        "status",
+        "--change",
+        "recover-prefixed-exceptional-retry-loops",
+        "--json"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-prefixed-retry-closing-strict-root-v1-20261018/0.stdout.raw",
+          "bytes": 3321,
+          "sha256": "19d9ca0f20f888828cee8ab70710b6e92e574beb37145b190933227ef9dbb5c0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-prefixed-retry-closing-strict-root-v1-20261018/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "instructions",
+        "apply",
+        "--change",
+        "recover-prefixed-exceptional-retry-loops",
+        "--json"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-prefixed-retry-closing-strict-root-v1-20261018/1.stdout.raw",
+          "bytes": 5558,
+          "sha256": "9f266e6e38c63ca5a4f1c047569a6513ce0b9c544859c4e31182a788f8a7c1e2"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-prefixed-retry-closing-strict-root-v1-20261018/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--json"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-prefixed-retry-closing-strict-root-v1-20261018/2.stdout.raw",
+          "bytes": 56566,
+          "sha256": "6fe372631b0a81d39b1cf02979f917d8e40db4f30f435f8827b8d0b6d37fede6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-prefixed-retry-closing-strict-root-v1-20261018/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "finished_utc": "2026-10-18T00:30:24.733949+00:00"
+}

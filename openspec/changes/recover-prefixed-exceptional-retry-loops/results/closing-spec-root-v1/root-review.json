@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "actual_apply_state": "all_done",
+  "actual_tasks": {
+    "total": 7,
+    "complete": 7,
+    "remaining": 0
+  },
+  "strict_items": 368,
+  "strict_passed": 368,
+  "strict_failed": 0,
+  "raw_count": 6
+}

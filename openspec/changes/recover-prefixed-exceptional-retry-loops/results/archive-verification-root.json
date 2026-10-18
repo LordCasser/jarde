@@ -1,0 +1,350 @@
+{
+  "status": "passed",
+  "archive_count": 16,
+  "tar_members": 2055,
+  "manifest_entries": 2039,
+  "archives": [
+    {
+      "name": "baseline-rebuild-matrix-root-v2",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/baseline-rebuild-matrix-root-v2/capture.tar.gz",
+        "bytes": 488804,
+        "sha256": "a460b09fc0aee3ee71920c15172f0a451a335310db2e3b6813b59f6b93d23303",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/baseline-rebuild-matrix-root-v2/capture-review.json",
+        "capture_review_members_reopened": 105
+      },
+      "tar_member_count": 105,
+      "manifest_entry_count": 104,
+      "manifest_sha256": "6fbac536dc9b80ac14ce091068b0badcc46fa1542598eb633d6f5cd44613f99a",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "final-api-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/final-api-root-v1/capture.tar.gz",
+        "bytes": 2749324,
+        "sha256": "fc1a2949d71e1ac99aa3d1217ba45dc0965bf259dccd54251309377ab4cbb033",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/final-api-root-v1/capture-review.json",
+        "capture_review_members_reopened": 105
+      },
+      "tar_member_count": 105,
+      "manifest_entry_count": 104,
+      "manifest_sha256": "496b1b0e7c6c37e55c0e65916be4afd23d972f758ec28649ee34fe465f74553e",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "final-focused-root-v5",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/final-focused-root-v5/capture.tar.gz",
+        "bytes": 819934,
+        "sha256": "373d523cef21d55eaa3668a7cfda58c2ddfb9ef37edc187d185eb730dfc49654",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/final-focused-root-v5/capture-review.json",
+        "capture_review_members_reopened": 30
+      },
+      "tar_member_count": 30,
+      "manifest_entry_count": 29,
+      "manifest_sha256": "ec59bcc994df50925ee83e2816368b9c36e3a79b7e12c0a9feb34dadddd79cc2",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "final-original-matrix-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/final-original-matrix-root-v1/capture.tar.gz",
+        "bytes": 477779,
+        "sha256": "e7448d615812766ad8bd8cde5533c03fe16055209c3e114625fe7b944a6fb4ed",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/final-original-matrix-root-v1/capture-review.json",
+        "capture_review_members_reopened": 182
+      },
+      "tar_member_count": 182,
+      "manifest_entry_count": 181,
+      "manifest_sha256": "21908fe8b64f2ff2d9e608f5501227a675677b71544989ed6bcf684a9b64fd27",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "final-supplement-matrix-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/final-supplement-matrix-root-v1/capture.tar.gz",
+        "bytes": 442627,
+        "sha256": "d80a40d1c7243dc1cff9759bdd46338635ca3136a7d189c7edc3906519e01857",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/final-supplement-matrix-root-v1/capture-review.json",
+        "capture_review_members_reopened": 371
+      },
+      "tar_member_count": 371,
+      "manifest_entry_count": 370,
+      "manifest_sha256": "3816a1e3421393e30c5b8efe97199ac5b7e0f63960e1232cfdc962c9579292b2",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "first-refusal-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/first-refusal-root-v1/capture.tar.gz",
+        "bytes": 2000891,
+        "sha256": "ac9c16c59e3d4e9d28a4c97c8bd4f636557e9c25fde46d076f9be6bf729875f9",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/first-refusal-root-v1/capture-review.json",
+        "capture_review_members_reopened": 43
+      },
+      "tar_member_count": 43,
+      "manifest_entry_count": 42,
+      "manifest_sha256": "f763db29c713662b879dd87f21ef49af4f9b1641561794bd6216dd225e11cdaa",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "implementation-diagnostics-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/implementation-diagnostics-root-v1/capture.tar.gz",
+        "bytes": 2750891,
+        "sha256": "fa3ae5106a9c85900ded2a41a8c075c10e404dfb871fd98d4c5f6437650bbd5c",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/implementation-diagnostics-root-v1/capture-review.json",
+        "capture_review_members_reopened": 64
+      },
+      "tar_member_count": 64,
+      "manifest_entry_count": 63,
+      "manifest_sha256": "29f4fd37a0378a06506c76d2dbb782845b7d3db67029d9fe807a4ece9a7f2ce0",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "legal-neighbor-originals-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/legal-neighbor-originals-root-v1/capture.tar.gz",
+        "bytes": 420508,
+        "sha256": "1e405ba2abd32196e014abad49790e3b21f237961048a9082f710bd3e342585d",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/legal-neighbor-originals-root-v1/capture-review.json",
+        "capture_review_members_reopened": 78
+      },
+      "tar_member_count": 78,
+      "manifest_entry_count": 77,
+      "manifest_sha256": "4384d9cdc4d3663fd7274dd00881fd2b095ee0b2226968d2d7fdd0cacab90523",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "msrv-root-v2",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/msrv-root-v2/capture.tar.gz",
+        "bytes": 662402,
+        "sha256": "431f01aea451976ecf426063fcbee306dbba6dc57a9fb7dba1b295b16d33b384",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/msrv-root-v2/capture-review.json",
+        "capture_review_members_reopened": 18
+      },
+      "tar_member_count": 18,
+      "manifest_entry_count": 17,
+      "manifest_sha256": "a0ca3894d5fdf209ebaef68dff8486f0ece01defcfa71338b8132131ffa89699",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "original-baseline-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/original-baseline-root-v1/capture.tar.gz",
+        "bytes": 556303,
+        "sha256": "aa8bcba5035095c38ea2da82966f725acc41faeb6042262d05f3d11bb431d763",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/original-baseline-root-v1/capture-review.json",
+        "capture_review_members_reopened": 90
+      },
+      "tar_member_count": 90,
+      "manifest_entry_count": 89,
+      "manifest_sha256": "7d09800bd01300a3a843d30a1297ed978246e94240d4b7c8125f4c601c8c7bd8",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "own-product-ci-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/own-product-ci-root-v1/capture.tar.gz",
+        "bytes": 2442413,
+        "sha256": "a48af9424e726a0f368f5f8889dd1a6c34113189e4de16bcab9fa71c47b8ff75",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/own-product-ci-root-v1/capture-review.json",
+        "capture_review_members_reopened": 118
+      },
+      "tar_member_count": 118,
+      "manifest_entry_count": 117,
+      "manifest_sha256": "daf5a3a8516096b962acda6d5dc4d291ef256584e6a52982fc930763c45998f6",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "public-expected-red-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/public-expected-red-root-v1/capture.tar.gz",
+        "bytes": 524846,
+        "sha256": "6446fce06d8e58b1bee9dbe9187a810f5d306fe6320e20028a18549b4be3c7df",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/public-expected-red-root-v1/capture-review.json",
+        "capture_review_members_reopened": 10
+      },
+      "tar_member_count": 10,
+      "manifest_entry_count": 9,
+      "manifest_sha256": "9bb30d40f8b4dc5394069aeff27d8b47d5293e6d70782a49c1350f6b00b5594f",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "supplement-baseline-matrix-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/supplement-baseline-matrix-root-v1/capture.tar.gz",
+        "bytes": 441885,
+        "sha256": "74d6a2190fae7f10d7fe1962260dedd3765a9d000ec467b2ff4faa16c32c1410",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/supplement-baseline-matrix-root-v1/capture-review.json",
+        "capture_review_members_reopened": 214
+      },
+      "tar_member_count": 214,
+      "manifest_entry_count": 213,
+      "manifest_sha256": "9b382731586ee11c17705fe1c8ef07e054915328761c9b57a82d50acc007aaad",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "supplement-collector-failure-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/supplement-collector-failure-root-v1/capture.tar.gz",
+        "bytes": 202733,
+        "sha256": "efe21d2828e8414ce3f74605e22bd89cd6dfb7991853031d4f18eeeea4c70bd7",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/supplement-collector-failure-root-v1/capture-review.json",
+        "capture_review_members_reopened": 25
+      },
+      "tar_member_count": 25,
+      "manifest_entry_count": 24,
+      "manifest_sha256": "1db33cbf01f14e4a2c71655f6e583acccd37d11d4789cb5e4ca741e78385a283",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "supplement-originals-api-root-v2",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/supplement-originals-api-root-v2/capture.tar.gz",
+        "bytes": 964907,
+        "sha256": "b263f82ac119055fe4ad3cebf8c4d3d77fe2008a51f49dd2f18bb3b1e8388d2d",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/supplement-originals-api-root-v2/capture-review.json",
+        "capture_review_members_reopened": 169
+      },
+      "tar_member_count": 169,
+      "manifest_entry_count": 168,
+      "manifest_sha256": "4474a4220d8ae591f80b8881b8266290a08aebb2357ffc4c4ad7e3fd09e4e6fa",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "workspace-acceptance-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/workspace-acceptance-root-v1/capture.tar.gz",
+        "bytes": 3439102,
+        "sha256": "c05a5d1a6ddcc5db5c72bed06e4ac94baa7a6db422e284fbccaca8e1e8ab8736",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results/workspace-acceptance-root-v1/capture-review.json",
+        "capture_review_members_reopened": 433
+      },
+      "tar_member_count": 433,
+      "manifest_entry_count": 432,
+      "manifest_sha256": "ce49f8bfa2210527a9229319cd5e55e69e2f9b9d0db3210f96044a85de878706",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    }
+  ],
+  "verification_tool": {
+    "path": "/private/tmp/jarde-prefixed-retry-all-archives-luna-v1-20261018/audit_archives.py",
+    "sha256": "238a90dc4cd1b903753f1b9dc033150ae219bf25b6333ae3e3faa4a56beb4c84",
+    "source": "#!/usr/bin/env python3\n\"\"\"Read-only verification of capture.tar.gz archives against adjacent reviews/manifests.\"\"\"\nfrom __future__ import annotations\nimport hashlib\nimport json\nimport re\nimport sys\nimport tarfile\nfrom pathlib import Path, PurePosixPath\n\nsys.dont_write_bytecode = True\nRESULTS = Path('/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results')\nOUT = Path('/private/tmp/jarde-prefixed-retry-all-archives-luna-v1-20261018')\nHEX = re.compile(r'^[0-9a-f]{64}$')\n\nclass AuditError(Exception):\n    pass\n\ndef need(ok: bool, msg: str) -> None:\n    if not ok:\n        raise AuditError(msg)\n\ndef sha_bytes(data: bytes) -> str:\n    return hashlib.sha256(data).hexdigest()\n\ndef sha_member(tf: tarfile.TarFile, member: tarfile.TarInfo) -> tuple[int, str]:\n    stream = tf.extractfile(member)\n    need(stream is not None, f'{member.name}: cannot read regular member')\n    digest = hashlib.sha256()\n    size = 0\n    with stream:\n        while True:\n            block = stream.read(1024 * 1024)\n            if not block:\n                break\n            size += len(block)\n            digest.update(block)\n    return size, digest.hexdigest()\n\ndef safe_member_name(name: str) -> bool:\n    if not name or '\\x00' in name or '\\\\' in name or name.startswith('/'):\n        return False\n    if re.match(r'^[A-Za-z]:', name):\n        return False\n    parts = name.split('/')\n    if any(part in ('', '.', '..') for part in parts):\n        return False\n    path = PurePosixPath(name)\n    return not path.is_absolute() and path.as_posix() == name\n\ndef audit_one(archive: Path) -> dict:\n    review_path = archive.parent / 'capture-review.json'\n    need(review_path.is_file() and not review_path.is_symlink(), f'{archive.parent.name}: capture-review.json missing or symlink')\n    review = json.loads(review_path.read_text(encoding='utf-8'))\n    raw = archive.read_bytes()\n    archive_bytes, archive_sha = len(raw), sha_bytes(raw)\n    need(review.get('archive_bytes') == archive_bytes, f'{archive.parent.name}: archive byte count differs from capture-review')\n    need(review.get('archive_sha256') == archive_sha, f'{archive.parent.name}: archive SHA-256 differs from capture-review')\n    need(type(review.get('members_reopened')) is int, f'{archive.parent.name}: invalid members_reopened')\n\n    with tarfile.open(archive, mode='r:gz') as tf:\n        members = tf.getmembers()\n        names = [m.name for m in members]\n        need(len(names) == len(set(names)), f'{archive.parent.name}: duplicate tar member path')\n        for m in members:\n            need(safe_member_name(m.name), f'{archive.parent.name}: unsafe/noncanonical path {m.name!r}')\n            need(m.isfile() and not m.issym() and not m.islnk(), f'{archive.parent.name}: non-regular tar member {m.name!r}')\n            need(m.size >= 0, f'{archive.parent.name}: negative tar size for {m.name!r}')\n        need(review['members_reopened'] == len(members), f'{archive.parent.name}: member count differs from capture-review')\n        need('manifest.json' in names, f'{archive.parent.name}: embedded manifest missing')\n        manifest_member = next(m for m in members if m.name == 'manifest.json')\n        stream = tf.extractfile(manifest_member)\n        need(stream is not None, f'{archive.parent.name}: cannot read manifest')\n        with stream:\n            manifest_bytes = stream.read()\n        manifest = json.loads(manifest_bytes.decode('utf-8'))\n        need(isinstance(manifest, dict), f'{archive.parent.name}: manifest is not a member map')\n        expected_names = set(manifest)\n        actual_names = set(names) - {'manifest.json'}\n        need(expected_names == actual_names,\n             f'{archive.parent.name}: manifest/member set mismatch (missing={sorted(expected_names-actual_names)[:3]}, unlisted={sorted(actual_names-expected_names)[:3]})')\n        checked = []\n        for m in members:\n            if m.name == 'manifest.json':\n                continue\n            expected = manifest[m.name]\n            need(isinstance(expected, dict) and set(expected) == {'bytes', 'sha256'},\n                 f'{archive.parent.name}: malformed manifest entry for {m.name!r}')\n            need(type(expected['bytes']) is int and expected['bytes'] >= 0 and isinstance(expected['sha256'], str)\n                 and HEX.fullmatch(expected['sha256']) is not None,\n                 f'{archive.parent.name}: invalid manifest digest record for {m.name!r}')\n            actual_size, actual_sha = sha_member(tf, m)\n            need(m.size == actual_size == expected['bytes'], f'{archive.parent.name}: byte count mismatch for {m.name!r}')\n            need(actual_sha == expected['sha256'], f'{archive.parent.name}: SHA-256 mismatch for {m.name!r}')\n            checked.append({'path': m.name, 'bytes': actual_size, 'sha256': actual_sha})\n    return {\n        'name': archive.parent.name,\n        'archive': {'path': str(archive), 'bytes': archive_bytes, 'sha256': archive_sha,\n                    'capture_review_path': str(review_path), 'capture_review_members_reopened': review['members_reopened']},\n        'tar_member_count': len(names),\n        'manifest_entry_count': len(checked),\n        'manifest_sha256': sha_bytes(manifest_bytes),\n        'checks': {'archive_review_pin': 'passed', 'unique_paths': 'passed', 'safe_canonical_paths': 'passed',\n                   'regular_members_only': 'passed', 'manifest_set_exact': 'passed',\n                   'member_bytes_and_sha256': 'passed'},\n        'members': checked,\n    }\n\ndef main() -> int:\n    OUT.mkdir(parents=True, exist_ok=True)\n    archives = sorted(RESULTS.glob('*/capture.tar.gz'))\n    entries, errors = [], []\n    for archive in archives:\n        try:\n            entries.append(audit_one(archive))\n        except Exception as exc:\n            errors.append({'name': archive.parent.name, 'error': f'{type(exc).__name__}: {exc}'})\n    report = {\n        'schema': 'prefixed-retry-capture-archive-audit-v1',\n        'status': 'passed' if archives and not errors else 'failed',\n        'results_root': str(RESULTS),\n        'archive_count_discovered': len(archives),\n        'archive_count_verified': len(entries),\n        'error_count': len(errors),\n        'archives': entries,\n        'errors': errors,\n        'limitations': ['This audit covers only capture.tar.gz files discovered at execution time.',\n                       'The later final own-CI archive was not present in this audit and is not claimed as verified.',\n                       'No archive was extracted to disk; member bytes were streamed from tar readers.'],\n    }\n    output = OUT / 'archive-audit.json'\n    output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\\n', encoding='utf-8')\n    print(json.dumps({'status': report['status'], 'archives': len(archives),\n                      'verified': len(entries), 'errors': len(errors), 'output': str(output)}, ensure_ascii=False))\n    return 0 if report['status'] == 'passed' else 1\n\nif __name__ == '__main__':\n    raise SystemExit(main())\n"
+  },
+  "method": "Root imported reviewed audit_one and streamed every tar member; no extraction or mutation. This final run includes own-product CI."
+}

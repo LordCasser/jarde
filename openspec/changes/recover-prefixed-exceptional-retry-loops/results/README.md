@@ -1,12 +1,12 @@
 # 实现与完整对照证据
 
-当前5/7；实现、对抗门和完整整类对照已通过，MSRV已通过；双fresh workspace及产品自身CI尚待完成。本片不增加CF-11或71/612整体计数。最终候选CLI为63070096B、SHA256 `25adeaf312a7644c7d4c73191ef1264af0378cf78139d35a890377e3c86371ce`。
+当前7/7；实现、对抗门、完整整类对照、MSRV、双fresh workspace及产品755fd2c自身CI39080067969均已root接受。本片不增加CF-11或71/612整体计数。最终候选CLI为63070096B、SHA256 `25adeaf312a7644c7d4c73191ef1264af0378cf78139d35a890377e3c86371ce`。
 
 最终24公开请求核176方法配置全结构化、全部物理BCI、4344同方法来源引用和UTF8边界；default/all相同，152非目标方法配置的正文/质量/fallback/map不变。214矩阵命令/428raw中，Jarde48完整原样编译、96双JVM运行864case逐字同原oracle；JADX22编译、44运行404case逐字同原，另两javac8 fullbundle major55工具边界无runtime。保留全部方法，未修生成Java；独立checker通过，root另重新解析70实际重编class的完整facts（仅JSON tuple/list归一）和逐条运行case数。
 
 final-focused-v5：fmt、Java库472/0、公开3/0、reader181/0、标准指纹5/0/1与regenerator1/0、CI同款Clippy及CLI build通过，exact clean/target absent。唯一来源变化为regenerator新增31fixture项，原2325项完全不变。先前的候选拒绝、临时诊断、reader普查计数失败另存，不能拼接为最终成功。
 
-下面早期归档仍按旧产品 `cf857aba` 的原范围解释；旧“未恢复”状态不代表当前候选。前13归档1486成员已root另独立逐字重开；新增MSRV归档18成员由capture逐字复开，最终交付再统一核验。
+下面早期归档仍按旧产品 `cf857aba` 的原范围解释；旧“未恢复”状态不代表当前候选。最终16归档2055成员已root独立逐字重开；2039个manifest payload的bytes/SHA全通过，见archive-verification-root.json。
 
 | 归档 | 实际范围 | 成员 / bytes / SHA256 |
 | --- | --- | --- |
@@ -23,8 +23,11 @@ final-focused-v5：fmt、Java库472/0、公开3/0、reader181/0、标准指纹5/
 | final-api-root-v1 | 24命令/48raw，176结构化方法配置/4344来源引用/全部物理BCI、身份、UTF8及非目标/default-all稳定；旧index与只重pinterminal索引的修复明确保留 | 105 / 2749324 / fc1a2949d71e1ac99aa3d1217ba45dc0965bf259dccd54251309377ab4cbb033 |
 | final-original-matrix-root-v1 | 69命令/138raw，24整类编译；Jarde16成功/32运行224case，JADX6成功/12运行84case，2工具边界；全源码/方法/隔离CP与实际class复核 | 182 / 477779 / e7448d615812766ad8bd8cde5533c03fe16055209c3e114625fe7b944a6fb4ed |
 | final-supplement-matrix-root-v1 | 145命令/290raw，48整类编译全成功；Jarde32/64运行640case、JADX16/32运行320case；8方法全保留、双编译器/VM、异常身份与效果次数核 | 371 / 442627 / d80a40d1c7243dc1cff9759bdd46338635ca3136a7d189c7edc3906519e01857 |
-
 | msrv-root-v2 | 显式rustup run 1.88.0实际版本及workspace/all-targets/all-features check通过、来源恒同final-focused-after、exact clean；保留首次cargo launcher拒绝，不计编译失败 | 18 / 662402 / 431f01aea451976ecf426063fcbee306dbba6dc57a9fb7dba1b295b16d33b384 |
+| workspace-acceptance-root-v1 | 两fresh seed各383targets/101批/3726通过/0失败/98忽略；19具名门每seed唯一通过，5051来源逐blob/mode绑定755fd产品、两seed逐target同值；旧collector错配计数表保留并按真实Running重建，默认栈/守卫/exact clean/target absent均通过 | 433 / 3439102 / c05a5d1a6ddcc5db5c72bed06e4ac94baa7a6db422e284fbccaca8e1e8ab8736 |
+| own-product-ci-root-v1 | 755fd产品自身CI39080067969：4jobs/52成功步骤，两seed各383target/3726通过/0失败/98忽略、逐target等值、10关键门每seed唯一通过；52实际命令/104raw、45git-show/current pins；保留gh UNKNOWN STEP与首次checker拒绝，追加官方逐步骤ZIP接受 | 118 / 2442413 / a48af9424e726a0f368f5f8889dd1a6c34113189e4de16bcab9fa71c47b8ff75 |
+
+关闭后的OpenSpec实际apply为all_done/7-of-7，strict全368/0；六raw及root核验在`closing-spec-root-v1`。
 
 所有归档含manifest，capture完成后root另逐成员核bytes/SHA重开。CLI二进制未归档，精确pin在收据中；诊断CLI不能当产品。collector/checker/driver/诊断及复用guard源码快照已打包，外部JDK与依赖仍按原绝对路径及SHA收据固定，不声称已随包提供所有依赖。
 

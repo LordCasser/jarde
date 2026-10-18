@@ -2,21 +2,25 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
-## 2026-10-18 当前：TestNestedLoops3 复合循环候选已通过首轮13门，完整交付未完成
+## 2026-10-18 当前：TestNestedLoops3 已完成产品验收（7/7）
 
-finThrow5/5、nestedFin16/16、父finally7/7、exception-only11/11、直接数组构造7/7、switch7/7均已交付，勿重复实现。持续推进固定71/612账本；本片不增加整体单元数。当前产品基线cf857aba，规划提交0d49f6381已推送，本片产品交付门进行中。
+finThrow5/5、nestedFin16/16、父finally7/7、exception-only11/11、直接数组构造7/7、switch7/7均已交付，勿重复实现。持续推进固定71/612账本；本片不增加CF-11或整体单元数。
 
-`recover-prefixed-exceptional-retry-loops` strict通过，apply当前5/7：原始完整TestNestedLoops3冻结、首拒和全部旧基线已接受，实现与对抗门已实际通过。新candidate已root审读集成Luna private v2，复用Loop/Try/Frame，区分outer header、inner retry header、protected、normal join与outer exit；只允许direct或一个纯latch bridge，不改Builder或异常normal-flow投影。
+产品 `755fd2c84ecbe204d03f0ff608d3a711a1bea494` 已推送main。`recover-prefixed-exceptional-retry-loops` 当前7/7，关闭后apply all_done、strict368/0已实际确认。自身[CI39080067969](https://github.com/LordCasser/jarde/actions/runs/39080067969)已root独立接受：4jobs/52步骤成功，两seed各383target/3726通过/0失败/98忽略、逐target相同，10新关键门每seed唯一通过；52实际命令/104raw及官方逐步骤ZIP已归档，gh的UNKNOWN STEP显示限制与首次checker拒绝保留。root独占共享编辑/Git/工具链，Luna只在私有目录准备与审阅。
 
-root首次focused编译成功但2项拒绝；实际诊断确认facts完整、inner body四叶(14 outer break/26 outer break/33 inner break/37 inner continue)正确，If reader的residual next为outer exit40。root修正handler边界None契约、catch完整Sequence，并加受预算的全部末端闭合与精确transfer multiset校验后，focused-root-v3实测内部10/0、公开3/0，CLI63069920B/SHA9c2f0d8cd385c64fb9bca70aaba1ec2b82eaa0f85f02e27e88ff6fa777cb6233，所有命令guard通过、来源未变、exact clean/target absent。该CLI尚未做最终整类重编运行，不能计交付。
+实现复用Loop/Try/Frame，不新增公共AST或pass。局部复合证明区分outer header、inner retry header、protected、normal join、outer exit，只接受direct或一个纯latch bridge；核真实物理/canonical row、SSA/effects、完整owner入口/出口/异常/clone闭合及精确transfer multiset。root已修正handler边界None契约、catch完整Sequence、封闭If residual，并补齐扫描/索引/checkpoint计费。真实外来边、错行/clone、effectful bridge、catch→outer及预算/取消/期限均有对抗门；内部metamorphism不冒称合法JVM输入。
 
-随后只读对抗审查发现两处计费缺口，root已将whole-method transfer source扫描改为bounded owner扫描、反复branch target扫描改为一次受预算索引，并计checkpoint复制成本；后续final-focused-v5已编译并实测Java库472/0、公开3/0、reader181/0；fmt、CI同款Clippy、标准指纹和CLI均已通过，唯一source变化为标准regenerator新增31条新fixture，原2325条完全不变。已集成Luna v3 physical-row错配、pre-cancel/deadline单测，v4已root集成为实际生产closure policy，直接消费完整CanonicalBlockId；新门使用真实canonical rows与Reader产生的clone identity做entry/exit/clone局部metamorphism。该metamorphism不是合法wholeclass/JVM输入，不能混算运行对照。root独占共享编辑/Git/工具链，Luna只私有准备。
+最终CLI `/private/tmp/jarde-prefixed-retry-final-focused-root-v5-20261018/candidate-cli`：63070096B，SHA256 `25adeaf312a7644c7d4c73191ef1264af0378cf78139d35a890377e3c86371ce`。fmt、CI同款Clippy、472 Java库、3公开、181 reader、标准指纹及regenerator通过；仅新增31指纹，旧2325项不变。MSRV1.88 workspace/all-targets/all-features通过。
 
-完整已接受基线见本change results索引8归档/734成员：原始24命令/48raw、整类matrix37命令/74raw（Jarde16编译失败无runtime；JADX6成功/12运行84case，另两major55工具边界）；八真实诊断请求；旧public2项质量前置RED；首次补充collector参数失败6命令；补充51命令/102raw、8class/16原JVM160case和16Jarde API；补充整类81命令/162raw（Jarde32编译失败无runtime、JADX16编译/32运行320case）；两合法邻类26命令/52raw、8class/16原JVM160case。原样全部方法保留，不手修生成Java，旧失败不混入通过计数。
+最终24公开请求核176结构化方法配置、全部物理BCI、4344同方法来源引用/UTF8；default/all与152非目标投影稳定。整类matrix214命令/428raw：Jarde48完整原样编译/96双JVM/864case同原oracle；JADX22编译/44运行404case同原，另两javac8 fullbundle major55工具边界无runtime。root独立checker通过，另重解析70实际重编class；全部方法保留、未手修生成Java。旧fallback、缺返回、首次collector参数错误、临时实现拒绝与reader普查计数失败均独立保留，不混算成功。
 
-永久fixture20class及Java/driver已复制并pin；public v3原2测试加8个补充pure-bridge输入已在focused-root-v3通过。同一最终CLI63070096B/SHA25adeaf312a7644c7d4c73191ef1264af0378cf78139d35a890377e3c86371ce的24公开API通过：176方法配置全结构化、4344来源引用全物理BCI/UTF8/身份，default/all与152非目标投影稳定。整类最终matrix214命令/428raw：Jarde48编译/96双JVM864case同原；JADX22编译/44运行404case同原，另两javac8 fullbundle major55工具边界不计runtime。独立checker全通过，root另重解析70实际class并逐条数case；API index末写前pin的collector bookkeeping错误已保留旧index并只重pin索引，两family receipts/24raw响应未改。
+两fresh workspace已独立接受：每seed383targets/101批/3726通过/0失败/98忽略，19关键门每seed唯一通过；动态inventory与逐target计数相同，5051来源逐git blob/字节/mode绑定755fd产品。默认栈、5GiB余量/target1GiB/每秒守卫、finally exact clean通过，target不存在。旧workspace collector把artifact顺序误当运行顺序，root保留原表并按stderr Running重建，见独立债务，不混入产品修改。
 
-MSRV1.88全workspace/all-targets/all-features已通过，来源恒同final-focused-after且exact clean；首次cargo launcher拒绝单列归档。下一步完成（全Java库、reader、公开3门、指纹、CI同款Clippy、CLI）、原8+补充16 API及整类双javac8/23/双JVM、P5/MSRV/双fresh workspace/自身CI，再提交交付。最终任务状态只按实际门勾选。
+证据索引为本change `results/README.md`；最终16归档2055成员已root独立逐字复开。关闭文档提交使用[skip ci]，不得把755fd产品CI说成后续文档HEAD自身CI。最终实际HEAD/远端/clean与无target收据将保存到 `/private/tmp/jarde-prefixed-retry-final-head-root-v1-20261018/execution.json`，接续时先核真实Git状态。
+
+下一项固定审计 `TestNestedLoops5` 已实际取得完整基线：`/private/tmp/jarde-testnestedloops5-baseline-run-root-v3-20261018`，28命令/56raw、八Jarde格三方法完整；testFor全fallback/jre_region_arms_do_not_meet(block9)，全部29物理BCI在解释map中有来源；constructor/check结构化。独立review已接受。原core四双VM运行三case均7，check两JVM23实测通过；check的真实JadxAssertions依赖major55，Java8加载边界另列。完整矩阵在 `/private/tmp/jarde-testnestedloops5-rebuild-matrix-run-root-v1-20261018`，42命令/84raw、24原样编译：Jarde8javac23缺返回/8javac8框架边界；JADX4javac23成功，8coreVM24case+4check23case同原，4check8边界。root独立matrix reviewer已通过，无语义不匹配；不能混算编译失败为运行成功。
+
+尚未为NL5新增机制或改共享Rust。Luna私有诊断patch经root逐块审读，修正未执行草稿的branch offset@18及block9/terminal11 gate后，准备于 `/private/tmp/jarde-testnestedloops5-diagnostic-root-v4-20261018`；仍未apply/编译/执行。下一步实际首拒probe，记录branch9→prefix14→child header16的Frame/SSA/现有continuation拒绝点，再决定最小OpenSpec及Luna实现。两参数化有限嵌套for补充源/独立driver在 `/private/tmp/jarde-testnestedloops5-parameterized-probes-prep-luna-v1-20261018`，六case计划覆盖真实早返回/正常路径/同实例尾部效果；尚未编译或采oracle。原样本的早返回在常量范围不可达，不能仅以原case返回7证明早返回语义。
 
 ## 2026-10-18 最新接续：switch 已完成产品验收（7/7）
 
