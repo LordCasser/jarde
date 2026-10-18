@@ -1,0 +1,93 @@
+{
+  "status": "passed",
+  "scope": "four new Seq2 captures only; prior prep/static archives remain separately reviewed",
+  "auditor_sha256": "238a90dc4cd1b903753f1b9dc033150ae219bf25b6333ae3e3faa4a56beb4c84",
+  "archives": [
+    {
+      "name": "cf11-sequential-loops2-baseline-root-v1",
+      "archive": {
+        "path": "openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-baseline-root-v1/capture.tar.gz",
+        "bytes": 1000478,
+        "sha256": "b7473a49fcc3aae45fb83e23b80b5a43297f5d426a87608b7c072fac32e45774",
+        "capture_review_path": "openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-baseline-root-v1/capture-review.json",
+        "capture_review_members_reopened": 91
+      },
+      "tar_member_count": 91,
+      "manifest_entry_count": 90,
+      "manifest_sha256": "da97b2f6fe3f8729c14ce00f4e6650bec35cbe13a10f0b9a78db4f864a503e97",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "cf11-sequential-loops2-generated-matrix-failed-root-v1",
+      "archive": {
+        "path": "openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-generated-matrix-failed-root-v1/capture.tar.gz",
+        "bytes": 267056,
+        "sha256": "56fa2c8af6679fc8c30ba28a31d5c9e5fb11d7320b65ed3cc2735d8bd3ce9591",
+        "capture_review_path": "openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-generated-matrix-failed-root-v1/capture-review.json",
+        "capture_review_members_reopened": 18
+      },
+      "tar_member_count": 18,
+      "manifest_entry_count": 17,
+      "manifest_sha256": "96d53496828a11f0a2d20bfaadd40fc1114d4e4758190b0d153ceb7b42dc7f5c",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "cf11-sequential-loops2-generated-matrix-root-v2",
+      "archive": {
+        "path": "openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-generated-matrix-root-v2/capture.tar.gz",
+        "bytes": 572390,
+        "sha256": "3769506416378743e70f363827e9e29ab52fc131e60eba50431b1e04a495fea9",
+        "capture_review_path": "openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-generated-matrix-root-v2/capture-review.json",
+        "capture_review_members_reopened": 260
+      },
+      "tar_member_count": 260,
+      "manifest_entry_count": 259,
+      "manifest_sha256": "2a4fa0c86c16a9889064ef31460c0faa454d0136caac1bccf43d89a5430654c4",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "cf11-sequential-loops2-review-tools-root-v1",
+      "archive": {
+        "path": "openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-review-tools-root-v1/capture.tar.gz",
+        "bytes": 46172,
+        "sha256": "042ccb672013f46c1b453c91b9572d9cb310e8eeda4b6eaea4cf36a806f35962",
+        "capture_review_path": "openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-review-tools-root-v1/capture-review.json",
+        "capture_review_members_reopened": 22
+      },
+      "tar_member_count": 22,
+      "manifest_entry_count": 21,
+      "manifest_sha256": "eaccbc518c8f916f426e926e8d18e8d67215b896310601494c3528695a9d7126",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    }
+  ],
+  "archive_count": 4,
+  "member_count": 391
+}

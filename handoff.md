@@ -4,7 +4,19 @@
 
 先按下方第一节接续；后续章节是已完成产品的历史检查点，其中的“下一项”和提交号不代表当前状态。
 
-## 2026-10-18 当前：Seq1 产品验收完成，下一固定项 Seq2
+## 2026-10-18 当前：Seq2 完整对照接受，下一固定项 TestNestedLoops
+
+持续goal active。finThrow5/5、nestedFin16/16、父finally7/7及后续Seq1/NL3/NL5已交付，勿重做。Seq2当前输入由既有产品 **ee013adb35711366d0aff2f774ee633b34c06082** 覆盖，无新增Rust/机制/OpenSpec实现任务；本次只更新证据与账本，不冒称新增产品CI或整个CF11/71/612完成。
+
+root完整读工具/源码并实际执行、独立接受原始基线24命令48raw和完整生成源码矩阵111命令222raw。Jarde16完整选定子类编译/64隔离运行512case均同原；JADX2完整outer+child编译/8运行64case同原，另2个javac8框架major55/expected52边界无runtime。原始64case另计。default原{'a'}与configured128注入分开；UTF16/identity/异常类型稳定，异常消息raw不跨JDK硬比。18成功格各实际wrong CodeSource拒绝，20class/60Code完整双parser库存/access/BCI接受；driver构造器仅核存在、不称运行。8Jarde请求均3方法Structured/无fallback/全BCI/default-all正文与map一致。
+
+CLI仍为aabf62fe373876d176e6001bf3ed1fd84f80d2169ff5e787c4095c5d253c63d9（63164416B）。3298来源等原构建3187不变文件加111已有exception-only证据/工具；CLI/依赖/JDK/来源前后不变，5GiB/target1GiB/defaultstack守卫接受，target不存在。首matrix driver-MUTF8解析失败保持1命令/0产品格/0runtime，独立保留；后续只收窄driver工具解析，不改目标完整校验。checker Path/表示/Namespace遮蔽和root草稿失败同样保留，最终root-v5实际accepted。
+
+证据为 `openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-{baseline-root-v1,generated-matrix-root-v2,generated-matrix-failed-root-v1,review-tools-root-v1}`。四包391成员全部逐字复开，报告 `cf11-sequential-loops2-archive-review-root-v1.json`。完整范围、原始失败与最终review见各README/archive；历史下方“Seq2尚未执行”已过时。
+
+**下一固定 TestNestedLoops**：root已读原始完整Java/黄金typed-foreach断言；历史接受是完整选定转写类，不冒称原始outer全编译。当前helper与永久测试已支持iterator声明/初始化分离和Elevated owner，旧BCI13/42不能当current首拒；需先核当前实际API输出，区分Object foreach+String cast与typed String header/Signature呈现。Luna已获派私有完整原始基线collector/standalone reflection driver准备，尚未执行；root审后fresh out运行，取真实首拒再写OpenSpec派Luna最小实现。root独占共享/Git/Cargo/JDK/JADX/CLI/网络，Luna仅私有准备/只读。不重做Seq1/NL3/NL5、不先新增solver/pass。
+
+## 2026-10-18：Seq1 产品验收完成（历史检查点）
 
 持续goal active，继续在当前聊天按71单元/612测试文件账本推进。finThrow5/5、nestedFin16/16和父finally7/7均已交付，勿重做。本次 `recover-statementful-loop-headers` **8/8**、`recover-field-write-test-copies` **5/5**；局部通过不增加CF11或71/612整体单元数。
 
