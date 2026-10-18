@@ -75,3 +75,9 @@ Jarde 现有相关回归：`CARGO_TARGET_DIR=/tmp/jarde-cf11-target CARGO_INCREM
 完整原始outer+child已root实际编译和接受，见[typed foreach基线](../../../changes/recover-typed-list-foreach-elements/results/README.md)。原始20命令/4JVM32case；生成75命令、20编译18成功、36JVM288case同原、18wrong CodeSource拒绝。8API两个方法均Structured，已有List<String>形参和两层Object foreach；不是旧BCI13/42的CFG拒绝。JADX两份实际源码均String头。历史表中TestNestedLoops“加法/减法”断言描述不准确：当前原始黄金检查两个typed String foreach以及equals/add/remove等文本，不含运行check。
 
 新OpenSpec `recover-typed-list-foreach-elements` 1/7，Luna私有实现中，尚无产品变更。复用泛型事务/同次AST，仅将受证元素cast吸收入typed头并保留原body绑定；原名头折叠和其它Object包装仍独立，不能据此宣称整条黄金、CF11或71/612完成。原始、生成源码与raw方法map各自核验，不把投影后文本视为map坐标。
+
+## 2026-10-18 typed foreach 产品候选与双轮验收
+
+最终代码e69a3494c（typed产品b78b34ed6加独立bulk计数区间修复）已推送。typed change现6/7：原始完整生成36JVM/288case、控制Jarde48JVM/912case同原；最终85ca CLI以20同argv API核除usage外全部JSON/完整Java/raw方法map逐字对应，显式复用既有JDK矩阵，未声称重跑。JADX8格String→Integer整类编译失败及2个原始outer框架边界保留。两fresh native各385目标/3759通过/0失败/98旧忽略，全部3857具名结果逐target一致；来源并集5150逐Git blob/bytes/mode绑定e69。自身CI39112513084尚待完整接受，不能提前计交付。
+
+本片只把受证List<E>/cast结合为typed头，保留合成头名和原Assign/Declare；原名头折叠、冗余iterator/Object包装仍独立，不增加CF11/71/612完成数。下一固定关系缺口与JADX算法参考见[原名绑定分析](../../java-syntax-2026-10-18/cf11-foreach-original-bindings-analysis-root-v1/README.md)，仅分析、未新建Spec/实现；原始黄金并未整条追平。
