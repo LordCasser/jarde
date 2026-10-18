@@ -1,12 +1,14 @@
-## 2026-10-19 最新检查点：indexed List 5/6，尾部预期修正已过
+## 2026-10-19 最新检查点：indexed List 本地完整验收通过，自身 CI 已完整接受，主线关闭接续
 
-本节优先。finThrow5/5、nestedFin16/16及前片已交付勿重做。b7旧Iterable断言失败、e727旧lambda golden断言失败均已真实保留，两个产品CI均未接受。第二native v2在guard命令74（计划第73批）失败，仅sum(List)I精确generic拒绝说明一行变化，不是default/all差异。Luna/root只迁移两处历史比较的此marker，旧evidence和正文/VM不变；修后6/0。
+本节优先。finThrow5/5、nestedFin16/16及前片均已交付，勿重做。当前 `recover-proved-indexed-list-parameter-signatures` 仍5/6，实际产品 **5bd65ef2f36999c3d0a3b4477a412a0ef532c956** 已推main；自身 **CI39153653464** 已root验收全部4jobs/52独立官方step，两seed各385目标/3777-0-98且全部具名结果相同，76精确门各轮一次。b7的Iterable旧预期、e727的两处lambda诊断旧预期和reader库存失败都保留在results归档。
 
-余下目标先逐一预跑；reader180/1实际暴露两新fixture库存未更新。root与Luna独立字节核算每class10bodies18branch/无handler-jsr，仅cfg(test)tuple/旁注更新。第一remainder失败前成功子集1344/0/17；第二remainder仅reader及未执行尾部295/0/3、CIClippy/最终CLI均过，不能拼作fresh通过。最终构建 `/private/tmp/jarde-indexed-list-signatures-reader-and-remainder-root-v1-20261019/execution.json`，来源3198不变、target absent，CLI90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c/63809216B仍与完整64VM832case矩阵逐字同一文件；生产逻辑未再改。
+fresh native v3真实385目标/101批/**3777通过/0失败/98旧忽略**，31精确门各一次；3198构建、5151native来源并集5158按Git blob/模式/当前bytes绑定5bd。独立验收 `/private/tmp/jarde-indexed-list-signatures-native-acceptance-root-v4-20261019/review.json` 与 `product-binding.json`；验证wrapper v3误分类reader lib的失败保留，v8只修分类后重新核收据，未重跑测试。target已exactclean且不存在，无Cargo待续。
 
-接续：将本测试修正提交推送为新产品，找其自身CI后fresh v3 seed5350648285461741569；root实际验收31native/76CI具名门、官方全部step/两seed、Git/source/CLI绑定再勾3.2。准备脚本v7已root静态审查，17source/9fixture，不能用旧产品CI。结果与全部失败入口本change/results/README.md。root独占共享/Git/网络/工具链，Luna私有；Cargo期间禁source/Gitmutation/network/manualJDK/CLI，5GiB/1GiB/defaultstack/每秒guard/exactclean。持续goal active，CF11/71/612不增整项计数。
+最终CLI90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c/63809216B与已验收完整64VM832case矩阵逐字相同，不冒称新VM运行。实际官方ZIP/17source/9fixture与全部门已收；v8 fixture库存清单顺序的真实前置失败保留，root v9只交换两行，所有实质检查不变。最终405成员归档逐字复开见results/final-native-and-own-ci-root-v1。接续同步账本、strict/apply与干净main关闭3.2。产品后的文档提交不能冒称另跑产品CI。持续goal active，CF11/71/612整项计数不变。
 
-下一固定TestLoopConditionInvoke只读memo和完整collector私有v2已准备/审查，未运行未确认缺陷；statementful header线性体与早返certificate组合仅候选，无新spec/实现。
+下一固定 **CF07 TestLoopConditionInvoke** 已实际完成基线与完整生成对照：原始4VM16case均false（next恒0，不能证明命中分支）；当前Jarde16次整类重编因缺return失败/零JardeVM，JADX2次JDK23重编4VM16case同原，2次JDK8框架major55失败不运行。两次临时诊断均已精确恢复共享源码，最终build.rs SHA d22ee8f1c40d0a98a174e759904a6a97313b85728bb3056d4aeba18ca8704df9。实际两profile均证明assignment目标int、RHS Some(Char)/next()，被exact equality拒绝；非usage诊断输出完全同产品。现有region均structured，无需新region机制。root已审现有widens，下一最小方案为保留strict已知类型与exact equality，仅加合法Byte/Short/Char→Int；RHS一次/源类型/LocalAssign及origin/publication/rollback不变，不引入meeting_position对unknown/reference/narrowing的宽松规则。动态控制与Spec尚待，新feature未实现。
+
+root独占共享/Git/网络/工具链，Luna只私有；Cargo期间禁source/Gitmutation/network/manualJDK/CLI，5GiB/target1GiB/defaultstack/每秒guard/exactclean。先核实际CI和进程，勿重复已过本地测试。
 
 ## 2026-10-19 当前检查点：indexed List 5/6，修正旧 Iterable 预期
 

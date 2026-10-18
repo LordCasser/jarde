@@ -1,6 +1,6 @@
 # Indexed List 参数声明：当前证据入口
 
-当前 tasks **5/6**：Luna v2/v3实现已集成，root focused、适用广门、最终完整源码与双VM对照均接受。产品提交、自身CI及fresh workspace尚待，不提前关闭。最终CLI SHA `90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c`，63809216B；基线仍为096a764dc/CLI56a589ef。
+当前 tasks **5/6**：Luna v2/v3实现已集成，root focused、适用广门、最终完整源码与双VM对照均接受。实际产品5bd65ef2已提交推送，fresh workspace已接受；自身CI39153653464全部通过并已独立验收；关闭文档及干净主线核验接续。最终CLI SHA `90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c`，63809216B；基线仍为096a764dc/CLI56a589ef。
 
 - `planning-and-dispatch-root-v1/dispatch.json`：实际Luna私有实现派发、作用域、共享写权限与集成前置条件。
 - `planning-and-dispatch-root-v1/root-implementation-review-decisions.json`：root及独立对抗审查，v1实现退回的具体修正；同目录保留原审和撤回的嵌套类型假问题。
@@ -46,3 +46,17 @@ Luna/root只在两处当前输出vs历史fixed比较中迁移这一条精确sum(
 首remainder失败前成功子集1344通过/17旧忽略，失败记录不提升为通过。第二remainder仅重跑reader和未执行尾部，实际295通过/0失败/3旧忽略，含reader181/0，CI Clippy/最终CLI构建/不变来源/清理全部接受。最终CLI仍90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c/63809216B，与完整64VM832case所用CLI逐字相同。上述片段不拼成fresh全workspace通过；还需新产品自己的CI和fresh v3。
 
 归档`lambda-and-fixture-census-corrections-root-v1`保存所有真实失败/差分/Luna/root独立库存/源和raw流。acceptance v4误把新gate加入继承字典被root拒绝；v7继承63不动、17source/9fixture文件、13额外CI具名检查（总76）和31个native具名检查，官方ZIP逐step检查不变，root仅静态审查未执行。
+
+## 2026-10-19 最终产品与 fresh native（仍5/6）
+
+实际产品5bd65ef2f36999c3d0a3b4477a412a0ef532c956已推。fresh v3真实385目标/101批，3777通过/0失败/98旧忽略，31精确门各一次；3198构建与5151native来源并集5158逐Git blob/模式及当前字节绑定产品。最终CLI90b/63809216B仍逐字同完整64VM832case矩阵，不声称额外VM。native验证wrapper v3误把reader lib分类为integration target的失败保留；v8只修该分类后实际重核收据和product binder，未重跑测试。target已exactclean且不存在。
+
+自身CI39153653464两轮workspace及指令边界oracle已过，其余Java检查仍运行，尚未接受。终态成功后须实际收官方ZIP及全部独立step、17source/9fixture、两seed和76精确门；3.2继续未勾选。
+
+## 2026-10-19 自身 CI 完整接受
+
+`final-native-and-own-ci-root-v1/capture-review.json`：405归档成员全部逐字复开，其中404证据成员再次与原始现场字节核对；归档SHA eaf348359b0cc04efb919d012ffce7b519a124741c19748ccf4875bd3c791bf5。实际CI采集32命令，另1命令收官方ZIP，独立verifier和root复核均接受。产品5bd自身CI39153653464四jobs、52独立官方step全部成功；两seed各385目标/3777通过/0失败/98既有忽略，全部具名结果一致，76精确门各轮一次。17source/9fixture、来源、CLI及实际产品绑定闭合，不用旧产品CI代替。
+
+私有v8采集器第一次因九项fixture清单把README排在NestedLoops2GenericControls前而在网络与输出目录创建前拒绝。root v9只交换两行清单顺序，保留所有库存/逐文件Git bytes/官方独立step/具名门检查；真实失败、修正diff和成功raw全部归档。不因私有采集器错误重跑CI或本地测试。此前v3 native验证器的reader lib分类失败亦保留。两处均非产品失败。
+
+主java8-recovery已同步，固定账本和handoff将记录当前实际验收；文档后继提交不冒称另跑5bd产品CI。本片不计CF11或71/612整项完成。
