@@ -1,0 +1,21 @@
+{
+  "name": "baseline-root-v2",
+  "archive": {
+    "path": "openspec/changes/fold-proved-foreach-local-bindings/results/baseline-root-v2/capture.tar.gz",
+    "bytes": 301574,
+    "sha256": "152de0d3d41b9de1dce8903c12593b0995f9517a15ae7b09aa40a38122b26a8d",
+    "capture_review_path": "openspec/changes/fold-proved-foreach-local-bindings/results/baseline-root-v2/capture-review.json",
+    "capture_review_members_reopened": 222
+  },
+  "tar_member_count": 222,
+  "manifest_entry_count": 221,
+  "manifest_sha256": "c69bd5d7687c79c53fd35fb7880bbb5328ed094c6fcad9343f41b1babd225463",
+  "checks": {
+    "archive_review_pin": "passed",
+    "unique_paths": "passed",
+    "safe_canonical_paths": "passed",
+    "regular_members_only": "passed",
+    "manifest_set_exact": "passed",
+    "member_bytes_and_sha256": "passed"
+  }
+}

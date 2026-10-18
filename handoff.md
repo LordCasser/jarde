@@ -1,3 +1,13 @@
+## 2026-10-18 当前工作：原名 foreach 绑定提升 OpenSpec 1/7
+
+本节优先；下文是历史。finThrow5/5、nestedFin16/16、父finally7/7及typed7/7/bulk4/4均已交付，不重做。持续goal active。
+
+当前 `fold-proved-foreach-local-bindings`：planning已strict374/0，apply ready，root完成基线1.1（1/7）。主规范只同步已交付typed契约；新delta完整MODIFIED，尚未同步未实现fold。目标固定原始debug/none：受证后头名s1/s2或local4/local6，移除直接首copy及唯一可见空声明；其它Iterator/Object包装等不动。必须实际AST子块可见性+全方法slot/value/全部读闭合，未知phi和冲突只跳过fold，保留可靠typed；不加solver/pass/通用scope框架。
+
+root已核85ca CLI、5150产品源/fixture、20API/40raw、3301源与1518保护pins；完整旧Java/每方法投影/raw report/map已冻结。旧全部六个验收文件与完整原始/控制收据pins不变，8 JADX编译失败与2 outer框架边界保留。此次只是读验旧基线，没有新CLI/JDK运行。持久基线新change/results/baseline-root-v2（222成员/152de0d3…），包括v1检查器仅去顶层usage误报的失败和v2修正。
+
+Luna并行私有准备：typed_foreach_impl生产/内部测试；typed_foreach_api_tests公开测试和真实fixture；nl_baseline_audit完整对照工具。root尚未应用生产代码或运行新Rust。私有目录 `/private/tmp/jarde-foreach-fold-{impl,public-tests,comparison-prep}-luna-v1-20261018`。root审查后独占共享写/Git/Rust/JDK/CLI/网络；串行工具链，Rust期间不改源/网络，默认stack/至少5GiB/target1GiB每秒guard/finally exactclean。完整新候选对照、广门、两fresh native、自身CI、产品绑定/归档/干净main仍待，不能提前勾任务。
+
 ## 2026-10-18 最新交付：typed foreach 7/7、bulk 4/4，自身CI已完整接受
 
 此节优先，下面运行态均是历史。finThrow5/5、nestedFin16/16、父finally7/7早已交付，勿重做；持续goal active，继续按JADX71单元/612测试账本推进，不因叶子完成关闭全局目标。
