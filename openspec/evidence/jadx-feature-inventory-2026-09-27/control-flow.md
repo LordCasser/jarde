@@ -165,6 +165,6 @@ bafb 产品自身 CI 38119159950 已实际独立验收四job/52step、双seed各
 
 2026-10-18交付：Object包装leaf6/6，产品096a764dc自身CI39138950945完整接受4jobs/52step、两seed各385目标/3770-0-98、65精确门；本地fresh3770/0/98及20门、源码并集5154绑定通过。其余五组固定输入当前56实际32API（NL2/NL4为同SHA归档leaf类）、16对default/all/全部方法BCI map闭合，无本轮新VM声明。当前真实下一缺口是NL2泛型声明：VoidBody返回门与List.get(I)Object合同缺失，仍raw List+物理String cast；已静态分析最小复用，无下一Spec/实现。CF11保持partial，不增加71/612整项数。最终证据入口remove-proved-list-object-argument-wrappers/results。
 
-### 2026-10-19 NL2 indexed List 参数声明，5/6验收检查点
+### 2026-10-19 NL2 indexed List 参数声明，6/6交付
 
-固定完整TestNestedLoops2及独立控制的最终CLI90b30ad…1f64c已实际恢复精确List<String>与原boolean/void/int/long结果；真实cast、get次数/异常时序和raw方法/map保持。Jarde32次完整源码编译/64VM832case同原，JADX重复get事件与非法转换编译失败分别保留。实现复用完整body census/SSA/opaque AST事务，修旧固定Stack0 receiver假设，无新IR/pass/solver。相关广门578/0、fmt/CI Clippy/MSRV通过；产品5bd65ef2已推，fresh native385目标/3777-0-98、31门与5158来源绑定接受；自身CI39153653464四jobs/52独立官方step、两seed各3777-0-98及76门完整接受，关闭文档与干净主线核验接续。见[本片证据](../../changes/recover-proved-indexed-list-parameter-signatures/results/README.md)。CF11保持partial，71单元/612测试文件计数不变。
+固定完整TestNestedLoops2及独立控制的最终CLI90b30ad…1f64c已实际恢复精确List<String>与原boolean/void/int/long结果；真实cast、get次数/异常时序和raw方法/map保持。Jarde32次完整源码编译/64VM832case同原，JADX重复get事件与非法转换编译失败分别保留。实现复用完整body census/SSA/opaque AST事务，修旧固定Stack0 receiver假设，无新IR/pass/solver。相关广门578/0、fmt/CI Clippy/MSRV通过；产品5bd65ef2已推，fresh native385目标/3777-0-98、31门与5158来源绑定接受；自身CI39153653464四jobs/52独立官方step、两seed各3777-0-98及76门完整接受，strict377/0，检查点e06cdb6ab已实际核干净main/远端一致及14aux detached-clean-main祖先，叶子6/6交付。见[本片证据](../../changes/recover-proved-indexed-list-parameter-signatures/results/README.md)。CF11保持partial，71单元/612测试文件计数不变。

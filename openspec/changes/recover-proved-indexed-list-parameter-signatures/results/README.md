@@ -1,6 +1,6 @@
 # Indexed List 参数声明：当前证据入口
 
-当前 tasks **5/6**：Luna v2/v3实现已集成，root focused、适用广门、最终完整源码与双VM对照均接受。实际产品5bd65ef2已提交推送，fresh workspace已接受；自身CI39153653464全部通过并已独立验收；关闭文档及干净主线核验接续。最终CLI SHA `90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c`，63809216B；基线仍为096a764dc/CLI56a589ef。
+当前 tasks **6/6**：Luna v2/v3实现已集成，root focused、适用广门、最终完整源码与双VM对照均接受。实际产品5bd65ef2已提交推送，fresh workspace已接受；自身CI39153653464全部通过并已独立验收；关闭检查点e06cdb6ab已实际核干净main/远端一致，15worktrees全部clean、14aux detached主线祖先且均无target。最终CLI SHA `90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c`，63809216B；基线仍为096a764dc/CLI56a589ef。
 
 - `planning-and-dispatch-root-v1/dispatch.json`：实际Luna私有实现派发、作用域、共享写权限与集成前置条件。
 - `planning-and-dispatch-root-v1/root-implementation-review-decisions.json`：root及独立对抗审查，v1实现退回的具体修正；同目录保留原审和撤回的嵌套类型假问题。
@@ -60,3 +60,7 @@ Luna/root只在两处当前输出vs历史fixed比较中迁移这一条精确sum(
 私有v8采集器第一次因九项fixture清单把README排在NestedLoops2GenericControls前而在网络与输出目录创建前拒绝。root v9只交换两行清单顺序，保留所有库存/逐文件Git bytes/官方独立step/具名门检查；真实失败、修正diff和成功raw全部归档。不因私有采集器错误重跑CI或本地测试。此前v3 native验证器的reader lib分类失败亦保留。两处均非产品失败。
 
 主java8-recovery已同步，固定账本和handoff将记录当前实际验收；文档后继提交不冒称另跑5bd产品CI。本片不计CF11或71/612整项完成。
+
+## 关闭：6/6
+
+strict377/0（18主规范全过），任务已全部完成。关闭检查点e06cdb6ab0167e00a31ef02bcceff82efdb1e093已实际fetch并核main==origin/main、仅main分支、15worktrees全部clean，其中14辅助树detached且为主线祖先、所有target absent；5158来源及实际CLI仍等同已接受产品。收据见`final-native-and-own-ci-root-v1/close-checkpoint.json`。最终关闭文档提交后的HEAD/clean收据另存 `/private/tmp/jarde-indexed-list-signatures-final-clean-main-root-v1-20261019/execution.json`，不在当前文档中预填未来提交SHA。8归档2370成员，旧7归档保持不变，新405成员已全部逐字复开。全局goal继续active，下一CF07叶子另立Spec，不增加整CF11或71/612完成数。

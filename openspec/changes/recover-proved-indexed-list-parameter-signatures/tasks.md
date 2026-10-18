@@ -11,4 +11,4 @@
 ## 3. Complete comparison and delivery
 
 - [x] 3.1 root用最终CLI对完整固定原始及独立控制做源码/JADX/Jarde双编译器/双VM对照，核精确List<E>与primitive结果声明、保留cast的Code/事件/异常、raw/map平面和错根控制；不借原始target运行生成类，不把编译失败当runtime通过。
-- [ ] 3.2 root完成fresh workspace、提交推送产品并独立验收其自身CI全部jobs/官方step及两seed/新增具名门，绑定来源/CLI/Git；同步主规范、固定账本与handoff，strict/apply通过，target清空且main干净、与远端一致后关闭本片。
+- [x] 3.2 root完成fresh workspace、提交推送产品并独立验收其自身CI全部jobs/官方step及两seed/新增具名门，绑定来源/CLI/Git；同步主规范、固定账本与handoff，strict/apply通过，target清空且main干净、与远端一致后关闭本片。
