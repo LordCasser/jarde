@@ -7975,7 +7975,7 @@ impl Engine {
                                             )
                                         });
                                     let transaction_needed = if list_body_needs_transaction {
-                                        generic_list_parameter_slots(
+                                        generic_list_parameter_types(
                                             member,
                                             &read.bytes,
                                             &pool,
@@ -12954,12 +12954,14 @@ fn generic_list_member_contract(name: &[u8], descriptor: &[u8]) -> Option<u8> {
 /// Select only exact `List<ConcreteReference>` parameters from the parsed physical Signature.
 /// This chooses which formal slots may enter the body-use proof; the ordinary Signature gate
 /// later checks the spelling and erasure against the same parsed parameter.
-fn generic_list_parameter_slots(
+fn generic_list_parameter_types(
     member: &MemberHeader,
     bytes: &[u8],
     pool: &[CpEntryFacts],
     budget: &mut Budget,
-) -> Result<Option<Vec<u16>>> {
+) -> Result<Option<Vec<(u16, jarde_java::ast::Type)>>> {
+    use jarde_reader::signature::{SignatureType, TypeArgument};
+
     budget.poll()?;
     budget.charge(
         CountedBudgetDimension::AnalysisSteps,
@@ -13000,11 +13002,15 @@ fn generic_list_parameter_slots(
     if slots.len() != parsed.parameters.len() {
         return Ok(None);
     }
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(parsed.parameters.len()).unwrap_or(u64::MAX),
+    )?;
     let mut selected = Vec::new();
     for (parameter, slot) in parsed.parameters.iter().zip(slots) {
         budget.poll()?;
         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        let jarde_reader::signature::SignatureType::Class(class) = parameter else {
+        let SignatureType::Class(class) = parameter else {
             continue;
         };
         let [list] = class.segments.as_slice() else {
@@ -13013,12 +13019,7 @@ fn generic_list_parameter_slots(
         if list.binary_name.as_slice() != b"java/util/List" {
             continue;
         }
-        let [
-            jarde_reader::signature::TypeArgument::Exact(
-                jarde_reader::signature::SignatureType::Class(element),
-            ),
-        ] = list.arguments.as_slice()
-        else {
+        let [TypeArgument::Exact(SignatureType::Class(element))] = list.arguments.as_slice() else {
             continue;
         };
         if element.segments.is_empty()
@@ -13029,9 +13030,311 @@ fn generic_list_parameter_slots(
         {
             continue;
         }
-        selected.push(slot);
+        let Some(binary_name) = element.segments.last().map(|segment| &segment.binary_name) else {
+            continue;
+        };
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(binary_name.len()).unwrap_or(u64::MAX),
+        )?;
+        let Ok(binary_name) = std::str::from_utf8(binary_name) else {
+            continue;
+        };
+        budget.charge(
+            CountedBudgetDimension::OutputBytes,
+            u64::try_from(binary_name.len()).unwrap_or(u64::MAX),
+        )?;
+        selected.push((
+            slot,
+            jarde_java::ast::Type::Reference(binary_name.replace('/', ".")),
+        ));
     }
     Ok(Some(selected))
+}
+
+/// Produces only optional typed foreach edits whose source Signature, retained AST, and same-run
+/// next/checkcast/store facts all identify the same direct List formal and element type.
+fn prove_generic_list_typed_foreach_edits(
+    candidate: &jarde_java::report::GenericReturnCandidate,
+    ast: &jarde_java::report::ClassSourceMethodAst,
+    caller: &PhysicalMethodId,
+    invokes: &[class_source::SameClassInvokeUse],
+    body_values: &[class_source::SameClassBodyValueSite],
+    list_parameter_slots: &[u16],
+    element_types: &[(u16, jarde_java::ast::Type)],
+    budget: &mut Budget,
+) -> Result<Vec<jarde_java::report::ClassSourceTypedForEachEdit>> {
+    use jarde_java::ast::Type;
+    use jarde_jvm::method_ir::Definition;
+
+    let jarde_java::report::GenericReturnValue::VoidBody {
+        parameter_read_bcis,
+        parameter_receiver_calls,
+        ..
+    } = &candidate.value
+    else {
+        return Ok(Vec::new());
+    };
+    let Some(foreach_sites) =
+        jarde_java::report::class_source_for_each_local_iterables(ast, budget).map_err(|stop| {
+            enum_projection_stop_error(stop, "typed foreach AST sites", "generic_call_ast_missing")
+        })?
+    else {
+        return Ok(Vec::new());
+    };
+    let mut result = Vec::new();
+    let Some(formals) =
+        jarde_java::report::class_source_method_formal_names(ast, budget).map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "typed foreach formal inventory",
+                "generic_call_ast_missing",
+            )
+        })?
+    else {
+        return Ok(result);
+    };
+    let bounded_work = parameter_read_bcis
+        .len()
+        .saturating_add(parameter_receiver_calls.len())
+        .saturating_add(foreach_sites.len())
+        .saturating_add(invokes.len())
+        .saturating_add(body_values.len())
+        .saturating_add(formals.len())
+        .saturating_add(list_parameter_slots.len())
+        .saturating_add(element_types.len())
+        .saturating_add(1);
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(parameter_read_bcis.len())
+            .unwrap_or(u64::MAX)
+            .saturating_mul(u64::try_from(bounded_work).unwrap_or(u64::MAX))
+            .saturating_mul(8),
+    )?;
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(parameter_read_bcis.len()).unwrap_or(u64::MAX),
+    )?;
+    for (slot, read_bci) in parameter_read_bcis {
+        budget.poll()?;
+        if !list_parameter_slots.contains(slot) {
+            continue;
+        }
+        let Some((_, element_type)) = element_types
+            .iter()
+            .find(|(candidate_slot, _)| candidate_slot == slot)
+        else {
+            continue;
+        };
+        let mut formal_matches = formals.iter().filter(|formal| formal.slot == *slot);
+        let Some(formal) = formal_matches.next() else {
+            continue;
+        };
+        if formal_matches.next().is_some() {
+            continue;
+        }
+        let formal_name = &formal.name;
+        let mut receiver_calls = parameter_receiver_calls
+            .iter()
+            .filter(|site| site.parameter_slot == *slot && site.load_bci == *read_bci);
+        let Some(receiver_call) = receiver_calls.next() else {
+            continue;
+        };
+        if receiver_calls.next().is_some() {
+            continue;
+        }
+        let mut iterator_invokes = invokes.iter().filter(|invoke| {
+            invoke.physical_caller == *caller
+                && invoke.bci == receiver_call.call_bci
+                && invoke.owner.as_slice() == b"java/util/List"
+                && invoke.name.as_slice() == b"iterator"
+                && invoke.descriptor.as_slice() == b"()Ljava/util/Iterator;"
+                && invoke.opcode == 0xb9
+                && invoke.ssa_operands_complete
+        });
+        let Some(iterator_invoke) = iterator_invokes.next() else {
+            continue;
+        };
+        if iterator_invokes.next().is_some() {
+            continue;
+        }
+        if iterator_invoke.receiver_value_fact.as_ref().is_none_or(|fact| {
+            fact.replaced_by.is_some()
+                || fact.uses.as_slice() != [Some(iterator_invoke.bci)]
+                || !matches!(fact.definition, Definition::Instruction { bci, .. } if bci == *read_bci)
+        }) {
+            continue;
+        }
+        let mut matching_sites = foreach_sites.iter().filter(|site| {
+            site.expression_bci == *read_bci
+                && site.local_name.as_deref() == Some(formal_name.as_str())
+        });
+        let Some(site) = matching_sites.next() else {
+            continue;
+        };
+        let binding_origin_owned = match site.first_binding_origin.as_ref() {
+            Some(origin) => jarde_java::report::class_source_origin_set_belongs_to_method(
+                origin, caller, budget,
+            )
+            .map_err(|stop| {
+                enum_projection_stop_error(
+                    stop,
+                    "typed foreach binding origin",
+                    "generic_call_ast_missing",
+                )
+            })?,
+            None => false,
+        };
+        let cast_origin_owned = match site.first_binding_cast_origin.as_ref() {
+            Some(origin) => jarde_java::report::class_source_origin_set_belongs_to_method(
+                origin, caller, budget,
+            )
+            .map_err(|stop| {
+                enum_projection_stop_error(
+                    stop,
+                    "typed foreach cast origin",
+                    "generic_call_ast_missing",
+                )
+            })?,
+            None => false,
+        };
+        if matching_sites.next().is_some()
+            || !site.foreign_origin_bcis.is_empty()
+            || !binding_origin_owned
+            || !cast_origin_owned
+            || !matches!(&site.header_type, Type::Reference(name) if name == "java.lang.Object")
+            || site.first_binding_cast_type.as_ref() != Some(element_type)
+            || site.first_binding_cast_local.as_deref() != Some(site.header_name.as_str())
+        {
+            continue;
+        }
+        let (Some(binding_bci), Some(cast_bci)) =
+            (site.first_binding_bci, site.first_binding_cast_bci)
+        else {
+            continue;
+        };
+        if jarde_java::report::class_source_instruction_opcode(ast, cast_bci, budget).map_err(
+            |stop| {
+                enum_projection_stop_error(
+                    stop,
+                    "typed foreach cast opcode",
+                    "generic_call_ast_missing",
+                )
+            },
+        )? != Some(0xc0)
+        {
+            continue;
+        }
+        let mut cast_sites = body_values.iter().filter(|value| value.bci == cast_bci);
+        let Some(cast) = cast_sites.next() else {
+            continue;
+        };
+        if cast_sites.next().is_some() || cast.opcode != 0xc0 {
+            continue;
+        }
+        let [(_, cast_input)] = cast.stack_reads.as_slice() else {
+            continue;
+        };
+        let [cast_output] = cast.stack_writes.as_slice() else {
+            continue;
+        };
+        if cast_input.replaced_by.is_some()
+            || cast_input.uses.as_slice() != [Some(cast_bci)]
+            || cast_output.replaced_by.is_some()
+            || cast_output.uses.as_slice() != [Some(binding_bci)]
+            || !matches!(cast_output.definition, Definition::Instruction { bci, .. } if bci == cast_bci)
+        {
+            continue;
+        }
+        let mut matching_next = invokes.iter().filter(|invoke| {
+            invoke.physical_caller == *caller
+                && invoke.owner.as_slice() == b"java/util/Iterator"
+                && invoke.name.as_slice() == b"next"
+                && invoke.descriptor.as_slice() == b"()Ljava/lang/Object;"
+                && invoke.opcode == 0xb9
+                && invoke.ssa_operands_complete
+                && invoke.result_value_fact.as_ref().is_some_and(|fact| {
+                    fact.value == cast_input.value
+                        && fact.replaced_by.is_none()
+                        && fact.uses.as_slice() == [Some(cast_bci)]
+                        && matches!(fact.definition, Definition::Instruction { bci, .. } if bci == invoke.bci)
+                })
+        });
+        let Some(next_invoke) = matching_next.next() else {
+            continue;
+        };
+        if matching_next.next().is_some() {
+            continue;
+        }
+        budget.poll()?;
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(
+                site.origin_bcis
+                    .len()
+                    .saturating_add(site.foreign_origin_bcis.len()),
+            )
+            .unwrap_or(u64::MAX),
+        )?;
+        if !site.origin_bcis.contains(&next_invoke.bci)
+            || site.foreign_origin_bcis.contains(&next_invoke.bci)
+        {
+            continue;
+        }
+        let mut stores = body_values.iter().filter(|value| value.bci == binding_bci);
+        let Some(store) = stores.next() else {
+            continue;
+        };
+        if stores.next().is_some()
+            || store.local_writes.len() != 1
+            || store.stack_reads.len() != 1
+            || store.stack_reads[0].1.value != cast_output.value
+            || store.stack_reads[0].1.replaced_by.is_some()
+            || !matches!(store.opcode, 0x3a | 0x4b..=0x4e)
+        {
+            continue;
+        }
+        let Some(cast_origin) = site.first_binding_cast_origin.as_ref() else {
+            continue;
+        };
+        let cast_origin_items = cast_origin.derived().len().saturating_add(1);
+        budget.charge(
+            CountedBudgetDimension::IrItems,
+            u64::try_from(cast_origin_items).unwrap_or(u64::MAX),
+        )?;
+        if let Type::Reference(name) = element_type {
+            budget.charge(
+                CountedBudgetDimension::OutputBytes,
+                u64::try_from(name.len()).unwrap_or(u64::MAX),
+            )?;
+        }
+        let cast_identity_bytes = jarde_java::report::class_source_method_identity_work(
+            caller, budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(stop, "typed foreach cast clone", "generic_call_ast_missing")
+        })?;
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(cast_origin_items.saturating_mul(cast_identity_bytes))
+                .unwrap_or(u64::MAX),
+        )?;
+        result.push(jarde_java::report::ClassSourceTypedForEachEdit {
+            statement_bci: site.statement_bci,
+            cast_bci,
+            ty: element_type.clone(),
+            cast_origin: cast_origin.clone(),
+            header_origin_count: site.origin_bcis.len(),
+        });
+    }
+    result.sort_by_key(|edit| edit.statement_bci);
+    if result
+        .windows(2)
+        .any(|pair| pair[0].statement_bci == pair[1].statement_bci)
+    {
+        return Ok(Vec::new());
+    }
+    Ok(result)
 }
 
 /// Proves the closed List receiver uses of a structured void candidate from the same physical
@@ -16281,6 +16584,10 @@ fn project_generic_call_components(
             >::new();
             let mut staged_list_parameter_proofs =
                 std::collections::BTreeMap::<usize, Vec<(u16, Vec<String>)>>::new();
+            let mut staged_typed_foreach_edits = std::collections::BTreeMap::<
+                usize,
+                Vec<jarde_java::report::ClassSourceTypedForEachEdit>,
+            >::new();
             if group_closed {
                 let order = component.order.as_deref().unwrap_or_default();
                 if order.len() != component.members.len() {
@@ -16419,13 +16726,22 @@ fn project_generic_call_components(
                         let mut validated_overload_call_bcis = Vec::new();
                         let mut call_casts = Vec::new();
                         let mut presentation_removals = Vec::new();
-                        let list_parameter_slots = generic_list_parameter_slots(
+                        let list_parameter_element_types = generic_list_parameter_types(
                             &method_headers[*index],
                             bytes,
                             pool,
                             budget,
+                        )?
+                        .unwrap_or_default();
+                        budget.charge(
+                            CountedBudgetDimension::IrItems,
+                            u64::try_from(list_parameter_element_types.len()).unwrap_or(u64::MAX),
                         )?;
-                        let list_parameter_slots = list_parameter_slots.unwrap_or_default();
+                        let list_parameter_slots = list_parameter_element_types
+                            .iter()
+                            .map(|(slot, _)| *slot)
+                            .collect::<Vec<_>>();
+                        let mut typed_foreach_edits = Vec::new();
                         let proved_list_parameters = if !list_parameter_slots.is_empty() {
                             let Some(candidate) = signature_candidate else {
                                 reject_generic_call_component!();
@@ -16449,6 +16765,16 @@ fn project_generic_call_components(
                                 break;
                             };
                             presentation_removals.extend(removals);
+                            typed_foreach_edits = prove_generic_list_typed_foreach_edits(
+                                candidate,
+                                caller_ast,
+                                &record.item.identity,
+                                invokes,
+                                &body_scan.body_values,
+                                &list_parameter_slots,
+                                &list_parameter_element_types,
+                                budget,
+                            )?;
                             proved
                         } else {
                             Vec::new()
@@ -16754,7 +17080,10 @@ fn project_generic_call_components(
                             reject_generic_call_component!();
                             break;
                         }
-                        if !call_casts.is_empty() || !presentation_removals.is_empty() {
+                        if !call_casts.is_empty()
+                            || !presentation_removals.is_empty()
+                            || !typed_foreach_edits.is_empty()
+                        {
                             let original_ast = caller_ast;
                             let original_emitted =
                                 jarde_java::report::emit_class_source_method_ast(
@@ -16770,10 +17099,11 @@ fn project_generic_call_components(
                                     )
                                 })?;
                             let Some(projected_ast) =
-                                jarde_java::report::project_class_source_invoke_argument_edits(
+                                jarde_java::report::project_class_source_generic_edits(
                                     original_ast,
                                     &presentation_removals,
                                     &call_casts,
+                                    &typed_foreach_edits,
                                     budget,
                                 )
                                 .map_err(|stop| {
@@ -16820,6 +17150,7 @@ fn project_generic_call_components(
                             }
                         }
                         staged_list_parameter_proofs.insert(*index, proved_list_parameters);
+                        staged_typed_foreach_edits.insert(*index, typed_foreach_edits);
                         staged_call_casts.insert(*index, call_casts);
                         staged_presentation_removals.insert(*index, presentation_removals);
                         staged.insert(*index, projection_state);
@@ -16922,11 +17253,20 @@ fn project_generic_call_components(
                     };
                     let mut final_casts = Vec::new();
                     let mut final_presentation_removals = Vec::new();
-                    let final_list_parameter_slots =
-                        generic_list_parameter_slots(&method_headers[*index], bytes, pool, budget)?
+                    let final_list_parameter_element_types =
+                        generic_list_parameter_types(&method_headers[*index], bytes, pool, budget)?
                             .unwrap_or_default();
+                    budget.charge(
+                        CountedBudgetDimension::IrItems,
+                        u64::try_from(final_list_parameter_element_types.len()).unwrap_or(u64::MAX),
+                    )?;
+                    let final_list_parameter_slots = final_list_parameter_element_types
+                        .iter()
+                        .map(|(slot, _)| *slot)
+                        .collect::<Vec<_>>();
                     let mut final_list_parameter_types = Vec::new();
                     let mut final_list_presentation_removals = Vec::new();
+                    let mut final_typed_foreach_edits = Vec::new();
                     if !final_list_parameter_slots.is_empty() {
                         let signature_candidate = methods[*index]
                             .same_run_generic_return
@@ -16960,9 +17300,57 @@ fn project_generic_call_components(
                         };
                         final_list_parameter_types = proved;
                         final_list_presentation_removals = removals;
+                        final_typed_foreach_edits = prove_generic_list_typed_foreach_edits(
+                            candidate,
+                            caller_ast,
+                            expected_method,
+                            invokes,
+                            &body_scan.body_values,
+                            &final_list_parameter_slots,
+                            &final_list_parameter_element_types,
+                            budget,
+                        )?;
                     }
                     if staged_list_parameter_proofs.get(index) != Some(&final_list_parameter_types)
                     {
+                        reject_generic_call_component!();
+                        break;
+                    }
+                    for edits in [
+                        staged_typed_foreach_edits
+                            .get(index)
+                            .map(Vec::as_slice)
+                            .unwrap_or(&[]),
+                        final_typed_foreach_edits.as_slice(),
+                    ] {
+                        for edit in edits {
+                            budget.poll()?;
+                            let identity_bytes =
+                                jarde_java::report::class_source_method_identity_work(
+                                    expected_method,
+                                    budget,
+                                )
+                                .map_err(|stop| {
+                                    enum_projection_stop_error(
+                                        stop,
+                                        "typed foreach plan identity",
+                                        "generic_call_ast_missing",
+                                    )
+                                })?;
+                            let comparison_work = identity_bytes
+                                .saturating_mul(edit.cast_origin.derived().len().saturating_add(1))
+                                .saturating_add(match &edit.ty {
+                                    jarde_java::ast::Type::Reference(name) => name.len(),
+                                    _ => 1,
+                                })
+                                .saturating_add(std::mem::size_of_val(edit));
+                            budget.charge(
+                                CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(comparison_work).unwrap_or(u64::MAX),
+                            )?;
+                        }
+                    }
+                    if staged_typed_foreach_edits.get(index) != Some(&final_typed_foreach_edits) {
                         reject_generic_call_component!();
                         break;
                     }

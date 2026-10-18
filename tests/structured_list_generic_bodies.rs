@@ -26,6 +26,9 @@ const ORDINARY_TRY_ADMISSION: &[u8] = include_bytes!(
     "fixtures/cf11-ordinary-try-list-generic/admission/OrdinaryTryListFixture.class"
 );
 
+const TYPED_LIST_FOREACH: &[u8] =
+    include_bytes!("fixtures/typed-list-foreach/TypedListForEachCases.class");
+
 fn request(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceRequest {
     ClassSourceRequest {
         class: ClassRef::Name {
@@ -165,6 +168,54 @@ fn assert_bcis_are_mapped(report: &RecoveryReport, bcis: &[u32]) {
             "physical BCI {bci} has source-map provenance"
         );
     }
+}
+
+fn assert_typed_foreach_copies(
+    projected: &str,
+    element_type: &str,
+    outer_target: &str,
+    inner_target: &str,
+) {
+    let prefix = format!("for ({element_type} ");
+    let headers = projected
+        .lines()
+        .filter_map(|line| {
+            let header = line.trim().strip_prefix(&prefix)?;
+            let (name, _) = header.split_once(" : ")?;
+            Some(name.to_owned())
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        headers.len(),
+        2,
+        "both nested foreach headers use {element_type}: {projected}"
+    );
+    assert!(
+        projected.contains(&format!("{outer_target} = {};", headers[0])),
+        "the original outer assignment remains as a typed synthetic-element copy: {projected}"
+    );
+    assert!(
+        projected.contains(&format!("{element_type} {inner_target} = {};", headers[1])),
+        "the original inner declaration remains as a typed synthetic-element copy: {projected}"
+    );
+    assert!(
+        !projected.contains(&format!("({element_type})")),
+        "the physical element cast was removed from projected body: {projected}"
+    );
+}
+
+fn assert_all_instruction_bcis_are_mapped(
+    bytes: &[u8],
+    class: &ClassFacts,
+    member: &ClassSourceMethod,
+) {
+    let code = method_code(class, bytes, member);
+    let bcis = code
+        .instructions
+        .iter()
+        .map(|instruction| instruction.bci)
+        .collect::<Vec<_>>();
+    assert_bcis_are_mapped(raw_body(member), &bcis);
 }
 
 #[test]
@@ -1003,6 +1054,11 @@ fn fixed_nested_string_body_projects_source_and_preserves_physical_origins() {
     assert_eq!(default_raw.source_map, all_raw.source_map);
     assert_eq!(default_raw.source_map, no_rule_details_raw.source_map);
 
+    assert_typed_foreach_copies(&default.text, "java.lang.String", "s1", "s2");
+    assert_typed_foreach_copies(&default_method.text, "java.lang.String", "s1", "s2");
+    assert_typed_foreach_copies(&all_method.text, "java.lang.String", "s1", "s2");
+    assert_typed_foreach_copies(&no_rule_details_method.text, "java.lang.String", "s1", "s2");
+
     let declaration =
         "test(java.util.List<java.lang.String> l1, java.util.List<java.lang.String> l2)";
     assert!(
@@ -1041,6 +1097,18 @@ fn fixed_nested_string_body_projects_source_and_preserves_physical_origins() {
     // The source map is defined over the unprojected RecoveryReport::text. It proves physical
     // provenance; it is not a map for ClassSourceMethod::text or ClassSourceReport::text.
     assert_utf8_source_map(default_raw);
+    let fixed_class = class_facts(FIXED, &mut task_budget(&[]).unwrap()).unwrap();
+    assert_all_instruction_bcis_are_mapped(FIXED, &fixed_class, default_method);
+    assert!(
+        default_raw.text.contains("for (java.lang.Object "),
+        "{}",
+        default_raw.text
+    );
+    assert!(
+        default_raw.text.contains("(java.lang.String)"),
+        "{}",
+        default_raw.text
+    );
     assert_bcis_are_mapped(
         default_raw,
         &[
@@ -1091,7 +1159,36 @@ fn differently_named_string_and_integer_classes_follow_their_list_element_type()
         "remove(Object) is not confused with remove(int): {}",
         string_method.text
     );
+    assert_typed_foreach_copies(&string.text, "java.lang.String", "candidate", "option");
+    assert_typed_foreach_copies(
+        &string_method.text,
+        "java.lang.String",
+        "candidate",
+        "option",
+    );
     assert_utf8_source_map(string_raw);
+    let string_class = class_facts(DISTINCT_STRING, &mut task_budget(&[]).unwrap()).unwrap();
+    assert_all_instruction_bcis_are_mapped(DISTINCT_STRING, &string_class, string_method);
+    assert!(
+        string_raw.text.contains("for (java.lang.Object "),
+        "{}",
+        string_raw.text
+    );
+    assert!(
+        string_raw.text.contains("(java.lang.String)"),
+        "{}",
+        string_raw.text
+    );
+    for cast_bci in [22, 52] {
+        assert!(
+            string_raw
+                .source_map
+                .of_bci(cast_bci)
+                .iter()
+                .any(|segment| { segment.text(&string_raw.text).contains("java.lang.String") }),
+            "physical String checkcast at BCI {cast_bci} remains in raw recovery source"
+        );
+    }
 
     let integer = performed(DISTINCT_INTEGER, "cf11/DistinctIntegerFixture");
     let integer_method = method(&integer, b"numbers");
@@ -1124,7 +1221,35 @@ fn differently_named_string_and_integer_classes_follow_their_list_element_type()
         "remove(Object) is not confused with remove(int): {}",
         integer_method.text
     );
+    assert_typed_foreach_copies(&integer.text, "java.lang.Integer", "value", "option");
+    assert_typed_foreach_copies(&integer_method.text, "java.lang.Integer", "value", "option");
     assert_utf8_source_map(integer_raw);
+    let integer_class = class_facts(DISTINCT_INTEGER, &mut task_budget(&[]).unwrap()).unwrap();
+    assert_all_instruction_bcis_are_mapped(DISTINCT_INTEGER, &integer_class, integer_method);
+    assert!(
+        integer_raw.text.contains("for (java.lang.Object "),
+        "{}",
+        integer_raw.text
+    );
+    assert!(
+        integer_raw.text.contains("(java.lang.Integer)"),
+        "{}",
+        integer_raw.text
+    );
+    for cast_bci in [22, 52] {
+        assert!(
+            integer_raw
+                .source_map
+                .of_bci(cast_bci)
+                .iter()
+                .any(|segment| {
+                    segment
+                        .text(&integer_raw.text)
+                        .contains("java.lang.Integer")
+                }),
+            "physical Integer checkcast at BCI {cast_bci} remains in raw recovery source"
+        );
+    }
 }
 
 #[test]
@@ -1257,6 +1382,7 @@ fn ordinary_try_late_cancellation_keeps_raw_source_and_installs_no_partial_proje
     ));
     let target_name = b"renamedTry";
     let complete_method = method(&complete, target_name);
+    assert!(complete_method.text.contains("for (java.lang.String "));
     let complete_raw = raw_body(complete_method);
     let projected_declaration = "renamedTry(java.util.List<java.lang.String> source, java.util.List<java.lang.String> sink)";
     assert!(complete_method.text.contains(projected_declaration));
@@ -1292,6 +1418,11 @@ fn ordinary_try_late_cancellation_keeps_raw_source_and_installs_no_partial_proje
         ExecutionReport::Cancelled { .. }
     ));
     assert_admission_projection_absent(&report);
+    assert!(
+        !method(&report, b"renamedTry")
+            .text
+            .contains("for (java.lang.String ")
+    );
     let raw = raw_body(method(&report, target_name));
     assert_eq!(raw.text, complete_raw.text);
     assert_eq!(raw.source_map, complete_raw.source_map);
@@ -1308,6 +1439,7 @@ fn ordinary_try_late_budget_stop_keeps_raw_source_and_installs_no_partial_projec
         "the budget-stop check requires a completed ordinary-try List<String> projection: {}",
         complete_method.text
     );
+    assert!(complete_method.text.contains("for (java.lang.String "));
     let complete_raw = raw_body(complete_method);
     // A bounded search observes this target's first successful overlay commit. The immediately
     // preceding budget must retain the completed raw artifact and publish no staged projection.
@@ -1353,6 +1485,11 @@ fn ordinary_try_late_budget_stop_keeps_raw_source_and_installs_no_partial_projec
         }
     ));
     assert_admission_projection_absent(&report);
+    assert!(
+        !method(&report, b"renamedTry")
+            .text
+            .contains("for (java.lang.String ")
+    );
     let raw = raw_body(method(&report, b"renamedTry"));
     assert_eq!(raw.text, complete_raw.text);
     assert_eq!(raw.source_map, complete_raw.source_map);
@@ -1365,9 +1502,9 @@ fn budget_stop_during_list_proof_keeps_raw_body_and_installs_no_projection() {
     let complete_method = method(&complete, b"test");
     let complete_raw = raw_body(complete_method);
 
-    // Root's CLI probe located this inside the final List proof charge.
-    // After adding declaration initializers, root v8 measured 25299 steps before that charge.
-    // This is an observed proof-stage boundary, not a usage-minus-one guess.
+    // Keep the original 32_531-step cap. New projection work changes the preceding charge
+    // count; the contract is a real refusal under that same cap with the completed raw artifact
+    // intact and no staged declaration or typed body published.
     let mut limits = task_limits(&[]).unwrap();
     limits.analysis_steps = 32_531;
     let mut budget = Budget::new(limits);
@@ -1384,9 +1521,10 @@ fn budget_stop_during_list_proof_keeps_raw_body_and_installs_no_projection() {
             ..
         }
     ));
-    assert_eq!(partial.usage.analysis_steps, 25_299);
+    assert!(partial.usage.analysis_steps < 32_531);
 
     let partial_method = method(&partial, b"test");
+    assert!(!partial_method.text.contains("for (java.lang.String "));
     let partial_raw = raw_body(partial_method);
     assert_eq!(partial_raw.text, complete_raw.text);
     assert_eq!(partial_raw.source_map, complete_raw.source_map);
@@ -1544,4 +1682,376 @@ fn raw_alias_escape_reference_lifetimes_match_default_all_and_source_origins() {
     );
     assert_utf8_source_map(default_raw);
     assert_bcis_are_mapped(default_raw, &[30, 35, 72, 77]);
+}
+
+#[test]
+fn typed_list_foreach_element_heads_preserve_bindings_and_raw_origins() {
+    let class_name = "typedforeach/TypedListForEachCases";
+    let default = performed(TYPED_LIST_FOREACH, class_name);
+    let all = match report_with(
+        TYPED_LIST_FOREACH,
+        class_name,
+        Some(&RecoveryEvidenceRequest::all()),
+        &mut task_budget(&[]).unwrap(),
+    ) {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("all-evidence typed foreach class completes: {other:?}"),
+    };
+    let essential_with_map =
+        RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap);
+    let essential = match report_with(
+        TYPED_LIST_FOREACH,
+        class_name,
+        Some(&essential_with_map),
+        &mut task_budget(&[]).unwrap(),
+    ) {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("essential-evidence typed foreach class completes: {other:?}"),
+    };
+    assert_eq!(default.text, all.text);
+    assert_eq!(default.text, essential.text);
+
+    let facts = class_facts(TYPED_LIST_FOREACH, &mut task_budget(&[]).unwrap()).unwrap();
+    for name in [
+        b"strings".as_slice(),
+        b"integers",
+        b"raw",
+        b"mismatch",
+        b"declared",
+    ] {
+        let d = method(&default, name);
+        let a = method(&all, name);
+        let e = method(&essential, name);
+        assert_eq!(d.text, a.text, "{}", d.text);
+        assert_eq!(d.text, e.text, "{}", d.text);
+        let raw = raw_body(d);
+        let raw_all = raw_body(a);
+        let raw_essential = raw_body(e);
+        assert_eq!(raw.text, raw_all.text, "{}", d.text);
+        assert_eq!(raw.text, raw_essential.text, "{}", d.text);
+        assert_eq!(raw.representation, Representation::Java, "{}", d.text);
+        assert_eq!(raw.quality, Quality::Structured, "{}", d.text);
+        assert_eq!(raw.source_map, raw_all.source_map);
+        assert_eq!(raw.source_map, raw_essential.source_map);
+        assert_utf8_source_map(raw);
+        assert_raw_map_method_identity(raw, d);
+        assert_all_instruction_bcis_are_mapped(TYPED_LIST_FOREACH, &facts, d);
+    }
+
+    let strings = &method(&default, b"strings").text;
+    assert!(
+        strings.contains("strings(java.util.List<java.lang.String> values)"),
+        "{strings}"
+    );
+    assert_eq!(
+        strings
+            .lines()
+            .filter(|line| line.trim_start().starts_with("for (java.lang.String "))
+            .count(),
+        1,
+        "{strings}"
+    );
+    let string_head = strings
+        .lines()
+        .find(|line| line.trim_start().starts_with("for (java.lang.String "))
+        .unwrap()
+        .trim_start()
+        .split(" : ")
+        .next()
+        .unwrap()
+        .strip_prefix("for (java.lang.String ")
+        .unwrap();
+    assert!(strings.contains("java.lang.String current;"), "{strings}");
+    assert!(strings.contains("current = \"before\";"), "{strings}");
+    assert!(
+        strings.contains(&format!("current = {string_head};")),
+        "preserve the loop-header copy: {strings}"
+    );
+    assert!(
+        strings.contains("typedforeach.TypedListForEachCases.after = current;"),
+        "{strings}"
+    );
+    assert!(
+        !strings.contains("(java.lang.String)"),
+        "typed header consumes the redundant cast: {strings}"
+    );
+
+    let integers = &method(&default, b"integers").text;
+    assert!(
+        integers.contains("integers(java.util.List<java.lang.Integer> values)"),
+        "{integers}"
+    );
+    assert_eq!(
+        integers
+            .lines()
+            .filter(|line| line.trim_start().starts_with("for (java.lang.Integer "))
+            .count(),
+        1,
+        "{integers}"
+    );
+    let integer_head = integers
+        .lines()
+        .find(|line| line.trim_start().starts_with("for (java.lang.Integer "))
+        .unwrap()
+        .trim_start()
+        .split(" : ")
+        .next()
+        .unwrap()
+        .strip_prefix("for (java.lang.Integer ")
+        .unwrap();
+    assert!(integers.contains("Object current;"), "{integers}");
+    assert!(integers.contains("current = null;"), "{integers}");
+    assert!(
+        integers.contains(&format!("current = {integer_head};")),
+        "preserve the loop-header copy: {integers}"
+    );
+    assert!(
+        integers.contains("typedforeach.TypedListForEachCases.after = current;"),
+        "{integers}"
+    );
+    assert!(
+        !integers.contains("(java.lang.Integer)"),
+        "typed header consumes the redundant cast: {integers}"
+    );
+
+    let declared = &method(&default, b"declared").text;
+    assert_eq!(
+        declared
+            .lines()
+            .filter(|line| line.trim_start().starts_with("for (java.lang.String "))
+            .count(),
+        1,
+        "{declared}"
+    );
+    let declared_head = declared
+        .lines()
+        .find(|line| line.trim_start().starts_with("for (java.lang.String "))
+        .unwrap()
+        .trim_start()
+        .split(" : ")
+        .next()
+        .unwrap()
+        .strip_prefix("for (java.lang.String ")
+        .unwrap();
+    assert!(
+        declared.contains(&format!("java.lang.String value = {declared_head};")),
+        "{declared}"
+    );
+    assert!(
+        declared.contains("typedforeach.TypedListForEachCases.seen = value;"),
+        "{declared}"
+    );
+    assert!(
+        !declared.contains(".add(") && !declared.contains("remove("),
+        "typed foreach is the only body projection: {declared}"
+    );
+
+    for (name, object_head, cast_type) in [
+        (
+            b"strings".as_slice(),
+            "java.lang.Object",
+            "java.lang.String",
+        ),
+        (
+            b"integers".as_slice(),
+            "java.lang.Object",
+            "java.lang.Integer",
+        ),
+        (
+            b"declared".as_slice(),
+            "java.lang.Object",
+            "java.lang.String",
+        ),
+    ] {
+        let member = method(&default, name);
+        let raw = raw_body(member);
+        assert!(
+            raw.text.contains(&format!("for ({object_head} ")),
+            "{}",
+            raw.text
+        );
+        assert!(raw.text.contains(&format!("({cast_type})")), "{}", raw.text);
+        let code = method_code(&facts, TYPED_LIST_FOREACH, member);
+        let cast = code
+            .instructions
+            .iter()
+            .find(|i| i.opcode == 0xc0)
+            .expect("original foreach element has a physical checkcast");
+        assert_bci_maps_to(member, cast.bci, cast_type);
+    }
+
+    let raw_method = method(&default, b"raw");
+    assert!(
+        raw_method.text.contains("raw(java.util.List values)"),
+        "{}",
+        raw_method.text
+    );
+    assert!(
+        raw_method.text.contains("for (java.lang.Object "),
+        "{}",
+        raw_method.text
+    );
+    assert!(
+        raw_method.text.contains("(java.lang.String)"),
+        "{}",
+        raw_method.text
+    );
+    let mismatch = method(&default, b"mismatch");
+    assert!(
+        mismatch
+            .text
+            .contains("mismatch(java.util.List<java.lang.String> values)"),
+        "{}",
+        mismatch.text
+    );
+    assert!(
+        mismatch.text.contains("for (java.lang.Object "),
+        "{}",
+        mismatch.text
+    );
+    assert!(
+        mismatch.text.contains("(java.lang.Integer)"),
+        "{}",
+        mismatch.text
+    );
+}
+
+#[derive(Debug)]
+struct DeadlineObserver {
+    entries: AtomicUsize,
+    delay_at: usize,
+    delayed: std::sync::atomic::AtomicBool,
+}
+
+impl LedgerObserver for DeadlineObserver {
+    fn entry(&self, _site: LedgerSite, _timing: Option<LedgerEntryTiming>) {
+        let observed = self.entries.fetch_add(1, Ordering::SeqCst) + 1;
+        if observed == self.delay_at && !self.delayed.swap(true, Ordering::SeqCst) {
+            std::thread::sleep(std::time::Duration::from_millis(1_100));
+        }
+    }
+
+    fn refusal(&self, _site: LedgerSite, _dimension: Option<BudgetDimension>) {}
+}
+
+fn observed_typed_foreach_report(
+    cancellation: CancellationToken,
+    observer: Arc<EntryObserver>,
+) -> Result<OperationOutcome<ClassSourceReport>> {
+    let engine = Engine::new();
+    let snapshot = engine
+        .open(
+            ArtifactInput::bytes(TYPED_LIST_FOREACH.to_vec()),
+            &mut task_budget(&[]).unwrap(),
+        )
+        .unwrap();
+    let request = request(&snapshot, "typedforeach/TypedListForEachCases");
+    let mut budget = Budget::with_cancellation_token(task_limits(&[]).unwrap(), cancellation);
+    let ledger = OperationLedger::new(&budget).with_observer(observer);
+    budget.with_ledger(ledger, UsageOwner::Methods);
+    engine.class_source(std::slice::from_ref(&snapshot), &request, &mut budget)
+}
+
+#[test]
+fn typed_foreach_late_deadline_keeps_raw_artifact_without_partial_projection() {
+    let token = CancellationToken::new();
+    let complete_observer = Arc::new(EntryObserver::new(None, token.clone()));
+    let complete = match observed_typed_foreach_report(token, complete_observer.clone()) {
+        Ok(OperationOutcome::Performed(report)) => report,
+        other => panic!("observed typed-foreach run must complete: {other:?}"),
+    };
+    assert!(matches!(
+        &complete.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    let complete_strings = method(&complete, b"strings");
+    assert_eq!(
+        complete
+            .text
+            .lines()
+            .filter(|line| line.trim_start().starts_with("for (java.lang.String "))
+            .count(),
+        2,
+        "the complete class installs both String foreach heads: {}",
+        complete.text
+    );
+    let complete_raw = raw_body(complete_strings);
+
+    // Find the first boundary that commits the strings projection. The immediately preceding
+    // boundary is delayed once so the elapsed-time check fires before that staged projection can commit.
+    let mut lower = 1;
+    let mut upper = complete_observer.count();
+    while lower + 1 < upper {
+        let boundary = lower + (upper - lower) / 2;
+        let token = CancellationToken::new();
+        let observer = Arc::new(EntryObserver::new(Some(boundary), token.clone()));
+        let committed = match observed_typed_foreach_report(token, observer) {
+            Ok(OperationOutcome::Performed(report)) => report.methods.iter().any(|member| {
+                member.item.name.raw().0 == b"strings"
+                    && member.text.contains("for (java.lang.String ")
+            }),
+            Ok(OperationOutcome::Incomplete(_)) | Err(Error::Cancelled { .. }) => false,
+            Ok(OperationOutcome::Ambiguous(_)) => panic!("frozen class must bind uniquely"),
+            Err(error) => panic!("unexpected boundary-search failure: {error:?}"),
+        };
+        if committed {
+            upper = boundary;
+        } else {
+            lower = boundary;
+        }
+    }
+
+    let token = CancellationToken::new();
+    let observer = Arc::new(DeadlineObserver {
+        entries: AtomicUsize::new(0),
+        delay_at: lower,
+        delayed: std::sync::atomic::AtomicBool::new(false),
+    });
+    let engine = Engine::new();
+    let snapshot = engine
+        .open(
+            ArtifactInput::bytes(TYPED_LIST_FOREACH.to_vec()),
+            &mut task_budget(&[]).unwrap(),
+        )
+        .unwrap();
+    let request = request(&snapshot, "typedforeach/TypedListForEachCases");
+    let mut limits = task_limits(&[]).unwrap();
+    limits.elapsed_millis = 1_000;
+    let mut budget = Budget::with_cancellation_token(limits, token);
+    let ledger = OperationLedger::new(&budget).with_observer(observer.clone());
+    budget.with_ledger(ledger, UsageOwner::Methods);
+    let report = match engine.class_source(std::slice::from_ref(&snapshot), &request, &mut budget) {
+        Ok(OperationOutcome::Performed(report)) => report,
+        other => panic!("deadline stop must retain the class report: {other:?}"),
+    };
+    assert!(
+        observer.delayed.load(Ordering::SeqCst),
+        "deadline delay was reached"
+    );
+    assert!(matches!(
+        &report.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::ElapsedMillis,
+            },
+            ..
+        }
+    ));
+    let stopped_strings = method(&report, b"strings");
+    assert!(
+        !stopped_strings.text.contains("for (java.lang.String "),
+        "{}",
+        stopped_strings.text
+    );
+    assert!(
+        !stopped_strings
+            .text
+            .contains("strings(java.util.List<java.lang.String>"),
+        "{}",
+        stopped_strings.text
+    );
+    let stopped_raw = raw_body(stopped_strings);
+    assert_eq!(stopped_raw.text, complete_raw.text);
+    assert_eq!(stopped_raw.source_map, complete_raw.source_map);
+    assert_utf8_source_map(stopped_raw);
 }

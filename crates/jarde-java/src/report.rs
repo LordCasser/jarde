@@ -48,8 +48,8 @@ use jarde_jvm::method_ir::{Definition, MethodIr, Slot, SsaTable};
 use jarde_reader::budget::{Budget, BudgetDimension, UsageSnapshot};
 use jarde_reader::classfile::{DescriptorKind, VerificationStatus, descriptor_facts};
 use jarde_reader::model::{
-    Diagnostic, DiagnosticSeverity, ExecutionReport, PhysicalDefinitionId, PhysicalMethodId,
-    TerminationReason,
+    ContainerOriginStep, Diagnostic, DiagnosticSeverity, ExecutionReport, PhysicalClassLocation,
+    PhysicalDefinitionId, PhysicalEntryId, PhysicalMethodId, PhysicalVariant, TerminationReason,
 };
 use serde::Serialize;
 
@@ -1500,7 +1500,28 @@ pub struct ClassSourceAstForEachIterable {
     pub statement_bci: u32,
     pub expression_bci: u32,
     pub local_name: Option<String>,
+    pub header_name: String,
+    pub header_type: crate::ast::Type,
+    pub first_binding_bci: Option<u32>,
+    pub first_binding_cast_bci: Option<u32>,
+    pub first_binding_cast_type: Option<crate::ast::Type>,
+    pub first_binding_cast_local: Option<String>,
+    pub first_binding_origin: Option<crate::source_map::OriginSet>,
+    pub first_binding_cast_origin: Option<crate::source_map::OriginSet>,
+    pub origin_bcis: Vec<u32>,
+    pub foreign_origin_bcis: Vec<u32>,
     pub scope_anchors: Vec<ClassSourceAstAnchor>,
+}
+
+/// One typed foreach edit whose physical next/cast/store chain was closed by the caller.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceTypedForEachEdit {
+    pub statement_bci: u32,
+    pub cast_bci: u32,
+    pub ty: crate::ast::Type,
+    pub cast_origin: crate::source_map::OriginSet,
+    pub header_origin_count: usize,
 }
 
 /// A retained formal's emitted name tied to its physical JVM local slot.
@@ -3013,37 +3034,113 @@ pub fn project_class_source_invoke_argument_edits(
     edits: &[ClassSourceInvokeArgumentCast],
     budget: &mut Budget,
 ) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
+    project_class_source_generic_edits(ast, removals, edits, &[], budget)
+}
+
+/// Applies proved call-argument edits and typed foreach edits in one retained-AST transaction.
+#[doc(hidden)]
+pub fn project_class_source_generic_edits(
+    ast: &ClassSourceMethodAst,
+    removals: &[ClassSourceInvokeArgumentPresentationCast],
+    edits: &[ClassSourceInvokeArgumentCast],
+    foreach_edits: &[ClassSourceTypedForEachEdit],
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
     use crate::ast::{Expr, ExprKind, Type};
     use std::sync::Arc;
 
-    if edits.is_empty() && removals.is_empty() {
+    if edits.is_empty() && removals.is_empty() && foreach_edits.is_empty() {
         return Ok(Some(ast.clone()));
     }
-    let total_edits = edits.len().saturating_add(removals.len());
+    let total_edits = edits
+        .len()
+        .saturating_add(removals.len())
+        .saturating_add(foreach_edits.len());
+    let first_edit_bci = edits
+        .first()
+        .map(|edit| edit.call_bci)
+        .or_else(|| removals.first().map(|edit| edit.call_bci))
+        .or_else(|| foreach_edits.first().map(|edit| edit.statement_bci));
     let grouping_cost = total_edits.saturating_mul(log2_upper_bound(total_edits).saturating_add(1));
-    charge_class_source_metadata(
-        budget,
-        grouping_cost,
-        edits
-            .first()
-            .map(|edit| edit.call_bci)
-            .or_else(|| removals.first().map(|edit| edit.call_bci)),
-    )?;
+    charge_class_source_metadata(budget, grouping_cost, first_edit_bci)?;
     crate::stop::charge(
         budget,
         jarde_reader::budget::CountedBudgetDimension::IrItems,
         u64::try_from(total_edits).unwrap_or(u64::MAX),
-        edits
-            .first()
-            .map(|edit| edit.call_bci)
-            .or_else(|| removals.first().map(|edit| edit.call_bci)),
+        first_edit_bci,
     )?;
     if edits
         .iter()
         .any(|edit| !matches!(&edit.ty, Type::Reference(_)))
+        || foreach_edits
+            .iter()
+            .any(|edit| !matches!(&edit.ty, Type::Reference(_)))
     {
         return Ok(None);
     }
+
+    let mut foreach_by_bci = std::collections::BTreeMap::new();
+    if !foreach_edits.is_empty() {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(foreach_edits.len()).unwrap_or(u64::MAX),
+            first_edit_bci,
+        )?;
+        for edit in foreach_edits {
+            crate::stop::poll(budget, Some(edit.statement_bci))?;
+            let copied_type_bytes = match &edit.ty {
+                Type::Reference(name) => name.len().saturating_mul(2),
+                _ => 0,
+            };
+            charge_class_source_metadata(
+                budget,
+                copied_type_bytes.saturating_add(1),
+                Some(edit.statement_bci),
+            )?;
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::OutputBytes,
+                u64::try_from(copied_type_bytes).unwrap_or(u64::MAX),
+                Some(edit.statement_bci),
+            )?;
+            if class_source_instruction_opcode(ast, edit.cast_bci, budget)? != Some(0xc0) {
+                return Ok(None);
+            }
+            if foreach_by_bci.insert(edit.statement_bci, edit).is_some() {
+                return Ok(None);
+            }
+        }
+    }
+
+    if !foreach_edits.is_empty() {
+        let mut cast_origin_items = 0usize;
+        let mut origin_merge_work = 0usize;
+        for edit in foreach_edits {
+            crate::stop::poll(budget, Some(edit.cast_bci))?;
+            let cast_count = edit.cast_origin.derived().len().saturating_add(1);
+            cast_origin_items = cast_origin_items.saturating_add(cast_count);
+            origin_merge_work = origin_merge_work.saturating_add(
+                edit.header_origin_count
+                    .saturating_add(cast_count)
+                    .saturating_mul(cast_count),
+            );
+        }
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(foreach_edits.len().saturating_add(cast_origin_items))
+                .unwrap_or(u64::MAX),
+            first_edit_bci,
+        )?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(origin_merge_work).unwrap_or(u64::MAX),
+            first_edit_bci,
+        )?;
+    }
+    let mut foreach_matched = std::collections::BTreeMap::<u32, usize>::new();
 
     let mut sites_by_bci = std::collections::BTreeMap::new();
     let mut edited_arguments = std::collections::HashSet::with_capacity(total_edits);
@@ -3106,14 +3203,7 @@ pub fn project_class_source_invoke_argument_edits(
                 }),
         )
         .saturating_add(1);
-    charge_class_source_metadata(
-        budget,
-        source_metadata_items,
-        edits
-            .first()
-            .map(|edit| edit.call_bci)
-            .or_else(|| removals.first().map(|edit| edit.call_bci)),
-    )?;
+    charge_class_source_metadata(budget, source_metadata_items, first_edit_bci)?;
     let mut edits_by_bci = std::collections::HashMap::<u32, Vec<usize>>::new();
     for (index, edit) in edits.iter().enumerate() {
         edits_by_bci.entry(edit.call_bci).or_default().push(index);
@@ -3211,8 +3301,183 @@ pub fn project_class_source_invoke_argument_edits(
             matched[*index] += 1;
         }
     });
+    fn apply_foreach_edits(
+        statements: &mut [crate::ast::Stmt],
+        edits: &std::collections::BTreeMap<u32, &ClassSourceTypedForEachEdit>,
+        matched: &mut std::collections::BTreeMap<u32, usize>,
+        member: &PhysicalMethodId,
+        budget: &mut Budget,
+    ) -> Result<(), crate::stop::StopReason> {
+        use crate::ast::{Expr, ExprKind, StmtKind, Type};
+        for statement in statements {
+            let bci = statement.origin.primary().bci();
+            charge_class_source_metadata(budget, 1, Some(bci))?;
+            if let Some(edit) = edits.get(&bci) {
+                if class_source_origin_set_belongs_to_method(&statement.origin, member, budget)?
+                    && statement.origin.derived().len().saturating_add(1)
+                        == edit.header_origin_count
+                {
+                    if let StmtKind::ForEach { ty, name, body, .. } = &mut statement.kind {
+                        if matches!(ty, Type::Reference(name) if name == "java.lang.Object") {
+                            if let Some(first) = body.first_mut() {
+                                let value = match &mut first.kind {
+                                    StmtKind::Declare {
+                                        value: Some(value), ..
+                                    }
+                                    | StmtKind::Assign { value, .. } => Some(value),
+                                    _ => None,
+                                };
+                                if let Some(value) = value {
+                                    let first_is_owned = class_source_origin_set_belongs_to_method(
+                                        &first.origin,
+                                        member,
+                                        budget,
+                                    )?;
+                                    let cast_is_owned = class_source_origin_set_belongs_to_method(
+                                        &value.origin,
+                                        member,
+                                        budget,
+                                    )?;
+                                    let matches_cast = first_is_owned
+                                        && cast_is_owned
+                                        && matches!(
+                                            &value.kind,
+                                            ExprKind::Cast { ty: cast_ty, value: cast_value }
+                                                if cast_ty == &edit.ty
+                                                    && value.origin == edit.cast_origin
+                                                    && value.origin.primary().bci() == edit.cast_bci
+                                                    && matches!(&cast_value.kind, ExprKind::Local(local) if local == name)
+                                        );
+                                    if matches_cast {
+                                        let identity_bytes =
+                                            class_source_method_identity_work(member, budget)?;
+                                        charge_class_source_metadata(
+                                            budget,
+                                            edit.cast_origin
+                                                .derived()
+                                                .len()
+                                                .saturating_add(1)
+                                                .saturating_mul(identity_bytes),
+                                            Some(edit.cast_bci),
+                                        )?;
+                                        let mut statement_origin = statement.origin.clone();
+                                        for origin in std::iter::once(edit.cast_origin.primary())
+                                            .chain(edit.cast_origin.derived().iter())
+                                        {
+                                            crate::stop::poll(budget, Some(origin.bci()))?;
+                                            let mut derived =
+                                                crate::source_map::Origin::derived(origin.bci());
+                                            if let Some(origin_method) = origin.method() {
+                                                derived = derived.in_method(origin_method);
+                                            }
+                                            if let Some(cp) = origin.cp() {
+                                                derived = derived.with_cp(cp);
+                                            }
+                                            statement_origin =
+                                                statement_origin.plus_derived(derived);
+                                        }
+                                        let cast_origin = value.origin.clone();
+                                        let old = std::mem::replace(
+                                            value,
+                                            Expr::new(ExprKind::Null, cast_origin),
+                                        );
+                                        let ExprKind::Cast {
+                                            value: unwrapped, ..
+                                        } = old.kind
+                                        else {
+                                            unreachable!()
+                                        };
+                                        let mut unwrapped = *unwrapped;
+                                        unwrapped.presented = Some(edit.ty.clone());
+                                        *value = unwrapped;
+                                        *ty = edit.ty.clone();
+                                        statement.origin = statement_origin;
+                                        *matched.entry(bci).or_default() += 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            match &mut statement.kind {
+                StmtKind::If {
+                    then_body,
+                    else_body,
+                    ..
+                } => {
+                    apply_foreach_edits(then_body, edits, matched, member, budget)?;
+                    apply_foreach_edits(else_body, edits, matched, member, budget)?;
+                }
+                StmtKind::While { body, .. }
+                | StmtKind::DoWhile { body, .. }
+                | StmtKind::Synchronized { body, .. }
+                | StmtKind::ForEach { body, .. } => {
+                    apply_foreach_edits(body, edits, matched, member, budget)?;
+                }
+                StmtKind::For {
+                    init, update, body, ..
+                } => {
+                    apply_foreach_edits(
+                        std::slice::from_mut(init.as_mut()),
+                        edits,
+                        matched,
+                        member,
+                        budget,
+                    )?;
+                    apply_foreach_edits(
+                        std::slice::from_mut(update.as_mut()),
+                        edits,
+                        matched,
+                        member,
+                        budget,
+                    )?;
+                    apply_foreach_edits(body, edits, matched, member, budget)?;
+                }
+                StmtKind::Switch { arms, .. } => {
+                    for arm in arms {
+                        apply_foreach_edits(&mut arm.body, edits, matched, member, budget)?;
+                    }
+                }
+                StmtKind::Try {
+                    body,
+                    catches,
+                    finally_body,
+                    ..
+                } => {
+                    apply_foreach_edits(body, edits, matched, member, budget)?;
+                    for catch in catches {
+                        apply_foreach_edits(&mut catch.body, edits, matched, member, budget)?;
+                    }
+                    if let Some(finally_body) = finally_body {
+                        apply_foreach_edits(finally_body, edits, matched, member, budget)?;
+                    }
+                }
+                _ => {}
+            }
+        }
+        Ok(())
+    }
+    if !foreach_edits.is_empty() {
+        apply_foreach_edits(
+            &mut program.stmts,
+            &foreach_by_bci,
+            &mut foreach_matched,
+            &ast.projection.member,
+            budget,
+        )?;
+    }
     if matched.iter().any(|count| *count != 1) || removed.iter().any(|count| *count != 1) {
         return Ok(None);
+    }
+    if !foreach_edits.is_empty() {
+        crate::stop::poll(budget, first_edit_bci)?;
+        if foreach_edits
+            .iter()
+            .any(|edit| foreach_matched.get(&edit.statement_bci) != Some(&1))
+        {
+            return Ok(None);
+        }
     }
     let projection = ClassSourceMethodAstSource {
         program,
@@ -3541,7 +3806,135 @@ pub fn class_source_for_each_local_iterables(
         charge_class_source_metadata(budget, scopes.len().saturating_add(1), Some(bci))?;
         pending.push((statements, index + 1, scopes.clone()));
         match &statement.kind {
-            StmtKind::ForEach { iterable, body, .. } => {
+            StmtKind::ForEach {
+                iterable,
+                body,
+                name,
+                ty,
+                ..
+            } => {
+                let (header_name, header_type) = (name, ty);
+                let first_binding = body.first().and_then(|first| {
+                    let value = match &first.kind {
+                        StmtKind::Declare {
+                            value: Some(value), ..
+                        }
+                        | StmtKind::Assign { value, .. } => value,
+                        _ => return None,
+                    };
+                    let cast = value;
+                    let ExprKind::Cast { ty, value } = &cast.kind else {
+                        return None;
+                    };
+                    let ExprKind::Local(local) = &value.kind else {
+                        return None;
+                    };
+                    Some((
+                        first.origin.primary().bci(),
+                        cast.origin.primary().bci(),
+                        ty,
+                        local,
+                        &first.origin,
+                        &cast.origin,
+                    ))
+                });
+                // Do not copy explicit foreign identities into the optional typed binding facts.
+                let first_binding = match first_binding {
+                    Some(binding)
+                        if class_source_origin_set_belongs_to_method(
+                            binding.4, member, budget,
+                        )? && class_source_origin_set_belongs_to_method(
+                            binding.5, member, budget,
+                        )? =>
+                    {
+                        Some(binding)
+                    }
+                    _ => None,
+                };
+                let metadata = header_name
+                    .len()
+                    .saturating_add(first_binding.as_ref().map_or(0, |item| item.3.len()))
+                    .saturating_add(match header_type {
+                        crate::ast::Type::Reference(name) => name.len(),
+                        _ => 1,
+                    })
+                    .saturating_add(first_binding.as_ref().map_or(0, |item| match &item.2 {
+                        crate::ast::Type::Reference(name) => name.len(),
+                        _ => 1,
+                    }))
+                    .saturating_add(1);
+                charge_class_source_metadata(budget, metadata, Some(bci))?;
+                let copied_text_bytes = header_name
+                    .len()
+                    .saturating_add(first_binding.as_ref().map_or(0, |item| item.3.len()))
+                    .saturating_add(match header_type {
+                        crate::ast::Type::Reference(name) => name.len(),
+                        _ => 0,
+                    })
+                    .saturating_add(first_binding.as_ref().map_or(0, |item| match item.2 {
+                        crate::ast::Type::Reference(name) => name.len(),
+                        _ => 0,
+                    }));
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::OutputBytes,
+                    u64::try_from(copied_text_bytes).unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                let binding_origin_count = first_binding.as_ref().map_or(0, |item| {
+                    item.4
+                        .derived()
+                        .len()
+                        .saturating_add(1)
+                        .saturating_add(item.5.derived().len())
+                        .saturating_add(1)
+                });
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    u64::try_from(binding_origin_count.saturating_add(4)).unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                let origin_count = statement.origin.derived().len().saturating_add(1);
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(origin_count).unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    u64::try_from(origin_count.saturating_mul(2)).unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                let mut origin_bcis = Vec::with_capacity(origin_count);
+                let mut foreign_origin_bcis = Vec::with_capacity(origin_count);
+                let primary_origin = statement.origin.primary();
+                origin_bcis.push(primary_origin.bci());
+                if primary_origin
+                    .method()
+                    .is_some_and(|origin_method| origin_method != member)
+                {
+                    foreign_origin_bcis.push(primary_origin.bci());
+                }
+                for origin in statement.origin.derived() {
+                    origin_bcis.push(origin.bci());
+                    if origin
+                        .method()
+                        .is_some_and(|origin_method| origin_method != member)
+                    {
+                        foreign_origin_bcis.push(origin.bci());
+                    }
+                }
+                if binding_origin_count != 0 {
+                    let identity_bytes = class_source_method_identity_work(member, budget)?;
+                    charge_class_source_metadata(
+                        budget,
+                        binding_origin_count.saturating_mul(identity_bytes),
+                        Some(bci),
+                    )?;
+                }
                 result.push(ClassSourceAstForEachIterable {
                     statement_bci: bci,
                     expression_bci: iterable.origin.primary().bci(),
@@ -3549,6 +3942,16 @@ pub fn class_source_for_each_local_iterables(
                         ExprKind::Local(name) => Some(name.clone()),
                         _ => None,
                     },
+                    header_name: header_name.clone(),
+                    header_type: header_type.clone(),
+                    first_binding_bci: first_binding.as_ref().map(|item| item.0),
+                    first_binding_cast_bci: first_binding.as_ref().map(|item| item.1),
+                    first_binding_cast_type: first_binding.as_ref().map(|item| item.2.clone()),
+                    first_binding_cast_local: first_binding.as_ref().map(|item| item.3.clone()),
+                    first_binding_origin: first_binding.as_ref().map(|item| item.4.clone()),
+                    first_binding_cast_origin: first_binding.as_ref().map(|item| item.5.clone()),
+                    origin_bcis,
+                    foreign_origin_bcis,
                     scope_anchors: scopes.clone(),
                 });
                 let mut child_scopes = scopes;
@@ -3920,6 +4323,94 @@ fn class_source_expression_reference_presentation_wrapper<'a>(
         return None;
     }
     Some(value)
+}
+
+/// Charges the variable identity bytes and archive steps needed to compare a retained method
+/// identity. Shared with the facade so typed-foreach proof and final revalidation use one bound.
+#[doc(hidden)]
+pub fn class_source_method_identity_work(
+    method: &PhysicalMethodId,
+    budget: &mut Budget,
+) -> Result<usize, crate::stop::StopReason> {
+    let (entry, steps) = match &method.owner.location {
+        PhysicalClassLocation::StandaloneRoot { .. } => (None, &[][..]),
+        PhysicalClassLocation::ArchiveEntry { entry } => {
+            (Some(entry), entry.origin.steps.as_slice())
+        }
+    };
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(steps.len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    let mut bytes = method
+        .name
+        .0
+        .len()
+        .saturating_add(method.descriptor.0.len())
+        .saturating_add(method.owner.class_bytes.digest.0.len());
+    match &method.owner.location {
+        PhysicalClassLocation::StandaloneRoot { snapshot } => {
+            bytes = bytes.saturating_add(snapshot.0.len());
+        }
+        PhysicalClassLocation::ArchiveEntry { entry } => {
+            bytes = bytes
+                .saturating_add(entry.origin.snapshot.0.len())
+                .saturating_add(entry.origin.root_container.0.len())
+                .saturating_add(entry.raw_name.0.len());
+            for step in &entry.origin.steps {
+                crate::stop::poll(budget, None)?;
+                bytes = bytes
+                    .saturating_add(step.via_raw_name.0.len())
+                    .saturating_add(step.child_container.0.len());
+            }
+        }
+    }
+    if let PhysicalVariant::Other { label } = &method.owner.variant {
+        bytes = bytes.saturating_add(label.len());
+    }
+    Ok(bytes
+        .saturating_add(std::mem::size_of::<PhysicalMethodId>())
+        .saturating_add(std::mem::size_of::<PhysicalDefinitionId>())
+        .saturating_add(std::mem::size_of::<PhysicalClassLocation>())
+        .saturating_add(std::mem::size_of::<PhysicalVariant>())
+        .saturating_add(entry.map_or(0, |_| {
+            std::mem::size_of::<PhysicalEntryId>().saturating_add(
+                steps
+                    .len()
+                    .saturating_mul(std::mem::size_of::<ContainerOriginStep>()),
+            )
+        })))
+}
+
+/// Checks every primary and derived anchor, allowing unbound anchors but rejecting any explicit
+/// foreign method. The identity bound is charged before origin iteration.
+#[doc(hidden)]
+pub fn class_source_origin_set_belongs_to_method(
+    origins: &crate::source_map::OriginSet,
+    member: &PhysicalMethodId,
+    budget: &mut Budget,
+) -> Result<bool, crate::stop::StopReason> {
+    let identity_bytes = class_source_method_identity_work(member, budget)?;
+    let count = origins.derived().len().saturating_add(1);
+    charge_class_source_metadata(
+        budget,
+        count.saturating_mul(
+            identity_bytes.saturating_add(std::mem::size_of::<crate::source_map::Origin>()),
+        ),
+        Some(origins.primary().bci()),
+    )?;
+    for origin in std::iter::once(origins.primary()).chain(origins.derived()) {
+        crate::stop::poll(budget, Some(origin.bci()))?;
+        if origin
+            .method()
+            .is_some_and(|origin_member| origin_member != member)
+        {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 fn class_source_origin_belongs_to_method(
@@ -16656,6 +17147,391 @@ mod generic_call_ast_projection_tests {
             class_source_invoke_ast_sites(&ast, &[key], &mut cancelled),
             Err(crate::stop::StopReason::Cancelled { .. })
         ));
+    }
+    fn typed_foreach_budget() -> Budget {
+        Budget::new(Limits {
+            ir_items: 1_000,
+            analysis_steps: 100_000,
+            output_bytes: 1_024,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        })
+    }
+
+    /// Internal AST metamorphism only; this fixture makes no legal-JVM evidence claim.
+    fn typed_foreach_case(
+        member: &PhysicalMethodId,
+        header_bci: u32,
+        next_bci: u32,
+        cast_bci: u32,
+        store_bci: u32,
+    ) -> (Stmt, ClassSourceTypedForEachEdit) {
+        let cast_origin = OriginSet::new(crate::source_map::Origin::direct(cast_bci).with_cp(7))
+            .plus_derived(
+                crate::source_map::Origin::derived(next_bci)
+                    .in_method(member)
+                    .with_cp(9),
+            );
+        let binding = Stmt::new(
+            StmtKind::Declare {
+                ty: Type::Reference("java.lang.String".to_owned()),
+                source_type_name: None,
+                name: "saved".to_owned(),
+                value: Some(Expr::new(
+                    ExprKind::Cast {
+                        ty: Type::Reference("java.lang.String".to_owned()),
+                        value: Box::new(Expr::new(
+                            ExprKind::Local("element".to_owned()),
+                            OriginSet::new(crate::source_map::Origin::direct(next_bci)),
+                        )),
+                    },
+                    cast_origin.clone(),
+                )),
+            },
+            OriginSet::new(crate::source_map::Origin::direct(store_bci)),
+        );
+        let header_origin = OriginSet::new(crate::source_map::Origin::direct(header_bci))
+            .plus_derived(crate::source_map::Origin::derived(next_bci));
+        let header_origin_count = header_origin.derived().len() + 1;
+        (
+            Stmt::new(
+                StmtKind::ForEach {
+                    label: None,
+                    ty: Type::Reference("java.lang.Object".to_owned()),
+                    name: "element".to_owned(),
+                    iterable: Expr::new(
+                        ExprKind::Local("input".to_owned()),
+                        OriginSet::new(crate::source_map::Origin::direct(header_bci)),
+                    ),
+                    body: vec![binding],
+                },
+                header_origin,
+            ),
+            ClassSourceTypedForEachEdit {
+                statement_bci: header_bci,
+                cast_bci,
+                ty: Type::Reference("java.lang.String".to_owned()),
+                cast_origin,
+                header_origin_count,
+            },
+        )
+    }
+
+    fn typed_foreach_ast() -> (ClassSourceMethodAst, ClassSourceTypedForEachEdit) {
+        let (base, _, _) = object_presentation_wrapper_ast(false);
+        let mut source = (*base.projection).clone();
+        let (loop_stmt, edit) = typed_foreach_case(&source.member, 1, 2, 3, 5);
+        source.program.stmts = vec![loop_stmt];
+        source.instruction_bcis = vec![1, 2, 3, 5];
+        source.instruction_count = source.instruction_bcis.len();
+        source.instruction_opcodes = vec![(1, 0xb9), (2, 0xb9), (3, 0xc0), (5, 0x3a)];
+        source.call_targets.clear();
+        (
+            ClassSourceMethodAst {
+                projection: std::sync::Arc::new(source),
+            },
+            edit,
+        )
+    }
+
+    fn assert_typed_foreach_refused(
+        ast: &ClassSourceMethodAst,
+        edits: &[ClassSourceTypedForEachEdit],
+    ) {
+        let before = ast.clone();
+        assert!(
+            project_class_source_generic_edits(ast, &[], &[], edits, &mut typed_foreach_budget())
+                .unwrap()
+                .is_none()
+        );
+        assert_eq!(ast, &before);
+    }
+
+    #[test]
+    fn typed_foreach_projection_unwraps_only_the_binding_and_preserves_origins() {
+        let (ast, edit) = typed_foreach_ast();
+        let before = ast.clone();
+        let store_origin = match &ast.projection.program.stmts[0].kind {
+            StmtKind::ForEach { body, .. } => body[0].origin.clone(),
+            _ => panic!("fixture is a foreach"),
+        };
+        let projected = project_class_source_generic_edits(
+            &ast,
+            &[],
+            &[],
+            std::slice::from_ref(&edit),
+            &mut typed_foreach_budget(),
+        )
+        .unwrap()
+        .unwrap();
+        let Stmt {
+            kind: StmtKind::ForEach { ty, name, body, .. },
+            origin,
+        } = &projected.projection.program.stmts[0]
+        else {
+            panic!("foreach remains")
+        };
+        assert_eq!(ty, &Type::Reference("java.lang.String".to_owned()));
+        assert_eq!(name, "element");
+        let Stmt {
+            kind:
+                StmtKind::Declare {
+                    name: target,
+                    value: Some(value),
+                    ..
+                },
+            origin: store,
+        } = &body[0]
+        else {
+            panic!("original first declaration remains")
+        };
+        assert_eq!(target, "saved");
+        assert_eq!(store, &store_origin);
+        assert!(matches!(&value.kind, ExprKind::Local(local) if local == name));
+        assert_eq!(value.presented, Some(ty.clone()));
+        assert_eq!(origin.primary().bci(), 1);
+        assert_eq!(origin.primary().method(), None);
+        assert!(
+            origin
+                .derived()
+                .iter()
+                .any(|o| o.bci() == 3 && o.cp() == Some(7))
+        );
+        assert!(origin.derived().iter().any(|o| o.bci() == 2
+            && o.method() == Some(&ast.projection.member)
+            && o.cp() == Some(9)));
+        assert_eq!(ast, before);
+    }
+    #[test]
+    fn typed_foreach_refuses_mismatched_or_foreign_site_plans_without_mutation() {
+        let (ast, edit) = typed_foreach_ast();
+        let mut wrong_type = edit.clone();
+        wrong_type.ty = Type::Reference("java.lang.Integer".to_owned());
+        assert_typed_foreach_refused(&ast, &[wrong_type]);
+        let mut wrong_bci = edit.clone();
+        wrong_bci.cast_bci = 99;
+        assert_typed_foreach_refused(&ast, &[wrong_bci]);
+        let mut wrong_header = edit.clone();
+        wrong_header.header_origin_count += 1;
+        assert_typed_foreach_refused(&ast, &[wrong_header]);
+        assert_typed_foreach_refused(&ast, &[edit.clone(), edit.clone()]);
+
+        let mut source = (*ast.projection).clone();
+        let member = source.member.clone();
+        let foreign = PhysicalMethodId {
+            name: JvmBytes(b"foreign".to_vec()),
+            ..member.clone()
+        };
+        let StmtKind::ForEach { body, .. } = &mut source.program.stmts[0].kind else {
+            panic!()
+        };
+        let StmtKind::Declare {
+            value: Some(value), ..
+        } = &mut body[0].kind
+        else {
+            panic!()
+        };
+        let ExprKind::Cast { .. } = &value.kind else {
+            panic!()
+        };
+        value.origin = OriginSet::new(
+            crate::source_map::Origin::direct(3)
+                .in_method(&foreign)
+                .with_cp(7),
+        )
+        .plus_derived(
+            crate::source_map::Origin::derived(2)
+                .in_method(&member)
+                .with_cp(9),
+        );
+        let mut foreign_edit = edit;
+        foreign_edit.cast_origin = value.origin.clone();
+        let foreign_ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        assert_typed_foreach_refused(&foreign_ast, &[foreign_edit]);
+
+        // Internal AST metamorphisms only; these are not legal-JVM evidence fixtures.
+        let (ast, edit) = typed_foreach_ast();
+        let mut cast_source = (*ast.projection).clone();
+        let StmtKind::ForEach { body, .. } = &mut cast_source.program.stmts[0].kind else {
+            panic!()
+        };
+        let StmtKind::Declare {
+            value: Some(value), ..
+        } = &mut body[0].kind
+        else {
+            panic!()
+        };
+        value.origin = value
+            .origin
+            .clone()
+            .plus_derived(crate::source_map::Origin::derived(77).in_method(&foreign));
+        let mut cast_edit = edit.clone();
+        cast_edit.cast_origin = value.origin.clone();
+        assert_typed_foreach_refused(
+            &ClassSourceMethodAst {
+                projection: std::sync::Arc::new(cast_source),
+            },
+            &[cast_edit],
+        );
+
+        let mut binding_source = (*ast.projection).clone();
+        let StmtKind::ForEach { body, .. } = &mut binding_source.program.stmts[0].kind else {
+            panic!()
+        };
+        body[0].origin = body[0]
+            .origin
+            .clone()
+            .plus_derived(crate::source_map::Origin::derived(78).in_method(&foreign));
+        assert_typed_foreach_refused(
+            &ClassSourceMethodAst {
+                projection: std::sync::Arc::new(binding_source),
+            },
+            std::slice::from_ref(&edit),
+        );
+
+        let mut header_source = (*ast.projection).clone();
+        let header = &mut header_source.program.stmts[0];
+        header.origin = header
+            .origin
+            .clone()
+            .plus_derived(crate::source_map::Origin::derived(79).in_method(&foreign));
+        let mut header_edit = edit;
+        header_edit.header_origin_count = header.origin.derived().len() + 1;
+        assert_typed_foreach_refused(
+            &ClassSourceMethodAst {
+                projection: std::sync::Arc::new(header_source),
+            },
+            &[header_edit],
+        );
+    }
+    #[test]
+    fn typed_foreach_traversal_reaches_try_and_switch_bodies_and_stops_atomically() {
+        let (ast, first_edit) = typed_foreach_ast();
+        let mut source = (*ast.projection).clone();
+        let (second_loop, second_edit) = typed_foreach_case(&source.member, 10, 11, 12, 14);
+        let ancillary = |bci| {
+            Stmt::new(
+                StmtKind::Expr(Expr::direct(ExprKind::Null, bci)),
+                OriginSet::new(crate::source_map::Origin::direct(bci)),
+            )
+        };
+        source.program.stmts = vec![Stmt::new(
+            StmtKind::Try {
+                resources: Vec::new(),
+                catches: vec![crate::ast::CatchClause {
+                    ty: "java.lang.Exception".into(),
+                    name: "failure".into(),
+                    body: vec![ancillary(22)],
+                }],
+                body: vec![ast.projection.program.stmts[0].clone(), ancillary(24)],
+                finally_body: Some(vec![Stmt::new(
+                    StmtKind::Switch {
+                        value: Expr::direct(ExprKind::Integer(0), 21),
+                        arms: vec![crate::ast::SwitchArm {
+                            keys: vec![0],
+                            labels: None,
+                            default: false,
+                            fall_through: false,
+                            body: vec![second_loop, ancillary(25)],
+                        }],
+                    },
+                    OriginSet::new(crate::source_map::Origin::direct(21)),
+                )]),
+            },
+            OriginSet::new(crate::source_map::Origin::direct(20)),
+        )];
+        source.instruction_bcis = vec![1, 2, 3, 5, 10, 11, 12, 14, 20, 21, 22, 24, 25];
+        source.instruction_count = source.instruction_bcis.len();
+        source.instruction_opcodes = source
+            .instruction_bcis
+            .iter()
+            .map(|bci| (*bci, if *bci == 3 || *bci == 12 { 0xc0 } else { 0xb9 }))
+            .collect();
+        let nested = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        let mut limited = Budget::new(Limits {
+            ir_items: 0,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        let before = nested.clone();
+        assert!(matches!(
+            project_class_source_generic_edits(
+                &nested,
+                &[],
+                &[],
+                &[first_edit.clone(), second_edit.clone()],
+                &mut limited
+            ),
+            Err(crate::stop::StopReason::Budget { .. })
+        ));
+        assert_eq!(nested, before);
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled = Budget::with_cancellation_token(Limits::default(), token);
+        assert!(matches!(
+            project_class_source_generic_edits(
+                &nested,
+                &[],
+                &[],
+                &[first_edit.clone(), second_edit.clone()],
+                &mut cancelled
+            ),
+            Err(crate::stop::StopReason::Cancelled { .. })
+        ));
+        assert_eq!(nested, before);
+        let mut elapsed = Budget::new(Limits {
+            elapsed_millis: 0,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            project_class_source_generic_edits(
+                &nested,
+                &[],
+                &[],
+                &[first_edit.clone(), second_edit.clone()],
+                &mut elapsed
+            ),
+            Err(crate::stop::StopReason::Interrupted {
+                code: "jre_budget_interrupted",
+                ..
+            })
+        ));
+        assert_eq!(nested, before);
+        let mut budget = typed_foreach_budget();
+        let projected = project_class_source_generic_edits(
+            &nested,
+            &[],
+            &[],
+            &[first_edit, second_edit],
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        let StmtKind::Try {
+            body,
+            catches,
+            finally_body: Some(finally),
+            ..
+        } = &projected.projection.program.stmts[0].kind
+        else {
+            panic!()
+        };
+        assert!(
+            matches!(&body[0].kind, StmtKind::ForEach { ty: Type::Reference(t), .. } if t == "java.lang.String")
+        );
+        assert!(matches!(&body[1].kind, StmtKind::Expr(_)));
+        assert!(matches!(&catches[0].body[0].kind, StmtKind::Expr(_)));
+        let StmtKind::Switch { arms, .. } = &finally[0].kind else {
+            panic!()
+        };
+        assert!(
+            matches!(&arms[0].body[0].kind, StmtKind::ForEach { ty: Type::Reference(t), .. } if t == "java.lang.String")
+        );
+        assert!(matches!(&arms[0].body[1].kind, StmtKind::Expr(_)));
     }
 }
 

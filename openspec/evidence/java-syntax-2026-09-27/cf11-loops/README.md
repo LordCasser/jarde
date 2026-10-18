@@ -8,7 +8,7 @@ Jarde 固定基线：`02f90beb742c6273966f2b117ce528a334f9d912`，分支 `codex/
 
 | 文件 | SHA-256 | 断言范围 |
 |---|---|---|
-| `TestNestedLoops.java` | `4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e` | 只检查生成文本中 `for` 两处、`if`、加法、减法各一处；没有 `check()` 行为断言。 |
+| `TestNestedLoops.java` | `4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e` | 检查两个 typed String foreach 的原变量名头，以及 `if (s1.equals(s2))`、`l2.add(s1)`、`l1.remove(s2)` 各一次；没有 `check()` 行为断言。 |
 | `TestNestedLoops2.java` | `795ea73a0acfc5695f9e67c456746919f889d52026695f406d88f9693469b6db` | 只检查 `for` 和 `while` 各出现一次；没有 `check()`。 |
 | `TestNestedLoops4.java` | `b84dbf9988e1343f6d26f06345a4e8ba8b17993b4dc33419c86d9e9194968cca` | 文本只检查 `break;`、`return 0;` 各一次；`TestCls.check()` 调用 `testFor` 并断言结果为 12，是本组明确的语义断言。IntegrationTest 有可用 source compiler 时先跑源类 check；只有识别到 check 并启用编译或 decompiled check 时才对反编译类执行运行检查。 |
 | `TestSequentialLoops2.java` | `adb34f80f7d55cd3309ed7708f0fdb46768cf32e4004dbd13d4e278530306720` | 检查两处 `while`、`break`、`return c`、两个 `<= 127`；无 `check()`。`testNoDebug` 另测无调试信息时的文本形状。 |

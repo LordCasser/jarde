@@ -1,20 +1,48 @@
+## 2026-10-18 最新：最终 typed foreach CLI 已通过广门及20API重绑，native/自身CI待验收
+
+此节优先于下方历史。finThrow5/5、nestedFin16/16、父finally7/7已交付，勿重做；持续goal active。当前 `recover-typed-list-foreach-elements` **5/7**：最终代码、来源/计费审查、完整原始/控制矩阵与hardened CLI重绑已接受，余两fresh native和实际产品CI/交付关闭。
+
+CLI `/private/tmp/jarde-typed-foreach-broad-root-v2-20261018/candidate-cli`，63405424B / SHA256 **16bd83857cfbcc6023013a6fc67b79030472f5beb0a448baba0b9b6599c7d27f**。广门802/0/6、fmt/CI Clippy/MSRV1.88通过，Reader1301/5751/630/4050/14、fingerprint2429且旧2427项不变，来源3190完全未变、exact clean/target absent。实际20同argv API/40raw核除usage外全部JSON与d130相等，3301来源及物理产物pins前后闭合，完整Java/每方法raw map逐字同。复用原始final 36JVM/288case、控制Jarde48JVM/912case运行证据；只重跑API，未重跑JDK，不把JADX8个类型错误编译失败冒称runtime。
+
+代码复用既有泛型源码事务/opaque AST，保留合成头名及原Assign/Declare，不新增IR/pass/scope solver。全部primary/derived来源一致校验、final计划闭包重验、新访问提前计费/Stop不发布；三个derived-only内部变形负例单列，不冒称合法JVM输入。原名头折叠/冗余iterator/overload包装独立欠账，CF11和71/612整体计数不增加。v1-v4 focused、collector/checker真实失败和所有私有草稿保留。
+
+下一步：推送本候选以便远端CI与本地两fresh native并行；root独占共享/Git/Rust/JDK/CLI/网络，本地工具串行，不在Cargo运行中改源或跑网络。两seed分别5350648285461741569/1570，使用既有workspace_runner，默认stack/5GiB/target1GiB守卫及exact clean；native独立验收工具v2（全unit module名已核）在 `/private/tmp/jarde-typed-foreach-native-acceptance-luna-v2-20261018`。ownCI准备v2在 `/private/tmp/jarde-typed-foreach-own-ci-prep-luna-v2-20261018`，11源码/3fixture/50关键门；需root供实际产品SHA/runid，官方ZIP补证按实际缺失调用既有helper。产品push/native/自身CI此刻均未完成，勿提前勾3.2/3.3。
+
+证据入口 `openspec/changes/recover-typed-list-foreach-elements/results/README.md`。交付后再写实际产品SHA/CI与干净main终态；全局goal不因叶子完成而complete。接续先核真实Git/进程状态。
+
+## 2026-10-18 最新：typed foreach 最终矩阵已接受，收紧来源与计费后再交付
+
+此节优先于下方历史记录。finThrow 5/5、nestedFin 16/16、父finally 7/7已交付，不重做；持续goal保持active。当前change `recover-typed-list-foreach-elements` 暂为4/7：d130候选的最终原始TestNestedLoops与19case控制矩阵已root独立接受；来源/计费修正已应用，task3.1待新CLI的20同argv API逐字重绑后重新勾选，broad-v2正在跑。
+
+HEAD/main/origin最后已推86741afeb（规划），本地产品未提交。d130 CLI为已验收当前候选，原始生成36VM/288case、控制Jarde48VM/912case全部同原；JADX合法类型不匹配样例8格整类编译失败完整保留。控制12API的raw方法text/map/quality/fallbacks与旧产品逐字不变，raw/mismatch/ctor投影不变；typed正例只改头类型/首cast及既有emitter固定body缩进。完整原始黄金原名头尚未追平，CF11/71/612计数不增加。
+
+广门v1为802/0/6，CI Clippy/MSRV通过、Reader census1301/5751/630/4050/14、fingerprint2429且原2427项不变，CLI与focused-v5同d130，target已exact clean。末审派生foreign来源/owner字节比较计费/new program_node_count预扫三点已由Luna补丁+root最小修正处理，正重跑最终门；旧AST clone计费helper的既有预扫独立记录不扩范围。两fresh native、最终新CLI对应Java复核、实际产品commit/push/自身CI均未完成。证据入口为本change results/README.md及final-root-acceptance-v1.json，各阶段真实失败保留。
+
+root独占共享修改/Git/Rust/JDK/CLI/网络，Luna只私有准备/只读；至少5GiB余量、target1GiB每秒守卫/defaultstack/exact clean。先核工具终态、来源pins及真实Git状态，再接续。
+
 # Jarde 接续入口
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
 先按下方第一节接续；后续章节是已完成产品的历史检查点，其中的“下一项”和提交号不代表当前状态。
 
-## 2026-10-18 当前：原始 TestNestedLoops 基线接受，typed List foreach 实施中
+## 2026-10-18 当前：typed List foreach 候选已定向验收，3/7
 
-finThrow5/5、nestedFin16/16及父finally7/7已交付，勿重做。持续goal active；当前固定差距是原始TestNestedLoops的两个Object foreach头，既有List<String>形参与循环语义已经正确。JADX实际两String头可作算法参考；不新增循环识别、全局pass或作用域solver。
+finThrow5/5、nestedFin16/16和父finally7/7已交付，勿重做。持续goal active。`recover-typed-list-foreach-elements` **3/7**：固定原始基线、私有Luna实现/root架构审查、公开正例与raw来源回归完成；完整最终三方矩阵、全部拒绝/停止、广门/两fresh native及自身产品CI仍待，不得声称产品交付或CF11/71/612完成。
 
-新OpenSpec `openspec/changes/recover-typed-list-foreach-elements/` 已strict通过，**1/7**：完整原始基线20命令40raw、4原JVM/32case、8API、2JADX输出，以及生成矩阵75命令150raw/20编译18成功/36JVM288case同原、18wrong CodeSource拒绝均root独立接受。Jarde16编译/32JVM256case，JADX2编译/4JVM32case；另外2JADX javac8完整outer框架major55失败无runtime。三包307成员已逐字复开，入口为change `results/README.md`。基底仍产品ee013/aabf CLI，无共享Rust修改或新产品CI。
+已应用Luna私有实现v3（`/private/tmp/jarde-typed-list-foreach-impl-luna-v3-20261018/task-2.1-v3.patch`），root修正以完整Program节点计新遍历、保留cast全部来源/CP/成员、补类型复制计费。改动仅既有泛型事务/opaque AST和测试；不新增循环识别、公共序列化模型、IR/pass或作用域solver。原Assign/Declare、synthetic名字与外层声明保留；List<E>/physical E cast精确结合，不匹配仅跳过typed候选，原generic List声明不降级。原名头折叠、iterator和Object包装独立欠账。
 
-Luna `/root/typed_foreach_impl` 正在私有目录 `/private/tmp/jarde-typed-list-foreach-impl-luna-v1-20261018/` 实现任务2.1；root须审patch再应用。设计：复用现有完整泛型事务和同次opaque AST，精确Signature E/物理checkcast/首绑定闭合，只改synthetic头Object→E并解开首句RHS cast，保留原Assign/Declare、名字、外层声明和位置；cast来源并入头，raw RecoveryReport.text/map不改。类型不匹配只拒绝typed候选，不降级原泛型声明。typed-only编辑必须独立触发事务，末尾重验具体AST/站点，所有新扫描先计费/poll。原名头折叠、冗余iterator和Object包装是独立债务，整上游黄金与CF11未完成。
+root focused **v5实际终态exit0并独立接受**：fmt、496 Java库、17公开/相邻用例（1既有ignored）、3 hoisted iterator，共516通过/0失败/1忽略；完成CLI构建和exact clean。CLI `/private/tmp/jarde-typed-foreach-focused-root-v5-20261018/candidate-cli` **63386112B/SHA d1304ad2c3acca940a744eb3023bea0f77f62d279afc675aff84a6c076d447c4**；3190构建来源不变，target absent/defaultstack/5GiB/target1GiB守卫接受。独立收据 `/private/tmp/jarde-typed-foreach-focused-review-root-v1-20261018/review.json`。
 
-独立19case Java控制已冻结在 `/private/tmp/jarde-typed-foreach-controls-prep-luna-v1-20261018/`，目前未执行；Luna准备collector，root审后采原始和未修对照，涵盖String/Integer空/null/错误元素、原绑定最后值与iterator/hasNext/next异常。目标全static，不冒称运行构造器。root独占共享源码/Git/Cargo/JDK/JADX/CLI/网络；agents只读/私有准备。当前target不存在，遵守5GiB/target1GiB/default stack及结束清理。
+前四focused失败保留：v1格式化未等终态导致test文件闭合变化且旧meter断言失败；v2新unit owned/ref类型错误；v3新增复制计费后旧固定meter值再次过时（真实late deadline已通过）；v4三个新AST测试借用了OutputBytes=0的旧helper。root保留原32_531限额，以真实Partial/原始完整text+map/无typed或generic局部发布为断言，不再用旧内部计数当契约；未调旧P5表/限额。新AST测试另给显式输出预算，生产计费保留。
 
-Seq2另补强raw方法source_map范围：旧checker用了whole长度，新的root-v2已实际对同一冻结receipt重核8API/24方法及两个真实checker负控；源码/原8次和生成72次JVM未重跑。补证在 `openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-raw-method-map-review-root-v2/`，不改历史raw、语义结论或运行计数。
+19case控制基线已独立接受：137命令274raw，4原编译profile/8JVM152case、12Jarde API，Jarde24完整编译48JVM912case同原，24+4错误CodeSource拒绝。JADX两JDK8启动错误保留，6命令Java23补跑后四profile均成功反编译，但8次有效整类重编均因mismatch的Iterator<String>→Integer cast不兼容失败，无JADX runtime；旧四次无源javac不混算。证据 `results/controls-baseline-root-v1`（373成员77f87a…）及`controls-jadx-java23-supplement-root-v1`（24成员329b5a…）。完整原始NL基线20+75命令/三包307成员见results README，Seq2 raw方法map补核亦保留。
+
+**当前root正在完整最终原始NL采集**：`/private/tmp/jarde-typed-foreach-original-final-root-v1-20261018/execution.json`，脚本prep-root-v3 SHA91a6c1acd2e3f3c5a1b2addfcbb12dec959367f87dd9c2ec0f82e6488f1ff088，只换上述CLI/Hash，driver4534…不变。先等真实process终态再审/跑对应完整生成矩阵。最终19case collector在 `/private/tmp/jarde-typed-foreach-controls-final-collector-root-v4-20261018/collect_controls.py`（cea527…），只修所有JADX启动使用pinned Java23，尚未执行；等原始NL及矩阵结束后串行运行，root审查不裁源。Rust/JDK/CLI/Git/root共享写入仍串行，agents只读/私有Python准备。
+
+新增fixture `tests/fixtures/typed-list-foreach/` 的class已git add -f，byteSHA eb5e8b…与原javac8-debug相同。独立raw Code步进核1class/6Code/0handler/10targets/0jsr/97BCI，Reader人口元组已按delta改1301/5751/630/4050/14，完整Reader门尚待广验。此改动在focused CLI之后，仅cfg(test)人口断言，最终CLI须由广门再构建/核字节，不能混称focused从后改源码构建。
+
+主线已推送的最近准备提交86741afeb，当前有未提交Rust/测试/证据；不要跳过完整门直接称clean产品。广门私有spec `/private/tmp/jarde-typed-foreach-broad-spec-root-v1-20261018.json`，复用既有guard，允许唯一运行内写fingerprint再生；先等全部Java采集结束、source closure稳定，再运行。后续两fresh native、产品commit/push和自身CI按tasks继续。
 
 ## 2026-10-18 当前：Seq2 完整对照接受，下一固定项 TestNestedLoops
 
