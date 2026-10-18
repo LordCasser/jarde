@@ -1,0 +1,5 @@
+# 双轮native独立验收与产品来源绑定
+
+root实际三命令exit0，22成员/SHA256 `23731b67ac3afbd8bb1dc69212f046f91d772402801d060a65e739c542a27adb`。两个fixed seeds各385目标/101批/3759通过/0失败/98既有忽略，9精确门各一次；全部3857具名(name,status)逐target集合完全相同。每轮5143来源一致，构建3190来源与之并集5150，均按Git blob/bytes/mode绑定e69a3494c8fcd0ff4783be1e9ff71499a730adde；最终CLI85ca6e7d…不变，target absent。
+
+保留collector legacy表每轮94批的错配与按真实串行Running重建的更正，不以旧表统计作验收。Luna原cross-stream疑点及依据本机Cargo文档撤回的更正一并保留；新增逐名状态比较已真实执行。CI interim只证明当时状态，最终own-product-ci单独接受；不把工具准备/归档完整性或局部门冒称全局71/612完成。

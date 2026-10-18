@@ -1,3 +1,29 @@
+## 2026-10-18 最新：双轮native与5150来源绑定已接受，等e69自身CI
+
+此节优先。最终产品e69a3494c8fcd0ff4783be1e9ff71499a730adde仍已推main。两fresh native v2都实际终态exit0：每轮385目标/101批/3759通过/0失败/98旧忽略，9精确门各一次；root已实际运行v3独立checker重建metadata/串行Running/harness，追加全部3857具名(name,status)逐target相等。collector legacy每轮94批顺序错配保留，不拿它当真。来源每轮5143/构建3190并集5150按Git blob/bytes/mode绑定e69，85ca CLI不变、target absent；没有Cargo进程待续。
+
+验收actual `/private/tmp/jarde-typed-foreach-workspace-acceptance-root-v2-20261018`，root launcher `/private/tmp/jarde-typed-foreach-native-close-root-v1-20261018.py`，三命令均exit0。bulk results新增workspace-seed1-root-v2(213)、seed2-root-v2(212)、workspace-acceptance-root-v2(22)，完整源码和工具/复核均保留；旧b78失败和取消CI原动作另存。typed **6/7**、bulk **3/4**；任务最后一项尚未勾。strict刚实际373/0。
+
+实际自身CI39112513084最近仍stable pass2运行（其它3job成功），随后还有ignored JDK/comparison与workflow门；尚未接受，须完整collector/官方ZIP/v3 verifier54门后才close。native结束后可网络操作。最终应root重开所有归档、更新账本/strict/handoff，文档关闭提交推送，核远端==本地/干净main及14旧checkout detached-clean-ancestor/target absent；文档head不冒称跑过产品CI。
+
+下一固定原名foreach分析已存 openspec/evidence/java-syntax-2026-10-18/cf11-foreach-original-bindings-analysis-root-v1（9成员/41e84a06…）：同BCI25不同scope、13/42锚点、物理slot/SSA、所缺local-reference→词法范围关系、JADX算法及未来规格约束显式演进。仅分析，无新Spec/实现/新运行，不加CF11/71/612计数。finThrow5/5、nestedFin16/16、父finally7/7早已交付，不重做；全局goal active。
+
+## 2026-10-18 最新运行态：fresh native seed1通过，seed2运行中
+
+此节优先。最终产品仍 **e69a3494c8fcd0ff4783be1e9ff71499a730adde**，main/origin已推。seed1 v2实际终态exit0：385目标/101批/3759通过/0失败/98旧忽略，5143来源pins未变、exactclean/target absent；尚待双轮独立验收，不能把collector legacy顺序当逐target计数。root当前seed2 v2 `/private/tmp/jarde-typed-foreach-workspace-seed2-root-v2-20261018`，seed5350648285461741570，exec session **41573**。Cargo期间仍不改源码/跑Gitmutation/JDK/CLI/网络。
+
+两轮后使用own-ci-prep-luna-v3 native wrapper9门、source binder；root已额外准备 `/private/tmp/jarde-typed-foreach-native-named-review-root-v1-20261018/review_named.py` 比较全部具名(status)逐目标相等。Luna最初cross-stream疑点经本机Cargo文档“test targets run serially”证据撤回，更正与原review均在acceptance-adversarial-luna-v1私有目录保留；当前385目标中仅task_operations example/test重名，所有54CI/9native门目标无歧义。
+
+实际自身CI **39112513084** 刚核3job成功、stable仍in_progress；状态收据 `/private/tmp/jarde-typed-foreach-own-ci-status-root-v1-20261018`，尚未接受。typed5/7、bulk3/4不变。下一原名fold仍分析，Luna确认首个缺口为local-reference→scope窄关系，未改共享代码/创建Spec，详 `/private/tmp/jarde-foreach-original-bindings-adversarial-luna-v1-20261018`。finThrow/nestedFin已完成，不重做；全局goal active。
+
+## 2026-10-18 最新运行态：e69a3494c已推，fresh native seed1 v2运行中
+
+此节优先。最终实际产品 **e69a3494c8fcd0ff4783be1e9ff71499a730adde** 已推main，独立bulk修复与typed候选b78分开提交；自身CI **39112513084** 已实际in_progress，尚未接受。旧b78 CI39111223906在3job成功/stable仍运行时被root取消为过期候选，动作/原状态收据在 `/private/tmp/jarde-bulk-interval-superseded-ci-root-v1-20261018`，未冒称旧CI完整成功。
+
+root当前运行 `workspace_runner.py --out /private/tmp/jarde-typed-foreach-workspace-seed1-root-v2-20261018 --seed 5350648285461741569`，exec session **91725**；第一失败native v1绝不可复用为通过。等实际终态并exactclean后，再fresh运行seed2-root-v2 /5350648285461741570；不得两轮并行。Cargo期间不改源码/跑Gitmutation/JDK/CLI/网络，可只读核记录/文档归档。默认stack、5GiB余量、target1GiB每秒守卫、finally exactclean。
+
+bulk change3/4、typed5/7；已通过最终822/0/6广门、85ca6e7d… CLI63405424B、20同argv API全部非usage JSON/完整Java/raw maps精确等价，源3190/3301闭合。剩余两fresh native、v3 verifier独立验收、来源Git blob绑定e69、该提交自身CI54门/完整job-step双seed、strict/归档/handoff/clean main后才关任务。产品binder与ownCI/native v3工具路径见下节。CI收集须完整实际日志和必要官方ZIP，不凭绿色状态或旧run接受。
+
 ## 2026-10-18 最新：bulk独立修复已过822门和20API，新产品/native/自身CI待验
 
 此节优先。typed foreach候选b78b34ed6已推，其第一fresh native因既有bulk计数区间错位失败，不能算通过；失败与源pins/exactclean已完整保留。独立 `align-bulk-class-task-execution-interval` 修复仅将现有Entered guard移到run_class_task入口、gate/delay/入口panic之前，加一条注释；不改gate/timeout/阈值/assert/调度/模型，无新机制。

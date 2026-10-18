@@ -14,3 +14,5 @@ v4真实定向部分已通过：单独4个bulk目标4+7+3+2=16测试，4次精�
 最终20同argv API/40raw已独立review接受，除usage外全部JSON、whole/projected/raw文本/maps与原完整Java矩阵对应d130逐字一致，3301来源/所有冻结物理产物等pins前后闭合。final-api-replay-root-v2为85成员/5377072d611ee7f1b3cf6b874f4428515ec85651bf5a91b18c9c02517bd46898；本次未重跑JDK，精确相同完整Java复用typed原始final36JVM/288case及控制Jarde48JVM/912case，JADX真实编译失败保持原样。
 
 本片3/4、typed5/7，未验两fresh native/最终提交自身CI。prepared implementation-acceptance-tools-root-v1为20成员/6a449ec758872a123e8d23b7ecfff03c322458bd8f8863be9c4c6959268527e7，包含实际Luna最小patch、ownCI v3（12源码/3fixture/54门）、native wrapper v3（9门/385目标）及精确base checker、产品Git binder；工具准备不是实际native/CI验收。原名fold仅静态备忘，独立未实施。
+
+最终e69两fresh native已root独立接受：每轮385目标/101批/3759通过/0失败/98忽略，9精确关键门每轮各一次；额外全部3857具名(name,status)逐target相等。来源各5143/构建3190并集5150按Git blob/bytes/mode绑定e69，CLI85ca不变、target absent。workspace-seed1-root-v2（213成员/255c6b24…）、workspace-seed2-root-v2（212/7f1dfbee…）、workspace-acceptance-root-v2（22/23731b67…）含实际收据及checker/binder/具名review；不是仅工具准备。superseded-ci-root-v1（6/6dcaf040…）保留取消旧候选的原始动作，不算最终自身CI成功。bulk3/4、typed6/7，余实际e69自身CI/strict/干净main闭合。

@@ -1,0 +1,5 @@
+# 第一fresh native（最终e69产品）
+
+实际终态exit0，385目标/101批/3759通过/0失败/98既有忽略，5143来源pins未变，默认stack/5GiB余量/target1GiB守卫、finally exactclean及target absent。归档213成员/SHA256 `255c6b24bc28fc274392810834b87b7675bca51a1016b362a93fdb2000b007af`，含完整收据/metadata/208raw及只读监看历史更正。
+
+此归档创建时第二轮仍运行，双seed独立验收尚未执行。collector legacy按artifact emission顺序配对的逐target表不能当真；最终以既有独立checker的Cargo串行Running→harness对应重建，两轮额外逐名状态相等复核另存workspace-acceptance。旧native v1真实失败在native-failure-root-v1保留，不计成功seed。

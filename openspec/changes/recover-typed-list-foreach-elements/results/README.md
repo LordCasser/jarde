@@ -1,6 +1,6 @@
 # 原始 TestNestedLoops 与 typed foreach 实施入口
 
-root已实际独立接受未修产品ee013/aabf CLI，当前Luna候选已应用并通过root focused-v5。OpenSpec任务1.1、2.1、2.2、2.3、3.1完成，当前5/7；最终广门及20API重绑已通过，两fresh native与自身产品CI待验收；不增加CF11或71/612整体完成数。
+root已实际独立接受未修产品ee013/aabf CLI，当前Luna候选已应用并通过root focused-v5。OpenSpec任务1.1、2.1、2.2、2.3、3.1完成，当前6/7；最终广门、20API重绑及两fresh native独立验收已通过，自身产品CI待验收；不增加CF11或71/612整体完成数。
 
 | 证据 | 实际范围 | 归档 |
 | --- | --- | --- |
@@ -55,3 +55,7 @@ replay-v2在发出任何CLI前因full class facts含额外字段而误当纯pin�
 ## 独立bulk阻断修复后的最终候选
 
 b78候选第一native实际在既有bulk生命周期门失败，未计成功seed。根因及最小guard位置修复另见 `align-bulk-class-task-execution-interval`，没有混入typed算法；旧失败保持。修复后CLI为63405424B/SHA256 `85ca6e7d36c0edeb72f7f6a3c33c405f203028fb21d128522f0b0a3a92e1cf78`，额外bulk16门+4精确重叠复跑及原全部广门共822/0/6通过，20同argv API重新接受全部非usage JSON/完整Java/raw maps逐字相等。对应独立change的broad-final-root-v4/final-api-replay-root-v2闭合源码3301/构建3190与全部产物，task3.1再次勾选；本片仍5/7，待两fresh native及新产品自身CI。
+
+## 双轮native已独立接受，6/7
+
+最终e69代码的两fresh native各385目标/101批/3759通过/0失败/98既有忽略，9门各一次，全部3857具名(name,status)逐target集合一致；来源各5143/构建3190并集5150已逐Git blob/bytes/mode绑定最终产品，CLI85ca6e7d…不变、target absent。完整收据及工具共447成员见独立bulk change的workspace-seed1-root-v2（213）、workspace-seed2-root-v2（212）、workspace-acceptance-root-v2（22）。此前b78 native真实失败及superseded CI完整保留；task3.2已真实完成，自身CI39112513084仍待验收，不提前勾3.3。
