@@ -1,0 +1,555 @@
+{
+  "status": "root-accepted-final-focused-and-java-matrices",
+  "candidate_cli_sha256": "d1304ad2c3acca940a744eb3023bea0f77f62d279afc675aff84a6c076d447c4",
+  "checks": [
+    {
+      "name": "original-structure",
+      "path": "/private/tmp/jarde-typed-foreach-original-final-review-root-v1-20261018/review.json",
+      "bytes": 251,
+      "sha256": "37cca8cd76d37a02b080192e284b32452e359258b7d0a0766cee90331bd4b42c",
+      "review": {
+        "status": "passed",
+        "receipt_sha256": "433b6a723137adb4aed904b2c7935079821def5b1b91f1593630c224bc73f439",
+        "commands": 20,
+        "raw_streams": 40,
+        "runtime_runs": 4,
+        "runtime_cases": 32,
+        "api_cells": 8,
+        "jadx_outputs": 2,
+        "classes": 4
+      }
+    },
+    {
+      "name": "original-projection",
+      "path": "/private/tmp/jarde-typed-foreach-original-projection-review-root-v2-20261018/review.json",
+      "bytes": 2354,
+      "sha256": "939773fae7364c0bdac6af6ad4c1624eccfe829b56cddd82b9fd6b94a0e79c00",
+      "review": {
+        "status": "accepted",
+        "old_receipt_sha256": "4f48e3b14738cb4d3746763290788f525bba4bb1a1a3d47aebcf0111e6f8d482",
+        "new_receipt_sha256": "433b6a723137adb4aed904b2c7935079821def5b1b91f1593630c224bc73f439",
+        "rows": [
+          {
+            "selectors": [
+              "debug",
+              "child",
+              "default"
+            ],
+            "two_typed_heads": true,
+            "only_type_and_first_cast_changes": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "debug",
+              "child",
+              "all"
+            ],
+            "two_typed_heads": true,
+            "only_type_and_first_cast_changes": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "debug",
+              "bundle-child",
+              "default"
+            ],
+            "two_typed_heads": true,
+            "only_type_and_first_cast_changes": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "debug",
+              "bundle-child",
+              "all"
+            ],
+            "two_typed_heads": true,
+            "only_type_and_first_cast_changes": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "no-debug",
+              "child",
+              "default"
+            ],
+            "two_typed_heads": true,
+            "only_type_and_first_cast_changes": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "no-debug",
+              "child",
+              "all"
+            ],
+            "two_typed_heads": true,
+            "only_type_and_first_cast_changes": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "no-debug",
+              "bundle-child",
+              "default"
+            ],
+            "two_typed_heads": true,
+            "only_type_and_first_cast_changes": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "no-debug",
+              "bundle-child",
+              "all"
+            ],
+            "two_typed_heads": true,
+            "only_type_and_first_cast_changes": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          }
+        ],
+        "CLI": {
+          "path": "/private/tmp/jarde-typed-foreach-focused-root-v5-20261018/candidate-cli",
+          "bytes": 63386112,
+          "sha256": "d1304ad2c3acca940a744eb3023bea0f77f62d279afc675aff84a6c076d447c4"
+        }
+      }
+    },
+    {
+      "name": "generated-matrix",
+      "path": "/private/tmp/jarde-typed-foreach-original-generated-final-review-root-v1-20261018/review.json",
+      "bytes": 1236,
+      "sha256": "7ab57e87e717635b7b51e5fcc818d4f07cc8e2e60ab05f217d141f7174772c59",
+      "review": {
+        "schema": "cf11-testnestedloops-current-generated-source-matrix-independent-review-v1",
+        "status": "independent_review_passed",
+        "matrix_receipt": {
+          "path": "/private/tmp/jarde-typed-foreach-original-generated-final-root-v1-20261018/execution.json",
+          "bytes": 4893598,
+          "sha256": "1d171a5ad5a3ef83fd72bde289ae67977ae9fe0cf36a622c9b4e576dbf8d1149"
+        },
+        "baseline_receipt": {
+          "path": "/private/tmp/jarde-typed-foreach-original-final-root-v1-20261018/execution.json",
+          "bytes": 6329781,
+          "sha256": "433b6a723137adb4aed904b2c7935079821def5b1b91f1593630c224bc73f439"
+        },
+        "source_cells": 10,
+        "source_copies": 10,
+        "compile_attempts": 20,
+        "compile_successes": 18,
+        "compile_failures": 2,
+        "failed_compile_selectors": [
+          [
+            [
+              "debug",
+              "bundle"
+            ],
+            "javac8"
+          ],
+          [
+            [
+              "no-debug",
+              "bundle"
+            ],
+            "javac8"
+          ]
+        ],
+        "successful_class_files": 20,
+        "successful_classes_with_dual_parse": 20,
+        "runtime_observations": 288,
+        "runtime_runs": 36,
+        "wrong_root_controls": 18,
+        "commands": 75,
+        "raw_streams": 150,
+        "class_parsed": true,
+        "runtime_rows_checked_against_raw_original_oracles": true,
+        "generated_closure_checked": true
+      }
+    },
+    {
+      "name": "controls-structure",
+      "path": "/private/tmp/jarde-typed-foreach-controls-final-review-root-v3-20261018/review.json",
+      "bytes": 2879,
+      "sha256": "2a7b5fb592333dcaf02dfbd7fd8b80765fed15bcb2e1a759cf09859cd88237c0",
+      "review": {
+        "receipt": "/private/tmp/jarde-typed-foreach-controls-final-root-v1-20261018/execution.json",
+        "schema": "typed-list-foreach-controls-matrix-v1",
+        "status": "captured-pending-review",
+        "counts": {
+          "commands": 137,
+          "original_profiles": 4,
+          "original_vm": 8,
+          "original_case_rows": 152,
+          "api_cells": 12,
+          "jadx_cells": 4,
+          "generated_compiles": 32,
+          "generated_compile_successes": 24,
+          "generated_compile_failures": 8,
+          "generated_vm": 48,
+          "generated_wrong_root": 24,
+          "raw_oracle_equal": true
+        },
+        "failed_cells": [
+          {
+            "kind": "generated-compile",
+            "cell": [
+              "jadx",
+              "javac8-debug",
+              "source",
+              "javac8",
+              "-g"
+            ],
+            "exit_code": 1,
+            "stderr": "89e4d831ff463757a8bca944c227660b165fbceadc5790764b95e15ac5f7f90a"
+          },
+          {
+            "kind": "generated-compile",
+            "cell": [
+              "jadx",
+              "javac8-debug",
+              "source",
+              "javac23",
+              "-g"
+            ],
+            "exit_code": 1,
+            "stderr": "29eaf4e22620cd2f09880978bf7509eb74ef462e83b5d60113e3de0cd084a5f8"
+          },
+          {
+            "kind": "generated-compile",
+            "cell": [
+              "jadx",
+              "javac8-no-debug",
+              "source",
+              "javac8",
+              "-g:none"
+            ],
+            "exit_code": 1,
+            "stderr": "e19cdc458a52387cb6ebe06894a7edf3fffc1745b061b1584d6897b6861c4fa9"
+          },
+          {
+            "kind": "generated-compile",
+            "cell": [
+              "jadx",
+              "javac8-no-debug",
+              "source",
+              "javac23",
+              "-g:none"
+            ],
+            "exit_code": 1,
+            "stderr": "a13618813a3a13f06065c27b87c2b2a0fe0e88db581bd4dba30eaefc7a3e6b49"
+          },
+          {
+            "kind": "generated-compile",
+            "cell": [
+              "jadx",
+              "javac23-debug",
+              "source",
+              "javac8",
+              "-g"
+            ],
+            "exit_code": 1,
+            "stderr": "30ef9065f00f5319e073082491d28912929eb9aa74427a87f54d39c8ec2a3bb1"
+          },
+          {
+            "kind": "generated-compile",
+            "cell": [
+              "jadx",
+              "javac23-debug",
+              "source",
+              "javac23",
+              "-g"
+            ],
+            "exit_code": 1,
+            "stderr": "d9ef961602a04667a15089065076c46721ffb1086682779fae9e3422ac3d6c90"
+          },
+          {
+            "kind": "generated-compile",
+            "cell": [
+              "jadx",
+              "javac23-no-debug",
+              "source",
+              "javac8",
+              "-g:none"
+            ],
+            "exit_code": 1,
+            "stderr": "dbc486c25b1c93dc89022f38d55d43d3f98d77e3615a6ffdcc6e3cbb6b0e62ac"
+          },
+          {
+            "kind": "generated-compile",
+            "cell": [
+              "jadx",
+              "javac23-no-debug",
+              "source",
+              "javac23",
+              "-g:none"
+            ],
+            "exit_code": 1,
+            "stderr": "abfa082ee7d3eee524b96153826f5a3385276fc283393d9af0ca787adfd57a83"
+          }
+        ],
+        "integrity_findings": [],
+        "assessment": "review evidence only; compiler/runtime failures are preserved, not converted to passes"
+      }
+    },
+    {
+      "name": "controls-projection",
+      "path": "/private/tmp/jarde-typed-foreach-controls-projection-review-root-v2-20261018/review.json",
+      "bytes": 6342,
+      "sha256": "ea5c55b77d6768ae448ded8828d790ddf99f06caaec7672fca376da6bfe35213",
+      "review": {
+        "status": "accepted",
+        "old_receipt_sha256": "c403d632b297e4ea7d3f49dec68a86ea3f0b20bb5a5057b873bda4e1318605f0",
+        "new_receipt_sha256": "dc8fd91c60d95d1d26d630d2bf8ba57b8ab54b9f58ed6582160286a4c9b4cc3a",
+        "rows": [
+          {
+            "selectors": [
+              "javac8-debug",
+              "default"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac8-debug",
+              "all"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac8-debug",
+              "essential"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac8-no-debug",
+              "default"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac8-no-debug",
+              "all"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac8-no-debug",
+              "essential"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac23-debug",
+              "default"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac23-debug",
+              "all"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac23-debug",
+              "essential"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac23-no-debug",
+              "default"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac23-no-debug",
+              "all"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          },
+          {
+            "selectors": [
+              "javac23-no-debug",
+              "essential"
+            ],
+            "method_names": [
+              "<init>",
+              "strings",
+              "integers",
+              "raw",
+              "mismatch",
+              "declared"
+            ],
+            "three_typed_heads": true,
+            "only_type_first_cast_and_exact_existing_renderer_12_space_body_indent_changes": true,
+            "raw_mismatch_and_constructor_projection_exactly_unchanged": true,
+            "raw_text_map_quality_fallbacks_exactly_unchanged": true
+          }
+        ],
+        "CLI": {
+          "path": "/private/tmp/jarde-typed-foreach-focused-root-v5-20261018/candidate-cli",
+          "bytes": 63386112,
+          "sha256": "d1304ad2c3acca940a744eb3023bea0f77f62d279afc675aff84a6c076d447c4"
+        }
+      }
+    },
+    {
+      "name": "focused",
+      "path": "/private/tmp/jarde-typed-foreach-focused-review-root-v1-20261018/review.json",
+      "bytes": 511,
+      "sha256": "7cd2f23b39a43dd0c2cd5f8f7efff49e8e75b39c82f8564d2a63eba70f615047",
+      "review": {
+        "status": "root-independent-review-accepted",
+        "receipt_sha256": "2cb4d177d56d9312b900e46ad7bfd5ba19ab2e9a5ce8dda6ead767f1da68a0b5",
+        "CLI": {
+          "path": "/private/tmp/jarde-typed-foreach-focused-root-v5-20261018/candidate-cli",
+          "bytes": 63386112,
+          "sha256": "d1304ad2c3acca940a744eb3023bea0f77f62d279afc675aff84a6c076d447c4"
+        },
+        "passing_appearances": 516,
+        "failures": 0,
+        "ignored": 1,
+        "source_files": 3190,
+        "source_unchanged": true,
+        "default_stack": true,
+        "target_absent": true
+      }
+    }
+  ],
+  "scope": "focused Rust and complete original/control Java comparison only; broad gates/native/product CI not accepted yet",
+  "preserved_failures": "JADX full source controls 8 compile failures; original outer javac8 major55 harness boundary; failed focused v1-v4 and projection checker v1 retained"
+}

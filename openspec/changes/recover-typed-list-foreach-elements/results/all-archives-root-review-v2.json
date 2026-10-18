@@ -1,0 +1,322 @@
+{
+  "status": "root-independent-archives-reopened-before-candidate-push",
+  "archive_count": 15,
+  "member_count": 1633,
+  "rows": [
+    {
+      "name": "acceptance-prep-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/acceptance-prep-root-v1/capture.tar.gz",
+        "bytes": 31777,
+        "sha256": "517e203a828d59ed8e1cf08264553f25139cf0cb0607f569d6940549790b22f0",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/acceptance-prep-root-v1/capture-review.json",
+        "capture_review_members_reopened": 21
+      },
+      "tar_member_count": 21,
+      "manifest_entry_count": 20,
+      "manifest_sha256": "9ec5244a065a500c079d4ad77c51d4c6e7a6535a83d1af756c92a304b0105d01",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "baseline-tools-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/baseline-tools-root-v1/capture.tar.gz",
+        "bytes": 102122,
+        "sha256": "6846f5860127f492a3da24ebfa6c777a55f7a3acb2a22205d81325bbbb576fa7",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/baseline-tools-root-v1/capture-review.json",
+        "capture_review_members_reopened": 40
+      },
+      "tar_member_count": 40,
+      "manifest_entry_count": 39,
+      "manifest_sha256": "957401828f36c12c0cf28acc2d55fca695135fe7c35146155f0b985aa760b718",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "broad-before-hardening-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/broad-before-hardening-root-v1/capture.tar.gz",
+        "bytes": 381561,
+        "sha256": "50b576ccac7d34516164bb16f62ce7dc87c2dcb666c3ad870d268326f48b626a",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/broad-before-hardening-root-v1/capture-review.json",
+        "capture_review_members_reopened": 41
+      },
+      "tar_member_count": 41,
+      "manifest_entry_count": 40,
+      "manifest_sha256": "84290b0fdc3dbff74062b10ec04781d8c070ed6dcf27d5e51e8c0438f04b26c7",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "broad-final-root-v2",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/broad-final-root-v2/capture.tar.gz",
+        "bytes": 380746,
+        "sha256": "bc17a1550bca58882bdd145812ca7a6fd446c59f951142d21e9dec706ac716fa",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/broad-final-root-v2/capture-review.json",
+        "capture_review_members_reopened": 41
+      },
+      "tar_member_count": 41,
+      "manifest_entry_count": 40,
+      "manifest_sha256": "b811e35bd2921d9367ea2abbc489eb1990698598d6dab4a8015654bdc0c6ab87",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "controls-baseline-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/controls-baseline-root-v1/capture.tar.gz",
+        "bytes": 782722,
+        "sha256": "77f87ac7baf068bd62fa9b93df49c79340aebb4080c9cb4d115f8be9c1949921",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/controls-baseline-root-v1/capture-review.json",
+        "capture_review_members_reopened": 373
+      },
+      "tar_member_count": 373,
+      "manifest_entry_count": 372,
+      "manifest_sha256": "46a1aede9700ae5d6cd21e737cbb0048b36ee182bb7a40e96e7a5c7f2098c10f",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "controls-final-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/controls-final-root-v1/capture.tar.gz",
+        "bytes": 796478,
+        "sha256": "62fc3e03ea91308833b7b72ea0f56c14314375e24319fb3b2781bcfd44c31c08",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/controls-final-root-v1/capture-review.json",
+        "capture_review_members_reopened": 381
+      },
+      "tar_member_count": 381,
+      "manifest_entry_count": 380,
+      "manifest_sha256": "f04fb6f6367b856ac1386459419a08ecc353268f4b10624f3efb48b18f31678a",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "controls-jadx-java23-supplement-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/controls-jadx-java23-supplement-root-v1/capture.tar.gz",
+        "bytes": 387512,
+        "sha256": "329b5a803dcaf95b0b47020ac8e04c4653d84f4e6d5fc2454aa4fdd7fdec880e",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/controls-jadx-java23-supplement-root-v1/capture-review.json",
+        "capture_review_members_reopened": 24
+      },
+      "tar_member_count": 24,
+      "manifest_entry_count": 23,
+      "manifest_sha256": "c4c1e263f4630bcc2c4663882d5e1dd9b03e13b7884fbc58bdc16441300a8ee7",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "focused-history-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/focused-history-root-v1/capture.tar.gz",
+        "bytes": 1741025,
+        "sha256": "d24344419f9a1893eecbdc75e81ed0403ed16443c0f328b7435c67d83b4c9562",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/focused-history-root-v1/capture-review.json",
+        "capture_review_members_reopened": 53
+      },
+      "tar_member_count": 53,
+      "manifest_entry_count": 52,
+      "manifest_sha256": "4aa918d339a4598e30b680e6a889dba5c0fc87b93c68b755a4b09e0df4730be9",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "generated-baseline-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/generated-baseline-root-v1/capture.tar.gz",
+        "bytes": 806867,
+        "sha256": "49c44b3fcf63375e0beec9f9f9e8c243b78dbbece2c84dae66256027990de446",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/generated-baseline-root-v1/capture-review.json",
+        "capture_review_members_reopened": 190
+      },
+      "tar_member_count": 190,
+      "manifest_entry_count": 189,
+      "manifest_sha256": "1ea3ee1b3999f30cbd8e0838a13a7381b949609f9426d3ec8ae8dba08e998c8a",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "generated-final-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/generated-final-root-v1/capture.tar.gz",
+        "bytes": 807554,
+        "sha256": "47f3335f5b51da53c24c166748ed8c65895b83b15f0ca8cea66608e0632bec1d",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/generated-final-root-v1/capture-review.json",
+        "capture_review_members_reopened": 190
+      },
+      "tar_member_count": 190,
+      "manifest_entry_count": 189,
+      "manifest_sha256": "4c7bbdfefd6321d49c35bff5e093451d2430aca41caa8682f685847ac7a92eed",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "hardened-api-replay-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/hardened-api-replay-root-v1/capture.tar.gz",
+        "bytes": 701974,
+        "sha256": "4ea51c950ad171bd74e18f922db06f10072fa1396e0eadadb42342df345e9aaa",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/hardened-api-replay-root-v1/capture-review.json",
+        "capture_review_members_reopened": 87
+      },
+      "tar_member_count": 87,
+      "manifest_entry_count": 86,
+      "manifest_sha256": "fa5d59152540748c090c678b1e3fe9f90054e93863b7d851f767160bf9a5b79a",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "hardening-tools-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/hardening-tools-root-v1/capture.tar.gz",
+        "bytes": 20489,
+        "sha256": "3a2c256b6c784727c38e23f8f184a8c7cbc948c64a4c081ebd2862da4372476e",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/hardening-tools-root-v1/capture-review.json",
+        "capture_review_members_reopened": 9
+      },
+      "tar_member_count": 9,
+      "manifest_entry_count": 8,
+      "manifest_sha256": "e0f742fcb7f2ffc71f83885c9e6b158b4e959a525fff261f9fd33d711162c800",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "implementation-tools-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/implementation-tools-root-v1/capture.tar.gz",
+        "bytes": 60482,
+        "sha256": "c366ad18e718137a57641bf900e5f2bc1df3d83f49bb2ca9ccd48d3c6f7ef78b",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/implementation-tools-root-v1/capture-review.json",
+        "capture_review_members_reopened": 29
+      },
+      "tar_member_count": 29,
+      "manifest_entry_count": 28,
+      "manifest_sha256": "a125344da32453484be5277d0546b7794a9ecec8e3ec568e0aa8fa3167487e51",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "original-baseline-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/original-baseline-root-v1/capture.tar.gz",
+        "bytes": 957314,
+        "sha256": "823669b76a4ad3f63e42ae0d063a1c697ef88e970be860e8278ac063b5931a11",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/original-baseline-root-v1/capture-review.json",
+        "capture_review_members_reopened": 77
+      },
+      "tar_member_count": 77,
+      "manifest_entry_count": 76,
+      "manifest_sha256": "3eaf2d204175a82ce81f917805045bc0272b4a9a1a6a3d5416ee5718c20c8152",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "original-final-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/original-final-root-v1/capture.tar.gz",
+        "bytes": 944343,
+        "sha256": "610ee3cda882edb831b0611b541fdfc457d65990b23625b715ad5a7da27311db",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/original-final-root-v1/capture-review.json",
+        "capture_review_members_reopened": 77
+      },
+      "tar_member_count": 77,
+      "manifest_entry_count": 76,
+      "manifest_sha256": "6e4781acb5445759b4effec85466fccd4c9e74a31b17edd1b225fe7bc4111efd",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    }
+  ]
+}

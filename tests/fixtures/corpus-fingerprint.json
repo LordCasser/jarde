@@ -13029,6 +13029,16 @@
       "blake3": "414d5055dd82b14e4d065370dc7e91068a2f41977867a52dc7fd192a3961f558",
       "bytes": 21459,
       "path": "tests/fixtures/switch-loop-exception-boundary/manifest.json"
+    },
+    {
+      "blake3": "d4f28e088465758c291549f5d9d3456c585144c3b0a07278d1e6534efde437dc",
+      "bytes": 1907,
+      "path": "tests/fixtures/typed-list-foreach/TypedListForEachCases.class"
+    },
+    {
+      "blake3": "c2377bc10b2f4849557a97c37469201b932492d4ad5d82ee113b5e968ebeab66",
+      "bytes": 1533,
+      "path": "tests/fixtures/typed-list-foreach/TypedListForEachCases.java"
     }
   ],
   "known_gaps": [

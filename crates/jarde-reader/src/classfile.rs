@@ -12306,7 +12306,10 @@ mod tests {
             // sixteen branch targets and two jsr instructions, independently parsed.
             // Extra stack-copy neighbor: one complete class, four Code bodies,
             // seventy instructions, no handlers, five branch targets and no jsr.
-            (1300, 5745, 630, 4040, 14),
+            // Typed List foreach adds one complete javac8 class, six Code bodies and
+            // ten direct branch targets; independent raw-Code parsing counts 97 instructions,
+            // no handlers and no jsr. The fixture is byte-identical to the runtime baseline.
+            (1301, 5751, 630, 4050, 14),
             "fixture population changed: re-measure these counts"
         );
     }

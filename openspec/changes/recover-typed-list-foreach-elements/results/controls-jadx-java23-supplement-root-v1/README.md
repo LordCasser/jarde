@@ -1,0 +1,3 @@
+# JADX Java23启动补跑
+
+root只对控制基线中两个javac8原始profile用同一pinned JDK23重启JADX，不重复Jarde或原始JVM。6命令12raw：两个JADX成功输出完整类；四次原样整类javac8/23编译均真实String→Integer不兼容转换错误，无runtime。root独立核全部raw/pins/sourcecopies/来源与JDK/target闭合，见extra/review.json。旧两JDK8启动错误与四次无源javac保留原包，未覆盖或混算为成功。collector范围只补启动和实际编译失败，不声称补跑其它运行。
