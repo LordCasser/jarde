@@ -8093,7 +8093,7 @@ fn short_circuit_array_operands(
 /// by the caller, so an unrelated store, call, allocation or throw cannot disappear.
 #[allow(clippy::too_many_arguments)] // keep the bounded walk's evidence explicit without storing mutable proof state
 #[derive(Clone, Copy, Debug)]
-struct LocalAssignmentShape {
+pub(crate) struct LocalAssignmentShape {
     duplicate: u32,
     store: u32,
     test: u32,
@@ -8119,7 +8119,7 @@ struct LocalAssignmentShape {
 /// terminal test. A later lexical/type check decides whether this physical shape may be written as
 /// Java, and the caller reads [`LocalAssignmentShape::enters_handler`] before it writes the
 /// assignment anywhere.
-fn local_assignment_at(
+pub(crate) fn local_assignment_at(
     ssa: &SsaTable,
     operations: &Operations,
     block: &CanonicalBlockId,

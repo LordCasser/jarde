@@ -6,7 +6,8 @@
 ## 2. 最小实现与对抗验证
 
 - [x] 2.1 Luna按design准备私有局部消费者，root审查集成；Reader真实候选实际验证精确canonical单入口/出口、线性body/真实latch和If+Straight+Endless所有权，纯条件路径不变、完整原例结构化且全BCI含goto20/gateway14保留，无新公共实体或solver。
-- [x] 2.2 增补Reader驱动额外入口/出口、错行/clone、错误/缺失SSA或物理transfer、重复owner与不支持Frame边界，以及正例扫描内真实预算/取消/期限；公开库与CLI核完整方法身份/UTF8/default-all和停止无部分输出，实际定向与旧控制通过。
+- [x] 2.2 增补Reader驱动额外入口/出口、错行/clone、错误/缺失SSA或物理transfer、重复owner与不支持Frame边界，以及正例扫描内真实预算/取消/期限；公开库与CLI核完整方法身份/UTF8/default-all和停止无部分输出，实际定向与旧控制通过。二次完整seed发现的旧copy拒绝回归已完成2.3；新CLI完整重放与798项本地广门重新验收通过。
+- [x] 2.3 Luna复用既有完整local_assignment_at及region目标槽准入收紧头部dup，root审查计费/Stop/claim；双编译器真实Reader参数目标和额外复制负控不claim，原公开拒绝快照不改、正例不变。最终CLI完整正向源码/来源逐字重放绑定既有实际Java矩阵；记录两failed seed/取消CI，不混算成功。
 
 ## 3. 完整验收与交付
 

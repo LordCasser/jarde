@@ -31,6 +31,12 @@ JADX冻结输出使用两个while(true)。本地LoopRegionMaker.makeEndlessLoop�
 
 ## Risks / Trade-offs
 
+第二次完整workspace seed实际在command75发现两个真实拒绝边界回归：`recover_loop_test_copy_store`的参数目标和MultiCopy均被statementful路径接管，Builder把未证明copy/test引用为注释，却保留Endless while及部分效果。旧完整拒绝文本不得改为此输出。结构闭合不能替代表达式证书；新路径只在StatementFree失败后工作，更必须区分可顺序写出的语句和未获证书的复制。
+
+修正沿既有职责边界：只将现有`build::LocalAssignmentShape`及`local_assignment_at`提升到crate内可见，不增加公共类型或重复SSA算法；新helper在claim前遍历头部`Operation::Duplicate`，须同时满足region既有`unobservable_store_dance_part`或`store_dance_part`准入，以及Builder既有完整物理/SSA/source-store-test唯一用处证明（测试值来自同头部terminal comparison真实栈操作数）。后者补足region粗粒度准入不检查全部单用事实的局限，参数槽边界仍由既有region准入保留。所有额外遍历和每次证明中的头部、entry槽与effect表扫描预先按真实上界计费并轮询，Stop继续传播且不claim。该新消费者不为其它未证明的dup家族新增恢复；已有纯条件路径不受影响。不能粗拒所有Store或Other：独立字段dup_x1证书和头部赋值/调用仍是正例。
+
+验收新增同次真实Reader负控，两编译器完整合法类的参数目标/多复制形状直接拒绝且visited不变，既有公开完整快照原样通过；原Seq1、效果补充、volatile及LeadingTick四组完整正向源码与来源重新绑定最终CLI。若生成源码与已接受矩阵逐字相同，可明确引用该同一Java字节的双编译/双VM证据，不能冒称重新运行或用质量标签替代真实来源与语义。旧两次failed seed和取消CI独立保留，最终两个fresh seed和新产品自身CI仍必须实际通过。
+
 - [头部赋值被抬出循环或重复求值] → 原始溢出/回边用例和带计数、顺序ledger、指定调用号抛出、状态相关返回的完整补充类对照；纯算术原例不能覆盖的路径单列。
 - [局部c/z跨两循环声明不完整] → 全方法完整原样重编、SSA/身份/所有物理BCI核验；不新增表达式规则掩盖缺失证明。
 - [goto20或已吸收gateway14丢来源] → 公开SourceMap-only/all全BCI/UTF8，精确owner次数和canonical对抗变形。
