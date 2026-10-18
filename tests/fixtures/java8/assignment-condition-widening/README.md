@@ -1,0 +1,9 @@
+# 条件赋值扩大转换的冻结输入
+
+完整上游来源：JADX提交2fb1b16386941660fda07e9017285aec40fcb37f，jadx-core/src/test/java/jadx/tests/integration/loops/TestLoopConditionInvoke.java；原898B源码SHA b21edd0b3316fbaeb89b6e19026e9b6721fe2decbc8e30059c8b6ed21eea4756，原样保存于source。JADX按Apache-2.0授权，许可证及原NOTICE随附。控制源码与两个独立反射driver由本项目编写。
+
+upstream-debug/no-debug是完整外类源码经javac23 --release 8实际编译产生的原始child class，没有裁剪源码。完整外类及上游JDK8测试框架major55编译失败边界在OpenSpec基线归档保存；此处未重复复制外类/测试框架class。原next恒0，四VM/16观测只证明false路径与位置保持。
+
+四个javac8/javac23与debug/no-debug目录是独立最小控制的真实编译产物。六case分别观察首次命中、再次调用后命中、非零初始位置恢复、STOP等于查找值、自然数组越界及char65535。原始8VM48观测和生成类运行严格分列；driver只在独立目录编译，用parentless loader核CodeSource，不从原始target补生成类缺失方法。
+
+六class均由实际基线字节冻结，复制不冒称重新编译。freeze-and-census.json列出每个来源/hash和直接Code目标：合计新增6class、30Code、0handler、12branch目标、0jsr。reader仅更新测试人口计数，生产读取合同不变。完整原始/生成基线及所有真实失败见openspec/changes/recover-proved-assignment-condition-widening/results。

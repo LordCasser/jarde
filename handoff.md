@@ -1,3 +1,15 @@
+## 2026-10-19 当前推进：CF07 条件赋值扩大转换，5/6
+
+本节是当前状态。finThrow5/5、nestedFin16/16及indexed List6/6已交付勿重做；前产品5bd/自身CI39153653464完整接受，既有main文档c0abb3adce3cf9b49d0e9548350e23a9a765a7af。当前新change `recover-proved-assignment-condition-widening` 5/6，生产及测试尚待产品提交推送/fresh/自身CI。持续goal active，CF07/CF11/71/612整项计数不增。
+
+生产只原Builder类型门复用widens，strict已知类型和equal保留，现有target只增加Byte/Short/Char→Int；RHS一次、LocalAssign/源type/origins/发布/rollback不变，无新helper/IR/pass/solver。core/public/census与指纹通过，相关540/0/5、CI Clippy及MSRV1.88通过。broad-v1 Homebrew cargo+1.88语法失败保留，显式rustup resume实际通过，不重跑成功片段、不称fresh。
+
+最终CLI96e534b0000fe91c1d34a282919479a97eb4706063501d188cdff010c4640366/63809504B位于 `/private/tmp/jarde-assignment-condition-widening-broad-resume-root-v1-20261019/candidate-cli`，逐字同公开验证CLI。完整最终四矩阵204命令root接受：上游及控制各16Jarde compile/32VM，128+192=320case全部同原；4756唯一pin复开，16API目标全部fallback→structured，其它raw方法不变。JADX6成功compile/12VM64case同原，两上游JDK8 major55边界失败不运行；原始12VM64case分列。explicit essential不请求map，默认入口主动请求，不能要求二者maps相等。v1-v9 checker schema/producer closure错误与真实Python失败全部保留，未重跑任何矩阵。
+
+三归档已root逐字复开，见本change/results/README.md。下一先strict/apply/主规范与固定账本、提交推送实际产品，再fresh workspace/default stack及自身CI完整4jobs/官方ZIP独立step/双seed/79精确门；native准备34门、CI18source/23fixture。准备路径 `/private/tmp/jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019`。target absent，无待续Cargo/JDK；Cargo期间禁止共享写/Gitmutation/network/manualJDK/CLI。使用现有workspace_runner.py，seed5350648285461741569，5GiB/target1GiB每秒guard/exactclean。
+
+下一固定TestComplexWhileLoop已有私有baseline及静态架构准备，root已读完整源/driver与collector适配diff，现有普通header/array-read/assignment机制可能足够，未确认缺陷，无新Spec/实现；禁止运行无null且无单字符的无限循环输入，有限样例不声称wrap后退出。
+
 ## 2026-10-19 最新检查点：indexed List 6/6 已交付，下一 CF07 条件赋值
 
 本节优先。finThrow5/5、nestedFin16/16及前片均已交付，勿重做。当前 `recover-proved-indexed-list-parameter-signatures` 已6/6，实际产品 **5bd65ef2f36999c3d0a3b4477a412a0ef532c956** 已推main；自身 **CI39153653464** 已root验收全部4jobs/52独立官方step，两seed各385目标/3777-0-98且全部具名结果相同，76精确门各轮一次。b7的Iterable旧预期、e727的两处lambda诊断旧预期和reader库存失败都保留在results归档。

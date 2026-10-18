@@ -1,5 +1,9 @@
 # JADX control-flow syntax inventory
 
+## 2026-10-19 CF-07 条件赋值扩大转换，最终对照已接受
+
+固定TestLoopConditionInvoke已用现有widens修复char→int条件赋值拒绝，无新恢复机制；16 API全部结构化，完整Jarde32次编译/64VM/320case与原始一致。主规范已同步，fresh及本产品自身CI待验；不增加CF-07或71/612整项计数。详见[本片验收](../../changes/recover-proved-assignment-condition-widening/results/README.md)。下一固定TestComplexWhileLoop仅静态/collector准备，未确认缺陷。
+
 ## 2026-10-18 CF-11 祖先 Iterator 声明清理产品验收
 
 实际产品 `ea2aaf042` 已推main，[自身CI39130065483](https://github.com/LordCasser/jarde/actions/runs/39130065483) 已root完整接受4jobs/52官方步骤、双seed各385目标/3768-0-98/63精确门。复用既有foreach与checkpoint，只有完整物理变量用途和真实AST祖先唯一闭合才移除空Iterator声明；缺证保留可靠循环/声明，无新IR/pass。最终广门810/0/6、两fresh native全3866具名结果相等，5154来源绑定产品。完整原始Java/生成矩阵及19case控制的真实旧边界、最终CLI同字节重绑范围见 [验收入口](../../changes/prune-proved-ancestor-iterator-declarations/results/README.md)。
