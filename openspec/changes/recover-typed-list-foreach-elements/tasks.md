@@ -12,4 +12,4 @@
 
 - [x] 3.1 root完整验收最终固定原始类和控制家族的双编译器/双VM、全部class/method/field/access/Code、whole/projected/raw各平面与raw方法source map/UTF8/BCI；逐格保留失败与wrong CodeSource负控，禁止手修/裁源。最终来源/CLI/默认stack/5GiB/target1GiB守卫及exact clean均有收据。
 - [x] 3.2 root运行fmt、CI同款Clippy、MSRV1.88、相邻Java/Reader/标准指纹和P5门，随后两fresh native seed；通过新增语义门并确认旧拒绝/非目标形态不变，不为绿改旧计量表或资源阈值，target清空。
-- [ ] 3.3 root提交推送实际产品，独立接受其自身CI全部job/step及双seed，完成OpenSpec严格验证、账本/handoff和真实远端==本地干净main收据；明确typed头范围、原名折叠等剩余债务及71/612计数不增加，不以文档head冒称自身产品CI。
+- [x] 3.3 root提交推送实际产品，独立接受其自身CI全部job/step及双seed，完成OpenSpec严格验证、账本/handoff和真实远端==本地干净main收据；明确typed头范围、原名折叠等剩余债务及71/612计数不增加，不以文档head冒称自身产品CI。

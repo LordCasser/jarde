@@ -1,0 +1,53 @@
+{
+  "changeName": "align-bulk-class-task-execution-interval",
+  "changeDir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "proposal": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval/proposal.md"
+    ],
+    "specs": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval/specs/analysis-contracts/spec.md"
+    ],
+    "design": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval/design.md"
+    ],
+    "tasks": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval/tasks.md"
+    ]
+  },
+  "progress": {
+    "total": 4,
+    "complete": 4,
+    "remaining": 0
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "description": "1.1 root核实际native command4失败、源pins和exact clean；对照gate/Registry.enter/Entered::drop及worker/serial共用入口，确认是区间错位而非max竞争，完整失败收据另行保留。",
+      "done": true
+    },
+    {
+      "id": "2",
+      "description": "1.2 Luna在私有目录按design移动唯一_entered guard至入口，不改阈值、gate算法或调度；root审最小patch、panic/早返回锁与drop边界，定向bulk生命周期/取消/交付/容器持有门及真实重叠复跑通过后验收。",
+      "done": true
+    },
+    {
+      "id": "3",
+      "description": "2.1 root完成fmt/CI Clippy/MSRV及相邻/P5门，构建最终CLI并以20同argv API核除usage外全部JSON/完整Java/raw maps与已有最终对照精确相同，显式复用其JVM矩阵；source/CLI守卫及clean有收据。",
+      "done": true
+    },
+    {
+      "id": "4",
+      "description": "2.2 root两fresh native完整通过并独立审计目标库存、全部具名结果/逐target计数及本片bulk/typed关键门；最终代码单独提交推送并接受自身CI，strict/失败历史/账本/handoff/干净main与target absent闭合，不把局部成功当全局71/612完成。",
+      "done": true
+    }
+  ],
+  "state": "all_done",
+  "instruction": "All tasks are complete! This change is ready to be archived.\nConsider running tests and reviewing the changes before archiving.",
+  "context": "Language: zh-CN\nAll artifacts must be written in zh-CN.\nKeep OpenSpec structural headings and SHALL/MUST keywords in English.\nProject: jarde, a pure Rust library-first JVM artifact analysis engine.\nArchitecture reference: JVM_Rust_Engine_Final_Architecture.md.\nKeep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend\nintegration are thin outward adapters that depend on jarde; the core must not\ndepend on CLI, MCP, or host/backend protocol types.\nP0-P5 and crate layering are archived within their recorded scope; 18 main specs are promoted.\nStage archival is not blanket product completion. The 2026-09-20 completion review found two\nrecovery correctness gaps (nested-expression evaluation position, fallback producer retention);\nclose-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,\nacceptance.md and the support matrix for the current status. Preserve historical archives.\nThe review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;\npreserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign\nthen found two engine defects, now tracked as bound-recovery-recursion (process abort,\nfixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,\nbeing fixed); a third change, clarify-structural-output-planes, records the read-rule\ngaps those findings exposed. optimize-demand-workloads remains an unfinished\ninvestigation program even though its O1 child bound-container-lookup is archived.\nQuery and Decompiler share readers and identities but do not start each other.\nPreserve physical origins and raw facts; distinguish symbolic references,\ndefinition resolution, dispatch, output quality, coverage and execution state.\nDo not execute target code or download target dependencies automatically.\nAll input processing, dependency expansion and output need explicit budgets.\nPrefer maintained libraries that pass our conformance gates; see dependencies.md.\nKeep the smallest complete change. Do not create speculative crates or abstractions.\nFavor long-term architecture; do not maintain backward compatibility by default.\nRecord unrelated architectural debt separately instead of expanding a change.\n",
+  "root": {
+    "path": "/Users/lordcasser/workspace/projects/jarde",
+    "source": "nearest"
+  }
+}

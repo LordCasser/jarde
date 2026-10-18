@@ -6,4 +6,4 @@
 ## 2. Integration and delivery
 
 - [x] 2.1 root完成fmt/CI Clippy/MSRV及相邻/P5门，构建最终CLI并以20同argv API核除usage外全部JSON/完整Java/raw maps与已有最终对照精确相同，显式复用其JVM矩阵；source/CLI守卫及clean有收据。
-- [ ] 2.2 root两fresh native完整通过并独立审计目标库存、全部具名结果/逐target计数及本片bulk/typed关键门；最终代码单独提交推送并接受自身CI，strict/失败历史/账本/handoff/干净main与target absent闭合，不把局部成功当全局71/612完成。
+- [x] 2.2 root两fresh native完整通过并独立审计目标库存、全部具名结果/逐target计数及本片bulk/typed关键门；最终代码单独提交推送并接受自身CI，strict/失败历史/账本/handoff/干净main与target absent闭合，不把局部成功当全局71/612完成。

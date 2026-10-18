@@ -1,0 +1,103 @@
+{
+  "status": "passed",
+  "scope": "Final documentation strict validation and CLI-authoritative leaf task completion; product CI belongs to e69, not the subsequent document head.",
+  "commands": [
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-18T09:25:34.342396+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval/results/delivery-checks-root-v1/01.stdout.txt",
+          "bytes": 17276,
+          "sha256": "e1c7cf74c0529520bfa617cb5a3cf67a67ac6915e4c75993b5b2c12af92f5933"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval/results/delivery-checks-root-v1/01.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "instructions",
+        "apply",
+        "--change",
+        "recover-typed-list-foreach-elements",
+        "--json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-18T09:25:34.913902+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval/results/delivery-checks-root-v1/02.stdout.txt",
+          "bytes": 6288,
+          "sha256": "87ce95654949e9238ce8b582b54135893f7897682a085d75de5ccfd05f913d2a"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval/results/delivery-checks-root-v1/02.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "instructions",
+        "apply",
+        "--change",
+        "align-bulk-class-task-execution-interval",
+        "--json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-18T09:25:35.122994+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval/results/delivery-checks-root-v1/03.stdout.txt",
+          "bytes": 4760,
+          "sha256": "15367a8c9a54e090c45fcca3c021933b1b8937ba6980b55abf4636ea3b1f06b5"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/align-bulk-class-task-execution-interval/results/delivery-checks-root-v1/03.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "strict": {
+    "passed": 373,
+    "failed": 0,
+    "items": 373
+  },
+  "changes": {
+    "recover-typed-list-foreach-elements": {
+      "state": "all_done",
+      "progress": {
+        "total": 7,
+        "complete": 7,
+        "remaining": 0
+      }
+    },
+    "align-bulk-class-task-execution-interval": {
+      "state": "all_done",
+      "progress": {
+        "total": 4,
+        "complete": 4,
+        "remaining": 0
+      }
+    }
+  }
+}

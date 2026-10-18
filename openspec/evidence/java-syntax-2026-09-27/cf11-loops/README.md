@@ -81,3 +81,7 @@ Jarde 现有相关回归：`CARGO_TARGET_DIR=/tmp/jarde-cf11-target CARGO_INCREM
 最终代码e69a3494c（typed产品b78b34ed6加独立bulk计数区间修复）已推送。typed change现6/7：原始完整生成36JVM/288case、控制Jarde48JVM/912case同原；最终85ca CLI以20同argv API核除usage外全部JSON/完整Java/raw方法map逐字对应，显式复用既有JDK矩阵，未声称重跑。JADX8格String→Integer整类编译失败及2个原始outer框架边界保留。两fresh native各385目标/3759通过/0失败/98旧忽略，全部3857具名结果逐target一致；来源并集5150逐Git blob/bytes/mode绑定e69。自身CI39112513084尚待完整接受，不能提前计交付。
 
 本片只把受证List<E>/cast结合为typed头，保留合成头名和原Assign/Declare；原名头折叠、冗余iterator/Object包装仍独立，不增加CF11/71/612完成数。下一固定关系缺口与JADX算法参考见[原名绑定分析](../../java-syntax-2026-10-18/cf11-foreach-original-bindings-analysis-root-v1/README.md)，仅分析、未新建Spec/实现；原始黄金并未整条追平。
+
+## 2026-10-18 typed foreach 交付关闭
+
+上述候选已完成产品验收：typed7/7、独立bulk4/4，实际e69自身CI39112513084接受4jobs/52steps/双seed各385目标3759/0/98、54关键门各一次。两fresh native与全部3857具名状态、5150来源Git绑定均接受；最终20API/完整Java/raw map重绑不改既有JDK矩阵边界。26归档2423成员逐字复开，详typed results末节。原名折叠等尚未做，整条原始黄金/CF11/71/612完成数不增加；下一固定关系缺口沿已归档分析推进，不重新随机探索。

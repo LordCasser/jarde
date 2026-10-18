@@ -1,6 +1,6 @@
 # 原始 TestNestedLoops 与 typed foreach 实施入口
 
-root已实际独立接受未修产品ee013/aabf CLI，当前Luna候选已应用并通过root focused-v5。OpenSpec任务1.1、2.1、2.2、2.3、3.1完成，当前6/7；最终广门、20API重绑及两fresh native独立验收已通过，自身产品CI待验收；不增加CF11或71/612整体完成数。
+root已实际独立接受未修产品ee013/aabf CLI，当前Luna候选已应用并通过root focused-v5。OpenSpec任务1.1、2.1、2.2、2.3、3.1完成，当前7/7；最终广门、20API重绑、两fresh native及最终e69自身产品CI已全部独立验收；不增加CF11或71/612整体完成数。
 
 | 证据 | 实际范围 | 归档 |
 | --- | --- | --- |
@@ -59,3 +59,11 @@ b78候选第一native实际在既有bulk生命周期门失败，未计成功seed
 ## 双轮native已独立接受，6/7
 
 最终e69代码的两fresh native各385目标/101批/3759通过/0失败/98既有忽略，9门各一次，全部3857具名(name,status)逐target集合一致；来源各5143/构建3190并集5150已逐Git blob/bytes/mode绑定最终产品，CLI85ca6e7d…不变、target absent。完整收据及工具共447成员见独立bulk change的workspace-seed1-root-v2（213）、workspace-seed2-root-v2（212）、workspace-acceptance-root-v2（22）。此前b78 native真实失败及superseded CI完整保留；task3.2已真实完成，自身CI39112513084仍待验收，不提前勾3.3。
+
+## 最终交付：7/7
+
+最终产品为typed b78b34ed6加独立bulk区间修复后的 **e69a3494c**，最终CLI85ca6e7d…；实际自身[CI39112513084](https://github.com/LordCasser/jarde/actions/runs/39112513084)由root接受4jobs/52steps、双seed各385目标3759/0/98、54精确门每seed各一次。官方ZIP52独立step成员齐全，零aggregate重建；完整140成员证据见[共用产品CI](../../align-bulk-class-task-execution-interval/results/own-product-ci-root-v1/README.md)。文档关闭HEAD只是产品后继，不冒称另跑产品CI。
+
+两fresh native、完整3857具名状态相等、5150来源逐Git blob/bytes/mode绑定和最终20API重绑全部接受。最终广门822/0/6、fmt/CI Clippy/MSRV1.88、Reader census1301/5751/630/4050/14和fingerprint2429不变；默认stack、5GiB/target1GiB守卫、exactclean/target absent闭合。完整原始36rebuilt JVM/288case与控制Jarde48JVM/912case同原；85ca只重跑20API并逐字绑定完整生成Java，未重跑这些JDK矩阵；原JADX8类型错误编译失败和2outer框架边界不掩盖。
+
+root最终复开当前两change及下一静态分析26归档2423成员（bulk results/all-archives-root-review-v3.json）。预交付81fb88bc2干净main/实际远端相等/14辅助checkout detached-clean-ancestor已实核；最终push后的真实head收据外置 `/private/tmp/jarde-typed-foreach-final-clean-main-root-v1-20261018/execution.json`。本片仅typed头+保留body binding，原名头折叠、冗余iterator/Object包装及既有AST计费预扫债务仍独立；不宣称整条上游黄金/CF11/71/612完成。
