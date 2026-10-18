@@ -13342,6 +13342,99 @@ mod generic_list_foreach_binding_slot_closed_tests {
         .unwrap()
     }
 
+    struct ListBodyEvidence {
+        ast: jarde_java::report::ClassSourceMethodAst,
+        candidate: jarde_java::report::GenericReturnCandidate,
+        caller: PhysicalMethodId,
+        invokes: Vec<class_source::SameClassInvokeUse>,
+        body_values: Vec<class_source::SameClassBodyValueSite>,
+    }
+
+    fn list_body_evidence() -> ListBodyEvidence {
+        let engine = Engine::new();
+        let mut budget = task_budget(&[]).unwrap();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(FIXTURE.to_vec()), &mut budget)
+            .unwrap();
+        let environment_request = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::SingleClass,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let OperationOutcome::Performed(source) = engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal(
+                            "jadx/tests/integration/loops/TestNestedLoops$TestCls",
+                        ),
+                    },
+                    environment: environment_request.clone(),
+                },
+                &mut budget,
+            )
+            .unwrap()
+        else {
+            panic!("the fixed source fixture completes")
+        };
+        let caller = source
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"test")
+            .unwrap()
+            .item
+            .identity
+            .clone();
+        let environment = environment_request
+            .build(std::slice::from_ref(&snapshot))
+            .unwrap();
+        let analyzed = jarde_jvm::analyze_method_ir(
+            std::slice::from_ref(&snapshot),
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: caller.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            &mut budget,
+        )
+        .unwrap();
+        let scan = scan_member_uses(analyzed.ir(), false, true, &mut budget)
+            .unwrap()
+            .unwrap();
+        let facts = recovery_facts(analyzed.ir().declaration(), analyzed.ir().code(), &caller);
+        let recovery_request = jarde_java::RecoveryRequest::new(
+            analyzed.ir(),
+            &facts,
+            environment.runtime.profile.clone(),
+        );
+        let recovered = jarde_java::report::recover_for_class_source_with_anonymous_ast(
+            &recovery_request,
+            &mut budget,
+            true,
+            false,
+            true,
+            true,
+            false,
+        );
+        assert!(recovered.report.produced());
+        ListBodyEvidence {
+            ast: recovered.ast.expect("the retained AST is available"),
+            candidate: recovered
+                .generic_return
+                .expect("the fixed List body has a generic candidate"),
+            caller,
+            invokes: scan.invokes,
+            body_values: scan.body_values,
+        }
+    }
+
     #[test]
     fn generic_list_foreach_binding_closes_actual_ssa_and_refuses_mutated_facts() {
         let evidence = evidence();
@@ -13541,6 +13634,190 @@ mod generic_list_foreach_binding_slot_closed_tests {
                 &evidence.body_values,
             ));
         }
+    }
+
+    #[test]
+    fn optional_remove_argument_break_leaves_required_list_proof_and_equals_edit() {
+        let evidence = list_body_evidence();
+        let baseline = prove_generic_list_parameter_body(
+            &evidence.candidate,
+            &evidence.ast,
+            &evidence.caller,
+            &evidence.invokes,
+            &evidence.body_values,
+            &[1, 2],
+            &mut task_budget(&[]).unwrap(),
+        )
+        .unwrap()
+        .expect("the required List body proof succeeds");
+        let remove = evidence
+            .invokes
+            .iter()
+            .find(|invoke| {
+                invoke.physical_caller == evidence.caller
+                    && invoke.owner.as_slice() == b"java/util/List"
+                    && invoke.name.as_slice() == b"remove"
+                    && invoke.descriptor.as_slice() == b"(Ljava/lang/Object;)Z"
+            })
+            .expect("the fixed body has List.remove(Object)");
+        let mut broken_invokes = evidence.invokes.clone();
+        let broken_remove = broken_invokes
+            .iter_mut()
+            .find(|invoke| invoke.bci == remove.bci)
+            .unwrap();
+        let broken_value = broken_remove.argument_value_facts[0].value;
+        broken_remove.argument_value_facts[0].replaced_by = Some(broken_value);
+        let after_optional_miss = prove_generic_list_parameter_body(
+            &evidence.candidate,
+            &evidence.ast,
+            &evidence.caller,
+            &broken_invokes,
+            &evidence.body_values,
+            &[1, 2],
+            &mut task_budget(&[]).unwrap(),
+        )
+        .unwrap()
+        .expect("a missing optional remove proof keeps the required List candidate");
+
+        assert_eq!(after_optional_miss.0, baseline.0);
+        let call_named = |bci: u32, name: &[u8]| {
+            evidence
+                .invokes
+                .iter()
+                .any(|invoke| invoke.bci == bci && invoke.name.as_slice() == name)
+        };
+        let add_bc_is = evidence
+            .invokes
+            .iter()
+            .filter(|invoke| {
+                invoke.physical_caller == evidence.caller
+                    && invoke.owner.as_slice() == b"java/util/List"
+                    && invoke.name.as_slice() == b"add"
+            })
+            .map(|invoke| invoke.bci)
+            .collect::<std::collections::BTreeSet<_>>();
+        let mandatory_removals = |result: &(
+            Vec<(u16, Vec<String>)>,
+            Vec<jarde_java::report::ClassSourceInvokeArgumentPresentationCast>,
+        )| {
+            result
+                .1
+                .iter()
+                .filter(|edit| call_named(edit.call_bci, b"add"))
+                .map(|edit| edit.call_bci)
+                .collect::<std::collections::BTreeSet<_>>()
+        };
+        assert!(!add_bc_is.is_empty());
+        assert_eq!(
+            mandatory_removals(&after_optional_miss),
+            mandatory_removals(&baseline)
+        );
+        assert_eq!(mandatory_removals(&baseline), add_bc_is);
+        let equals_bci = evidence
+            .invokes
+            .iter()
+            .find(|invoke| {
+                invoke.owner.as_slice() == b"java/lang/String"
+                    && invoke.name.as_slice() == b"equals"
+                    && invoke.descriptor.as_slice() == b"(Ljava/lang/Object;)Z"
+            })
+            .unwrap()
+            .bci;
+        assert!(baseline.1.iter().any(|edit| edit.call_bci == equals_bci));
+        assert!(
+            after_optional_miss
+                .1
+                .iter()
+                .any(|edit| edit.call_bci == equals_bci)
+        );
+        assert!(
+            !after_optional_miss
+                .1
+                .iter()
+                .any(|edit| edit.call_bci == remove.bci)
+        );
+    }
+
+    #[test]
+    fn unmatched_optional_equals_key_does_not_hide_valid_calls() {
+        let evidence = list_body_evidence();
+        let baseline = prove_generic_list_parameter_body(
+            &evidence.candidate,
+            &evidence.ast,
+            &evidence.caller,
+            &evidence.invokes,
+            &evidence.body_values,
+            &[1, 2],
+            &mut task_budget(&[]).unwrap(),
+        )
+        .unwrap()
+        .expect("the required List body proof succeeds");
+        let mut invokes_with_unmatched_equals = evidence.invokes.clone();
+        let mut unmatched = evidence
+            .invokes
+            .iter()
+            .find(|invoke| {
+                invoke.owner.as_slice() == b"java/lang/String"
+                    && invoke.name.as_slice() == b"equals"
+                    && invoke.descriptor.as_slice() == b"(Ljava/lang/Object;)Z"
+            })
+            .expect("the fixed body has String.equals(Object)")
+            .clone();
+        unmatched.bci = evidence
+            .invokes
+            .iter()
+            .map(|invoke| invoke.bci)
+            .max()
+            .unwrap()
+            .saturating_add(100);
+        assert!(
+            !evidence
+                .invokes
+                .iter()
+                .any(|invoke| invoke.bci == unmatched.bci)
+        );
+        // Malformed internal census row only: this BCI has no AST or physical instruction.
+        invokes_with_unmatched_equals.push(unmatched.clone());
+
+        let with_unmatched = prove_generic_list_parameter_body(
+            &evidence.candidate,
+            &evidence.ast,
+            &evidence.caller,
+            &invokes_with_unmatched_equals,
+            &evidence.body_values,
+            &[1, 2],
+            &mut task_budget(&[]).unwrap(),
+        )
+        .unwrap()
+        .expect("one missing optional AST site does not withdraw the required List proof");
+        assert_eq!(with_unmatched.0, baseline.0);
+
+        let planned_bc_is = |result: &(
+            Vec<(u16, Vec<String>)>,
+            Vec<jarde_java::report::ClassSourceInvokeArgumentPresentationCast>,
+        )| {
+            result
+                .1
+                .iter()
+                .map(|edit| edit.call_bci)
+                .collect::<std::collections::BTreeSet<_>>()
+        };
+        assert_eq!(planned_bc_is(&with_unmatched), planned_bc_is(&baseline));
+        let actual_equals_bc_is = evidence
+            .invokes
+            .iter()
+            .filter(|invoke| {
+                invoke.owner.as_slice() == b"java/lang/String"
+                    && invoke.name.as_slice() == b"equals"
+            })
+            .map(|invoke| invoke.bci)
+            .collect::<std::collections::BTreeSet<_>>();
+        assert!(
+            actual_equals_bc_is
+                .iter()
+                .all(|bci| planned_bc_is(&with_unmatched).contains(bci))
+        );
+        assert!(!planned_bc_is(&with_unmatched).contains(&unmatched.bci));
     }
 }
 
@@ -13858,10 +14135,351 @@ fn prove_generic_list_typed_foreach_edits(
     Ok(result)
 }
 
+fn push_generic_optional_removal(
+    removals: &mut Vec<jarde_java::report::ClassSourceInvokeArgumentPresentationCast>,
+    site: &jarde_java::report::ClassSourceInvokeAstSite,
+    argument_index: usize,
+    budget: &mut Budget,
+) -> Result<()> {
+    budget.charge(CountedBudgetDimension::IrItems, 1)?;
+    let target_bytes = site
+        .key
+        .target
+        .owner()
+        .len()
+        .saturating_add(site.key.target.name().len())
+        .saturating_add(site.key.target.descriptor().len());
+    budget.charge(
+        CountedBudgetDimension::OutputBytes,
+        u64::try_from(target_bytes).unwrap_or(u64::MAX),
+    )?;
+    removals.push(
+        jarde_java::report::ClassSourceInvokeArgumentPresentationCast {
+            call_bci: site.key.call_bci,
+            opcode: site.key.opcode,
+            target: site.key.target.clone(),
+            argument_index,
+        },
+    );
+    Ok(())
+}
+
+/// Proves that one consumed local is the direct result of an enhanced-for element checkcast.
+/// The caller chooses whether the proven reference type is required generic evidence (add) or
+/// only supports an optional erased-Object wrapper removal (remove/equals).
+fn prove_generic_list_element_local_argument(
+    ast: &jarde_java::report::ClassSourceMethodAst,
+    actual_name: &str,
+    load_bci: u32,
+    value_fact: &class_source::SameClassInvokeValueFact,
+    invoke: &class_source::SameClassInvokeUse,
+    caller: &PhysicalMethodId,
+    invokes: &[class_source::SameClassInvokeUse],
+    body_values: &[class_source::SameClassBodyValueSite],
+    formals: &[jarde_java::report::ClassSourceMethodFormalName],
+    declarations: &[jarde_java::report::ClassSourceAstLocalDeclaration],
+    assignments: &[jarde_java::report::ClassSourceAstLocalAssignment],
+    foreach_sites: &[jarde_java::report::ClassSourceAstForEachIterable],
+    selected_reads: &[(u16, u32)],
+    budget: &mut Budget,
+) -> Result<Option<jarde_java::ast::Type>> {
+    use jarde_java::ast::Type;
+    use jarde_jvm::method_ir::Definition;
+
+    budget.poll()?;
+    if invoke.physical_caller != *caller {
+        return Ok(None);
+    }
+    let bound = formals
+        .len()
+        .saturating_add(declarations.len())
+        .saturating_add(assignments.len())
+        .saturating_add(foreach_sites.len())
+        .saturating_add(selected_reads.len())
+        .saturating_add(invokes.len())
+        .saturating_add(body_values.len())
+        .saturating_add(1);
+    let work = u64::try_from(bound).unwrap_or(u64::MAX).saturating_mul(12);
+    budget.charge(CountedBudgetDimension::AnalysisSteps, work)?;
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(body_values.len().saturating_add(1)).unwrap_or(u64::MAX),
+    )?;
+
+    let name_work = declarations
+        .iter()
+        .map(|item| item.name.len())
+        .chain(assignments.iter().map(|item| item.name.len()))
+        .fold(
+            actual_name
+                .len()
+                .saturating_mul(declarations.len().saturating_add(assignments.len())),
+            usize::saturating_add,
+        );
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(name_work).unwrap_or(u64::MAX),
+    )?;
+    let mut declaration_matches = declarations.iter().filter(|item| item.name == actual_name);
+    let Some(declaration) = declaration_matches.next() else {
+        return Ok(None);
+    };
+    if declaration_matches.next().is_some() {
+        return Ok(None);
+    }
+    let Type::Reference(actual_type) = &declaration.ty else {
+        return Ok(None);
+    };
+    let mut assignment_matches = assignments.iter().filter(|item| item.name == actual_name);
+    let Some(assignment) = assignment_matches.next() else {
+        return Ok(None);
+    };
+    if assignment_matches.next().is_some() {
+        return Ok(None);
+    }
+    let Some(cast_ty) = assignment.cast_type.as_ref() else {
+        return Ok(None);
+    };
+    let type_name_work = match (cast_ty, &declaration.ty) {
+        (Type::Reference(cast_name), Type::Reference(declared_name)) => {
+            cast_name.len().saturating_add(declared_name.len())
+        }
+        _ => return Ok(None),
+    };
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(type_name_work).unwrap_or(u64::MAX),
+    )?;
+    let identity_bytes = jarde_java::report::class_source_method_identity_work(caller, budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "List local scope identity",
+                "generic_call_ast_missing",
+            )
+        })?;
+    let name_bytes = formals
+        .iter()
+        .map(|formal| formal.name.len())
+        .chain(
+            foreach_sites
+                .iter()
+                .filter_map(|site| site.local_name.as_ref().map(String::len)),
+        )
+        .fold(0usize, usize::saturating_add);
+    let foreach_anchor_pairs = foreach_sites
+        .len()
+        .saturating_mul(assignment.scope_anchors.len());
+    let declaration_anchor_work = declaration
+        .scope_anchors
+        .len()
+        .saturating_mul(identity_bytes)
+        .saturating_mul(2);
+    let scope_work = selected_reads.len().saturating_mul(
+        formals
+            .len()
+            .saturating_add(foreach_sites.len())
+            .saturating_add(declaration_anchor_work)
+            .saturating_add(foreach_anchor_pairs.saturating_mul(identity_bytes))
+            .saturating_add(name_bytes),
+    );
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(scope_work).unwrap_or(u64::MAX),
+    )?;
+    let declaration_scope_is_prefix = assignment
+        .scope_anchors
+        .get(..declaration.scope_anchors.len())
+        == Some(declaration.scope_anchors.as_slice());
+    let assignment_loop_matches = selected_reads
+        .iter()
+        .filter_map(|(loop_slot, loop_read_bci)| {
+            let mut formal_matches = formals.iter().filter(|formal| formal.slot == *loop_slot);
+            let formal = formal_matches.next()?;
+            if formal_matches.next().is_some() {
+                return None;
+            }
+            foreach_sites.iter().find(|site| {
+                site.expression_bci == *loop_read_bci
+                    && site.local_name.as_deref() == Some(formal.name.as_str())
+                    && assignment.scope_anchors.iter().any(|anchor| {
+                        anchor.bci == site.statement_bci && anchor.method.as_ref() == Some(caller)
+                    })
+            })
+        })
+        .count();
+    let cast_bci = assignment.value_bci;
+    if cast_ty != &declaration.ty
+        || assignment.bci >= invoke.bci
+        || !declaration_scope_is_prefix
+        || assignment_loop_matches == 0
+        || jarde_java::report::class_source_instruction_opcode(ast, cast_bci, budget).map_err(
+            |stop| {
+                enum_projection_stop_error(
+                    stop,
+                    "List local cast opcode",
+                    "generic_call_ast_missing",
+                )
+            },
+        )? != Some(0xc0)
+    {
+        return Ok(None);
+    }
+    let Some(cast_value) = body_values.iter().find(|value| value.bci == cast_bci) else {
+        return Ok(None);
+    };
+    let [(_, cast_input)] = cast_value.stack_reads.as_slice() else {
+        return Ok(None);
+    };
+    let [cast_output] = cast_value.stack_writes.as_slice() else {
+        return Ok(None);
+    };
+    if cast_value.opcode != 0xc0
+        || !matches!(cast_output.definition, Definition::Instruction { bci, .. } if bci == cast_bci)
+        || cast_input.replaced_by.is_some()
+        || cast_output.replaced_by.is_some()
+    {
+        return Ok(None);
+    }
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(cast_output.uses.len().saturating_add(1)).unwrap_or(u64::MAX),
+    )?;
+    if cast_output.uses.as_slice() != [Some(assignment.bci)] {
+        return Ok(None);
+    }
+    let next_use_work = invokes
+        .iter()
+        .filter(|next| {
+            next.physical_caller == *caller
+                && next.owner.as_slice() == b"java/util/Iterator"
+                && next.name.as_slice() == b"next"
+                && next.descriptor.as_slice() == b"()Ljava/lang/Object;"
+                && next.opcode == 0xb9
+                && next.ssa_operands_complete
+        })
+        .map(|next| {
+            next.result_value_fact
+                .as_ref()
+                .map_or(0, |fact| fact.uses.len())
+        })
+        .fold(0usize, usize::saturating_add);
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(next_use_work).unwrap_or(u64::MAX),
+    )?;
+    let mut next_calls = invokes.iter().filter(|next| {
+        next.physical_caller == *caller
+            && next.owner.as_slice() == b"java/util/Iterator"
+            && next.name.as_slice() == b"next"
+            && next.descriptor.as_slice() == b"()Ljava/lang/Object;"
+            && next.opcode == 0xb9
+            && next.ssa_operands_complete
+            && next.result_value_fact.as_ref().is_some_and(|result| {
+                result.value == cast_input.value
+                    && matches!(result.definition, Definition::Instruction { bci, .. } if bci == next.bci)
+                    && result.replaced_by.is_none()
+                    && result.uses.as_slice() == [Some(cast_bci)]
+            })
+    });
+    let Some(_next_call) = next_calls.next() else {
+        return Ok(None);
+    };
+    if next_calls.next().is_some() {
+        return Ok(None);
+    }
+    let Some(declaration_value) = body_values.iter().find(|value| value.bci == assignment.bci)
+    else {
+        return Ok(None);
+    };
+    let [(actual_slot, stored_value)] = declaration_value.local_writes.as_slice() else {
+        return Ok(None);
+    };
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(declaration_value.stack_reads.len().saturating_add(1)).unwrap_or(u64::MAX),
+    )?;
+    if !matches!(stored_value.definition, Definition::Instruction { bci, .. } if bci == declaration_value.bci)
+        || stored_value.replaced_by.is_some()
+        || declaration_value.stack_reads.iter().filter(|(_, fact)| {
+            fact.value == cast_output.value
+                && matches!(fact.definition, Definition::Instruction { bci, .. } if bci == cast_bci)
+                && fact.replaced_by.is_none()
+        }).count() != 1
+    {
+        return Ok(None);
+    }
+    let mut write_count = 0usize;
+    for site in body_values {
+        budget.poll()?;
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(site.local_writes.len().saturating_add(1)).unwrap_or(u64::MAX),
+        )?;
+        write_count = write_count.saturating_add(
+            site.local_writes
+                .iter()
+                .filter(|(local, _)| local == actual_slot)
+                .count(),
+        );
+    }
+    if write_count != 1 {
+        return Ok(None);
+    }
+    let mut loads = body_values.iter().filter(|value| value.bci == load_bci);
+    let Some(load_value) = loads.next() else {
+        return Ok(None);
+    };
+    if loads.next().is_some() {
+        return Ok(None);
+    }
+    let [(loaded_slot, local_value)] = load_value.local_reads.as_slice() else {
+        return Ok(None);
+    };
+    let [loaded_value] = load_value.stack_writes.as_slice() else {
+        return Ok(None);
+    };
+    if *loaded_slot != *actual_slot
+        || load_value.opcode != 0x19 && !matches!(load_value.opcode, 0x2a..=0x2d)
+        || load_value.local_writes.len() != 0
+        || !load_value.stack_reads.is_empty()
+        || local_value.replaced_by.is_some()
+        || local_value.value != stored_value.value
+        || loaded_value.value != value_fact.value
+        || !matches!(value_fact.definition, Definition::Instruction { bci, .. } if bci == load_bci)
+        || loaded_value.replaced_by.is_some()
+        || value_fact.replaced_by.is_some()
+        || !matches!(loaded_value.definition, Definition::Instruction { bci, .. } if bci == load_value.bci)
+    {
+        return Ok(None);
+    }
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            value_fact
+                .uses
+                .len()
+                .saturating_add(loaded_value.uses.len())
+                .saturating_add(1),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    if value_fact.uses.as_slice() != [Some(invoke.bci)]
+        || loaded_value.uses.as_slice() != [Some(invoke.bci)]
+    {
+        return Ok(None);
+    }
+    budget.charge(
+        CountedBudgetDimension::OutputBytes,
+        u64::try_from(actual_type.len()).unwrap_or(u64::MAX),
+    )?;
+    Ok(Some(Type::Reference(actual_type.clone())))
+}
+
 /// Proves the closed List receiver uses of a structured void candidate from the same physical
 /// reads and retained AST. The returned slot/type tuples are transaction-local inputs to the
-/// parsed Signature gate; the second result contains only the add(Object) presentation wrappers
-/// whose direct-local actuals passed the physical/declaration check below.
+/// parsed Signature gate; the second result contains required add(Object) and independently
+/// proved optional argument presentation removals.
 fn prove_generic_list_parameter_body(
     candidate: &jarde_java::report::GenericReturnCandidate,
     ast: &jarde_java::report::ClassSourceMethodAst,
@@ -14158,169 +14776,269 @@ fn prove_generic_list_parameter_body(
             if wrapper.child.shape != Shape::Local {
                 return Ok(None);
             }
-            let matching_declarations = declarations
-                .iter()
-                .filter(|declaration| declaration.name == actual_name)
-                .collect::<Vec<_>>();
-            let [declaration] = matching_declarations.as_slice() else {
+            let Some(argument_fact) = invoke.argument_value_facts.first() else {
                 return Ok(None);
             };
-            let Type::Reference(actual_type) = &declaration.ty else {
-                return Ok(None);
-            };
-            let matching_assignments = assignments
-                .iter()
-                .filter(|assignment| assignment.name == actual_name)
-                .collect::<Vec<_>>();
-            let [assignment] = matching_assignments.as_slice() else {
-                return Ok(None);
-            };
-            let Some(cast_ty) = assignment.cast_type.as_ref() else {
-                return Ok(None);
-            };
-            let declaration_scope_is_prefix = assignment
-                .scope_anchors
-                .get(..declaration.scope_anchors.len())
-                == Some(declaration.scope_anchors.as_slice());
-            let assignment_loop_matches = selected_reads
-                .iter()
-                .filter_map(|(loop_slot, loop_read_bci)| {
-                    let name = formal_name(*loop_slot)?;
-                    foreach_sites.iter().find(|site| {
-                        site.expression_bci == *loop_read_bci
-                            && site.local_name.as_deref() == Some(name)
-                            && assignment.scope_anchors.iter().any(|anchor| {
-                                anchor.bci == site.statement_bci
-                                    && anchor.method.as_ref() == Some(caller)
-                            })
-                    })
-                })
-                .count();
-            let cast_bci = assignment.value_bci;
-            if cast_ty != &declaration.ty
-                || assignment.bci >= invoke.bci
-                || !declaration_scope_is_prefix
-                || assignment_loop_matches == 0
-                || jarde_java::report::class_source_instruction_opcode(ast, cast_bci, budget)
-                    .map_err(|stop| {
-                        enum_projection_stop_error(
-                            stop,
-                            "List actual cast opcode",
-                            "generic_call_ast_missing",
-                        )
-                    })?
-                    != Some(0xc0)
-            {
+            if invoke.argument_value_facts.len() != 1 {
                 return Ok(None);
             }
-            let Some(cast_value) = body_values.iter().find(|value| value.bci == cast_bci) else {
-                return Ok(None);
-            };
-            let [(_, cast_input)] = cast_value.stack_reads.as_slice() else {
-                return Ok(None);
-            };
-            let [cast_output] = cast_value.stack_writes.as_slice() else {
-                return Ok(None);
-            };
-            if cast_value.opcode != 0xc0
-                || cast_input.replaced_by.is_some()
-                || cast_output.replaced_by.is_some()
-                || cast_output.uses.as_slice() != [Some(assignment.bci)]
-            {
-                return Ok(None);
-            }
-            let next_calls = invokes
-                .iter()
-                .filter(|next| {
-                    next.physical_caller == *caller
-                        && next.owner.as_slice() == b"java/util/Iterator"
-                        && next.name.as_slice() == b"next"
-                        && next.descriptor.as_slice() == b"()Ljava/lang/Object;"
-                        && next.opcode == 0xb9
-                        && next.ssa_operands_complete
-                        && next.result_value_fact.as_ref().is_some_and(|result| {
-                            result.value == cast_input.value
-                                && result.replaced_by.is_none()
-                                && result.uses.as_slice() == [Some(cast_bci)]
-                        })
-                })
-                .collect::<Vec<_>>();
-            if next_calls.len() != 1 {
-                return Ok(None);
-            }
-            let declaration_stores = body_values
-                .iter()
-                .flat_map(|value| {
-                    value
-                        .local_writes
-                        .iter()
-                        .map(move |(local, fact)| (value, *local, fact))
-                })
-                .filter(|(value, _, _)| value.bci == assignment.bci)
-                .collect::<Vec<_>>();
-            let [(declaration_value, actual_slot, stored_value)] = declaration_stores.as_slice()
+            let Some(actual_type) = prove_generic_list_element_local_argument(
+                ast,
+                actual_name,
+                wrapper.child.primary.bci,
+                argument_fact,
+                invoke,
+                caller,
+                invokes,
+                body_values,
+                &formals,
+                &declarations,
+                &assignments,
+                &foreach_sites,
+                &selected_reads,
+                budget,
+            )?
             else {
                 return Ok(None);
             };
-            if !matches!(stored_value.definition, Definition::Instruction { bci, .. } if bci == declaration_value.bci)
-                || stored_value.replaced_by.is_some()
-                || declaration_value.stack_reads.iter().filter(|(_, fact)| {
-                    fact.value == cast_output.value
-                        && matches!(fact.definition, Definition::Instruction { bci, .. } if bci == cast_bci)
-                        && fact.replaced_by.is_none()
-                }).count() != 1
-            {
-                return Ok(None);
-            }
-            let all_local_writes = body_values
-                .iter()
-                .flat_map(|value| {
-                    value
-                        .local_writes
-                        .iter()
-                        .map(move |(local, _)| (value.bci, *local))
-                })
-                .filter(|(_, local)| local == actual_slot)
-                .collect::<Vec<_>>();
-            if all_local_writes.as_slice() != [(declaration_value.bci, *actual_slot)] {
-                return Ok(None);
-            }
-            let Some(load_value) = body_values
-                .iter()
-                .find(|value| value.bci == wrapper.child.primary.bci)
-            else {
-                return Ok(None);
-            };
-            let [(loaded_slot, local_value)] = load_value.local_reads.as_slice() else {
-                return Ok(None);
-            };
-            let [loaded_value] = load_value.stack_writes.as_slice() else {
-                return Ok(None);
-            };
-            let Some(argument_value) = invoke.argument_value_facts.first() else {
-                return Ok(None);
-            };
-            if *loaded_slot != *actual_slot
-                || local_value.replaced_by.is_some()
-                || local_value.value != stored_value.value
-                || loaded_value.value != argument_value.value
-                || argument_value.replaced_by.is_some()
-                || argument_value.uses.as_slice() != [Some(invoke.bci)]
-                || !matches!(loaded_value.definition, Definition::Instruction { bci, .. } if bci == load_value.bci)
-                || loaded_value.uses.as_slice() != [Some(invoke.bci)]
-            {
-                return Ok(None);
-            }
-            type_uses
-                .entry(*slot)
-                .or_default()
-                .push(actual_type.clone());
+            type_uses.entry(*slot).or_default().push(match actual_type {
+                Type::Reference(name) => name,
+                _ => unreachable!("the element-local proof returns a reference type"),
+            });
             removals.push(ClassSourceInvokeArgumentPresentationCast {
                 call_bci: site.key.call_bci,
                 opcode: site.key.opcode,
                 target: site.key.target.clone(),
                 argument_index: 0,
             });
+        } else if call_kind == 2 {
+            // remove(Object) is a cleanup opportunity only. Its argument never contributes to
+            // type_uses, and a missing local proof leaves the original wrapper untouched.
+            let Some(argument) = site.arguments.first() else {
+                continue;
+            };
+            let Some(wrapper) = argument.presentation_wrapper.as_ref() else {
+                continue;
+            };
+            if !matches!(&wrapper.ty, Type::Reference(name) if name == "java.lang.Object")
+                || site.arguments.len() != 1
+                || argument.primary.bci != wrapper.child.primary.bci
+                || wrapper.child.primary.method.as_ref() != Some(caller)
+                || wrapper.child.shape != Shape::Local
+            {
+                continue;
+            }
+            let Some(actual_name) = wrapper.child.direct_local_name.as_deref() else {
+                continue;
+            };
+            let [argument_fact] = invoke.argument_value_facts.as_slice() else {
+                continue;
+            };
+            if prove_generic_list_element_local_argument(
+                ast,
+                actual_name,
+                wrapper.child.primary.bci,
+                argument_fact,
+                invoke,
+                caller,
+                invokes,
+                body_values,
+                &formals,
+                &declarations,
+                &assignments,
+                &foreach_sites,
+                &selected_reads,
+                budget,
+            )?
+            .is_some()
+            {
+                push_generic_optional_removal(&mut removals, site, 0, budget)?;
+            }
+        }
+    }
+
+    // equals(Object) is not a List receiver call, so it is inventoried separately from the
+    // required closed List-use set. Any incomplete optional AST match simply keeps its wrapper.
+    let equals_work = u64::try_from(invokes.len())
+        .unwrap_or(u64::MAX)
+        .saturating_mul(4);
+    budget.charge(CountedBudgetDimension::AnalysisSteps, equals_work)?;
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(invokes.len()).unwrap_or(u64::MAX),
+    )?;
+    let mut equals_key_bytes = 0u64;
+    for invoke in invokes {
+        budget.poll()?;
+        if invoke.physical_caller == *caller
+            && invoke.owner.as_slice() == b"java/lang/String"
+            && invoke.name.as_slice() == b"equals"
+            && invoke.descriptor.as_slice() == b"(Ljava/lang/Object;)Z"
+            && invoke.opcode == 0xb6
+            && invoke.ssa_operands_complete
+        {
+            equals_key_bytes = equals_key_bytes
+                .saturating_add(u64::try_from(invoke.owner.len()).unwrap_or(u64::MAX))
+                .saturating_add(u64::try_from(invoke.name.len()).unwrap_or(u64::MAX))
+                .saturating_add(u64::try_from(invoke.descriptor.len()).unwrap_or(u64::MAX));
+        }
+    }
+    budget.charge(CountedBudgetDimension::OutputBytes, equals_key_bytes)?;
+    let mut equals_keys = Vec::<(ClassSourceInvokeKey, usize)>::new();
+    for (invoke_index, invoke) in invokes.iter().enumerate() {
+        budget.poll()?;
+        if invoke.physical_caller == *caller
+            && invoke.owner.as_slice() == b"java/lang/String"
+            && invoke.name.as_slice() == b"equals"
+            && invoke.descriptor.as_slice() == b"(Ljava/lang/Object;)Z"
+            && invoke.opcode == 0xb6
+            && invoke.ssa_operands_complete
+        {
+            if let Some(key) = generic_call_ast_key(invoke) {
+                equals_keys.push((key, invoke_index));
+            }
+        }
+    }
+    let sort_work = equals_keys.len().saturating_mul(
+        (usize::BITS as usize)
+            .saturating_sub(equals_keys.len().max(1).leading_zeros() as usize)
+            .saturating_add(1),
+    );
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(sort_work.saturating_add(equals_keys.len())).unwrap_or(u64::MAX),
+    )?;
+    equals_keys.sort_by_key(|(key, _)| key.call_bci);
+    for (index, (key, invoke_index)) in equals_keys.iter().enumerate() {
+        budget.poll()?;
+        let duplicate_call_bci = (index > 0 && equals_keys[index - 1].0.call_bci == key.call_bci)
+            || equals_keys
+                .get(index + 1)
+                .is_some_and(|next| next.0.call_bci == key.call_bci);
+        if duplicate_call_bci {
+            continue;
+        }
+        let one_key = std::slice::from_ref(key);
+        let Some(sites) = jarde_java::report::class_source_invoke_ast_sites(ast, one_key, budget)
+            .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "optional String equals AST site",
+                "generic_call_ast_missing",
+            )
+        })?
+        else {
+            // Optional sites fail independently: a missing/mismatched AST node leaves this
+            // invocation wrapped while other proved equals calls keep their edits.
+            continue;
+        };
+        let identity_bytes = jarde_java::report::class_source_method_identity_work(caller, budget)
+            .map_err(|stop| {
+                enum_projection_stop_error(
+                    stop,
+                    "optional String equals identity",
+                    "generic_call_ast_missing",
+                )
+            })?;
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(
+                sites
+                    .len()
+                    .saturating_mul(identity_bytes.saturating_add(2))
+                    .saturating_add(1),
+            )
+            .unwrap_or(u64::MAX),
+        )?;
+        let mut matching_sites = sites
+            .iter()
+            .filter(|site| site.key.call_bci == key.call_bci && site.caller == *caller);
+        let Some(site) = matching_sites.next() else {
+            continue;
+        };
+        if matching_sites.next().is_some() {
+            continue;
+        }
+        let invoke = &invokes[*invoke_index];
+        let Some(receiver) = site.receiver.as_ref() else {
+            continue;
+        };
+        let Some(receiver_name) = receiver.direct_local_name.as_deref() else {
+            continue;
+        };
+        if receiver.shape != Shape::Local
+            || receiver.primary.method.as_ref() != Some(caller)
+            || !matches!(
+                &receiver.presented_type,
+                Some(Type::Reference(name)) if name == "java.lang.String"
+            )
+        {
+            continue;
+        }
+        let Some(receiver_fact) = invoke.receiver_value_fact.as_ref() else {
+            continue;
+        };
+        let Some(receiver_type) = prove_generic_list_element_local_argument(
+            ast,
+            receiver_name,
+            receiver.primary.bci,
+            receiver_fact,
+            invoke,
+            caller,
+            invokes,
+            body_values,
+            &formals,
+            &declarations,
+            &assignments,
+            &foreach_sites,
+            &selected_reads,
+            budget,
+        )?
+        else {
+            continue;
+        };
+        if !matches!(receiver_type, Type::Reference(name) if name == "java.lang.String") {
+            continue;
+        }
+        let Some(argument) = site.arguments.first() else {
+            continue;
+        };
+        let Some(wrapper) = argument.presentation_wrapper.as_ref() else {
+            continue;
+        };
+        if !matches!(&wrapper.ty, Type::Reference(name) if name == "java.lang.Object")
+            || site.arguments.len() != 1
+            || argument.primary.bci != wrapper.child.primary.bci
+            || wrapper.child.primary.method.as_ref() != Some(caller)
+            || wrapper.child.shape != Shape::Local
+        {
+            continue;
+        }
+        let Some(argument_name) = wrapper.child.direct_local_name.as_deref() else {
+            continue;
+        };
+        let [argument_fact] = invoke.argument_value_facts.as_slice() else {
+            continue;
+        };
+        if prove_generic_list_element_local_argument(
+            ast,
+            argument_name,
+            wrapper.child.primary.bci,
+            argument_fact,
+            invoke,
+            caller,
+            invokes,
+            body_values,
+            &formals,
+            &declarations,
+            &assignments,
+            &foreach_sites,
+            &selected_reads,
+            budget,
+        )?
+        .is_some()
+        {
+            push_generic_optional_removal(&mut removals, site, 0, budget)?;
         }
     }
     let mut proved = Vec::new();

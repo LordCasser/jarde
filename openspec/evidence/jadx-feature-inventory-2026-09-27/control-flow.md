@@ -154,3 +154,9 @@ CF-18 于 2026-09-28 完成上述固定形态的受证恢复：两份完整 Java
 bafb 产品自身 CI 38119159950 已实际独立验收四job/52step、双seed各359目标/3444-0-97；stack 最小递归帧修复使三个父片产品交付条件闭合。当前同CLI完整CF07 counted@20派生If来源与CF13 walk switch/continue复核16条命令，双JDK原/Jarde四组输出一致；这两项旧缺口已修，历史失败和来源遗漏记录保留，不能重复派发。lastIndexOf 计算初值仍为while，独立 [computed-init for](../../changes/recover-proved-computed-for-initializers/design.md) 规划复用SSA/Builder/返回叶/来源证书，不加新pass。
 
 新字节码副作用控制还确认 JADX 会把普通javac f()-1 初始化跨过独立g调用，双JDK正常/异常顺序与原版不同。Jarde对此类仍fallback；无handler独立limit调用初值完整重编运行同原但仍while。准确证据与后续边界验收存入该change，不增加整个CF07/CF13或71单元完成数。
+
+### 2026-10-18 CF11 Object 参数展示包装检查点
+
+固定 TestNestedLoops 的精确 String.equals(Object)/List.remove(Object) 冗余展示包装已用既有SSA与投影事务恢复，当前change `remove-proved-list-object-argument-wrappers` 5/6，完整原始/生成JVM对照及812/0/6广门接受；产品提交、自身CI与fresh workspace待完成。Integer引用实际保持remove(Object)，remove不参与E推断。所有编译失败单列，不计运行通过。CF11仍partial，不增加71单元/612测试完成数。
+
+下一固定TestSequentialLoops的冻结基线原已独立接受；不能再按旧缺基线说明重做。最终56 CLI的debug/none、child/bundle、default/all共8API已采集待review，先核现有statementful header恢复路径再决定是否需要新变更。
