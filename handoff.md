@@ -1,3 +1,13 @@
+## 2026-10-19 最新检查点：indexed List 5/6，尾部预期修正已过
+
+本节优先。finThrow5/5、nestedFin16/16及前片已交付勿重做。b7旧Iterable断言失败、e727旧lambda golden断言失败均已真实保留，两个产品CI均未接受。第二native v2在guard命令74（计划第73批）失败，仅sum(List)I精确generic拒绝说明一行变化，不是default/all差异。Luna/root只迁移两处历史比较的此marker，旧evidence和正文/VM不变；修后6/0。
+
+余下目标先逐一预跑；reader180/1实际暴露两新fixture库存未更新。root与Luna独立字节核算每class10bodies18branch/无handler-jsr，仅cfg(test)tuple/旁注更新。第一remainder失败前成功子集1344/0/17；第二remainder仅reader及未执行尾部295/0/3、CIClippy/最终CLI均过，不能拼作fresh通过。最终构建 `/private/tmp/jarde-indexed-list-signatures-reader-and-remainder-root-v1-20261019/execution.json`，来源3198不变、target absent，CLI90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c/63809216B仍与完整64VM832case矩阵逐字同一文件；生产逻辑未再改。
+
+接续：将本测试修正提交推送为新产品，找其自身CI后fresh v3 seed5350648285461741569；root实际验收31native/76CI具名门、官方全部step/两seed、Git/source/CLI绑定再勾3.2。准备脚本v7已root静态审查，17source/9fixture，不能用旧产品CI。结果与全部失败入口本change/results/README.md。root独占共享/Git/网络/工具链，Luna私有；Cargo期间禁source/Gitmutation/network/manualJDK/CLI，5GiB/1GiB/defaultstack/每秒guard/exactclean。持续goal active，CF11/71/612不增整项计数。
+
+下一固定TestLoopConditionInvoke只读memo和完整collector私有v2已准备/审查，未运行未确认缺陷；statementful header线性体与早返certificate组合仅候选，无新spec/实现。
+
 ## 2026-10-19 当前检查点：indexed List 5/6，修正旧 Iterable 预期
 
 本节优先。finThrow5/5、nestedFin16/16已交付勿重做。当前产品b7d53e50的第一次fresh seed1实际在batch40失败：listOwner(List<String>)已合法恢复String foreach，旧测试要求Object。root审查Luna测试补丁，只更新该正向预期；Collection/extra next/escape拒绝不变，新增非空/空/null元素原始及恢复整类执行对照。实际Iterable5/0、语料再生成1及校验5/0/1、CI Clippy/最终CLI构建通过，target absent。失败native和未接受b7 CI快照保留，不能当完整通过。

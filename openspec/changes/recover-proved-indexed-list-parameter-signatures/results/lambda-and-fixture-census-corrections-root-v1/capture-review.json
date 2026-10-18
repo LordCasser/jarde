@@ -1,0 +1,6 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "archive_sha256": "044b0d0b439874401b27922230c6f1953d583ba47c994a8262fc04f4c5456e84",
+  "members": 466,
+  "scope": "Actual failed native v2, failed first remainder suite reader census, both old product ownCI failures/raw logs, exact test-only corrections and independent raw-Code census, completed tail CIClippy/build/CLI equality, acceptance prep v4 rejected duplicate and corrected v5/v6/v7. No fresh workspace/ownCI acceptance implied."
+}

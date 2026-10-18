@@ -36,3 +36,13 @@ Luna 私有 v1 硬编码参数名 values 被 root 拒绝；v2 改为不绑定名
 实际 guarded focused：语料再生成1通过、语料校验5通过/1旧忽略、Iterable整目标5通过/0失败；只有预定manifest由生成器改变。最终不变源 CI Clippy及CLI构建通过，3198来源恒同，exactclean/target absent。最终CLI 63809216B/SHA90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c 与原完整矩阵CLI逐字相同；832case仍由完全相同的实际可执行文件绑定，不冒称新跑VM。相对原广门构建只有test/driver/manifest三个文件变化，生产源码未动。
 
 收据和失败归档 `listowner-regression-correction-root-v1` 全成员root逐字复开。下一步重新提交产品并验其自身CI、fresh完整workspace；3.2仍未勾选。
+
+## 2026-10-19 两处历史预期与库存修正（仍5/6）
+
+第二次fresh v2再次真实失败，guard命令74（计划第73批）的两个lambda-capture断言只在`sum(Ljava/util/List;)I`的generic拒绝说明一行与历史fixed文本不同；不是default/all差异。root展开完整字符串diff，并读ordinary candidate/CompleteBody参数证明/统一尾部：primitive完整体candidate现已建立，但forEach等用途仍不满足List合同，最终进入既有“return source is not a proven parameter value or selected member creation”拒绝。正文、声明/类别与其它成员不变；该目标其余4项含整类javac/VM通过。自身CI39151566570也已真实失败于同两条断言，其余3jobs成功，不能接受为产品CI。
+
+Luna/root只在两处当前输出vs历史fixed比较中迁移这一条精确sum(List)I marker，要求旧marker恰一次；旧evidence、baseline==fixed、其它正文/成员/运行断言不改，不strip通用marker。修正后整目标实际6/0。为避免尾部未知失败反复重跑全workspace，先用现有guard逐目标运行上轮未执行的目标。首remainder记录在reader lib真实180通过/1失败：语料新增两个class但库存期望仍1303/5755/630/4066/14。root与Luna各自从实际class字节/Code/BCI独立核算，每class10body/18branch/0handler/0jsr，精确delta2/20/0/36/0；仅改cfg(test)库存tuple为1305/5775/630/4102/14及旁注，无生产读取改动。
+
+首remainder失败前成功子集1344通过/17旧忽略，失败记录不提升为通过。第二remainder仅重跑reader和未执行尾部，实际295通过/0失败/3旧忽略，含reader181/0，CI Clippy/最终CLI构建/不变来源/清理全部接受。最终CLI仍90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c/63809216B，与完整64VM832case所用CLI逐字相同。上述片段不拼成fresh全workspace通过；还需新产品自己的CI和fresh v3。
+
+归档`lambda-and-fixture-census-corrections-root-v1`保存所有真实失败/差分/Luna/root独立库存/源和raw流。acceptance v4误把新gate加入继承字典被root拒绝；v7继承63不动、17source/9fixture文件、13额外CI具名检查（总76）和31个native具名检查，官方ZIP逐step检查不变，root仅静态审查未执行。

@@ -179,6 +179,19 @@ fn quotes(text: &str) -> usize {
         .count()
 }
 
+const HISTORIC_LIST_SUM_REFUSAL: &str = "// jarde: generic Signature projection refused for `sum(Ljava/util/List;)I`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types";
+const CURRENT_LIST_SUM_REFUSAL: &str = "// jarde: generic Signature projection refused for `sum(Ljava/util/List;)I`: unsupported (ordinary_generic_source_unproved): return source is not a proven parameter value or selected member creation";
+
+/// Adjusts only the one historic sum(List) refusal marker whose proof result intentionally changed.
+fn current_list_sum_record(text: &str) -> String {
+    assert_eq!(
+        text.matches(HISTORIC_LIST_SUM_REFUSAL).count(),
+        1,
+        "the frozen record must contain exactly one old sum(List) marker"
+    );
+    text.replacen(HISTORIC_LIST_SUM_REFUSAL, CURRENT_LIST_SUM_REFUSAL, 1)
+}
+
 /// One member's text out of a frozen rendering. The assembled source separates members by a blank
 /// line, and each recovered member states its own `// @method <name><descriptor>` envelope line, so
 /// the member is found by that line: the walk back stops at the member's **declaration** (the
@@ -218,7 +231,7 @@ fn the_primitive_array_capture_recovers_in_both_javac_legs() {
         let report = source_of(&anchor_jar(leg), "P02_lambda");
         assert_eq!(
             report.text,
-            evidence("fixed", &format!("P02_lambda-{leg}.fixed.txt")),
+            current_list_sum_record(&evidence("fixed", &format!("P02_lambda-{leg}.fixed.txt"),)),
             "the {leg} rendering must equal the frozen fixed-leg record"
         );
         assert_eq!(
@@ -397,10 +410,11 @@ fn the_multianewarray_capture_preserves_its_members_while_the_nested_helper_reco
             before, after,
             "the {leg} historical baseline/fixed snapshots remain unchanged"
         );
+        let current_after = current_list_sum_record(&after);
         for name in ["<init>", "sum", "main"] {
             assert_eq!(
                 member_of_rendering(&report.text, name),
-                member_of_rendering(&after, name),
+                member_of_rendering(&current_after, name),
                 "the {leg} `{name}` region stays unchanged by nested helper recovery"
             );
         }
