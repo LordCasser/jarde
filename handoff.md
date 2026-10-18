@@ -1,3 +1,17 @@
+## 2026-10-19 当前推进：CF08 两个原始Java接受，双入口循环OpenSpec 1/6
+
+本节优先。finThrow5/5、nestedFin16/16、indexed List6/6、条件赋值扩大转换6/6均已交付，勿重做；持续goal active。生产仍ef4fbef5/CLI96e534b0，当前只增加证据与新计划，无生产代码改动。NotIndexed已随6dd3b8d2d推main；本轮新增Endless与双入口实际基线及OpenSpec，需核最终Git收据。
+
+固定NotIndexed完整原始类已root接受71命令、Jarde8整类成功编译/16VM80观察，详情cf08-notindexed-original-root-v1。固定Endless也已root完整接受，入口 `openspec/evidence/java-syntax-2026-10-19/cf08-endless-original-root-v1/README.md`：20原始+24初始生成+51补跑=95实际命令；16Jarde完整成功编译/32构造VM、2JADX成功/4构造VM、18错根全部通过。三个真正不终止方法从不调用；Jarde16份三方法Code/BCI/limits/rows/access同原，JADX test2/3为纯this恒等while的9B代替原6B，静态等价但不字节同。2旧框架JDK8失败不运行；parser shadowing及require/pin前置失败保留，不伪称fresh。333payload+inventory归档root逐字复开，SHA50b90850ac4915ecfc3fadf301fbebea8596fbe8a2a44b0743ac5abcb0bee84e。
+
+新真实缺口入口 `openspec/evidence/java-syntax-2026-10-19/cf08-multientry-prefix-baseline-root-v1/README.md`：独立19B JVM控制，非原Smali/DEX等价。26命令，原2VM24观察、JADX2完整编译/4VM48观察同原；Jarde4API均jre_region_irreducible [4,7,11]、8完整编译missing return失败/0VM。12用例含int环绕，root另用32bit公式核stdout，128payload+inventory归档逐字复开SHAc04218d477523e40e3c7f28187552b04358d1b64a33bd79a6697ac44c984e442。
+
+当前OpenSpec `recover-proved-entry-split-int-loops` 已strict通过并apply ready1/6。root裁决：五角色E→P/H、P→H、H→L/X、L→P、X return，严格三局部绑定及pure int increment/test，单一窄Region物理owner一次、prefix AST受证展示两次；复用现有AST/checkpoint/来源/预算，仍跑原uncovered/overlap/unaccounted门。不改canonical/jsr path/natural-loop分类，无通用clone pass/solver/state machine。主规范Semantics-preserving fallback的窄例外目前只是delta，未同步主spec。
+
+已按OpenSpec继续派现有Luna三路，仅私有、未执行/未接受：typed_foreach_impl在 `/private/tmp/jarde-entry-split-impl-luna-v1-20261019` 准备生产patch；typed_foreach_api_tests在 `/private/tmp/jarde-entry-split-probe-prep-luna-v1-20261019` 准备真实IR只读probe；nl_baseline_audit在 `/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019` 准备classwriter/driver/正反边界公库tests。不要混淆draft与完成；root必须先执行审1.2实际SSA，再集成候选代码/fixtures、target指纹库存、串行Cargo与完整三方验收。未勾的5项均未完成。
+
+CF08仍partial，71/612整项不增；原Smali、其它不可约图和equals展示cast单列。root独占共享/Git/网络/工具链；所有Python-B，Luna无共享/工具链/Git写。无Cargo/target或待续JDK进程。Cargo仍5GiB/target1GiB/defaultstack/每秒guard/finally精确清理，期间禁止源写/Gitmutation/网络/手动JDK/CLI；先核真实receipt/进程再续，不重跑已成功门、不建工作树。
+
 ## 2026-10-19 当前推进：CF08 原始 NotIndexed 完整验收
 
 本节优先；finThrow5/5、nestedFin16/16、indexed List6/6与条件赋值扩大转换6/6均已交付，勿重做。持续goal active；产品仍ef4fbef5、CLI96e534b0，自身CI及fresh验收见下方。当前仅证据文档变化，没有新生产代码/Spec，不增加CF08或71/612整项完成数。

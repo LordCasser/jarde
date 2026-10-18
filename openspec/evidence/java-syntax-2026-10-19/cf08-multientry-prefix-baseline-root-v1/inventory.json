@@ -1,0 +1,776 @@
+{
+  "schema": "cf08-multientry-prefix-diagnostic-archive-v1",
+  "members": [
+    {
+      "path": "private-tmp/jarde-cf08-multientry-architecture-luna-v1-20261019/README.md",
+      "bytes": 6114,
+      "sha256": "e3a027a0434a750b3edae612ac7d89a9a47101c9556d1fdf3e0f9e4ce7849327",
+      "original_path": "/private/tmp/jarde-cf08-multientry-architecture-luna-v1-20261019/README.md"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-architecture-luna-v1-20261019/pins.json",
+      "bytes": 735,
+      "sha256": "6ba3dab1af7cc08031a7f9c02bb1c57cbf609b39a3a0da517892102bdd2c17e8",
+      "original_path": "/private/tmp/jarde-cf08-multientry-architecture-luna-v1-20261019/pins.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/collector.py",
+      "bytes": 28800,
+      "sha256": "1391677d239b61512000328baaf5cc6c8182fa0c38ba41cd5a4fffa08802d032",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/collector.py"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/driver-classes/MultiEntryCounterDriver.class",
+      "bytes": 6309,
+      "sha256": "09c923498a4e6e4a4b6066b164b4ea56535c15e4c5006c581e6fa98ad89522f3",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/driver-classes/MultiEntryCounterDriver.class"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/execution.json",
+      "bytes": 3537283,
+      "sha256": "da22ca92c26800ff92f7a3dfaf54007c3c315e01d9a335e58b52392dc0255f9a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/execution.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/inputs/MultiEntryCounterClassWriter.java",
+      "bytes": 4585,
+      "sha256": "1915690e5797e07e34e6e8621ac45a186afce2090906c8cd8d28f9c1af63183a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/inputs/MultiEntryCounterClassWriter.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/inputs/MultiEntryCounterDriver.java",
+      "bytes": 4528,
+      "sha256": "7bd11372d1edbfc7ddba476bd96df5ab7b2182f0b5f221befbdce30fcc409b0f",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/inputs/MultiEntryCounterDriver.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jadx-compile/javac23/cf08/MultiEntryCounter.class",
+      "bytes": 467,
+      "sha256": "fa1c774b1c8ac1a701c8a4697b84835e237c5b6516c8846fdd3173be2b48673b",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jadx-compile/javac23/cf08/MultiEntryCounter.class"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jadx-compile/javac8/cf08/MultiEntryCounter.class",
+      "bytes": 467,
+      "sha256": "07e1151da09f356cdc4038b5e5e3ddc0abd8805404522b1e001eae27856bb8c7",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jadx-compile/javac8/cf08/MultiEntryCounter.class"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jadx/sources/cf08/MultiEntryCounter.java",
+      "bytes": 305,
+      "sha256": "6ed438129b96d206e7afcc53b72e3b6c4ee30675ee99e1e7d0f2bfb1c335e281",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jadx/sources/cf08/MultiEntryCounter.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/bundle-child/all/MultiEntryCounter.java",
+      "bytes": 1314,
+      "sha256": "c60fa7ee4c83b891c7c0ecfedc298e8617a8db14f7c88c31fbb714debb70debb",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/bundle-child/all/MultiEntryCounter.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/bundle-child/all/report.json",
+      "bytes": 25066,
+      "sha256": "0ca956f6579ce3b4f9bcd8e36f3cdb5c22c1f50702362a7c402d6d50521c66d0",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/bundle-child/all/report.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/bundle-child/default/MultiEntryCounter.java",
+      "bytes": 1314,
+      "sha256": "c60fa7ee4c83b891c7c0ecfedc298e8617a8db14f7c88c31fbb714debb70debb",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/bundle-child/default/MultiEntryCounter.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/bundle-child/default/report.json",
+      "bytes": 24065,
+      "sha256": "104eb5b5f7d9cce0a0c44e65529062afae45abb4f1f25888671e366582db30ab",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/bundle-child/default/report.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/child/all/MultiEntryCounter.java",
+      "bytes": 1314,
+      "sha256": "c60fa7ee4c83b891c7c0ecfedc298e8617a8db14f7c88c31fbb714debb70debb",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/child/all/MultiEntryCounter.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/child/all/report.json",
+      "bytes": 21637,
+      "sha256": "dcec06658eb26d3f6cb5e79d047061d97ab38137fe75ef4f14fca01c49f81320",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/child/all/report.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/child/default/MultiEntryCounter.java",
+      "bytes": 1314,
+      "sha256": "c60fa7ee4c83b891c7c0ecfedc298e8617a8db14f7c88c31fbb714debb70debb",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/child/default/MultiEntryCounter.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/child/default/report.json",
+      "bytes": 20641,
+      "sha256": "31a0256de04947844837d1a6fcceff3f57000e58efab7f90c371d8efeb9b38ee",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/jarde/child/default/report.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/original-classes/cf08/MultiEntryCounter.class",
+      "bytes": 271,
+      "sha256": "fe1a87ea523c10649ea3141d89b9ce04a2c2cfb6e8c31e70479193794311e2fb",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/original-classes/cf08/MultiEntryCounter.class"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/1.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/1.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/10.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/10.stdout.raw",
+      "bytes": 25066,
+      "sha256": "0ca956f6579ce3b4f9bcd8e36f3cdb5c22c1f50702362a7c402d6d50521c66d0",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/10.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/11.stderr.raw",
+      "bytes": 159,
+      "sha256": "6b3117f9baa130a68622a49a9496a31f94dc7e0a9f6ae656ade03dcdee816b50",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/11.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/11.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/12.stderr.raw",
+      "bytes": 402,
+      "sha256": "5c202cfe9a063f13d15d2b47392dbf31ca5ea79c9e953e4185c6a1039e5a040c",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/12.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/12.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/12.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/13.stderr.raw",
+      "bytes": 155,
+      "sha256": "cc49bbe2e11bb261cd924d2ba4951e22f7818b0be3b310b974fac07c036265e2",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/13.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/13.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/13.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/14.stderr.raw",
+      "bytes": 398,
+      "sha256": "1a6c2372a168d0e15e85dde39a6a0ce378f0a5af26b1ac9c2a75f2ba3218475a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/14.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/14.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/15.stderr.raw",
+      "bytes": 166,
+      "sha256": "436c22bdd0c1e7394b7703c53fa113bd2470a303eb3f65f312e646e1ae34eed2",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/15.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/15.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/15.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/16.stderr.raw",
+      "bytes": 409,
+      "sha256": "495c85f97da0ec20657c2a0923dbdaa62ecd5531fefd52afe7aa8bb93d55e443",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/16.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/16.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/17.stderr.raw",
+      "bytes": 162,
+      "sha256": "4a5b63097c1c83e6bd437dc62e07cdc048fbaf4c09b0a466129d443640dcb740",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/17.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/17.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/17.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/18.stderr.raw",
+      "bytes": 405,
+      "sha256": "1776004a5890b3c30e746dea4b2b901871524241891b64caffae20ffcac54e9f",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/18.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/18.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/18.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/19.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/19.stdout.raw",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/19.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/2.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/2.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/20.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/20.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/20.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/21.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/21.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/21.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/22.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/22.stdout.raw",
+      "bytes": 1098,
+      "sha256": "cc3e0ae96e38acc6299e79a4dfc2f7186ff0c7b690dc3344903fc4a0c0111b13",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/22.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/23.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/23.stdout.raw",
+      "bytes": 1098,
+      "sha256": "cc3e0ae96e38acc6299e79a4dfc2f7186ff0c7b690dc3344903fc4a0c0111b13",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/23.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/24.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/24.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/24.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/24.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/25.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/25.stdout.raw",
+      "bytes": 1098,
+      "sha256": "cc3e0ae96e38acc6299e79a4dfc2f7186ff0c7b690dc3344903fc4a0c0111b13",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/25.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/26.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/26.stdout.raw",
+      "bytes": 1098,
+      "sha256": "cc3e0ae96e38acc6299e79a4dfc2f7186ff0c7b690dc3344903fc4a0c0111b13",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/26.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/3.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/3.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/4.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/4.stdout.raw",
+      "bytes": 1098,
+      "sha256": "cc3e0ae96e38acc6299e79a4dfc2f7186ff0c7b690dc3344903fc4a0c0111b13",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/4.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/5.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/5.stdout.raw",
+      "bytes": 1098,
+      "sha256": "cc3e0ae96e38acc6299e79a4dfc2f7186ff0c7b690dc3344903fc4a0c0111b13",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/5.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/6.stderr.raw",
+      "bytes": 301,
+      "sha256": "d643b8c08532bf264afb6e6dd2db824fd40b73ac5c3ad8a66ff872fd74ce0780",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/6.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/6.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/7.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/7.stdout.raw",
+      "bytes": 20641,
+      "sha256": "31a0256de04947844837d1a6fcceff3f57000e58efab7f90c371d8efeb9b38ee",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/7.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/8.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/8.stdout.raw",
+      "bytes": 21637,
+      "sha256": "dcec06658eb26d3f6cb5e79d047061d97ab38137fe75ef4f14fca01c49f81320",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/8.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/9.stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/9.stdout.raw",
+      "bytes": 24065,
+      "sha256": "104eb5b5f7d9cce0a0c44e65529062afae45abb4f1f25888671e366582db30ab",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/raw/9.stdout.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/root-review.json",
+      "bytes": 1067,
+      "sha256": "5d7683fec7e568322fdbfb59fdd6103590562b463f8fc070590d45d6642a5511",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/root-review.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/target.jar",
+      "bytes": 425,
+      "sha256": "8e923ff6457904def6e44a2a55519551ec6d7ec024a6315b6e1d3c19f8208d91",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/target.jar"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/upstream/FixMultiEntryLoops.java",
+      "bytes": 4528,
+      "sha256": "0c2b67bbb15648632767625db7163bed579efcc66fc3a58b9466760f01eb945a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/upstream/FixMultiEntryLoops.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/upstream/TestMultiEntryLoop.java",
+      "bytes": 353,
+      "sha256": "17b9f250a1b32e368b4c8c69b4ec660c9722cf2aee3eb8bd1a6fd63fbc866e74",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/upstream/TestMultiEntryLoop.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/upstream/TestMultiEntryLoop.smali",
+      "bytes": 975,
+      "sha256": "6bc3bd8342295941d26c924abc6b3930e3a223303a1b524cbeeb9e448250e1c5",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/upstream/TestMultiEntryLoop.smali"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-baseline-root-v1-20261019/writer-classes/MultiEntryCounterClassWriter.class",
+      "bytes": 3245,
+      "sha256": "726c43d2f4d6926bb1171ae9bdb0878fe34e69eac99c0db86478eadf2746b9b8",
+      "original_path": "/private/tmp/jarde-cf08-multientry-baseline-root-v1-20261019/writer-classes/MultiEntryCounterClassWriter.class"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v1-20261019/MultiEntryCounterClassWriter.java",
+      "bytes": 4585,
+      "sha256": "1915690e5797e07e34e6e8621ac45a186afce2090906c8cd8d28f9c1af63183a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v1-20261019/MultiEntryCounterClassWriter.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v1-20261019/MultiEntryCounterDriver.java",
+      "bytes": 3008,
+      "sha256": "678419985e922cdd88414549f83e2c26d6153dd6f80709a5906d3f691eeef264",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v1-20261019/MultiEntryCounterDriver.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v1-20261019/README.md",
+      "bytes": 5287,
+      "sha256": "9669f96ee6628d4a0098c7cc2aa179c07ded43b6b661860b3f1693b5c468cc13",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v1-20261019/README.md"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v1-20261019/pins.json",
+      "bytes": 4305,
+      "sha256": "a6d6a499424ce3ba523e8353d4e4f342f00bbbd24d8135113ebce8f9c9339330",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v1-20261019/pins.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/MultiEntryCounterClassWriter.java",
+      "bytes": 4585,
+      "sha256": "1915690e5797e07e34e6e8621ac45a186afce2090906c8cd8d28f9c1af63183a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/MultiEntryCounterClassWriter.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/README.md",
+      "bytes": 3973,
+      "sha256": "a6d829bddeb4ac8d6cd1e1cc7e2a4e2412a3fb5f60d30757ca6286db9f002cee",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/README.md"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/baseline-diff.patch",
+      "bytes": 64845,
+      "sha256": "542dda7701df4515a6a89f22055561f9dccefb3100d54b628bd49c59762c9313",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/baseline-diff.patch"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/collect_multientry.py",
+      "bytes": 27929,
+      "sha256": "982fcf0cd82597b544e6c0212378bc93d5eb0cedfadf67884fe6eaaf986c6546",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/collect_multientry.py"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/driver/MultiEntryCounterDriver.java",
+      "bytes": 4528,
+      "sha256": "7bd11372d1edbfc7ddba476bd96df5ab7b2182f0b5f221befbdce30fcc409b0f",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/driver/MultiEntryCounterDriver.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/pins.json",
+      "bytes": 5439,
+      "sha256": "d584470b24094d546968522194faea56ab92b7acd0ae9b94d5f7f17efe8baa5f",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/pins.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/source/FixMultiEntryLoops.java",
+      "bytes": 4528,
+      "sha256": "0c2b67bbb15648632767625db7163bed579efcc66fc3a58b9466760f01eb945a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/source/FixMultiEntryLoops.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/source/TestMultiEntryLoop.java",
+      "bytes": 353,
+      "sha256": "17b9f250a1b32e368b4c8c69b4ec660c9722cf2aee3eb8bd1a6fd63fbc866e74",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/source/TestMultiEntryLoop.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/source/TestMultiEntryLoop.smali",
+      "bytes": 975,
+      "sha256": "6bc3bd8342295941d26c924abc6b3930e3a223303a1b524cbeeb9e448250e1c5",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/source/TestMultiEntryLoop.smali"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/upstream/FixMultiEntryLoops.java",
+      "bytes": 4528,
+      "sha256": "0c2b67bbb15648632767625db7163bed579efcc66fc3a58b9466760f01eb945a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/upstream/FixMultiEntryLoops.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/upstream/TestMultiEntryLoop.java",
+      "bytes": 353,
+      "sha256": "17b9f250a1b32e368b4c8c69b4ec660c9722cf2aee3eb8bd1a6fd63fbc866e74",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/upstream/TestMultiEntryLoop.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v2-20261019/upstream/TestMultiEntryLoop.smali",
+      "bytes": 975,
+      "sha256": "6bc3bd8342295941d26c924abc6b3930e3a223303a1b524cbeeb9e448250e1c5",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v2-20261019/upstream/TestMultiEntryLoop.smali"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/MultiEntryCounterClassWriter.java",
+      "bytes": 4585,
+      "sha256": "1915690e5797e07e34e6e8621ac45a186afce2090906c8cd8d28f9c1af63183a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/MultiEntryCounterClassWriter.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/README.md",
+      "bytes": 4584,
+      "sha256": "a8dfe1702a763cdbbd6192cbb5074267ad1ee685f88e833957d0383aba2fb279",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/README.md"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/baseline-diff.patch",
+      "bytes": 64845,
+      "sha256": "542dda7701df4515a6a89f22055561f9dccefb3100d54b628bd49c59762c9313",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/baseline-diff.patch"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/collect_multientry.py",
+      "bytes": 28782,
+      "sha256": "88760cd3319e3808f4443c24f42c5553785c7cd4620548aa5193377eec230b60",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/collect_multientry.py"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/driver/MultiEntryCounterDriver.java",
+      "bytes": 4528,
+      "sha256": "7bd11372d1edbfc7ddba476bd96df5ab7b2182f0b5f221befbdce30fcc409b0f",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/driver/MultiEntryCounterDriver.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/pins.json",
+      "bytes": 1698,
+      "sha256": "67418766e5d011c89595a45c3c1fb0ad1a20e176c41e92661070bca4e0fbeafa",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/pins.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/source/FixMultiEntryLoops.java",
+      "bytes": 4528,
+      "sha256": "0c2b67bbb15648632767625db7163bed579efcc66fc3a58b9466760f01eb945a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/source/FixMultiEntryLoops.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/source/TestMultiEntryLoop.java",
+      "bytes": 353,
+      "sha256": "17b9f250a1b32e368b4c8c69b4ec660c9722cf2aee3eb8bd1a6fd63fbc866e74",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/source/TestMultiEntryLoop.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/source/TestMultiEntryLoop.smali",
+      "bytes": 975,
+      "sha256": "6bc3bd8342295941d26c924abc6b3930e3a223303a1b524cbeeb9e448250e1c5",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/source/TestMultiEntryLoop.smali"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/upstream/FixMultiEntryLoops.java",
+      "bytes": 4528,
+      "sha256": "0c2b67bbb15648632767625db7163bed579efcc66fc3a58b9466760f01eb945a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/upstream/FixMultiEntryLoops.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/upstream/TestMultiEntryLoop.java",
+      "bytes": 353,
+      "sha256": "17b9f250a1b32e368b4c8c69b4ec660c9722cf2aee3eb8bd1a6fd63fbc866e74",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/upstream/TestMultiEntryLoop.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/upstream/TestMultiEntryLoop.smali",
+      "bytes": 975,
+      "sha256": "6bc3bd8342295941d26c924abc6b3930e3a223303a1b524cbeeb9e448250e1c5",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/upstream/TestMultiEntryLoop.smali"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v3-20261019/v2-to-v3.diff",
+      "bytes": 13940,
+      "sha256": "1778b98706230c9916b654a8bcaa023c03bc8962138bcdf94d12ee81573643ab",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v3-20261019/v2-to-v3.diff"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/MultiEntryCounterClassWriter.java",
+      "bytes": 4585,
+      "sha256": "1915690e5797e07e34e6e8621ac45a186afce2090906c8cd8d28f9c1af63183a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/MultiEntryCounterClassWriter.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/README.md",
+      "bytes": 4584,
+      "sha256": "a8dfe1702a763cdbbd6192cbb5074267ad1ee685f88e833957d0383aba2fb279",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/README.md"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/baseline-diff.patch",
+      "bytes": 64845,
+      "sha256": "542dda7701df4515a6a89f22055561f9dccefb3100d54b628bd49c59762c9313",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/baseline-diff.patch"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/collect_multientry.py",
+      "bytes": 28800,
+      "sha256": "1391677d239b61512000328baaf5cc6c8182fa0c38ba41cd5a4fffa08802d032",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/collect_multientry.py"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/driver/MultiEntryCounterDriver.java",
+      "bytes": 4528,
+      "sha256": "7bd11372d1edbfc7ddba476bd96df5ab7b2182f0b5f221befbdce30fcc409b0f",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/driver/MultiEntryCounterDriver.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/pins.json",
+      "bytes": 1973,
+      "sha256": "53c0e8f06c94977531b023b4106b71eb135d03e0b9e64a1060fc1add3ffd460a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/pins.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/source/FixMultiEntryLoops.java",
+      "bytes": 4528,
+      "sha256": "0c2b67bbb15648632767625db7163bed579efcc66fc3a58b9466760f01eb945a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/source/FixMultiEntryLoops.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/source/TestMultiEntryLoop.java",
+      "bytes": 353,
+      "sha256": "17b9f250a1b32e368b4c8c69b4ec660c9722cf2aee3eb8bd1a6fd63fbc866e74",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/source/TestMultiEntryLoop.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/source/TestMultiEntryLoop.smali",
+      "bytes": 975,
+      "sha256": "6bc3bd8342295941d26c924abc6b3930e3a223303a1b524cbeeb9e448250e1c5",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/source/TestMultiEntryLoop.smali"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/upstream/FixMultiEntryLoops.java",
+      "bytes": 4528,
+      "sha256": "0c2b67bbb15648632767625db7163bed579efcc66fc3a58b9466760f01eb945a",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/upstream/FixMultiEntryLoops.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/upstream/TestMultiEntryLoop.java",
+      "bytes": 353,
+      "sha256": "17b9f250a1b32e368b4c8c69b4ec660c9722cf2aee3eb8bd1a6fd63fbc866e74",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/upstream/TestMultiEntryLoop.java"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/upstream/TestMultiEntryLoop.smali",
+      "bytes": 975,
+      "sha256": "6bc3bd8342295941d26c924abc6b3930e3a223303a1b524cbeeb9e448250e1c5",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/upstream/TestMultiEntryLoop.smali"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/v2-to-v3.diff",
+      "bytes": 13940,
+      "sha256": "1778b98706230c9916b654a8bcaa023c03bc8962138bcdf94d12ee81573643ab",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/v2-to-v3.diff"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-prep-luna-v4-20261019/v3-to-v4.diff",
+      "bytes": 1845,
+      "sha256": "9b3730e1d321e5f55d5b5b949663ad48cb56bb305a47475e722eee6b80de1ff8",
+      "original_path": "/private/tmp/jarde-cf08-multientry-prep-luna-v4-20261019/v3-to-v4.diff"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-review-root-v1-20261019/architecture-verdict.md",
+      "bytes": 1789,
+      "sha256": "477826e6ad8e9f8372409889cc82bde6bddd288128cbed89f203a924027564a0",
+      "original_path": "/private/tmp/jarde-cf08-multientry-review-root-v1-20261019/architecture-verdict.md"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-review-root-v1-20261019/review.json",
+      "bytes": 834,
+      "sha256": "d2b1993ec6c02c233075ba8c7df10d9824992e06d4398313617cf6faca7c27a1",
+      "original_path": "/private/tmp/jarde-cf08-multientry-review-root-v1-20261019/review.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-review-root-v1-20261019/review.py",
+      "bytes": 8786,
+      "sha256": "31b5ef10d50ae23c43211c06b28e98dda019a9a71254be54ee5f5aa4058405b9",
+      "original_path": "/private/tmp/jarde-cf08-multientry-review-root-v1-20261019/review.py"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-wrapper-root-v1-20261019/execution.json",
+      "bytes": 1115,
+      "sha256": "54ab27296c8484fefdfb6328880888a7671c3e74383bb44254af8a65fe9f3433",
+      "original_path": "/private/tmp/jarde-cf08-multientry-wrapper-root-v1-20261019/execution.json"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-wrapper-root-v1-20261019/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/private/tmp/jarde-cf08-multientry-wrapper-root-v1-20261019/stderr.raw"
+    },
+    {
+      "path": "private-tmp/jarde-cf08-multientry-wrapper-root-v1-20261019/stdout.raw",
+      "bytes": 81,
+      "sha256": "dcb20c99d9fe5b4471c12ada29725cbc7e94a7b374a96a5e9afc22ebe2862676",
+      "original_path": "/private/tmp/jarde-cf08-multientry-wrapper-root-v1-20261019/stdout.raw"
+    },
+    {
+      "path": "upstream/jadx/LICENSE",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "original_path": "/Users/lordcasser/workspace/testzone/jadx/LICENSE"
+    },
+    {
+      "path": "upstream/jadx/NOTICE",
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "original_path": "/Users/lordcasser/workspace/testzone/jadx/NOTICE"
+    }
+  ],
+  "payload_members": 128,
+  "receipt_sha256": "da22ca92c26800ff92f7a3dfaf54007c3c315e01d9a335e58b52392dc0255f9a",
+  "scope": "Constructed JVM control, not original Smali/DEX equivalence. Static rejected collector drafts corrected before execution are documented in prep diffs; actual capture has 26 commands."
+}

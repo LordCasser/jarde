@@ -1,5 +1,11 @@
 # JADX control-flow syntax inventory
 
+## 2026-10-19 CF-08：原始Endless接受，双入口恢复新片1/6
+
+[Endless完整验收](../java-syntax-2026-10-19/cf08-endless-original-root-v1/README.md)已接受：95实际命令（原始20/生成24/补跑51）、Jarde16完整编译/32构造VM，三个循环Code等原；JADX2编译/4构造VM及2框架失败如实保留。无限方法未执行，纯this恒等条件静态解释单列。NotIndexed前项不重做。
+
+[双入口前缀JVM控制](../java-syntax-2026-10-19/cf08-multientry-prefix-baseline-root-v1/README.md)实际复现差距：原2VM24观察，JADX2完整编译/4VM48观察同原，Jarde4不可约拒绝/8missing-return编译失败。它不是原Smali等价。已立 [recover-proved-entry-split-int-loops](../../changes/recover-proved-entry-split-int-loops/tasks.md) 1/6，Luna私有实现/真实IR探针/对抗性tests并行准备，root待审和运行。五角色/严格int局部/唯一物理owner及双展示来源是边界；不放宽所有不可约图、不增通用IR/pass。**CF08保持partial，71/612整项计数不变。**
+
 ## 2026-10-19 CF-08：NotIndexed 原始完整类对照接受
 
 [新证据](../java-syntax-2026-10-19/cf08-notindexed-original-root-v1/README.md)补齐未裁剪的上游外层/目标类，保留 check()；8 API/24 方法均 structured。实际71命令，Jarde8次成功整类编译/16VM80观察、JADX2次成功/4VM20观察均同原始；10次JDK8框架 major55/52 编译失败保留且不运行，原始4VM20观察另计。空 cwd 与 parentless/CodeSource 隔离通过。driver未执行 check/JUnit，现有机制足够，没有新实现；Object实参展示cast单列质量债务。CF08保持部分覆盖，71/612计数不变。EndlessLoop 的原始/API审计已通过；生成源码18编译成功，但collector变量遮蔽漏17组验证，正准备只补缺失VM，不把它称完整验收。Smali原输入与独立构造JVM双入口control严格分开。

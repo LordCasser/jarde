@@ -1,0 +1,20 @@
+{
+  "status": "planning_strict_accepted_implementation_pending",
+  "strict_all": {
+    "passed": 379,
+    "failed": 0
+  },
+  "own_strict": "passed after Builder-vs-Region type responsibility clarification",
+  "apply_progress": {
+    "complete": 1,
+    "total": 6
+  },
+  "production_unchanged": true,
+  "baseline_receipt_sha256": "da22ca92c26800ff92f7a3dfaf54007c3c315e01d9a335e58b52392dc0255f9a",
+  "parallel_private_assignments": {
+    "typed_foreach_impl": "2.1 implementation candidate",
+    "typed_foreach_api_tests": "1.2 real IR probe preparation",
+    "nl_baseline_audit": "2.2 adversarial fixture/test preparation"
+  },
+  "root_required_next": "Review actual IR probe/SSA first, then integrate privately prepared implementation and execute full acceptance. No candidate has been accepted or built."
+}

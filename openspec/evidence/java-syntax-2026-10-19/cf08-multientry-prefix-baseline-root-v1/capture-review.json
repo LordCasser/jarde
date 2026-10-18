@@ -1,0 +1,34 @@
+{
+  "status": "root_reopened_all_archive_members_and_live_sources",
+  "payload_members": 128,
+  "regular_members_including_inventory": 129,
+  "archive_sha256": "c04218d477523e40e3c7f28187552b04358d1b64a33bd79a6697ac44c984e442",
+  "inventory_sha256": "dc86d74bc631f53f0f194c29e3d957c1d56627d76bbb3e78db4f54d8b7e57b33",
+  "root_review": {
+    "status": "root_accepted_constructed_multientry_gap_baseline",
+    "receipt_sha256": "da22ca92c26800ff92f7a3dfaf54007c3c315e01d9a335e58b52392dc0255f9a",
+    "commands": 26,
+    "raw_streams": 52,
+    "unique_pinned_paths": 3416,
+    "pin_records_reopened": 10301,
+    "original_vm_runs": 2,
+    "original_observations": 24,
+    "jarde_api_cells": 4,
+    "jarde_missing_return_compile_failures": 8,
+    "jarde_vm_runs": 0,
+    "jadx_compile_successes": 2,
+    "jadx_vm_runs": 4,
+    "jadx_observations": 48,
+    "independent_wrapped_int_oracle_matches": true,
+    "scc_external_entries": [
+      4,
+      7
+    ],
+    "irreducible_basic_blocks": [
+      4,
+      7,
+      11
+    ],
+    "limitations": "Constructed JVM control; not original Smali/DEX equivalence or full CF08 coverage. Root read full writer/driver and verified class Code/frames statically; no product change."
+  }
+}

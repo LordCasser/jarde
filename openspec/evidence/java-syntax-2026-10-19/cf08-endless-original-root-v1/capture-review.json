@@ -1,0 +1,7 @@
+{
+  "status": "root_reopened_all_archive_members_and_live_sources",
+  "payload_members": 333,
+  "regular_members_including_inventory": 334,
+  "archive_sha256": "50b90850ac4915ecfc3fadf301fbebea8596fbe8a2a44b0743ac5abcb0bee84e",
+  "inventory_sha256": "391bc61e377d70980d42780c6ff5ad96e102e60aa0a9b9abfc40b1a3f35e07a2"
+}
