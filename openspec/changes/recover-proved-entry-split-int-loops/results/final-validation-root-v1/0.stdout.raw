@@ -1,0 +1,19 @@
+✓ spec/analysis-contracts
+✓ spec/artifact-snapshots
+✓ spec/artifact-views
+✓ spec/classfile-inspection
+✓ spec/conservative-output
+✓ spec/demand-resolver
+✓ spec/facts-cache
+✓ spec/java8-recovery
+✓ spec/jvm-ir
+✓ spec/measured-execution
+✓ spec/modern-classfile-semantics
+✓ spec/performance-gates
+✓ spec/query-api
+✓ spec/recovery-validation
+✓ spec/runtime-dispatch-queries
+✓ spec/semantic-query-plugins
+✓ spec/source-maps
+✓ spec/structural-xref
+Totals: 18 passed, 0 failed (18 items)

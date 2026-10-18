@@ -1,0 +1,63 @@
+{
+  "changeName": "recover-proved-entry-split-int-loops",
+  "changeDir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "proposal": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/proposal.md"
+    ],
+    "specs": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/specs/java8-recovery/spec.md"
+    ],
+    "design": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/design.md"
+    ],
+    "tasks": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/tasks.md"
+    ]
+  },
+  "progress": {
+    "total": 6,
+    "complete": 6,
+    "remaining": 0
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "description": "1.1 冻结原/JADX/Jarde完整对照与架构裁决；验收26实际命令、原始双VM24观察、JADX两完整编译/四VM48观察一致、Jarde四不可约拒绝/八missing-return编译失败及物理Code/frames/双入口。入口为cf08-multientry-prefix-baseline-root-v1；不冒称原Smali覆盖。",
+      "done": true
+    },
+    {
+      "id": "2",
+      "description": "1.2 增加同次真实IR的只读Facts/SSA/类型探针及永久完整fixture准备，证明五角色/全部边、phi输入、局部绑定与更新/返回关系；root实际执行并审核输出，fixture来源指纹/库存可重建，不从JSON或伪造表推导正向证明。",
+      "done": true
+    },
+    {
+      "id": "3",
+      "description": "2.1 Luna私有实现窄区域证书、唯一owner及Builder两处前缀展示，root逐差异审查后集成；以真实正例structured、既有所有权/unaccounted门仍运行、全部物理来源与重复展示span通过验证，不改canonical/自然循环分类或公共协议。",
+      "done": true
+    },
+    {
+      "id": "4",
+      "description": "2.2 增加可泛化正向变常量/槽位/入口sense及明确负向额外边、角色别名、非Int/Unknown、异常/调用/stack逃逸/jsr/完整性拒绝控制；用实际有效class和focused公共库测试证明缺证候选完整拒绝、无半成品（legacy保留其既有分块拒绝）；真实预算/取消测试分别命中证明/两处输出/来源阶段并保留原Stop/usage，正文停止不发布，后置可选映射遵循可靠完整节点前缀和Partial/None证据状态。",
+      "done": true
+    },
+    {
+      "id": "5",
+      "description": "3.1 root完成原始/JADX/Jarde固定及控制类完整重编和隔离对照；CI等价lint修正后的最终CLI另实际执行24格API重绑定，仅剔除usage后完整JSON/源码/身份/映射相同，因此精确复用已接受的16成功编译/32VM/1728观察，不冒称重跑；两编译器/双JVM核零/一/多轮、skip双值及int环绕，失败不运行，raw/source/class/身份/SourceMap/default-all闭合；适用CF07/CF11及finThrow/nestedFin拒绝与输出回归无损，保留原失败与harness修正。",
+      "done": true
+    },
+    {
+      "id": "6",
+      "description": "3.2 root完成fmt/适用Clippy/MSRV/focused及fresh完整workspace、精确产品提交推送和自身CI；遵守5GiB/target1GiB/defaultstack/每秒guard/最终清理，完整审核具名结果与产品源码/CLI绑定。同步主规范、strict与归档逐字复开、账本/handoff/干净main后关闭；CF08/71/612整项仍不自动增加。",
+      "done": true
+    }
+  ],
+  "state": "all_done",
+  "instruction": "All tasks are complete! This change is ready to be archived.\nConsider running tests and reviewing the changes before archiving.",
+  "context": "Language: zh-CN\nAll artifacts must be written in zh-CN.\nKeep OpenSpec structural headings and SHALL/MUST keywords in English.\nProject: jarde, a pure Rust library-first JVM artifact analysis engine.\nArchitecture reference: JVM_Rust_Engine_Final_Architecture.md.\nKeep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend\nintegration are thin outward adapters that depend on jarde; the core must not\ndepend on CLI, MCP, or host/backend protocol types.\nP0-P5 and crate layering are archived within their recorded scope; 18 main specs are promoted.\nStage archival is not blanket product completion. The 2026-09-20 completion review found two\nrecovery correctness gaps (nested-expression evaluation position, fallback producer retention);\nclose-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,\nacceptance.md and the support matrix for the current status. Preserve historical archives.\nThe review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;\npreserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign\nthen found two engine defects, now tracked as bound-recovery-recursion (process abort,\nfixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,\nbeing fixed); a third change, clarify-structural-output-planes, records the read-rule\ngaps those findings exposed. optimize-demand-workloads remains an unfinished\ninvestigation program even though its O1 child bound-container-lookup is archived.\nQuery and Decompiler share readers and identities but do not start each other.\nPreserve physical origins and raw facts; distinguish symbolic references,\ndefinition resolution, dispatch, output quality, coverage and execution state.\nDo not execute target code or download target dependencies automatically.\nAll input processing, dependency expansion and output need explicit budgets.\nPrefer maintained libraries that pass our conformance gates; see dependencies.md.\nKeep the smallest complete change. Do not create speculative crates or abstractions.\nFavor long-term architecture; do not maintain backward compatibility by default.\nRecord unrelated architectural debt separately instead of expanding a change.\n",
+  "root": {
+    "path": "/Users/lordcasser/workspace/projects/jarde",
+    "source": "nearest"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "status": "root_reopened_all_144_payload_bytes_modes_and_exact_inventory",
+  "archive_sha256": "3eea2de4a59149f9bd99d5c762bc04b690cd22ff2845d909a0617a813ba7f3a7",
+  "payload_members": 144,
+  "excluded_external_tool_jars": 11,
+  "original_class_sha256": "4fd1503499a049efa8e736a98de4339b6504973f80208987ed0774073df9c447",
+  "baseline_receipt_sha256": "dbd183d84d4f3992046db3424e3419aee09c9d6a69aac5e4d5998169bc01a46f"
+}

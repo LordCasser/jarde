@@ -1,0 +1,10 @@
+{
+  "status": "root_reopened_all_payload_bytes_and_modes",
+  "payload_members": 412,
+  "archive_sha256": "70f7fa952e384a3f29c1317f1f7923ac0a7bad7ba57e242277b0d335179e0bf1",
+  "notes": [
+    "All complete source/class/raw trees preserved, including actual compiler/decompiler failures.",
+    "Private collector/reviewer static draft mistakes and read-only selfcheck corrections preserved; root performed final independent execution.",
+    "CLI/toolchains remain external pinned inputs, no Rust build artifacts in archive."
+  ]
+}

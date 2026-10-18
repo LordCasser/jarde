@@ -1,0 +1,1104 @@
+{
+  "excluded_external_inputs": [
+    {
+      "bytes": 31316,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "artifacts/raung-asm-0.1.1-sources.jar",
+      "sha256": "a416ccd6be80f0f4f1cfb96cfb7165e35ed7ddfad10878ce239b6fa4634f1532",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifacts/raung-asm-0.1.1-sources.jar"
+    },
+    {
+      "bytes": 66830,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "artifacts/raung-asm-0.1.1.jar",
+      "sha256": "9da6fcc38fa3a7c373bbe219e03357e4a51b34f10bef82f7dd4bb19368ae2a57",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifacts/raung-asm-0.1.1.jar"
+    },
+    {
+      "bytes": 31316,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "raung-asm-0.1.1-sources.jar",
+      "sha256": "a416ccd6be80f0f4f1cfb96cfb7165e35ed7ddfad10878ce239b6fa4634f1532",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v1-20261019/raung-asm-0.1.1-sources.jar"
+    },
+    {
+      "bytes": 66830,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "raung-asm-0.1.1.jar",
+      "sha256": "9da6fcc38fa3a7c373bbe219e03357e4a51b34f10bef82f7dd4bb19368ae2a57",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v1-20261019/raung-asm-0.1.1.jar"
+    },
+    {
+      "bytes": 91131,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "asm-util-9.6.jar",
+      "sha256": "c635a7402f4aa9bf66b2f4230cea62025a0fe1cd63e8729adefc9b1994fac4c3",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v2-20261019/asm-util-9.6.jar"
+    },
+    {
+      "bytes": 32614,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "raung-common-0.1.1.jar",
+      "sha256": "6edf3a349db9fdebb5fbb67560be1f70497666c350ec3eaf54d7fcb00de7a481",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v2-20261019/raung-common-0.1.1.jar"
+    },
+    {
+      "bytes": 67831,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "slf4j-api-2.0.11.jar",
+      "sha256": "ce0e71d673acb9036bb55d0244b261cf033f8e4c1245f14f931dfb1937dd4c95",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v2-20261019/slf4j-api-2.0.11.jar"
+    },
+    {
+      "bytes": 30570,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "annotations-24.1.0.jar",
+      "sha256": "27a770dc7ce50500918bb8c3c0660c98290630ec796b5e3cf6b90f403b3033c6",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/annotations-24.1.0.jar"
+    },
+    {
+      "bytes": 123598,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "asm-9.6.jar",
+      "sha256": "3c6fac2424db3d4a853b669f4e3d1d9c3c552235e19a319673f887083c2303a1",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/asm-9.6.jar"
+    },
+    {
+      "bytes": 34041,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "asm-analysis-9.6.jar",
+      "sha256": "d92832d7c37edc07c60e2559ac6118b31d642e337a6671edcb7ba9fae68edbbb",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/asm-analysis-9.6.jar"
+    },
+    {
+      "bytes": 51935,
+      "mode": 420,
+      "reason": "Official assembler tool binary/source archive remains externally pinned; only source provenance/POM and inspected API snippets plus licenses are archived.",
+      "relative_path": "asm-tree-9.6.jar",
+      "sha256": "c43ecf17b539c777e15da7b5b86553b377e2d39a683de6285567d5283888e7ef",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/asm-tree-9.6.jar"
+    }
+  ],
+  "payload_member_count": 144,
+  "payload_members": [
+    {
+      "archive_path": "assemble/ExtractLoopRestore2.java",
+      "bytes": 998,
+      "mode": 420,
+      "sha256": "85fcf26b0c5cd8e3c56fccc36f619fdf95888c14a28ec7d66872678880c3e2d2",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/ExtractLoopRestore2.java"
+    },
+    {
+      "archive_path": "assemble/TestLoopRestore2.raung",
+      "bytes": 285,
+      "mode": 420,
+      "sha256": "21857f4a38efbf49a01bb2b7c4738598f83f928e0020b8e4bcb2942dc19fd70f",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/TestLoopRestore2.raung"
+    },
+    {
+      "archive_path": "assemble/assemble.py",
+      "bytes": 4172,
+      "mode": 420,
+      "sha256": "860e39b6b449563ce6aaba167f8f70a8c4b75540308d02f623b38441155cef43",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/assemble.py"
+    },
+    {
+      "archive_path": "assemble/dependency-closure-review.json",
+      "bytes": 4298,
+      "mode": 420,
+      "sha256": "4fd2b2eabe5080e905c3bb9487767fd7d89e5f9c9c256560ae459816f1aaf455",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/dependency-closure-review.json"
+    },
+    {
+      "archive_path": "assemble/execution.json",
+      "bytes": 39579,
+      "mode": 420,
+      "sha256": "7574e9bc667646d4d48e1b44ca21960ecb0dc51117ec55b5fc5e8de4a227c8c0",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "assemble/extract_unique_class.py",
+      "bytes": 1619,
+      "mode": 420,
+      "sha256": "9e5db578ce0fa8f0d0a45eead231a96d1755b09a2e348509431bf2237fd14016",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/extract_unique_class.py"
+    },
+    {
+      "archive_path": "assemble/extraction.json",
+      "bytes": 646,
+      "mode": 420,
+      "sha256": "0da9b3a1853e81815056d2e3310bed1e278d888790597e50a01d7bf59e220419",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/extraction.json"
+    },
+    {
+      "archive_path": "assemble/original-classes/loops/TestLoopRestore2.class",
+      "bytes": 148,
+      "mode": 420,
+      "sha256": "4fd1503499a049efa8e736a98de4339b6504973f80208987ed0774073df9c447",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/original-classes/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "assemble/original.jar",
+      "bytes": 310,
+      "mode": 420,
+      "sha256": "89d1f82e7a1c46db40ddf1631c750817c0e1f920a06794dd0b4f2a7d64a9ac48",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/original.jar"
+    },
+    {
+      "archive_path": "assemble/physical-facts.json",
+      "bytes": 582,
+      "mode": 420,
+      "sha256": "cef2ad2facbad8ceca79c11606c8bde19025fd84cf6b5b77dbdbad2aef985976",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/physical-facts.json"
+    },
+    {
+      "archive_path": "assemble/raw/0.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/raw/0.stderr.raw"
+    },
+    {
+      "archive_path": "assemble/raw/0.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/raw/0.stdout.raw"
+    },
+    {
+      "archive_path": "assemble/raw/1.stderr.raw",
+      "bytes": 186,
+      "mode": 420,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/raw/1.stderr.raw"
+    },
+    {
+      "archive_path": "assemble/raw/1.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/raw/1.stdout.raw"
+    },
+    {
+      "archive_path": "assemble/raw/2.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/raw/2.stderr.raw"
+    },
+    {
+      "archive_path": "assemble/raw/2.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/raw/2.stdout.raw"
+    },
+    {
+      "archive_path": "assemble/raw/3.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/raw/3.stderr.raw"
+    },
+    {
+      "archive_path": "assemble/raw/3.stdout.raw",
+      "bytes": 1284,
+      "mode": 420,
+      "sha256": "940111557dc532ae37876942ed39265c7b81a201808ce69e027035c2410e84bb",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/raw/3.stdout.raw"
+    },
+    {
+      "archive_path": "assemble/tool-classes/ExtractLoopRestore2.class",
+      "bytes": 1721,
+      "mode": 420,
+      "sha256": "8c6476e5286f18724b799e35c720152e96ff0b329d5deb34ffaa1eae613f8c2e",
+      "source_path": "/private/tmp/jarde-looprestore2-assemble-root-v1-20261019/tool-classes/ExtractLoopRestore2.class"
+    },
+    {
+      "archive_path": "baseline/collector.py",
+      "bytes": 26689,
+      "mode": 420,
+      "sha256": "093118528661bf15b11e45050922ca4872be7bfdd6a4f11ff5f3c032b32b4af1",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/collector.py"
+    },
+    {
+      "archive_path": "baseline/compile/jarde/class-all/javac23/classes/loops/TestLoopRestore2.class",
+      "bytes": 435,
+      "mode": 420,
+      "sha256": "af943aa3829ab41c77f3b292dae69903b818916cbe4f0f58bc3b433f6662770b",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/compile/jarde/class-all/javac23/classes/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "baseline/compile/jarde/class-all/javac8/classes/loops/TestLoopRestore2.class",
+      "bytes": 435,
+      "mode": 420,
+      "sha256": "e0594eb4ca2a8d00953422fed0dd157ba64698514554907b96e22ff80d0c9193",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/compile/jarde/class-all/javac8/classes/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "baseline/compile/jarde/class-default/javac23/classes/loops/TestLoopRestore2.class",
+      "bytes": 435,
+      "mode": 420,
+      "sha256": "af943aa3829ab41c77f3b292dae69903b818916cbe4f0f58bc3b433f6662770b",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/compile/jarde/class-default/javac23/classes/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "baseline/compile/jarde/class-default/javac8/classes/loops/TestLoopRestore2.class",
+      "bytes": 435,
+      "mode": 420,
+      "sha256": "e0594eb4ca2a8d00953422fed0dd157ba64698514554907b96e22ff80d0c9193",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/compile/jarde/class-default/javac8/classes/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "baseline/compile/jarde/jar-all/javac23/classes/loops/TestLoopRestore2.class",
+      "bytes": 435,
+      "mode": 420,
+      "sha256": "af943aa3829ab41c77f3b292dae69903b818916cbe4f0f58bc3b433f6662770b",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/compile/jarde/jar-all/javac23/classes/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "baseline/compile/jarde/jar-all/javac8/classes/loops/TestLoopRestore2.class",
+      "bytes": 435,
+      "mode": 420,
+      "sha256": "e0594eb4ca2a8d00953422fed0dd157ba64698514554907b96e22ff80d0c9193",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/compile/jarde/jar-all/javac8/classes/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "baseline/compile/jarde/jar-default/javac23/classes/loops/TestLoopRestore2.class",
+      "bytes": 435,
+      "mode": 420,
+      "sha256": "af943aa3829ab41c77f3b292dae69903b818916cbe4f0f58bc3b433f6662770b",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/compile/jarde/jar-default/javac23/classes/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "baseline/compile/jarde/jar-default/javac8/classes/loops/TestLoopRestore2.class",
+      "bytes": 435,
+      "mode": 420,
+      "sha256": "e0594eb4ca2a8d00953422fed0dd157ba64698514554907b96e22ff80d0c9193",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/compile/jarde/jar-default/javac8/classes/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "baseline/execution.json",
+      "bytes": 3681280,
+      "mode": 420,
+      "sha256": "dbd183d84d4f3992046db3424e3419aee09c9d6a69aac5e4d5998169bc01a46f",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "baseline/independent-review.json",
+      "bytes": 28122,
+      "mode": 420,
+      "sha256": "8645433b6452e592763000bdfbd8959d4915a3cd69c3a6e72da38b445e926632",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/independent-review.json"
+    },
+    {
+      "archive_path": "baseline/input/loops/TestLoopRestore2.class",
+      "bytes": 148,
+      "mode": 420,
+      "sha256": "4fd1503499a049efa8e736a98de4339b6504973f80208987ed0774073df9c447",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/input/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "baseline/input/original.jar",
+      "bytes": 310,
+      "mode": 420,
+      "sha256": "89d1f82e7a1c46db40ddf1631c750817c0e1f920a06794dd0b4f2a7d64a9ac48",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/input/original.jar"
+    },
+    {
+      "archive_path": "baseline/jadx/classes/sources/loops/TestLoopRestore2.java",
+      "bytes": 255,
+      "mode": 420,
+      "sha256": "bb5dc2a311f0bc8a27c5df263cadef78790741e9229d6903d96e8c996fa86e07",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/jadx/classes/sources/loops/TestLoopRestore2.java"
+    },
+    {
+      "archive_path": "baseline/jarde/class/all/report.json",
+      "bytes": 16879,
+      "mode": 420,
+      "sha256": "ab10f3df5b0ea723fd3d069a3af87af40b0d50bc1a5b1a3748ab2b0f15c3beff",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/jarde/class/all/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/class/all/source/loops/TestLoopRestore2.java",
+      "bytes": 846,
+      "mode": 420,
+      "sha256": "c7a27b716668454ff0ae9bc728072c1484079d17cd912e05a6fcacc11ca7ff8a",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/jarde/class/all/source/loops/TestLoopRestore2.java"
+    },
+    {
+      "archive_path": "baseline/jarde/class/default/report.json",
+      "bytes": 16367,
+      "mode": 420,
+      "sha256": "cd2f039935586d1ad70c81a5d10d0140dfe42dd61ffa83efa43c5784b2076ebf",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/jarde/class/default/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/class/default/source/loops/TestLoopRestore2.java",
+      "bytes": 846,
+      "mode": 420,
+      "sha256": "c7a27b716668454ff0ae9bc728072c1484079d17cd912e05a6fcacc11ca7ff8a",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/jarde/class/default/source/loops/TestLoopRestore2.java"
+    },
+    {
+      "archive_path": "baseline/jarde/jar/all/report.json",
+      "bytes": 20653,
+      "mode": 420,
+      "sha256": "e1a5b5b22f333673731bd8361de6a4b623345106a2644ea14fc384a1ca580a1e",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/jarde/jar/all/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/jar/all/source/loops/TestLoopRestore2.java",
+      "bytes": 846,
+      "mode": 420,
+      "sha256": "c7a27b716668454ff0ae9bc728072c1484079d17cd912e05a6fcacc11ca7ff8a",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/jarde/jar/all/source/loops/TestLoopRestore2.java"
+    },
+    {
+      "archive_path": "baseline/jarde/jar/default/report.json",
+      "bytes": 20137,
+      "mode": 420,
+      "sha256": "31775c6cc619311aa4cdb71fdcbfa791162799982b91914cfc1698ef9e985e3e",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/jarde/jar/default/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/jar/default/source/loops/TestLoopRestore2.java",
+      "bytes": 846,
+      "mode": 420,
+      "sha256": "c7a27b716668454ff0ae9bc728072c1484079d17cd912e05a6fcacc11ca7ff8a",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/jarde/jar/default/source/loops/TestLoopRestore2.java"
+    },
+    {
+      "archive_path": "baseline/raw/1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/1.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/1.stdout.raw",
+      "bytes": 6,
+      "mode": 420,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/1.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/10.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/10.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/10.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/10.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/11.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/11.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/11.stdout.raw",
+      "bytes": 20653,
+      "mode": 420,
+      "sha256": "e1a5b5b22f333673731bd8361de6a4b623345106a2644ea14fc384a1ca580a1e",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/11.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/12.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/12.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/12.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/12.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/13.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/13.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/13.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/13.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/14.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/14.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/14.stdout.raw",
+      "bytes": 148,
+      "mode": 420,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/14.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/15.stderr.raw",
+      "bytes": 210,
+      "mode": 420,
+      "sha256": "58d35cd12ebdf5d2f474437e13313bc3df8a759b75b95c7c66255b86f1118fa0",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/15.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/15.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/15.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/16.stderr.raw",
+      "bytes": 453,
+      "mode": 420,
+      "sha256": "f51cffcf8b5b71fd3bbc7a8f6e96de40015c705994dfe32735cba708194eda38",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/16.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/16.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/16.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/2.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/2.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/2.stdout.raw",
+      "bytes": 16367,
+      "mode": 420,
+      "sha256": "cd2f039935586d1ad70c81a5d10d0140dfe42dd61ffa83efa43c5784b2076ebf",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/2.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/3.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/3.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/3.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/3.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/4.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/4.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/4.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/4.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/5.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/5.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/5.stdout.raw",
+      "bytes": 16879,
+      "mode": 420,
+      "sha256": "ab10f3df5b0ea723fd3d069a3af87af40b0d50bc1a5b1a3748ab2b0f15c3beff",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/5.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/6.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/6.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/6.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/6.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/7.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/7.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/7.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/7.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/8.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/8.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/8.stdout.raw",
+      "bytes": 20137,
+      "mode": 420,
+      "sha256": "31775c6cc619311aa4cdb71fdcbfa791162799982b91914cfc1698ef9e985e3e",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/8.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/9.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/9.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/9.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/raw/9.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/root-review.json",
+      "bytes": 1333,
+      "mode": 420,
+      "sha256": "7368d781effad8647a46738113e30e3b3a3b3947c416602c019a77588a14993f",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/root-review.json"
+    },
+    {
+      "archive_path": "baseline/runtime-bound-cwd.py",
+      "bytes": 389,
+      "mode": 420,
+      "sha256": "bc917ec08e07ed462c18958f9a0d3b064b7d5bba3adc5fa41d9db49ff6c3de46",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-root-v1-20261019/runtime-bound-cwd.py"
+    },
+    {
+      "archive_path": "collector-luna-v1/README.md",
+      "bytes": 3429,
+      "mode": 420,
+      "sha256": "7a7f029fc5c899f4e67431e302f46e64217259d351d3e197eb94de0b163cb628",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-luna-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "collector-luna-v1/assembly-evidence-pins.json",
+      "bytes": 1092,
+      "mode": 420,
+      "sha256": "251fcb914df37ef9a9b8774e1c5534974e543c317776f44c277fec5761a3572b",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-luna-v1-20261019/assembly-evidence-pins.json"
+    },
+    {
+      "archive_path": "collector-luna-v1/bundle-pins.json",
+      "bytes": 1127,
+      "mode": 420,
+      "sha256": "41c33d16583b7528c94dce7295c7c7f27c92633a003c25bb017b563ac148cff7",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-luna-v1-20261019/bundle-pins.json"
+    },
+    {
+      "archive_path": "collector-luna-v1/collect_baseline.py",
+      "bytes": 26405,
+      "mode": 420,
+      "sha256": "dce9c23dc1039e2638801a16fa0767ea56e3df147642f072b74aa6ab38542701",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-luna-v1-20261019/collect_baseline.py"
+    },
+    {
+      "archive_path": "collector-luna-v1/dependency-file-pins.json",
+      "bytes": 4610,
+      "mode": 420,
+      "sha256": "85a3469f22b1006ab6335c59ca8eaec2d8bdd2ec3ca9947fe0e0affa618e865f",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-luna-v1-20261019/dependency-file-pins.json"
+    },
+    {
+      "archive_path": "collector-luna-v1/expected-original-physical-facts.json",
+      "bytes": 582,
+      "mode": 420,
+      "sha256": "cef2ad2facbad8ceca79c11606c8bde19025fd84cf6b5b77dbdbad2aef985976",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-luna-v1-20261019/expected-original-physical-facts.json"
+    },
+    {
+      "archive_path": "collector-root-v2/README.md",
+      "bytes": 3429,
+      "mode": 420,
+      "sha256": "7a7f029fc5c899f4e67431e302f46e64217259d351d3e197eb94de0b163cb628",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-root-v2-20261019/README.md"
+    },
+    {
+      "archive_path": "collector-root-v2/assembly-evidence-pins.json",
+      "bytes": 1092,
+      "mode": 420,
+      "sha256": "251fcb914df37ef9a9b8774e1c5534974e543c317776f44c277fec5761a3572b",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-root-v2-20261019/assembly-evidence-pins.json"
+    },
+    {
+      "archive_path": "collector-root-v2/bundle-pins.json",
+      "bytes": 1127,
+      "mode": 420,
+      "sha256": "41c33d16583b7528c94dce7295c7c7f27c92633a003c25bb017b563ac148cff7",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-root-v2-20261019/bundle-pins.json"
+    },
+    {
+      "archive_path": "collector-root-v2/collect_baseline.py",
+      "bytes": 26689,
+      "mode": 420,
+      "sha256": "093118528661bf15b11e45050922ca4872be7bfdd6a4f11ff5f3c032b32b4af1",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-root-v2-20261019/collect_baseline.py"
+    },
+    {
+      "archive_path": "collector-root-v2/dependency-file-pins.json",
+      "bytes": 4610,
+      "mode": 420,
+      "sha256": "85a3469f22b1006ab6335c59ca8eaec2d8bdd2ec3ca9947fe0e0affa618e865f",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-root-v2-20261019/dependency-file-pins.json"
+    },
+    {
+      "archive_path": "collector-root-v2/expected-original-physical-facts.json",
+      "bytes": 582,
+      "mode": 420,
+      "sha256": "cef2ad2facbad8ceca79c11606c8bde19025fd84cf6b5b77dbdbad2aef985976",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-root-v2-20261019/expected-original-physical-facts.json"
+    },
+    {
+      "archive_path": "collector-root-v2/root-static-correction.md",
+      "bytes": 226,
+      "mode": 420,
+      "sha256": "97c11a26ba3aa5d34cccbb6f3d092cae9967e3a7a917728a0fcb2feada2cb211",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-prep-root-v2-20261019/root-static-correction.md"
+    },
+    {
+      "archive_path": "raung-prep-v3/ExtractLoopRestore2.java",
+      "bytes": 998,
+      "mode": 420,
+      "sha256": "85fcf26b0c5cd8e3c56fccc36f619fdf95888c14a28ec7d66872678880c3e2d2",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/ExtractLoopRestore2.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/README.md",
+      "bytes": 2668,
+      "mode": 420,
+      "sha256": "5471a97d371ac0979d0605fc05d2277f3f930f2cbd9d81a8fdfe198452e40d6e",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/README.md"
+    },
+    {
+      "archive_path": "raung-prep-v3/api-evidence.md",
+      "bytes": 1631,
+      "mode": 420,
+      "sha256": "f44f9ea88e8f715608496c19c821d09bcf42081efb6b24a9b49b85d2f4e0107d",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/api-evidence.md"
+    },
+    {
+      "archive_path": "raung-prep-v3/api/RaungConvert.java",
+      "bytes": 1582,
+      "mode": 420,
+      "sha256": "a811b6b76bf89401c819aa7dd7534c16797da48233df27af49cae85c42a357f2",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/api/RaungConvert.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/api/RaungInputPlugin.java",
+      "bytes": 828,
+      "mode": 420,
+      "sha256": "709e2e90fe4e18feef6f61ad714dd6714afb94f8a17bf83f0245e663ec0b3d59",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/api/RaungInputPlugin.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/api/RaungTest.java",
+      "bytes": 2719,
+      "mode": 420,
+      "sha256": "322598c26091057acdf54243c649e7b0026e27fefd54b022d59509151d5bde2b",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/api/RaungTest.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/api/jadx-raung-input.build.gradle.kts",
+      "bytes": 111,
+      "mode": 420,
+      "sha256": "c732aa0446f20e48abfea07c59b74b0b217b53699123bad3891a3af5531091d4",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/api/jadx-raung-input.build.gradle.kts"
+    },
+    {
+      "archive_path": "raung-prep-v3/api/libs.versions.toml",
+      "bytes": 4616,
+      "mode": 420,
+      "sha256": "4de405b3f523945f2f28749bd742a17df87ee9c814fcb1d8e4c2980183601de3",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/api/libs.versions.toml"
+    },
+    {
+      "archive_path": "raung-prep-v3/artifact-metadata.json",
+      "bytes": 862,
+      "mode": 420,
+      "sha256": "04d86ead42a54238c8b6cd47b2a752379ab2d0ed619fc429b31e8bd3ec8ae950",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifact-metadata.json"
+    },
+    {
+      "archive_path": "raung-prep-v3/artifact-pins.json",
+      "bytes": 949,
+      "mode": 420,
+      "sha256": "af14e3f129980f4b86c5a19c65d3fc631c45c765e06604517412f0060a79b9b4",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifact-pins.json"
+    },
+    {
+      "archive_path": "raung-prep-v3/artifact-sources/io/github/skylot/raung/asm/RaungAsm.java",
+      "bytes": 491,
+      "mode": 420,
+      "sha256": "4c0d66bf057ef339c214a84de1f0af81db958f4ccdd399706e726ba381161c8c",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifact-sources/io/github/skylot/raung/asm/RaungAsm.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/artifact-sources/io/github/skylot/raung/asm/api/IRaungAsm.java",
+      "bytes": 1229,
+      "mode": 420,
+      "sha256": "8a9c829a367d4650b3e167c3c6f633fe3a24346ce69d850835bc36cad8afb856",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifact-sources/io/github/skylot/raung/asm/api/IRaungAsm.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/artifact-sources/io/github/skylot/raung/asm/impl/RaungAsmBuilder.java",
+      "bytes": 1878,
+      "mode": 420,
+      "sha256": "5d21011ddb77f154e27ea84e5a438bec681aed9d605943b2b6dc9c212cb01afc",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifact-sources/io/github/skylot/raung/asm/impl/RaungAsmBuilder.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/artifact-sources/io/github/skylot/raung/asm/impl/RaungAsmExecutor.java",
+      "bytes": 4051,
+      "mode": 420,
+      "sha256": "8c086b2fb86e17aa18a7eedd127d616b5dfcf3898fae1443f9d23fa817648cf0",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifact-sources/io/github/skylot/raung/asm/impl/RaungAsmExecutor.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/artifact-sources/io/github/skylot/raung/asm/impl/utils/RaungAsmException.java",
+      "bytes": 365,
+      "mode": 420,
+      "sha256": "1bbbdc3d23f7094696f9927fe88a084ca00d237a0ad95a29f9c3cfde98d0350f",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifact-sources/io/github/skylot/raung/asm/impl/utils/RaungAsmException.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/artifact-sources/io/github/skylot/raung/asm/impl/utils/ValidateAsmArgs.java",
+      "bytes": 1318,
+      "mode": 420,
+      "sha256": "87ffcf9e9e3543c7d4b38e27b296648d060669c319ffd8dcedbeb77fc9367f0d",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifact-sources/io/github/skylot/raung/asm/impl/utils/ValidateAsmArgs.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/artifacts/downloads.json",
+      "bytes": 4378,
+      "mode": 420,
+      "sha256": "9b2b6d33f8bcd5fd801fcdf46bc3bc5dea5d1fddcff521744ab51a4066bb902b",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifacts/downloads.json"
+    },
+    {
+      "archive_path": "raung-prep-v3/artifacts/raung-asm-0.1.1.pom",
+      "bytes": 2026,
+      "mode": 420,
+      "sha256": "83c75b4a8692b6807078d12c63ceb2ccb171ddc3bb4380dc782d33e88538ecb2",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/artifacts/raung-asm-0.1.1.pom"
+    },
+    {
+      "archive_path": "raung-prep-v3/bundle-pins.json",
+      "bytes": 5680,
+      "mode": 420,
+      "sha256": "cb226ade6351edfdf92e0f48e8d622e39e959dbd746b13d04d074178df06c9ef",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/bundle-pins.json"
+    },
+    {
+      "archive_path": "raung-prep-v3/extract_unique_class.py",
+      "bytes": 1619,
+      "mode": 420,
+      "sha256": "9e5db578ce0fa8f0d0a45eead231a96d1755b09a2e348509431bf2237fd14016",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/extract_unique_class.py"
+    },
+    {
+      "archive_path": "raung-prep-v3/source-pins-v2.json",
+      "bytes": 2639,
+      "mode": 420,
+      "sha256": "279eba5292c4b0860c78e93f9fd7e315ad94e97a2bb4567439d25f858ef59010",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/source-pins-v2.json"
+    },
+    {
+      "archive_path": "raung-prep-v3/upstream/TestLoopRestore2.java",
+      "bytes": 402,
+      "mode": 420,
+      "sha256": "4f80b21fe8b6170ece4bd227ea9da4e5cec30fe6e28ac7b555c146166f3c6851",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/upstream/TestLoopRestore2.java"
+    },
+    {
+      "archive_path": "raung-prep-v3/upstream/TestLoopRestore2.raung",
+      "bytes": 285,
+      "mode": 420,
+      "sha256": "21857f4a38efbf49a01bb2b7c4738598f83f928e0020b8e4bcb2942dc19fd70f",
+      "source_path": "/private/tmp/jarde-looprestore2-raung-extraction-luna-v3-20261019/upstream/TestLoopRestore2.raung"
+    },
+    {
+      "archive_path": "reviewer-luna-v1/README.md",
+      "bytes": 2007,
+      "mode": 420,
+      "sha256": "5a2354c1031c8e016084ecef7d73188c3a98e3e8a1eb64c53e642f44c08257b5",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-review-prep-luna-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "reviewer-luna-v1/review_baseline.py",
+      "bytes": 19168,
+      "mode": 420,
+      "sha256": "e07157f1077c5ee7d0c40b0d100b5e40aa708b7750129867ebf2503741b0e78c",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-review-prep-luna-v1-20261019/review_baseline.py"
+    },
+    {
+      "archive_path": "reviewer-luna-v2/README.md",
+      "bytes": 1445,
+      "mode": 420,
+      "sha256": "8fbf3daba35a98a4836f475924cd909d7d2d58b87bdd49dea8c862ee5b46e3d4",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-review-prep-luna-v2-20261019/README.md"
+    },
+    {
+      "archive_path": "reviewer-luna-v2/review_baseline.py",
+      "bytes": 25156,
+      "mode": 420,
+      "sha256": "635b149e9ce18a23c6f8a5b42c55dd6a219678a944c32c2b917c9f5f9a37e9d0",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-review-prep-luna-v2-20261019/review_baseline.py"
+    },
+    {
+      "archive_path": "reviewer-luna-v2/v1-v2.diff",
+      "bytes": 12514,
+      "mode": 420,
+      "sha256": "accb65f55b3b27d58691a61d588ef78b808839ab757a485d37d6773987c78dad",
+      "source_path": "/private/tmp/jarde-looprestore2-baseline-review-prep-luna-v2-20261019/v1-v2.diff"
+    },
+    {
+      "archive_path": "static-trace/README.md",
+      "bytes": 5148,
+      "mode": 420,
+      "sha256": "c4d80619e121ad46afe11c71316755c99511c7e6495ac9ae56a702bbf534cbc3",
+      "source_path": "/private/tmp/jarde-looprestore2-gateway-map-static-luna-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "static-trace/pins.json",
+      "bytes": 3125,
+      "mode": 420,
+      "sha256": "d355c17b2be2c36ccf829f1d5273ffb169c26a4b707f71f527d32e812bbb2f4c",
+      "source_path": "/private/tmp/jarde-looprestore2-gateway-map-static-luna-v1-20261019/pins.json"
+    },
+    {
+      "archive_path": "tool-downloads-v1/downloads.json",
+      "bytes": 4378,
+      "mode": 420,
+      "sha256": "9b2b6d33f8bcd5fd801fcdf46bc3bc5dea5d1fddcff521744ab51a4066bb902b",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v1-20261019/downloads.json"
+    },
+    {
+      "archive_path": "tool-downloads-v1/raung-asm-0.1.1.pom",
+      "bytes": 2026,
+      "mode": 420,
+      "sha256": "83c75b4a8692b6807078d12c63ceb2ccb171ddc3bb4380dc782d33e88538ecb2",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v1-20261019/raung-asm-0.1.1.pom"
+    },
+    {
+      "archive_path": "tool-downloads-v2/asm-util-9.6.pom",
+      "bytes": 2938,
+      "mode": 420,
+      "sha256": "52c5c1d357404779d1a99b49a85bf9d3a085025b8516cb73dbef77c8ae34005e",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v2-20261019/asm-util-9.6.pom"
+    },
+    {
+      "archive_path": "tool-downloads-v2/downloads.json",
+      "bytes": 8649,
+      "mode": 420,
+      "sha256": "c6a9e5c4913ca73751c4b93a15da81c3c1a91dcac53be85ca10b067ab6245b14",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v2-20261019/downloads.json"
+    },
+    {
+      "archive_path": "tool-downloads-v2/raung-common-0.1.1.pom",
+      "bytes": 2024,
+      "mode": 420,
+      "sha256": "fcde2c775389e6bb2888431efa9904690825cc18de2b57b9c9938c3a17a8fef2",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v2-20261019/raung-common-0.1.1.pom"
+    },
+    {
+      "archive_path": "tool-downloads-v2/slf4j-api-2.0.11.pom",
+      "bytes": 2826,
+      "mode": 420,
+      "sha256": "3784b0ed363649fafd6d99bf2ac7230f9efa81c81f5ce7edb473e2b615d90fba",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v2-20261019/slf4j-api-2.0.11.pom"
+    },
+    {
+      "archive_path": "tool-downloads-v3/annotations-24.1.0.pom",
+      "bytes": 1324,
+      "mode": 420,
+      "sha256": "2e37fd7020a4364b9e5d9f77c5b6742a3bea927dd560ca1e390dc815c9c50820",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/annotations-24.1.0.pom"
+    },
+    {
+      "archive_path": "tool-downloads-v3/asm-9.6.pom",
+      "bytes": 2370,
+      "mode": 420,
+      "sha256": "92eee24bc3c843e4881d46c1dd6505471ee3142facfb466b428cfea5a56c6b60",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/asm-9.6.pom"
+    },
+    {
+      "archive_path": "tool-downloads-v3/asm-analysis-9.6.pom",
+      "bytes": 2621,
+      "mode": 420,
+      "sha256": "fa3f995021cff4f4139306e6cffeeea07539106440d29b19cc06a7a636a13850",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/asm-analysis-9.6.pom"
+    },
+    {
+      "archive_path": "tool-downloads-v3/asm-tree-9.6.pom",
+      "bytes": 2592,
+      "mode": 420,
+      "sha256": "1bcb481d7fc16b955bb60ca07c8cfa2424bcee78bdc405bba31c7d6f5dc2d113",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/asm-tree-9.6.pom"
+    },
+    {
+      "archive_path": "tool-downloads-v3/downloads.json",
+      "bytes": 14282,
+      "mode": 420,
+      "sha256": "83af3cff35637ec72861a08c3e4766c3b9adb0a356816048e50ef0390ff67ec8",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/downloads.json"
+    },
+    {
+      "archive_path": "tool-downloads-v3/ow2-1.5.1.pom",
+      "bytes": 11290,
+      "mode": 420,
+      "sha256": "321ddbb7ee6fe4f53dea6b4cd6db74154d6bfa42391c1f763b361b9f485acf05",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/ow2-1.5.1.pom"
+    },
+    {
+      "archive_path": "tool-downloads-v3/slf4j-parent-2.0.11.pom",
+      "bytes": 15425,
+      "mode": 420,
+      "sha256": "32bee1cc0e0c3fe798c414e672d8fab892f13e9619468eb14f6027bf0e245571",
+      "source_path": "/private/tmp/jarde-raung-tool-resolve-root-v3-20261019/slf4j-parent-2.0.11.pom"
+    },
+    {
+      "archive_path": "tool-sources/JADX-LICENSE",
+      "bytes": 11357,
+      "mode": 420,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/tool-sources/JADX-LICENSE"
+    },
+    {
+      "archive_path": "tool-sources/JADX-NOTICE",
+      "bytes": 10658,
+      "mode": 420,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/tool-sources/JADX-NOTICE"
+    },
+    {
+      "archive_path": "tool-sources/RAUNG-MIT-LICENSE",
+      "bytes": 1094,
+      "mode": 420,
+      "sha256": "3f4ce5092a550dde8fa65e97a476629664d0bc4b02106b3ef5fb716341648cb7",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/tool-sources/RAUNG-MIT-LICENSE"
+    },
+    {
+      "archive_path": "tool-sources/classfile_helpers.py",
+      "bytes": 54227,
+      "mode": 420,
+      "sha256": "c9f064d714decd49f028e403709307106547aa2acc7462ed703aeaaf158766cd",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/tool-sources/classfile_helpers.py"
+    },
+    {
+      "archive_path": "tool-sources/compare.py",
+      "bytes": 40483,
+      "mode": 420,
+      "sha256": "18bef8e21e525d61014c2c3419efdb5671120177a24fd41549935bd743bf18e6",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/tool-sources/compare.py"
+    },
+    {
+      "archive_path": "tool-sources/license-provenance.json",
+      "bytes": 380,
+      "mode": 420,
+      "sha256": "eb6d1d698b1285939c86e5c2bed553517a4a5031f1713845803e2900649c5fd4",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/tool-sources/license-provenance.json"
+    },
+    {
+      "archive_path": "tool-sources/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "mode": 420,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/tool-sources/run-validation-build-root-v9.py"
+    },
+    {
+      "archive_path": "tool-sources/runtime-bound-cwd.py",
+      "bytes": 389,
+      "mode": 420,
+      "sha256": "bc917ec08e07ed462c18958f9a0d3b064b7d5bba3adc5fa41d9db49ff6c3de46",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/tool-sources/runtime-bound-cwd.py"
+    },
+    {
+      "archive_path": "tool-sources/snapshot-provenance.json",
+      "bytes": 1713,
+      "mode": 420,
+      "sha256": "71b834b9c4a3bb86328e1dd80f317b55a37e62078399430365ac84d7331eff16",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/tool-sources/snapshot-provenance.json"
+    },
+    {
+      "archive_path": "tool-sources/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "mode": 420,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/tool-sources/target-size-scan-root-v1.py"
+    },
+    {
+      "archive_path": "tooling/README.md",
+      "bytes": 3358,
+      "mode": 420,
+      "sha256": "2dc08a3520a54ae3a85c04f9c74b53b062c9097f60c2a4fcfc86dd18252d3db8",
+      "source_path": "/private/tmp/jarde-entry-split-final-archive-prep-luna-v2-20261019/README.md"
+    },
+    {
+      "archive_path": "tooling/pack-manifest.json",
+      "bytes": 4591,
+      "mode": 420,
+      "sha256": "7db4cbb65f3361d35f556ddf4a24b4e97a7dea1cefcd3429dfbdd03d80a9bf36",
+      "source_path": "/private/tmp/jarde-looprestore2-evidence-archive-root-v2-20261019/manifest.json"
+    },
+    {
+      "archive_path": "tooling/pack.py",
+      "bytes": 11897,
+      "mode": 420,
+      "sha256": "c47f53dcb2b3352fc4bb4d2aae04da4a1c1e2d97f23d98b4f4d2d9d845297e03",
+      "source_path": "/private/tmp/jarde-entry-split-final-archive-prep-luna-v2-20261019/pack.py"
+    }
+  ],
+  "schema": "jarde-evidence-archive-inventory-v2"
+}

@@ -1,0 +1,112 @@
+{
+  "status": "passed",
+  "commands": [
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--specs"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/results/final-validation-root-v1/0.stdout.raw",
+          "bytes": 515,
+          "sha256": "be7f29110b68fd3a163e3493f0b599437452668b69093de484c0863fca237956"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/results/final-validation-root-v1/0.stderr.raw",
+          "bytes": 16,
+          "sha256": "5bc31df123a2e521acdd2c0d9477b367feec506471a91065d0a6b32c09089ed5"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/results/final-validation-root-v1/1.stdout.raw",
+          "bytes": 17645,
+          "sha256": "e405a9fbb5a688336040cbf5b54fde3671ac346ca6b654fc29e32ce6e1ee4aae"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/results/final-validation-root-v1/1.stderr.raw",
+          "bytes": 16,
+          "sha256": "5bc31df123a2e521acdd2c0d9477b367feec506471a91065d0a6b32c09089ed5"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/results/final-validation-root-v1/2.stdout.raw",
+          "bytes": 17645,
+          "sha256": "e405a9fbb5a688336040cbf5b54fde3671ac346ca6b654fc29e32ce6e1ee4aae"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/results/final-validation-root-v1/2.stderr.raw",
+          "bytes": 16,
+          "sha256": "5bc31df123a2e521acdd2c0d9477b367feec506471a91065d0a6b32c09089ed5"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "instructions",
+        "apply",
+        "--change",
+        "recover-proved-entry-split-int-loops",
+        "--json"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/results/final-validation-root-v1/3.stdout.raw",
+          "bytes": 6127,
+          "sha256": "b118cacc6bd1a9583d0c870ab08f7af8a64a4c1a7220b4c6ac5fac34c8d1be85"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/results/final-validation-root-v1/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/results/final-validation-root-v1/4.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-entry-split-int-loops/results/final-validation-root-v1/4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "product_revision": "3fa7745b0a42b447bf1931bfe052191f24389b29",
+  "scope": "Main specs after semantic sync and all current changes, including next planned origin leaf; no production modification or Rust command."
+}

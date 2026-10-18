@@ -1,0 +1,15 @@
+{
+  "status": "root_reopened_all_payload_bytes_modes_and_exact_inventory",
+  "payload_members": 689,
+  "archive_sha256": "799d6fba7c78dedb32965f027e731960d14f40a0d7c2a8e146913583f6e515ab",
+  "excluded_external_inputs": [
+    {
+      "bytes": 63938736,
+      "mode": 365,
+      "reason": "Final external CLI is independently pinned f7ea5a20173b671f94b46fe4304618cd5fcce0b3e0b327eb8c3e891fb92618ba; avoid archiving native binary.",
+      "relative_path": "candidate-cli",
+      "sha256": "f7ea5a20173b671f94b46fe4304618cd5fcce0b3e0b327eb8c3e891fb92618ba",
+      "source_path": "/private/tmp/jarde-entry-split-clippy-final-build-root-v1-20261019/candidate-cli"
+    }
+  ]
+}
