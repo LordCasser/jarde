@@ -1,0 +1,72 @@
+{
+  "schema": "statementful-loop-header-fixtures-v1",
+  "files": [
+    {
+      "path": "supplement/SequentialLoopEffects.java",
+      "bytes": 1406,
+      "sha256": "0f29256873f90ba08a1cd41171266a43d88e1d69d3bbec4bf69e129084558f1d",
+      "origin": {
+        "path": "/private/tmp/jarde-seq1-supplement-collector-prep-luna-v1-20261018/SequentialLoopEffects.java",
+        "bytes": 1406,
+        "sha256": "0f29256873f90ba08a1cd41171266a43d88e1d69d3bbec4bf69e129084558f1d"
+      }
+    },
+    {
+      "path": "supplement/SequentialLoopEffectsDriver.java",
+      "bytes": 8650,
+      "sha256": "c9c9d1b230a7ec165e1340548e0dea307ec7afe4bfb54412daf45af62196d92e",
+      "origin": {
+        "path": "/private/tmp/jarde-seq1-supplement-collector-prep-luna-v1-20261018/driver-source/SequentialLoopEffectsDriver.java",
+        "bytes": 8650,
+        "sha256": "c9c9d1b230a7ec165e1340548e0dea307ec7afe4bfb54412daf45af62196d92e"
+      }
+    },
+    {
+      "path": "supplement/javac8-debug/classes/SequentialLoopEffects.class",
+      "bytes": 1408,
+      "sha256": "4703eb205d6b0d068a856a726fba1e6a3651cefbbd720488a420d7176368648f",
+      "origin": {
+        "path": "/private/tmp/jarde-seq1-supplement-baseline-root-v1-20261018/original/javac8-debug/classes/SequentialLoopEffects.class",
+        "bytes": 1408,
+        "sha256": "4703eb205d6b0d068a856a726fba1e6a3651cefbbd720488a420d7176368648f"
+      }
+    },
+    {
+      "path": "supplement/javac8-no-debug/classes/SequentialLoopEffects.class",
+      "bytes": 1013,
+      "sha256": "02e255802cb3b3d9735bcff06e92442170a1ee99f6ad5d7bc7a821520300cc7d",
+      "origin": {
+        "path": "/private/tmp/jarde-seq1-supplement-baseline-root-v1-20261018/original/javac8-no-debug/classes/SequentialLoopEffects.class",
+        "bytes": 1013,
+        "sha256": "02e255802cb3b3d9735bcff06e92442170a1ee99f6ad5d7bc7a821520300cc7d"
+      }
+    },
+    {
+      "path": "supplement/javac23-debug/classes/SequentialLoopEffects.class",
+      "bytes": 1408,
+      "sha256": "dc3694205f6a7e2e5bb01db7d4625fc577b013df03c49113182db9c83dcca234",
+      "origin": {
+        "path": "/private/tmp/jarde-seq1-supplement-baseline-root-v1-20261018/original/javac23-debug/classes/SequentialLoopEffects.class",
+        "bytes": 1408,
+        "sha256": "dc3694205f6a7e2e5bb01db7d4625fc577b013df03c49113182db9c83dcca234"
+      }
+    },
+    {
+      "path": "supplement/javac23-no-debug/classes/SequentialLoopEffects.class",
+      "bytes": 1013,
+      "sha256": "8afe56d21296ae4e8a8470f49000225bf388dfed5da5b363bd7e887e714f1564",
+      "origin": {
+        "path": "/private/tmp/jarde-seq1-supplement-baseline-root-v1-20261018/original/javac23-no-debug/classes/SequentialLoopEffects.class",
+        "bytes": 1013,
+        "sha256": "8afe56d21296ae4e8a8470f49000225bf388dfed5da5b363bd7e887e714f1564"
+      }
+    }
+  ],
+  "source_receipt": {
+    "path": "/private/tmp/jarde-seq1-supplement-baseline-root-v1-20261018/execution.json",
+    "bytes": 8549038,
+    "sha256": "0e3646e5d695f0be48037f316ea5dfce5471ba720fe7037d7019ae99a6b5e564"
+  },
+  "baseline_product": "e70b350ee33307294a3d383ffdea5874caf9f5b8",
+  "scope": "Exact original whole class files and sources; independent baseline acceptance is referenced in this change results."
+}

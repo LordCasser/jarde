@@ -1,0 +1,72 @@
+{
+  "schema": "statementful-loop-header-fixtures-v1",
+  "files": [
+    {
+      "path": "original/TestSequentialLoops.java",
+      "bytes": 666,
+      "sha256": "7b9826d70fcd7444773250dbcacbc2a35e41e75c32b002fc8091322132006913",
+      "origin": {
+        "path": "/private/tmp/jarde-testsequentialloops-baseline-run-root-v1-20261018/source/TestSequentialLoops.java",
+        "bytes": 666,
+        "sha256": "7b9826d70fcd7444773250dbcacbc2a35e41e75c32b002fc8091322132006913"
+      }
+    },
+    {
+      "path": "original/TestSequentialLoopsDriver.java",
+      "bytes": 2872,
+      "sha256": "f7054441504154092c69feb26a051fc1f215b3c57dd555e39048e51c89ed343c",
+      "origin": {
+        "path": "/private/tmp/jarde-testsequentialloops-baseline-run-root-v1-20261018/driver-source/TestSequentialLoopsDriver.java",
+        "bytes": 2872,
+        "sha256": "f7054441504154092c69feb26a051fc1f215b3c57dd555e39048e51c89ed343c"
+      }
+    },
+    {
+      "path": "original/debug/classes/jadx/tests/integration/loops/TestSequentialLoops$TestCls.class",
+      "bytes": 686,
+      "sha256": "78e4f26968bbdc48f5928572d9ab6ef4d6002ff72dffb4ae5c58bcef029a7107",
+      "origin": {
+        "path": "/private/tmp/jarde-testsequentialloops-baseline-run-root-v1-20261018/debug/classes/jadx/tests/integration/loops/TestSequentialLoops$TestCls.class",
+        "bytes": 686,
+        "sha256": "78e4f26968bbdc48f5928572d9ab6ef4d6002ff72dffb4ae5c58bcef029a7107"
+      }
+    },
+    {
+      "path": "original/debug/classes/jadx/tests/integration/loops/TestSequentialLoops.class",
+      "bytes": 1296,
+      "sha256": "4e909641889b369038fb05b886b6d474d3a9653e2e4b6b9889da990eaba0c8ab",
+      "origin": {
+        "path": "/private/tmp/jarde-testsequentialloops-baseline-run-root-v1-20261018/debug/classes/jadx/tests/integration/loops/TestSequentialLoops.class",
+        "bytes": 1296,
+        "sha256": "4e909641889b369038fb05b886b6d474d3a9653e2e4b6b9889da990eaba0c8ab"
+      }
+    },
+    {
+      "path": "original/no-debug/classes/jadx/tests/integration/loops/TestSequentialLoops$TestCls.class",
+      "bytes": 383,
+      "sha256": "df9f42bd8cdac4bd4124342b93ca3ee5a27093fb54788b377ec7c617f69ad6a1",
+      "origin": {
+        "path": "/private/tmp/jarde-testsequentialloops-baseline-run-root-v1-20261018/no-debug/classes/jadx/tests/integration/loops/TestSequentialLoops$TestCls.class",
+        "bytes": 383,
+        "sha256": "df9f42bd8cdac4bd4124342b93ca3ee5a27093fb54788b377ec7c617f69ad6a1"
+      }
+    },
+    {
+      "path": "original/no-debug/classes/jadx/tests/integration/loops/TestSequentialLoops.class",
+      "bytes": 1069,
+      "sha256": "b296730fd1fe79febb86d8869fd5a275fde6fb359669121742163a0e34a3f206",
+      "origin": {
+        "path": "/private/tmp/jarde-testsequentialloops-baseline-run-root-v1-20261018/no-debug/classes/jadx/tests/integration/loops/TestSequentialLoops.class",
+        "bytes": 1069,
+        "sha256": "b296730fd1fe79febb86d8869fd5a275fde6fb359669121742163a0e34a3f206"
+      }
+    }
+  ],
+  "source_receipt": {
+    "path": "/private/tmp/jarde-testsequentialloops-baseline-run-root-v1-20261018/execution.json",
+    "bytes": 2600269,
+    "sha256": "615f5f0e7f7734be42cc190592e75315a4091da4715087cf89bc7adffc044911"
+  },
+  "baseline_product": "e70b350ee33307294a3d383ffdea5874caf9f5b8",
+  "scope": "Exact original whole class files and sources; independent baseline acceptance is referenced in this change results."
+}

@@ -1,0 +1,1 @@
+完整独立volatile int字段写/复制/比较控制。四javac8/23 debug/none profile，每组完整FieldWriteCopies与FieldWriteCopyRefusals。正例6fields/4methods，拒绝控制5fields/5methods；保持各自完整类，不抽取方法或修生成源码。13原采集命令/26raw、8VM/10行oracle已root独立接受，见recover-field-write-test-copies/results/volatile-original-oracle-root-v1。原input SHA与成员/Code见该归档。预命令collector Path错误单列，无JDK执行；不将本原oracle计作Jarde rebuilt验收。

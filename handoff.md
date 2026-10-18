@@ -4,6 +4,34 @@
 
 先按下方第一节接续；后续章节是已完成产品的历史检查点，其中的“下一项”和提交号不代表当前状态。
 
+## 2026-10-18 当前：Seq1 循环头语句恢复（5/7，最终广门通过，待两seed/自身CI）
+
+使用 `recover-statementful-loop-headers`，proposal/design/spec/tasks已完整创建并strict单项通过，apply ready；原始首拒1.1及补充完整基线1.2已root验收关闭，未把planning标成实现完成。NL5产品e70及文档2de80的交付状态见下一节，finThrow/nestedFin等勿重复实现。固定71/612与CF11整体计数不变。
+
+原始Seq1旧完整基线、38命令旧源码矩阵、当前e70八API恒同已独立接受并持久化为三个CF11包225成员。真实Reader诊断v2在 `/private/tmp/jarde-seq1-diagnostic-root-v2-20261018`：guarded build+clean与8API，root执行独立reviewer核40条含旧流/新流/wrapper/build raw、报告非usage全JSON恒同、source snapshot只在region.rs精确instrumented/original差异，源码已恢复且target absent。原42B/25BCI，natural header2={2,17}/latch17/exit14，header23={23,34}/latch34/exit40；默认Frame、旧dualNone、StatementFree Store5首拒均来自实际stderr。v1遗漏cargo -p仅命令入口失败，无项目编译，raw/清理单列。56成员归档first-refusal-root-v2已root逐字复开。
+
+设计复用既有If.test_effects、Straight与LoopEndless：只在本头部StatementFree失败时按完整canonical/SSA/物理branch及单一直线回边证明，全部完成后一次claim。纯条件/Frame/publicIR不放宽。root发现build对独立Transfer不出来源，故可选唯一纯出口gateway须被精确吸收为Straight+LoopBreak；原14是break来源、20用现gateway_origins，不新增continue或通用builder机制。Luna v1仅改chain Err的接缝被root发现原例不会触发，未应用；v2改在直接test_is_pure Err。root已完整审读并集成v2，再删除冗余SSA末尾position扫描、把branch arity扫描移到charge后并纳入真实费用（私有root-v3），未改Frame/AST/builder。
+
+补充完整 `SequentialLoopEffects`（3方法/14字段）及独立反射driver已root读完。实际collector `/private/tmp/jarde-seq1-supplement-collector-prep-root-v2-20261018/collect.py`已完成119命令：四原始dual-javac/debug-none、8原VM一致oracle、16Jarde和8JADX源码格、48原样重编；已root实际独立接受32旧Jarde缺return/16JADX成功、32双VM352case同原；root修正reviewer的局部method.text坐标并严格核全身份/类树/default-all，48方法配置均无旧map缺口。318成员归档supplement-baseline-root-v1逐字复开。root修了未执行collector草稿的generated label与冗余重编debug维度，完整原inputs仍双debug，未删任何生成源码格。
+
+已复制8完整class/20Code/574BCI/0handler/50branch/0jsr到tests/fixtures/recover-statementful-loop-headers，并集成root修过的3公开Rust门：BCI14/20只约束原目标、不约束constructor，nodebug不固定local名，补充constructor/next也实际恢复。首次guarded fmt/3公开在 `/private/tmp/jarde-seq1-focused-root-v1-20261018` 已终态：编译成功，原始整方法/全BCI测试通过，补充和依赖其完整正例的late-budget测试失败；CLI build尚未执行。原因是补充第二个field赋值条件的dup_x1 BCI61为既有Operation::Other，循环结构已生成，builder未支持该stack copy。原始fields/fixture不删除不改简单以取绿，正在独立架构分析该新暴露依赖，未标2.1/2.2完成。guard finally exact clean、source before/after相同，target absent。cargo fmt session24903已确认0结束，runner的fmt check已过；最终source before/after仍须核。Luna exception_only_jadx继续私有内部门，其他两Luna交付冻结。root独占共享编辑/Git/Cargo/JDK/JADX/CLI/网络，Luna只读/私有；实现和最终源码矩阵尚未验收。
+
+最新增量优先于上述首轮记录：新增依赖`recover-field-write-test-copies`（1/5，strict/apply ready），root读Luna v2后补below唯一消费者集成；Luna v1交付后同目录曾加opcode检查，未执行，前后hash见v2/v1-history.md。parent实际v2内部门3过1错误数量断言，root修为真实header10/51；v3内部门4过、公开original+Stop过，补充Structured但goto32来源缺失。root保留fused出口块全部在外部，仅证明开头纯goto32目标为同SSA块下一指令46，并将32纳入既有gateway_origins；入射共享/异常拒绝，无新carrier/部分claim。v4内部门4全过、公开原始/完整补充/真实Stop三过；新增volatile门抓到布尔return提前缓存仍内联next导致doublecall。v4 CLI `/private/tmp/jarde-seq1-focused-root-v4-20261018/candidate-cli`，63136928B/SHA ac060f625a6bab3eebdd19dc8cf387c9603b1c3f90da76ff78013c3b9c6ef978，仅诊断候选不是最终产品。真实完整原样Java双javac/4VM已复现calls2而原1，6cmd/12raw加API2raw，保留在child conditional-cache-double-call-failure-root-v1（22成员）；不能把Structured当正确。正在按child design5派Luna最小同phi重建，禁止全族prepare重跑/丢allowedrow或留旧cache。
+
+volatile四profile独立原oracle13cmd/26raw、8class/8VM/10line由root完整读666行reviewer并实际执行接受；45成员归档复开。8class已复制tests/fixtures/recover-field-write-test-copies：36Code/560BCI/4handler/48targets/0jsr独立计数；parent8class20Code/50targets合并Reader期望改1296/5733/630/4019/12，尚待实测全walk，指纹尚未再生。child Reader私有测试v2已root审读集成至src/build/tests（标准nested模块、5级fixture路径、真实deadline）；尚未编译。三方完整volatile collector私有v1已root读diff，未执行，最终CLI待修后冻结。所有已结束Cargo守卫source恒同/finally exact clean，target absent；共享未提交，root独占Git/工具链/集成。
+
+并行下一固定TestSequentialLoops2仅源码memo `/private/tmp/jarde-seq2-next-analysis-root-v1-20261018`：默认lowercases仅{'a'}，普通ASCII会真实越界；后续需默认状态异常与明确反射配置128项表的正常路径分开取oracle，不能修源假装原行为。尚未编译/提取，不声称新缺陷。
+
+最新验收优先于上述早期记录：字段布尔缓存最小重建已root逐块审读、加真实ireturn门并集成。focused-v6实际486 Java lib +4公开+181 Reader全过、0失败/忽略，671 passing appearances；CLI63146896B/SHA `0bb89f827c1e2b6b0e215d1940299be046a7adc57866389d87e6595ba0295677`，source恒同/default stack/guard/finally clean，target absent。21成员focused归档与独立root-review.json已接受。原checker遗漏should-panic后缀导致670计数，后续实际修正核671；测试本身未失败。v4缓存失败12成员、v5测试JvmString编译失败8成员与真实4VM重复调用22成员均保留。
+
+同一v6 CLI的完整三方矩阵均实际独立验收：原始Seq1 24命令基线+70命令完整重编、24重编中22成功，Jarde16重编/32VM192case、JADX12VM72case同原，另两JADX完整outer javac8框架major55边界无runtime；全方法/字段/access/全BCI/UTF8/default-all核验，270成员original-final-pipeline-root-v1。补充183命令/48原样重编/96VM1056case同原，16Jarde格48方法Structured，476成员supplement-final-matrix-root-v1。volatile183命令/48原样重编/96VM960case同原，16Jarde格64方法Structured且volatile z:0x41，480成员见child volatile-final-matrix-root-v1。各自原oracle单独计数，child引用父补充不重复计数。default/all正文/质量/来源相同，regions随evidence变化不要求恒同；root已更正未执行reviewer草稿把quality误当kind的问题。原始pipeline reviewer首轮CLI NameError及错误argv说明均明确保留，fresh root v2与正确位置参数才接受。
+
+新增三个真实边界输入：完整Java额外body出口/多latch、v49双入口、v49 jsr头。root审查修正未执行jsr v2的returnAddress误作int，v3后实际10命令/6双JVM -Xverify:all+CodeSource接受，generated run未执行。Reader实测extraExit header2/owners2,16,24/latch24；multi owners2,16,22,28/latches22,28，直接helper均拒绝且不claim；dualEntry无natural loop；jsr BCI23两真实path[2]/[5]、无natural loop，同BCI跨分析错path拒绝只算proof-context负例，不冒称whole jsr支持。40成员inputs及13成员暂存观测已归档，现已把三门改为严格实际断言，等待广门实测。fixture独立增量3class/8Code/104BCI/0handler/16targets/2jsr，Reader新期望1299/5741/630/4035/14（观察轮181 Reader已实测通过）。
+
+18命令广门现已root独立接受785通过出现/0失败/6忽略，CLI逐字同完整矩阵，旧2387指纹不变，仅新增37至2424。记录位于 `/private/tmp/jarde-statementful-loop-final-gates-root-v1-20261018`，仅标准fingerprint再生变更；后续两fresh seed/产品自身CI/提交推送尚未执行，不能声称已交付。root独占共享/Git/所有工具链；Luna只私有/只读。下一个明确缺口仅是测试：字段额外栈复制及缺字段证据拒绝门正在新独立capture收集，不改生产；完成后再生最终指纹，不改旧P5预算。父5/7、child3/5；当时两change15归档1792成员已独立逐字复开，具体以all-archives-root-review-v1.json为准。生产源码未在矩阵后改动，只追加严格边界测试/fixture/census；若最终CLI不同须实际解释或重验，不能沿用推测。
+
+最终增量：字段额外复制完整近邻root实际4cmd/2VM接受，仅BCI10一字节，返回false/calls1/z3；root从未执行前z2手算改正为next(value)=value+1实际z3，collector/driver未伪造观察值。两新私有拒绝门（含Plan::empty缺字段证据）已实测，field模块现5门。最终guard v2于 `/private/tmp/jarde-statementful-loop-final-gates-root-v2-20261018` 终态接受：678通过出现/0失败/1忽略，491 Java lib+181 Reader+指纹再生/检查；fmt/CI Clippy/MSRV1.88通过、CLI SHA仍0bb89f…、target absent。最终指纹2427，旧2387不变/新40；Reader实际1300/5745/630/4040/14。父5/7、child4/5；当前源码已冻结，后续只运行两固定seed及自身CI/提交交付，不再扩展实现。完整三方120重编/236VM2280case已接受，其中两JADX框架major55边界不算编译成功，原JVM192case另列。
+
 ## 2026-10-18 当前：TestNestedLoops5 已完成产品验收（8/8）
 
 `recover-proved-loop-arm-returns` 产品 **e70b350ee33307294a3d383ffdea5874caf9f5b8** 已推送main，8/8关闭。自身[CI39087192303](https://github.com/LordCasser/jarde/actions/runs/39087192303)已root独立接受：4jobs/52步骤全成功、两seed各384目标/3736通过/0失败/98忽略，20重点门每seed各一次。53采集命令106raw及官方逐步骤ZIP命令2raw保留，gh UNKNOWN STEP显示限制未隐藏。后续文档关闭HEAD不冒称自身跑过该产品CI。

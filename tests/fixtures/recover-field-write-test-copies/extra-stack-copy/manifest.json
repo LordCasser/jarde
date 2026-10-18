@@ -1,0 +1,13 @@
+{
+  "scope": "One complete major52 class; only assignAndCompare Code BCI10 differs (iconst5 -> dup), remaining class byte-for-byte unchanged. This is an extra physical copy consumer rejected by the exact suffix gate, not a forged SSA multi-use table. Positive runtime oracle z=3 follows next(value)=value+1; preparation z=2 estimate was corrected before execution. Reader refusal is still pending.",
+  "fixture_census": {
+    "classes": 1,
+    "code_bodies": 4,
+    "instructions": 70,
+    "handlers": 0,
+    "branch_targets": 5,
+    "jsr": 0
+  },
+  "receipt": "/private/tmp/jarde-field-copy-extra-stack-copy-root-v1-20261018/execution.json",
+  "review": "/private/tmp/jarde-field-copy-extra-stack-copy-root-v1-20261018/root-review.json"
+}
