@@ -167,4 +167,4 @@ bafb 产品自身 CI 38119159950 已实际独立验收四job/52step、双seed各
 
 ### 2026-10-19 NL2 indexed List 参数声明，5/6验收检查点
 
-固定完整TestNestedLoops2及独立控制的最终CLI90b30ad…1f64c已实际恢复精确List<String>与原boolean/void/int/long结果；真实cast、get次数/异常时序和raw方法/map保持。Jarde32次完整源码编译/64VM832case同原，JADX重复get事件与非法转换编译失败分别保留。实现复用完整body census/SSA/opaque AST事务，修旧固定Stack0 receiver假设，无新IR/pass/solver。相关广门578/0、fmt/CI Clippy/MSRV通过；fresh workspace、产品提交与自身CI尚待，不提前交付。见[本片证据](../../changes/recover-proved-indexed-list-parameter-signatures/results/README.md)。CF11保持partial，71单元/612测试文件计数不变。
+固定完整TestNestedLoops2及独立控制的最终CLI90b30ad…1f64c已实际恢复精确List<String>与原boolean/void/int/long结果；真实cast、get次数/异常时序和raw方法/map保持。Jarde32次完整源码编译/64VM832case同原，JADX重复get事件与非法转换编译失败分别保留。实现复用完整body census/SSA/opaque AST事务，修旧固定Stack0 receiver假设，无新IR/pass/solver。相关广门578/0、fmt/CI Clippy/MSRV通过；产品5bd65ef2已推，fresh native385目标/3777-0-98、31门与5158来源绑定接受；自身CI39153653464四jobs/52独立官方step、两seed各3777-0-98及76门完整接受，关闭文档与干净主线核验接续。见[本片证据](../../changes/recover-proved-indexed-list-parameter-signatures/results/README.md)。CF11保持partial，71单元/612测试文件计数不变。

@@ -1,0 +1,54 @@
+{
+  "status": "archive_inventory_only_prior_archives_not_retested",
+  "archives": [
+    {
+      "path": "openspec/changes/recover-proved-indexed-list-parameter-signatures/results/controls-baseline-root-v1/capture.tar.gz",
+      "bytes": 5263218,
+      "sha256": "2a60efed6b4185d4c28303b248c740b278d4d1f7c730b0b785bfe40f8685695e",
+      "members": 439
+    },
+    {
+      "path": "openspec/changes/recover-proved-indexed-list-parameter-signatures/results/final-acceptance-preparation-root-v1/capture.tar.gz",
+      "bytes": 23826,
+      "sha256": "948be69f60c3865208d9b05d935fc066a8836a79eff96a1d95a348f5ba8a7e4a",
+      "members": 10
+    },
+    {
+      "path": "openspec/changes/recover-proved-indexed-list-parameter-signatures/results/final-complete-comparison-root-v1/capture.tar.gz",
+      "bytes": 3834271,
+      "sha256": "60a0cbddf1ce871924c6c6ad76817b74201f596abe284bb91eb86813d3f38581",
+      "members": 573
+    },
+    {
+      "path": "openspec/changes/recover-proved-indexed-list-parameter-signatures/results/final-native-and-own-ci-root-v1/capture.tar.gz",
+      "bytes": 5268975,
+      "sha256": "eaf348359b0cc04efb919d012ffce7b519a124741c19748ccf4875bd3c791bf5",
+      "members": 405
+    },
+    {
+      "path": "openspec/changes/recover-proved-indexed-list-parameter-signatures/results/implementation-and-validation-root-v1/capture.tar.gz",
+      "bytes": 2942302,
+      "sha256": "11bfa247b6e17551a719bf2f38b59c001bd37afdc9c92621161a98739fa76064",
+      "members": 83
+    },
+    {
+      "path": "openspec/changes/recover-proved-indexed-list-parameter-signatures/results/lambda-and-fixture-census-corrections-root-v1/capture.tar.gz",
+      "bytes": 2764885,
+      "sha256": "044b0d0b439874401b27922230c6f1953d583ba47c994a8262fc04f4c5456e84",
+      "members": 466
+    },
+    {
+      "path": "openspec/changes/recover-proved-indexed-list-parameter-signatures/results/listowner-regression-correction-root-v1/capture.tar.gz",
+      "bytes": 1707218,
+      "sha256": "81c2db9d0327963f635d107da403b0e9bc2009c80133e7da708d85b9a4e6adc8",
+      "members": 121
+    },
+    {
+      "path": "openspec/changes/recover-proved-indexed-list-parameter-signatures/results/primary-baseline-root-v1/capture.tar.gz",
+      "bytes": 1754018,
+      "sha256": "34b5192221b3a4e0fe976b0504494d2681f4c4d0dbc0aa196e53db826ded9cb8",
+      "members": 273
+    }
+  ],
+  "members": 2370
+}

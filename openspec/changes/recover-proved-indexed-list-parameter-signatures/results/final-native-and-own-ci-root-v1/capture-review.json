@@ -1,0 +1,42 @@
+{
+  "status": "root_reopened_all_archive_members_equal_live_evidence",
+  "product": "5bd65ef2f36999c3d0a3b4477a412a0ef532c956",
+  "archive_sha256": "eaf348359b0cc04efb919d012ffce7b519a124741c19748ccf4875bd3c791bf5",
+  "archive_bytes": 5268975,
+  "members": 405,
+  "evidence_members_reopened_against_live_originals": 404,
+  "native": {
+    "targets": 385,
+    "batches": 101,
+    "passed": 3777,
+    "failed": 0,
+    "ignored": 98,
+    "critical_gates": 31,
+    "bound_source_union": 5158
+  },
+  "own_ci": {
+    "run_id": "39153653464",
+    "jobs": 4,
+    "official_individual_steps": 52,
+    "seeds": [
+      "5350648285461741569",
+      "5350648285461741570"
+    ],
+    "each_seed_targets": 385,
+    "each_seed_passed": 3777,
+    "each_seed_failed": 0,
+    "each_seed_ignored": 98,
+    "critical_gates_each_seed": 76
+  },
+  "failures_preserved": [
+    "native verification v3 reader target-kind classification failure",
+    "CI collection v3 preflight fixture order mismatch; before output directory/network"
+  ],
+  "exclusions": [
+    "candidate-cli",
+    "__pycache__",
+    ".pyc",
+    "previous seven archives",
+    "mutable Git ledger"
+  ]
+}
