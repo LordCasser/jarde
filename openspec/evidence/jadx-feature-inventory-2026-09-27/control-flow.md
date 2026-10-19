@@ -4,7 +4,7 @@
 
 [最终native/自身CI](../../changes/bound-loop-header-chains-at-body-effects/results/native-and-own-ci-root-v1/README.md)：一次fresh392targets/103批/3816-0-98、71精确门；CI39210601042四jobs/52独立官方ZIP步骤，双seed116门及全部3914具名结果一致，无aggregate/transport失败。5263构建/native来源逐Git/bytes/mode绑定产品，593payload逐成员复开；1requirement/4scenario主spec同步、全部385 strict通过。finThrow5/5、nestedFin16/16与旧片不重做，文档后继不冒称重跑产品CI。
 
-[Loop2原件](../java-syntax-2026-10-19/cf09-testbreakinloop2-original-root-v1/README.md)46命令接受，原件/JADX各八观察同，八目标ownership_overlap BCI0、16Jarde全编译拒绝、无JardeVM；17/17来源只是quote。164payload已逐bytes/mode归档。下一[同轮trace准备](../java-syntax-2026-10-19/cf09-testbreakinloop2-ir-probe-preparation-root-v1/README.md)只有静态root27pin审查，未编译运行，未立修复OpenSpec。固定13原件六项接受、一项真实gap、六项待baseline；[3–6静态范围](../java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md)不计覆盖。CF09/71/612仍partial。以下均为历史。
+[Loop2原件](../java-syntax-2026-10-19/cf09-testbreakinloop2-original-root-v1/README.md)46命令接受，原件/JADX各八观察同，八目标ownership_overlap BCI0、16Jarde全编译拒绝、无JardeVM；17/17来源只是quote。164payload已逐bytes/mode归档。[同轮trace实测](../../changes/recover-branching-named-catch-retry-loops/results/same-run-ir-root-v1/README.md)已1/0：两模式均无自然循环，retry首拒绝check_20，handler回跳再次进入Try，owners[0,9,17,19,0,9]；独立复核、源码恢复与清理通过。[最小OpenSpec](../../changes/recover-branching-named-catch-retry-loops/tasks.md)1/6，Luna在私有目录准备实现/测试，未集成或验收修复。固定13原件六项接受、一项真实gap、六项待baseline；[3–6静态范围](../java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md)不计覆盖。CF09/71/612仍partial。以下均为历史。
 
 ## 2026-10-19 历史：Continue完整交付，DoWhileBreak已证真实缺口
 
