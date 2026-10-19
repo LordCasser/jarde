@@ -472,32 +472,24 @@ fn a_write_that_cannot_be_spelled_as_the_decided_type_terminates_its_structure()
 }
 
 #[test]
-fn an_int_local_at_a_boolean_return_uses_the_jvm_low_bit() {
-    // `unproven` has the same literal-only local writes as `literalArmed`, but its method descriptor
-    // is `Z`. The writes do not prove the local itself is boolean: the declaration stays `int`.
-    // `ireturn Z` consumes the low bit of its int-sized operand, so the return position can still be
-    // presented as `local1 % 2 != 0`. This is the boundary contract exercised by
-    // `tests/p3_integer_boolean_return_contract.rs`, rather than a boolean type inference.
+fn a_literal_local_with_a_closed_boolean_return_is_declared_boolean() {
+    // The frozen `unproven` member writes only 0/1 and its sole read directly returns Z.
+    // Unlike `literalArmed`, that descriptor sink independently states a Boolean use; the
+    // literal-local proof also closes the actual Phi and all physical accesses before typing it.
+    // Arbitrary integers still use the JVM low-bit conversion, covered separately by
+    // p3_integer_boolean_return_contract and p3_integer_boolean_return_boundaries.
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);
     let text = whole_body(&engine, &fixture, b"unproven", b"(Z)Z");
+    assert!(text.contains("boolean local1;"), "{text}");
     assert!(
-        text.contains("int local1;"),
-        "the declaration keeps the type the literal-only writes decide:\n{}",
-        text
+        text.contains("local1 = true;") && text.contains("local1 = false;"),
+        "{text}"
     );
+    assert!(text.contains("return local1;"), "{text}");
     assert!(
-        text.contains("local1 = 1;") && text.contains("local1 = 0;"),
-        "the literal-only writes keep their int spelling:\n{text}"
-    );
-    assert!(
-        text.contains("return local1 % 2 != 0;"),
-        "the boolean return spells the JVM low-bit behavior:\n{text}"
-    );
-    assert!(
-        !text.contains("boolean local1"),
-        "no local of this member is presented as a boolean:\n{}",
-        text
+        !text.contains("int local1;") && !text.contains("% 2 != 0"),
+        "{text}"
     );
 }
 

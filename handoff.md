@@ -1,3 +1,13 @@
+## 2026-10-19 当前：CF09 布尔局部恢复5/6，完整对照已接受
+
+本节优先，下方历史不重做。finThrow5/5、nestedFin16/16已交付；继续按固定JADX用例推进。当前主线产品待提交；`recover-proved-literal-boolean-locals` 5/6，root已审Luna v2并集成，只有声明规划的literal-only窄准入与精确append(Z)消费；旧seeded/concat gate不变，没有全局solver/CFG/Region机制。完整物理访问闭合与同owner一层实际读Phi是新分支证明边界。
+
+最终CLI `/private/tmp/jarde-literal-boolean-focused-root-v4-20261019/candidate-cli`，63983392B/SHA9ea9177b8992c8444c9f9af0158ca7bc99b3e7dfee4696b342aea7da2e295167。完整72命令已root独立接受：8API、16整类JDK8/23编译、32VM/192观察全部与原件同，16错CodeSource根负向均调用前拒绝。原打印差异消失，map34/42→41/42，只缺BCI44另记。不重跑原件/JADX，精确复用已归档94命令基线。入口 `openspec/changes/recover-proved-literal-boolean-locals/results/README.md`；定向+矩阵357payload归档SHA8200e38eb0646cae1cdc2c1017c6b74c1a0d65c1daf02fcc910c86e9f7a02b17已逐字/mode复开，真实IR16payload单独保留。全部失败及修正边界保留；Java lib509/0、新公共3/0、相关布尔/Reader/指纹/fmt/Clippy和最终构建均通过，源码冻结且target absent。
+
+接续必须提交推送产品后 fresh workspace seed1一次，53精确native门+九项CF07/CF11/finThrow/nestedFin回归；最终产品自身CI全部4jobs/独立官方ZIP步骤/双seed98精确门（含13继承extra-critical）和全部具名结果。私有prep `/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019` 已root差异与库存审，24sources/63fixtures，继承checker/binder/ZIP工具逐字同；尚无当前产品完整native/CI结果。当前broad-build v4 source unchanged，可用原严格binder。随后主spec同步、strict、最终证据归档、task3.2与clean-main；不能拿旧2684产品CI作当前证据。
+
+并行下一固定原件 TestContinueInLoop 只有有限八用例数学计划已root审，Luna正在私有准备完整baseline，尚未运行/发现缺陷。CF09/71/612计数不关闭。root独占共享写/Git/network/Cargo/JDK/CLI，Luna仅私有tmp/只读，Python-B；Cargo仍5GiB/target1GiB/defaultstack/每秒guard/finally exactclean，期间禁止共享写/Gitmutation/network/manualJDK或CLI；不建新worktree。
+
 ## 2026-10-19 当前：if-loop 来源完整验收；继续 CF09 布尔局部标志
 
 本节优先，下方是历史检查点。finThrow5/5、nestedFin16/16已交付不重做；持续 goal active。产品 `2684b4ee79a263ceb851d73c84e6ce4499dbd4b4` 已推 main，最终 CLI `/private/tmp/jarde-if-loop-entry-focused-root-v4-20261019/candidate-cli`，SHA `56ed2f31f824187b178082d1045788e5ba09ea8f9ab4e1fe6bffeca37db8efa8`。四 API 来源10/10、846B全文不变，完整编译只做精确复用，没有目标运行。

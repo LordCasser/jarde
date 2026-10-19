@@ -2650,6 +2650,8 @@ fn decide_types(
                 fields,
                 return_type,
                 parameters,
+                resource_slots,
+                has_exception_handlers,
                 &boolean_variables,
                 budget,
             )? && boolean_variables.insert(*variable)
@@ -3446,29 +3448,178 @@ fn null_leading_reference_type(
     Ok(has_non_null.then_some(common).flatten())
 }
 
+/// The literal-only case reuses the declaration census, but must close each actually-read local
+/// Phi against the exact direct store results before judging that candidate's reads. This slice
+/// refuses loop-carried, nested, unknown and otherwise indirect Phi inputs.
+fn literal_boolean_local_inputs_closed(
+    candidate: LocalVariable,
+    accesses: &[SlotUse],
+    ssa: &SsaTable,
+    reuse: &reuse::Plan,
+    parameters: u16,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let slot = candidate.slot();
+    if slot < parameters || accesses.is_empty() {
+        return Ok(false);
+    }
+
+    let mut writes = BTreeSet::new();
+    let mut reads = BTreeSet::new();
+    let mut listed_reads = Vec::new();
+    let mut listed_writes = Vec::new();
+    for access in accesses {
+        poll(budget, Some(access.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(access.bci),
+        )?;
+        if access.path.is_none() || reuse.variable_at(slot, access.bci) != Some(candidate) {
+            return Ok(false);
+        }
+        match (access.read, access.written) {
+            (Some(read), None) => {
+                reads.insert(read);
+                listed_reads.push((access.bci, read));
+            }
+            (None, Some(written)) if ssa.value(written).replaced_by().is_none() => {
+                writes.insert(written);
+                listed_writes.push((access.bci, written));
+            }
+            _ => return Ok(false),
+        }
+    }
+    if writes.is_empty() || reads.is_empty() {
+        return Ok(false);
+    }
+
+    // `slot_uses` intentionally omits elided cleanup and accesses without a reuse owner. Recheck
+    // this candidate against the full physical local-access stream before treating that summary as
+    // closed. A different known owner is a separate lifetime; an ownerless access at this slot is
+    // ambiguous and refuses the candidate.
+    let mut physical_reads = Vec::new();
+    let mut physical_writes = Vec::new();
+    for block in ssa.blocks() {
+        for instruction in block.instructions() {
+            let bci = instruction.bci();
+            poll(budget, Some(bci))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+            for (physical_slot, value) in instruction.reads() {
+                if *physical_slot != Slot::Local(slot) {
+                    continue;
+                }
+                poll(budget, Some(bci))?;
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+                match reuse.variable_at(slot, bci) {
+                    Some(owner) if owner == candidate => physical_reads.push((bci, *value)),
+                    Some(_) => {}
+                    None => return Ok(false),
+                }
+            }
+            for (physical_slot, value) in instruction.writes() {
+                if *physical_slot != Slot::Local(slot) {
+                    continue;
+                }
+                poll(budget, Some(bci))?;
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+                match reuse.variable_at(slot, bci) {
+                    Some(owner) if owner == candidate => physical_writes.push((bci, *value)),
+                    Some(_) => {}
+                    None => return Ok(false),
+                }
+            }
+        }
+    }
+    listed_reads.sort_unstable();
+    listed_writes.sort_unstable();
+    physical_reads.sort_unstable();
+    physical_writes.sort_unstable();
+    if listed_reads != physical_reads || listed_writes != physical_writes {
+        return Ok(false);
+    }
+
+    // Only a read value not already proved as a direct store result needs Phi lookup. Resolve its
+    // exact definition to one block/slot and look up only that entry; unused loop Phis are never
+    // admitted into a graph or followed.
+    for read in reads.iter().filter(|read| !writes.contains(read)) {
+        let (read_block, read_slot) = match ssa.value(*read).def() {
+            Definition::Phi {
+                block,
+                slot: Slot::Local(phi_slot),
+            } if *phi_slot == slot => (block, Slot::Local(*phi_slot)),
+            _ => return Ok(false),
+        };
+        let mut matching_phi = None;
+        for phi in ssa.phis() {
+            let at = phi.block().bci();
+            poll(budget, Some(at))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+            if phi.block() == read_block && phi.slot() == read_slot {
+                if phi.value() != *read {
+                    return Ok(false);
+                }
+                matching_phi = Some(phi);
+                break;
+            }
+        }
+        let Some(phi) = matching_phi else {
+            return Ok(false);
+        };
+        let at = phi.block().bci();
+        if ssa.value(*read).replaced_by().is_some()
+            || reuse.variable_at(slot, at) != Some(candidate)
+        {
+            return Ok(false);
+        }
+        let mut has_direct_store_input = false;
+        for input in phi.inputs() {
+            poll(budget, Some(at))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+            match input {
+                PhiInput::Value(value) if writes.contains(value) => {
+                    has_direct_store_input = true;
+                }
+                // This slice proves only a directly-read Phi of literal stores. Loop-carried,
+                // nested, unknown and otherwise ungrounded inputs need a separate proof.
+                _ => return Ok(false),
+            }
+        }
+        if !has_direct_store_input {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
 /// Whether one local variable is a `boolean` **accumulate counter**
-/// (`recover-boolean-int-bitwise-operands`).
+/// (`recover-boolean-int-bitwise-operands`) and the narrower literal-only flag case.
 ///
 /// `boolean r = false; for (boolean x : f) r ^= x; return r;` lowers `r` to an `int` local: the
 /// initialising write stores `iconst_0`, the loop's write stores `iload r; iload x; ixor`, and the
 /// method's own `Z` return reads the counter. The frames state one `int` shape for the four
 /// int-sized primitives, so no frame states the type — but the counter's whole value graph does:
 ///
-/// * **every write** stores a `0`/`1` value: the literal a `boolean` is initialised with, or the
-///   value of a bitwise operator whose operands are boolean evidence — the production chain stays in
-///   the boolean bitwise context the change states;
-/// * **every read** is consumed where a `boolean` is read: an operand of a bitwise operator whose
+/// * **every write** stores a `0`/`1` value: either the literal a `boolean` is initialised with, or
+///   the value of a bitwise operator whose operands are boolean evidence — the production chain
+///   stays in the boolean context the applicable rule states;
+/// * **every read** is consumed where a `boolean` is read: for the bitwise rule, an operand whose
 ///   other operand is boolean evidence, the `ireturn` of a `Z` method, or a store into a variable
-///   this decision already states `boolean` (the counter's own write, judged by
-///   [`BooleanConsumption`]);
-/// * at least one write is that accumulation, so a variable that only ever stores literals states
-///   nothing about a boolean context.
+///   this decision already states `boolean`; for the literal-only rule, only its exact typed sinks,
+///   local boolean stores and bitwise positions are admitted;
+/// * the established bitwise rule still requires at least one seeded accumulation. The separate
+///   literal-only rule instead requires a complete physical-access census, any actually-read local
+///   Phi to merge only direct literal store results, and an independent descriptor sink (`return Z`
+///   or exact `append(Z)`).
 ///
-/// The candidate itself reads as a `boolean` while its own writes are judged — the value it carries
-/// is what its own update combines — and every other variable reads from the decision so far. That
-/// is what makes this a data-flow sufficiency test rather than a guess: an `int` counter whose
-/// update combines it with an `int` sibling has no evidence at all, and one whose value is consumed
-/// by arithmetic, a comparison or an `int` store fails the read walk and keeps the refusal.
+/// The bitwise candidate itself reads as a `boolean` while its own writes are judged — the value it
+/// carries is what its own update combines — and every other variable reads from the decision so
+/// far. The literal-only candidate has no such self-seed: its stores are direct constants, its one
+/// directly-read Phi (if any) merges those stores, and a read reaches an independent descriptor sink.
+/// This keeps an `int` counter with an integer sibling, arithmetic read, non-zero comparison or
+/// `int` store outside both proofs.
+///
 #[allow(clippy::too_many_arguments)]
 fn accumulates_boolean(
     candidate: LocalVariable,
@@ -3480,6 +3631,8 @@ fn accumulates_boolean(
     fields: &field::Plan,
     return_type: Option<&Type>,
     parameters: u16,
+    resource_slots: &BTreeSet<u16>,
+    has_exception_handlers: bool,
     boolean_variables: &BTreeSet<LocalVariable>,
     budget: &mut Budget,
 ) -> Result<bool, StopReason> {
@@ -3491,7 +3644,10 @@ fn accumulates_boolean(
     let is_boolean_variable =
         |variable: LocalVariable| variable == candidate || boolean_variables.contains(&variable);
     let mut accumulated = false;
+    let mut literal_only = true;
+    let mut write_count = 0usize;
     for access in accesses.iter().filter(|access| access.written.is_some()) {
+        write_count += 1;
         let Some(stored) = access.stored else {
             return Ok(false);
         };
@@ -3501,9 +3657,9 @@ fn accumulates_boolean(
         let operation = operations.get(*bci);
         // The write's own production stays in the boolean bitwise context: the `0`/`1` literal a
         // `boolean` is initialised with, or the value of a bitwise operator.
-        if !matches!(operation, Some(Operation::Push(ConstantValue::Int(0 | 1))))
-            && !matches!(operation, Some(Operation::Bitwise { .. }))
-        {
+        let is_literal = matches!(operation, Some(Operation::Push(ConstantValue::Int(0 | 1))));
+        literal_only &= is_literal;
+        if !is_literal && !matches!(operation, Some(Operation::Bitwise { .. })) {
             return Ok(false);
         }
         let proof = {
@@ -3526,9 +3682,14 @@ fn accumulates_boolean(
         }
         accumulated |= proof.has_seed();
     }
-    if !accumulated {
+    let literal_candidate = !accumulated && literal_only && write_count > 0;
+    if literal_candidate && (has_exception_handlers || resource_slots.contains(&candidate.slot())) {
         return Ok(false);
     }
+    if !accumulated && !literal_candidate {
+        return Ok(false);
+    }
+    let mut independent_boolean_sink = false;
     for access in accesses.iter().filter(|access| access.read.is_some()) {
         let Some(load) = instruction_at(ssa, access.bci) else {
             return Ok(false);
@@ -3542,6 +3703,16 @@ fn accumulates_boolean(
         if *load_slot != candidate.slot() || !matches!(load.opcode(), 0x15 | 0x1a..=0x1d) {
             return Ok(false);
         }
+        if literal_candidate {
+            let Some(read) = access.read else {
+                return Ok(false);
+            };
+            if reuse.variable_at(candidate.slot(), access.bci) != Some(candidate)
+                || load.reads() != [(Slot::Local(candidate.slot()), read)]
+            {
+                return Ok(false);
+            }
+        }
         let mut consumption = BooleanConsumption {
             ssa,
             operations,
@@ -3550,13 +3721,22 @@ fn accumulates_boolean(
             fields,
             return_type,
             is_boolean_variable: &is_boolean_variable,
+            literal_boolean_candidate: literal_candidate,
+            has_descriptor_sink: false,
             budget: Some(&mut *budget),
         };
         if !consumption.consumed(*loaded, access.bci, 0, &mut BTreeSet::new())? {
             return Ok(false);
         }
+        independent_boolean_sink |= consumption.has_descriptor_sink;
     }
-    Ok(true)
+    if accumulated {
+        return Ok(true);
+    }
+    if !independent_boolean_sink {
+        return Ok(false);
+    }
+    literal_boolean_local_inputs_closed(candidate, accesses, ssa, reuse, parameters, budget)
 }
 
 /// The first write of Test5's reused slot is a pending `null` return. Its
@@ -19986,6 +20166,8 @@ impl Builder<'_> {
             fields: self.fields,
             return_type: self.return_type.as_ref(),
             is_boolean_variable: &|variable| self.decided_boolean(variable),
+            literal_boolean_candidate: false,
+            has_descriptor_sink: false,
             budget: None,
         };
         consumption
@@ -35472,11 +35654,14 @@ where
 ///   `recover-conditional-rhs-field-compound` states for the field compound;
 /// * a bitwise operator whose **other** operand is boolean evidence, whose own value this walk then
 ///   judges in turn: Java accepts `&`, `|` and `^` only between two `boolean`s or two integrals, so
-///   a boolean sibling states the operation's type (`(a & !b) & c`).
+///   a boolean sibling states the operation's type (`(a & !b) & c`);
+/// * for the literal-only candidate only, an exact `StringBuilder`/`StringBuffer.append(Z)` argument.
+///   The call is also recorded as a descriptor sink. Existing seeded-bitwise and render-time callers
+///   do not enable this position.
 ///
-/// Every other use — arithmetic, a comparison, an `int` store, a call argument, a branch test — is
-/// not a boolean position, so the value keeps the `int` presentation it has and the refusal the
-/// operand pair states stands.
+/// Every other use — arithmetic, a comparison or branch test, an `int` store, or any other call argument
+/// — is not a boolean position, so the value keeps the `int` presentation it has and the refusal
+/// the operand pair states stands.
 struct BooleanConsumption<'a> {
     ssa: &'a SsaTable,
     operations: &'a Operations,
@@ -35487,6 +35672,12 @@ struct BooleanConsumption<'a> {
     /// Whether one local variable is a `boolean` by the caller's own decision: the plan's answer for
     /// every variable, or the candidate the accumulate rule is judging while it judges it.
     is_boolean_variable: &'a dyn Fn(LocalVariable) -> bool,
+    /// Only the literal-only rule may admit exact `append(Z)` calls.
+    /// Existing seeded bitwise and render-time consumers keep their previous call policy.
+    literal_boolean_candidate: bool,
+    /// Set only by an exact `return Z` or builder `append(Z)` consumer; branches and local phis do
+    /// not provide the independent descriptor evidence required by the literal-only rule.
+    has_descriptor_sink: bool,
     /// The budget one judged consumer is billed against, where the caller has one. The declarations
     /// plan charges its walk; the render pass's own admission check runs unbilled, exactly as the
     /// boolean evidence read beside it does.
@@ -35549,7 +35740,9 @@ impl BooleanConsumption<'_> {
                 .variable_at(*slot, bci)
                 .is_some_and(|variable| (self.is_boolean_variable)(variable))),
             Some(Operation::Return) => {
-                Ok(instruction.opcode() == 0xac && self.return_type == Some(&Type::Boolean))
+                let sink = instruction.opcode() == 0xac && self.return_type == Some(&Type::Boolean);
+                self.has_descriptor_sink |= sink;
+                Ok(sink)
             }
             Some(Operation::Field {
                 access: FieldAccess::Write,
@@ -35577,6 +35770,20 @@ impl BooleanConsumption<'_> {
                     return Ok(false);
                 };
                 self.consumed(output, at, depth + 1, seen)
+            }
+            Some(Operation::Invoke(target)) if self.literal_boolean_candidate => {
+                let operands = stack_operands(instruction);
+                let exact_boolean_append = instruction.opcode() == 0xb6
+                    && target.kind() == InvokeKind::Virtual
+                    && ((target.owner() == "java/lang/StringBuilder"
+                        && target.name() == "append"
+                        && target.descriptor() == "(Z)Ljava/lang/StringBuilder;")
+                        || (target.owner() == "java/lang/StringBuffer"
+                            && target.name() == "append"
+                            && target.descriptor() == "(Z)Ljava/lang/StringBuffer;"))
+                    && matches!(operands.as_slice(), [(_, receiver), (_, argument)] if *receiver != value && *argument == value);
+                self.has_descriptor_sink |= exact_boolean_append;
+                Ok(exact_boolean_append)
             }
             _ => Ok(false),
         }
@@ -48296,5 +48503,177 @@ mod tests {
                 assert!(matches!(wrong_value, ValueRenderFailure::Refusal(_)));
             },
         );
+    }
+
+    const LITERAL_BOOLEAN_DEBUG_FIXTURE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class"
+    );
+    const LITERAL_BOOLEAN_NO_DEBUG_FIXTURE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class"
+    );
+
+    fn literal_boolean_fixture_attempt(
+        context: &IteratorTestContext,
+        variable: LocalVariable,
+        accesses: &[SlotUse],
+        budget: &mut Budget,
+    ) -> Result<bool, StopReason> {
+        let ir = context.analysis.ir();
+        let declaration = ir.declaration().expect("fixture declaration");
+        let ssa = ir.ssa().expect("fixture SSA");
+        let code = ir.code().expect("fixture bytecode");
+        let operations = Operations::of(code, ir.constant_pool());
+        let descriptor = "([[II)Z";
+        let facts =
+            crate::facts::MethodFacts::new("test", descriptor, declaration.parameter_slots());
+        let parameter_types = facts.parameter_types();
+        let return_ty = return_type(descriptor);
+        let fields = crate::field::Plan::empty();
+        let resources = resource_slots(&context.regions);
+        accumulates_boolean(
+            variable,
+            accesses,
+            ssa,
+            &operations,
+            &context.reuse,
+            &parameter_types,
+            &fields,
+            return_ty.as_ref(),
+            declaration.parameter_slots(),
+            &resources,
+            !code.exception_handlers.is_empty(),
+            &BTreeSet::new(),
+            budget,
+        )
+    }
+
+    #[test]
+    fn literal_only_boolean_local_uses_the_real_read_phi_and_closes_the_full_access_census() {
+        for class in [
+            LITERAL_BOOLEAN_DEBUG_FIXTURE,
+            LITERAL_BOOLEAN_NO_DEBUG_FIXTURE,
+        ] {
+            let context = iterator_test_context(class, "test", "([[II)Z", 8);
+            let ir = context.analysis.ir();
+            let ssa = ir.ssa().expect("fixture SSA");
+            let code = ir.code().expect("fixture bytecode");
+            let operations = Operations::of(code, ir.constant_pool());
+            let mut elided_cleanup = Vec::new();
+            for region in &context.regions {
+                region.elided_cleanup_bcis(&mut elided_cleanup);
+            }
+            let elided_cleanup = elided_cleanup.into_iter().collect::<BTreeSet<_>>();
+            let uses = slot_uses(
+                ssa,
+                &operations,
+                &context.reuse,
+                &region_paths(&context.regions),
+                &elided_cleanup,
+            );
+            let candidates = uses
+                .iter()
+                .filter(|(_, accesses)| {
+                    let writes = accesses
+                        .iter()
+                        .filter(|access| access.written.is_some())
+                        .collect::<Vec<_>>();
+                    writes.len() == 2
+                        && accesses.iter().any(|access| access.read.is_some())
+                        && writes.iter().all(|access| {
+                            let Some(stored) = access.stored.or(access.written) else {
+                                return false;
+                            };
+                            let Definition::Instruction { bci, .. } = ssa.value(stored).def()
+                            else {
+                                return false;
+                            };
+                            matches!(
+                                operations.get(*bci),
+                                Some(Operation::Push(ConstantValue::Int(0 | 1)))
+                            )
+                        })
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(
+                candidates.len(),
+                1,
+                "fixture has one two-literal local with reads"
+            );
+            let variable = *candidates[0].0;
+            let accesses = candidates[0].1.as_slice();
+            assert_eq!(
+                context.declarations.decided.get(&variable),
+                Some(&Decided::Type(Type::Boolean)),
+                "the whole declaration plan uses the literal-only proof"
+            );
+
+            let mut complete = child_array_test_budget();
+            assert!(
+                literal_boolean_fixture_attempt(&context, variable, accesses, &mut complete,)
+                    .expect("real fixture proof completes")
+            );
+            let proof_steps = complete.usage().analysis_steps;
+            assert!(proof_steps > 1);
+
+            // Removing one real write and duplicating the other cannot make the physical census
+            // appear complete, even though the fabricated summary still has two writes.
+            let mut omitted_duplicate = accesses.to_vec();
+            let omitted_index = omitted_duplicate
+                .iter()
+                .position(|access| access.written.is_some())
+                .expect("actual write row");
+            omitted_duplicate.remove(omitted_index);
+            let duplicate = omitted_duplicate
+                .iter()
+                .find(|access| access.written.is_some())
+                .expect("the other actual write")
+                .clone();
+            omitted_duplicate.push(duplicate);
+            let mut negative = child_array_test_budget();
+            assert!(
+                !literal_boolean_fixture_attempt(
+                    &context,
+                    variable,
+                    &omitted_duplicate,
+                    &mut negative,
+                )
+                .expect("misleading access summary is refused")
+            );
+
+            let mut pathless = accesses.to_vec();
+            pathless
+                .iter_mut()
+                .find(|access| access.read.is_some())
+                .expect("actual local read")
+                .path = None;
+            let mut negative = child_array_test_budget();
+            assert!(
+                !literal_boolean_fixture_attempt(&context, variable, &pathless, &mut negative,)
+                    .expect("pathless access is refused")
+            );
+
+            let cut = proof_steps - 1;
+            let mut limits = child_array_test_budget().limits().clone();
+            limits.analysis_steps = cut;
+            let mut stopped = Budget::new(limits);
+            assert!(matches!(
+                literal_boolean_fixture_attempt(&context, variable, accesses, &mut stopped),
+                Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    ..
+                })
+            ));
+            assert_eq!(stopped.usage().analysis_steps, cut);
+
+            let token = jarde_reader::budget::CancellationToken::new();
+            token.cancel();
+            let mut cancelled =
+                Budget::with_cancellation_token(child_array_test_budget().limits().clone(), token);
+            assert!(matches!(
+                literal_boolean_fixture_attempt(&context, variable, accesses, &mut cancelled),
+                Err(StopReason::Cancelled { at: Some(_) })
+            ));
+            assert_eq!(cancelled.usage().analysis_steps, 0);
+        }
     }
 }
