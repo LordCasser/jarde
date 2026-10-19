@@ -1,0 +1,117 @@
+{
+  "status": "root_reviewed_static_scope_only",
+  "files": [
+    {
+      "path": "historical-v1/README.md",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v1-20261019/README.md",
+      "bytes": 5793,
+      "sha256": "79a548b4891f5277a645ed30227395b974acf149713e8bb7f0c165709007604a"
+    },
+    {
+      "path": "historical-v1/TestBreakInLoop3.java",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v1-20261019/TestBreakInLoop3.java",
+      "bytes": 1216,
+      "sha256": "7426191067f7ec483c191029376a2ee5544ccfdb5f893c2cf0a21f4df219ffc4"
+    },
+    {
+      "path": "historical-v1/TestBreakInLoop4.java",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v1-20261019/TestBreakInLoop4.java",
+      "bytes": 1068,
+      "sha256": "42b0f55b653b41bc69286e1947c8a19d94b0da810cdcc7cf48bb6d2cd6a256e5"
+    },
+    {
+      "path": "historical-v1/TestBreakInLoop5.java",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v1-20261019/TestBreakInLoop5.java",
+      "bytes": 1495,
+      "sha256": "4aef48802b7dc7cc47c7c03d6c2639103c2913345cb8be8818545e63ed1fea64"
+    },
+    {
+      "path": "historical-v1/TestBreakInLoop6.java",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v1-20261019/TestBreakInLoop6.java",
+      "bytes": 534,
+      "sha256": "6b59880e867a7b2c60437233448a65e1f12553154ce15210d606327a98ceada3"
+    },
+    {
+      "path": "historical-v1/TestBreakInLoop6.smali",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v1-20261019/TestBreakInLoop6.smali",
+      "bytes": 1216,
+      "sha256": "573f2a2329cebe8ac6aec6af5ec40ecab683eb95a37515470a512bad63ea8c16"
+    },
+    {
+      "path": "historical-v1/sha256.txt",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v1-20261019/sha256.txt",
+      "bytes": 771,
+      "sha256": "37dd509e8458f38c198eb428d647d4765bae5cf79e06b4c6a10a6d82198c9f66"
+    },
+    {
+      "path": "current-v2/README.md",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v2-20261019/README.md",
+      "bytes": 6182,
+      "sha256": "b3feb1b5243bae3973bb85042d7e423c2bfb1d5721e92191ac1bed31754e016e"
+    },
+    {
+      "path": "current-v2/TestBreakInLoop3.java",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v2-20261019/TestBreakInLoop3.java",
+      "bytes": 1216,
+      "sha256": "7426191067f7ec483c191029376a2ee5544ccfdb5f893c2cf0a21f4df219ffc4"
+    },
+    {
+      "path": "current-v2/TestBreakInLoop4.java",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v2-20261019/TestBreakInLoop4.java",
+      "bytes": 1068,
+      "sha256": "42b0f55b653b41bc69286e1947c8a19d94b0da810cdcc7cf48bb6d2cd6a256e5"
+    },
+    {
+      "path": "current-v2/TestBreakInLoop5.java",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v2-20261019/TestBreakInLoop5.java",
+      "bytes": 1495,
+      "sha256": "4aef48802b7dc7cc47c7c03d6c2639103c2913345cb8be8818545e63ed1fea64"
+    },
+    {
+      "path": "current-v2/TestBreakInLoop6.java",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v2-20261019/TestBreakInLoop6.java",
+      "bytes": 534,
+      "sha256": "6b59880e867a7b2c60437233448a65e1f12553154ce15210d606327a98ceada3"
+    },
+    {
+      "path": "current-v2/TestBreakInLoop6.smali",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v2-20261019/TestBreakInLoop6.smali",
+      "bytes": 1216,
+      "sha256": "573f2a2329cebe8ac6aec6af5ec40ecab683eb95a37515470a512bad63ea8c16"
+    },
+    {
+      "path": "current-v2/pins.txt",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v2-20261019/pins.txt",
+      "bytes": 230,
+      "sha256": "8f5ca42a2b963ec8cf0ee13c59c94b3f6cfe56c80a4ee576d5d41977e1b6230a"
+    },
+    {
+      "path": "current-v2/sha256.txt",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v2-20261019/sha256.txt",
+      "bytes": 441,
+      "sha256": "aed6883123851f4bd24fd14d45b1b9534e9001749556cb5882823c3e55d0da51"
+    },
+    {
+      "path": "current-v2/v1-v2.diff.gz",
+      "source_path": "/private/tmp/jarde-breakinloop3-to6-source-plans-luna-v2-20261019/v1-v2.diff",
+      "bytes": 3993,
+      "sha256": "069fedf7fcd7c16df5bf963af7c986476d9d463f38460930536d18c17eb8e174",
+      "encoding": "gzip",
+      "uncompressed_bytes": 10417,
+      "uncompressed_sha256": "df3a76f49579e6e96d0faeb2eba2fd1167cd9aeaec7c4a335af80265461d1e1a"
+    }
+  ],
+  "not_executed": [
+    "compiler",
+    "JADX",
+    "Jarde",
+    "runtime",
+    "IR_probe"
+  ],
+  "correction": "v1’s suggested Loop4 exceptional-retry relation was induced by root task wording and contradicted the source; v2 explicitly rejects it.",
+  "next_priority": [
+    "4/5 full positive Java baselines",
+    "3 verify actual JADX ability before planning parity work",
+    "6 separate Smali/Dex input boundary"
+  ]
+}

@@ -1,14 +1,20 @@
-## 2026-10-19 当前：ComplexIf完整对照已接受，body边界片5/6
+## 2026-10-19 当前：ComplexIf两原件完整交付，body边界片6/6
 
-本节优先，下方为历史。main起点acc8f381，当前产品修改尚未提交；finThrow5/5、nestedFin16/16及旧DoWhile等已完整交付，不重做。`bound-loop-header-chains-at-body-effects`5/6：同轮真实IR确认后续AND候选的StatementFree拒绝；Luna窄实现经root审查/覆盖控制集成，仅让已证AND前缀在后续带效果body处停止吸收并补successor/target核验，复用原body/If/gateway/LoopBreak与ownership。不改变初始header/OR/Stop，不新增Region/pass/CFG/ForHeader/Builder机制。
+本节优先，下方为历史。finThrow5/5、nestedFin16/16、旧DoWhile等均已完整交付，不重做。本轮产品 `c8af822ef6d929f8ad1221f58d02e27669c63fc7` 已推main；后继纯证据/文档HEAD以实际Git为准，最终clean-main审计入口 `/private/tmp/jarde-loop-header-body-boundary-final-clean-main-root-v1-20261019/execution.json`。该外置收据在最后提交/推送后生成，避免把文档HEAD当产品CI提交。
 
-入口 `openspec/changes/bound-loop-header-chains-at-body-effects/results/README.md`。最终CLI SHA52ff01f7794c962f2fbb9d809612c0cc371ef297de8cb32a29629323d168cbca，64,287,728B/0555；v5 Java lib521/0、fmt/Clippy/build通过，v4公开/周边/Reader/指纹成功由源码精确绑定复用。完整56命令/16 API/16全源码编译尝试，八JDK23成功、八JDK8原framework55/52边界；16隔离VM144观察全同原件，八错根拒绝。生成目标/Point完整源码保留，原件/JADX外围树精确复用。目标Structured8/8，map7/33→32/33，Point12/12；BCI69隐式回跳来源缺口单列债务。392payload归档SHA678997a9923042e2b29b41ff7a2969e2b2964e5668412e2a26d891c9cb02bde0逐bytes/mode复开，全部真实失败及修正保留。
+`bound-loop-header-chains-at-body-effects`6/6。Luna实现经root真实IR、架构/失败路径和完整对照验收：后续AND的本块StatementFree拒绝仅确定body边界，保留已证tests、exact successor/target/ownership及Stop，复用原body/If/gateway/LoopBreak。不改变首header/OR，不新增Region/pass/CFG/ForHeader/Builder。入口 `openspec/changes/bound-loop-header-chains-at-body-effects/results/README.md`。
 
-下一必须提交推送当前产品，再执行一次fresh workspace和本产品自身CI四jobs/52独立官方步骤/双seed全部具名结果并绑定Git/CLI/源码，随后主spec同步/strict/最终归档和clean-main。私有own-CI prep为 `/private/tmp/jarde-loop-header-body-boundary-own-ci-prep-luna-v1-20261019`，71native/116CI精确门仅为准备，尚未执行。不得将旧79385产品CI当本次验收。
+最终CLI `/private/tmp/jarde-loop-header-body-boundary-focused-root-v5-20261019/candidate-cli`，64,287,728B/0555/SHA52ff01f7794c962f2fbb9d809612c0cc371ef297de8cb32a29629323d168cbca。主ComplexIf完整56命令/16目标Point API、八JDK23完整源对编译、16VM144观察全同原件、八错根拒绝，map32/33/Point12/12。ComplexIf2同产品48命令/八Structured API、八JDK23整类编译、16VM176观察全同原件、八错根拒绝，map33/34、metadata零差异；没有新增机制/fixture/门。两矩阵均保留八JDK8原framework55/52边界，原件/JADX全树精确复用。
 
-下一固定ComplexIf2完整原件基线已接受，原件/JADX各44观察同，旧目标fallback/map11/34；179payload已归档。当前最终CLI单API smoke显示Structured，完整候选对照仍由Luna私有准备，尚未接受2修复或扩大当前fixture。固定13原件四项已交付、ComplexIf待最终产品广验、ComplexIf2待完整候选比较、七项待完整原件对照；CF09/71/612仍partial。collector复制引入的路径/库存/诊断审计债务与BCI69映射债务均单列，不混入当前恢复补丁。
+定向Java lib521/0及公开/周边/Reader/指纹/fmt/Clippy均接受。fresh一次392targets/103批/3816-0-98、71精确门与全部周边目标通过，默认栈、guard零事件、峰值target850904408B、源码零变、finally exactclean。自身CI39210601042四jobs/52独立官方ZIP步骤、双seed各116精确门和全部3914具名结果一致；无aggregate替代或transport失败。build3303/native5256来源并集5263逐Git blob/bytes/mode绑定产品。593payload最终归档SHA3d0d51e92467513d2a2ae39002a4732505e5cd9fd8af196c4b43c7a52bb9c991已root逐bytes/mode复开；主spec同步1requirement/4scenario，全部385 strict（18main+367change）通过。后继文档不声称重跑产品native/CI。
 
-root独占共享写/Git/network/Cargo/JDK/CLI，Luna只共享只读和私有tmp/Python-B；不建新branch/worktree。Cargo保持5GiB/target1GiB/defaultstack/每秒guard/finally exactclean，期间无共享写/Gitmutation/network/manualJDK或CLI。当前无活动工具链，target absent。
+下一固定TestBreakInLoop2完整基线已46命令/八API/20全编译接受：原件/JADX各八观察同；Jarde目标八次jre_region_ownership_overlap（BCI0重复owner）、16全编译均缺jarde_refused_body，无JardeVM。17/17来源只是bytecode quote非Structured；原件+JADX三错根拒绝。164payload归档SHAa9665b017aa5536f43fcd1a12d5770d11490babb3de88b65786033dfbc6df9d8，入口cf09-testbreakinloop2-original-root-v1/README.md。两case只验证可达正常break路径，catch/clear/sleep不可达，不伪称private调用次数已测。
+
+下一动作：审并运行 `/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019` 同轮IR/ownership trace。28payload私有准备已持久归档SHA6d944722398c973a75766e9256b626833637df7803152b8fb9ffc9a8646047e8，入口cf09-testbreakinloop2-ir-probe-preparation-root-v1/README.md，root27pin静态预检通过，**未编译/未运行，尚无修复OpenSpec**。v1格式参数/env包装/多余ForHeader计数器分析被审回，v2纠正。实际需核Catches、retry_loop_facts首拒绝、Frame和最终ownership前树；单块handler retry证明不能直接套有重抛/回跳分支的handler，只是假设。现有Loop.blocks已区分Endless header/body，禁止简单去重所有权或凭诊断造新机制。
+
+固定13原件现六项完整接受、Loop2一个真实gap、其余六项待完整baseline。3–6的静态计划已落cf09-breakinloop3-to6-static-scope-root-v1：4/5优先Java正向baseline，3 NYI先查实际JADX，6单列Smali/Dex与class/JAR输入边界；这些不计覆盖完成。BCI69/78映射及collector工具债务单列，cf09-implicit-loop-transfer-mapping-debt-root-v1保留纠正过的静态分析；不要混入Loop2修复。CF09/71/612仍partial。
+
+root独占共享写/Git/network/Cargo/JDK/CLI，Luna只共享只读和私有tmp/Python-B；不建branch/worktree。Cargo保持5GiB/target1GiB/defaultstack/每秒guard/finally exactclean；期间无共享写/Gitmutation/network/manualJDK或CLI。当前无活动工具链，target absent。下一probe临时源码必须finally精确恢复当前region SHA5da4d9f40e0892ac134bb42fb1508fffad090b92338a86b9403efd47b7977510并移除临时module；外部输入/runner pins同样前后复开，探针env仅限guard runner子进程环境并记录。其他机器接续先pull GitHub/读本节，旧绝对私有路径需按归档恢复或新版本审查repin。
 
 ## 2026-10-19 历史：DoWhileBreak已交付，ComplexIf完整基线已接受
 

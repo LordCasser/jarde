@@ -1,0 +1,210 @@
+{
+  "status": "preparation_only_not_compiled_or_executed",
+  "members": [
+    {
+      "archive_path": "historical-probe-v1/README.md",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/README.md",
+      "bytes": 3528,
+      "sha256": "6fbb5cbb6266b29a7bbecc89434f1254c1eda9dd8494d32988a26829b9d20329",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/candidate-region.rs",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/candidate-region.rs",
+      "bytes": 1312504,
+      "sha256": "e20c5bca51d6bb99b2f2af8af4dbf323a3603d5cefbe8f1d8e7bede1ed63d0f9",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/candidate.patch",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/candidate.patch",
+      "bytes": 9442,
+      "sha256": "1116ca17f518a240200c235f9e058be50ba0c6d373e40575cfd0ac00e99ab000",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/commands.json",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/commands.json",
+      "bytes": 261,
+      "sha256": "923627d6ffdbc48e3e3fa6680e5bcf3dfd641fbe7a3bbf4193c103b2359a6d08",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/module.patch",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/module.patch",
+      "bytes": 1184,
+      "sha256": "55fdb6833178fb45916bd75bed9e39b6a1aa0a0f2367a1542d1eab520a9fc2a0",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/original/debug/TestBreakInLoop2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/original/debug/TestBreakInLoop2$TestCls.class",
+      "bytes": 1255,
+      "sha256": "51d46fb86d9017a1e6da6740f74defe0d02c66d66ba85eeabcceb89c2a0e79c9",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/original/no-debug/TestBreakInLoop2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/original/no-debug/TestBreakInLoop2$TestCls.class",
+      "bytes": 772,
+      "sha256": "e987629f0aa1ae2c704da8d522da3ebdf4c09ee5e7b411f73ca0a12a921f2e45",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/original-region.rs",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/original-region.rs",
+      "bytes": 1310095,
+      "sha256": "5da4d9f40e0892ac134bb42fb1508fffad090b92338a86b9403efd47b7977510",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/pins.json",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/pins.json",
+      "bytes": 4684,
+      "sha256": "7ce8b99f53da3185bbfa08157d06c425e4f8fc6d014c21ac3d71b71041918914",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/retry-check-map.json",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/retry-check-map.json",
+      "bytes": 4166,
+      "sha256": "0f25719d45e23097d52ced8e63369e8840f9348167853b96356468e97b9d8dd0",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/runner-spec.json",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/runner-spec.json",
+      "bytes": 1656,
+      "sha256": "e1e439ac6a5f7de33c9ba4564ab631a8810701630b583c3ac4bb15bc458cadc1",
+      "mode": 420
+    },
+    {
+      "archive_path": "historical-probe-v1/testbreakinloop2_ir_probe_tests.rs",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v1-20261019/testbreakinloop2_ir_probe_tests.rs",
+      "bytes": 13180,
+      "sha256": "07ce99f3efaf9d90a16a09d13c10b69c5c5d60e9d02621d46f287311cd0ffa21",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/README.md",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/README.md",
+      "bytes": 2068,
+      "sha256": "689ecc9e3a73b3f768c365689dbd7d0ba721d3d1985df522a5a1f6937b42a451",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/candidate-region.rs",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/candidate-region.rs",
+      "bytes": 1312496,
+      "sha256": "d1f2ef5a8f0d0d0ec8e9b749ae6dbc17a2e40bcf9fa8261c7332e8441c7cea9e",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/candidate.patch",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/candidate.patch",
+      "bytes": 9434,
+      "sha256": "e01bf62f19ac6621b53bd408606d6165bce4d170fa24ff657a0dd7a2728f1c95",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/commands.json",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/commands.json",
+      "bytes": 222,
+      "sha256": "a6ddbbfabbc52ca817fdb0853b07721381a6d352cae4ce5c1c7c111d1ec86f35",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/module.patch",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/module.patch",
+      "bytes": 953,
+      "sha256": "3b8a0142e0e16c6c73836e440fbb7dfa7f50a2de11209c2ac821a7b6103ca00b",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/original/debug/TestBreakInLoop2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/original/debug/TestBreakInLoop2$TestCls.class",
+      "bytes": 1255,
+      "sha256": "51d46fb86d9017a1e6da6740f74defe0d02c66d66ba85eeabcceb89c2a0e79c9",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/original/no-debug/TestBreakInLoop2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/original/no-debug/TestBreakInLoop2$TestCls.class",
+      "bytes": 772,
+      "sha256": "e987629f0aa1ae2c704da8d522da3ebdf4c09ee5e7b411f73ca0a12a921f2e45",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/original-region.rs",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/original-region.rs",
+      "bytes": 1310095,
+      "sha256": "5da4d9f40e0892ac134bb42fb1508fffad090b92338a86b9403efd47b7977510",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/pins.json",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/pins.json",
+      "bytes": 8391,
+      "sha256": "005e85931c9c734f67308fd1fb4e55eead01903e90920c9183c375bcc6435ee1",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/retry-check-map.json",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/retry-check-map.json",
+      "bytes": 4166,
+      "sha256": "0f25719d45e23097d52ced8e63369e8840f9348167853b96356468e97b9d8dd0",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/runner-spec.json",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/runner-spec.json",
+      "bytes": 3981,
+      "sha256": "ea1075802b8d7d7c9a1926465ebd5c658abf46e272907d37f2a5b1cf62735365",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/static-review.md",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/static-review.md",
+      "bytes": 1480,
+      "sha256": "b59ce2ba58b1d7038caabc79a615937abd9605e18fa273f15e2a325f68777f95",
+      "mode": 420
+    },
+    {
+      "archive_path": "current-probe-v2/testbreakinloop2_ir_probe_tests.rs",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019/testbreakinloop2_ir_probe_tests.rs",
+      "bytes": 7213,
+      "sha256": "d0b59c51e9089ed7dd139f5bacdde843b13ca810520963a1ff0724645a33536f",
+      "mode": 420
+    },
+    {
+      "archive_path": "root-preflight/review.json",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-ir-probe-root-preflight-v1-20261019/review.json",
+      "bytes": 933,
+      "sha256": "a9dd988cf4da467d05f8e33671624d3addefa73476b9f94be7e1a84027c717a4",
+      "mode": 420
+    },
+    {
+      "archive_path": "root-architecture/README.md",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-static-architecture-root-v1-20261019/README.md",
+      "bytes": 2136,
+      "sha256": "b79b097632f459d65c04ad5f7138e4715d50f9cf7275e3c58aacab5f637bc052",
+      "mode": 420
+    },
+    {
+      "archive_path": "root-architecture/pins.json",
+      "source_path": "/private/tmp/jarde-testbreakinloop2-static-architecture-root-v1-20261019/pins.json",
+      "bytes": 1202,
+      "sha256": "011ddc7f0d1ce5f68b1b758ab5727db47b140a45338e181d967a024f9ba2e9ab",
+      "mode": 420
+    }
+  ],
+  "payload_member_count": 28,
+  "source_region_sha256": "5da4d9f40e0892ac134bb42fb1508fffad090b92338a86b9403efd47b7977510",
+  "actual_probe_tests": 0,
+  "known_v1_issues": [
+    "extra named-format argument",
+    "env wrapper bypasses runner test summary handling",
+    "unnecessary auxiliary counter/ForHeader analysis"
+  ],
+  "v2_root_notes": "Guard runner subprocess receives JRE_LOOP2_IR_PROBE=1 and propagates it to Cargo children; record exact environment, do not mutate session. Reopen external pins before/finally. Absolute private input paths need reviewed repinning on another host."
+}

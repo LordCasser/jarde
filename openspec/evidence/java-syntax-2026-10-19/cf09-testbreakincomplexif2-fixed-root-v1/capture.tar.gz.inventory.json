@@ -1,0 +1,1106 @@
+{
+  "excluded_external_cli": [],
+  "schema": "complex-if2-complete-candidate-comparison-root-v1",
+  "members": [
+    {
+      "archive_path": "final-preparation/README.md",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-prep-luna-v1-20261019/README.md",
+      "bytes": 3022,
+      "sha256": "737ee519707f8538bcfca6d5d8dd35c3daf6f8e984d37cc2d2b64a5b8127a266",
+      "mode": 420
+    },
+    {
+      "archive_path": "final-preparation/adaptation.diff",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-prep-luna-v1-20261019/adaptation.diff",
+      "bytes": 79092,
+      "sha256": "1d89479692b3e9db7f5c630447814526ed2189087a1982c10d67396b1abc54c9",
+      "mode": 420
+    },
+    {
+      "archive_path": "final-preparation/collect_final.py",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-prep-luna-v1-20261019/collect_final.py",
+      "bytes": 54172,
+      "sha256": "2f3977336482ecb7596b2375faceaad2d78f105101c370a875188eefac642fc1",
+      "mode": 420
+    },
+    {
+      "archive_path": "final-preparation/pins.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-prep-luna-v1-20261019/pins.json",
+      "bytes": 5697,
+      "sha256": "8e92e2e65a6acb457b09c190677b4b6c770610d5a1e968910202d6e3d9b0a7e8",
+      "mode": 420
+    },
+    {
+      "archive_path": "final-preparation/preflight.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-prep-luna-v1-20261019/preflight.json",
+      "bytes": 609,
+      "sha256": "ba2654fb4ebc160fbe0af1708cdc369fd6187b0804ef41e5c474bd147545b674",
+      "mode": 420
+    },
+    {
+      "archive_path": "final-preparation/review.py",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-prep-luna-v1-20261019/review.py",
+      "bytes": 51436,
+      "sha256": "bad98ff1ce382ad00e933780aed17ee8c69a867d97750768d4958c4daeecbd25",
+      "mode": 420
+    },
+    {
+      "archive_path": "final-preparation/static_preflight.py",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-prep-luna-v1-20261019/static_preflight.py",
+      "bytes": 7168,
+      "sha256": "f401b0aebcf9a05ddf2a4e12d0909d893def47940959acfbed9396d33177f9d9",
+      "mode": 420
+    },
+    {
+      "archive_path": "root-preflight/review.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-preflight-root-v1-20261019/review.json",
+      "bytes": 2107,
+      "sha256": "76deb8fec7054befe0fc512fb43e7f806143db83979074e2d1ef9bb84c213221",
+      "mode": 420
+    },
+    {
+      "archive_path": "single-api-smoke/execution.json",
+      "source_path": "/private/tmp/jarde-complex-if2-candidate-smoke-root-v1-20261019/execution.json",
+      "bytes": 2492,
+      "sha256": "d9f82ff7cc25b5eeb0f80775b25ba23bb6029923bddec709fea355e73b9b649e",
+      "mode": 420
+    },
+    {
+      "archive_path": "single-api-smoke/stderr.raw",
+      "source_path": "/private/tmp/jarde-complex-if2-candidate-smoke-root-v1-20261019/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "single-api-smoke/stdout.raw",
+      "source_path": "/private/tmp/jarde-complex-if2-candidate-smoke-root-v1-20261019/stdout.raw",
+      "bytes": 101243,
+      "sha256": "0f55b36ad22f765182590c52e4ff52b80411f99a651e5e8ac8efe357be27d6d3",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-launch/execution.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-launch-root-v1-20261019/execution.json",
+      "bytes": 778,
+      "sha256": "7967208a6e7bd4d6900fc9e58817c173100b68d6bc5537cb9c7c271edd6664d5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-launch/review.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-launch-root-v1-20261019/review.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-launch/review.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-launch-root-v1-20261019/review.stdout.raw",
+      "bytes": 2477,
+      "sha256": "faf200ab54770e6b317f2cf04c0625d40bb5c6678d9ebf18e41313aa68d2b4b0",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-launch/run.py",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-launch-root-v1-20261019/run.py",
+      "bytes": 1172,
+      "sha256": "b5da45c30949949fa9138c1d7673868087e7033d2c32f6f6e4c97a599c90f686",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-launch/stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-launch-root-v1-20261019/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-launch/stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-launch-root-v1-20261019/stdout.raw",
+      "bytes": 133,
+      "sha256": "437bdec66f2b00db07dc4f361a153884e0977ae960f9810b7a22cd82dfcd8e16",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/collector.py",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/collector.py",
+      "bytes": 54172,
+      "sha256": "2f3977336482ecb7596b2375faceaad2d78f105101c370a875188eefac642fc1",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/driver-classes/TestBreakInComplexIf2Driver.class",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/driver-classes/TestBreakInComplexIf2Driver.class",
+      "bytes": 8837,
+      "sha256": "980c593830a5c25e3496ba1b04fad94bb456fe17062d4c04ee978ef527338629",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/execution.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/execution.json",
+      "bytes": 12266692,
+      "sha256": "51a6ecf5725c2d6368ab7497abdb1214b7a168c7dcdf2a897455c90fc6772084",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-classes/debug/bundle-child/all/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-classes/debug/bundle-child/all/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "bytes": 1604,
+      "sha256": "fc571bbe5cc20b9283cd6fcbbe67ec16a22982af0b95bce61c7378452a562904",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-classes/debug/bundle-child/default/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-classes/debug/bundle-child/default/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "bytes": 1604,
+      "sha256": "fc571bbe5cc20b9283cd6fcbbe67ec16a22982af0b95bce61c7378452a562904",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-classes/debug/child/all/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-classes/debug/child/all/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "bytes": 1604,
+      "sha256": "fc571bbe5cc20b9283cd6fcbbe67ec16a22982af0b95bce61c7378452a562904",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-classes/debug/child/default/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-classes/debug/child/default/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "bytes": 1604,
+      "sha256": "fc571bbe5cc20b9283cd6fcbbe67ec16a22982af0b95bce61c7378452a562904",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-classes/no-debug/bundle-child/all/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-classes/no-debug/bundle-child/all/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "bytes": 1149,
+      "sha256": "72f9634980a5d688c0916bcbda47fb2ed6c66e446e3738fbacbfc4edff2a5bda",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-classes/no-debug/bundle-child/default/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-classes/no-debug/bundle-child/default/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "bytes": 1149,
+      "sha256": "72f9634980a5d688c0916bcbda47fb2ed6c66e446e3738fbacbfc4edff2a5bda",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-classes/no-debug/child/all/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-classes/no-debug/child/all/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "bytes": 1149,
+      "sha256": "72f9634980a5d688c0916bcbda47fb2ed6c66e446e3738fbacbfc4edff2a5bda",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-classes/no-debug/child/default/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-classes/no-debug/child/default/javac23/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.class",
+      "bytes": 1149,
+      "sha256": "72f9634980a5d688c0916bcbda47fb2ed6c66e446e3738fbacbfc4edff2a5bda",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-sources/debug/bundle-child/all/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-sources/debug/bundle-child/all/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "bytes": 2760,
+      "sha256": "715d7ade41b1ed6bddf0f87bcc5dbe04aa337263ab5a2df4936b526dd0b5d9c6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-sources/debug/bundle-child/default/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-sources/debug/bundle-child/default/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "bytes": 2760,
+      "sha256": "715d7ade41b1ed6bddf0f87bcc5dbe04aa337263ab5a2df4936b526dd0b5d9c6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-sources/debug/child/all/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-sources/debug/child/all/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "bytes": 2760,
+      "sha256": "715d7ade41b1ed6bddf0f87bcc5dbe04aa337263ab5a2df4936b526dd0b5d9c6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-sources/debug/child/default/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-sources/debug/child/default/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "bytes": 2760,
+      "sha256": "715d7ade41b1ed6bddf0f87bcc5dbe04aa337263ab5a2df4936b526dd0b5d9c6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-sources/no-debug/bundle-child/all/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-sources/no-debug/bundle-child/all/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "bytes": 2775,
+      "sha256": "18a7707642efd6d004ac1843b3cef225e34dd770904641b13a9bef90313f41b5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-sources/no-debug/bundle-child/default/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-sources/no-debug/bundle-child/default/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "bytes": 2775,
+      "sha256": "18a7707642efd6d004ac1843b3cef225e34dd770904641b13a9bef90313f41b5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-sources/no-debug/child/all/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-sources/no-debug/child/all/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "bytes": 2775,
+      "sha256": "18a7707642efd6d004ac1843b3cef225e34dd770904641b13a9bef90313f41b5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/generated-sources/no-debug/child/default/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/generated-sources/no-debug/child/default/jadx/tests/integration/loops/TestBreakInComplexIf2$TestCls.java",
+      "bytes": 2775,
+      "sha256": "18a7707642efd6d004ac1843b3cef225e34dd770904641b13a9bef90313f41b5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/independent-review.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/independent-review.json",
+      "bytes": 3965,
+      "sha256": "c5137c0c3218522922f435ede282a4b94e8c2478f6b1adfa053545979309e85a",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/debug/bundle-child/all/target/report.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/debug/bundle-child/all/target/report.json",
+      "bytes": 161820,
+      "sha256": "507daa046f6875fd7db9b81cc628765b5c91d5c81eacb3c0abac00d0cda4e366",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/debug/bundle-child/all/target/whole-source.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/debug/bundle-child/all/target/whole-source.java",
+      "bytes": 2760,
+      "sha256": "715d7ade41b1ed6bddf0f87bcc5dbe04aa337263ab5a2df4936b526dd0b5d9c6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/debug/bundle-child/default/target/report.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/debug/bundle-child/default/target/report.json",
+      "bytes": 160131,
+      "sha256": "b1c2fe56d97f8500d8119f3918926017af850e785c27c0d952388bff312130d5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/debug/bundle-child/default/target/whole-source.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/debug/bundle-child/default/target/whole-source.java",
+      "bytes": 2760,
+      "sha256": "715d7ade41b1ed6bddf0f87bcc5dbe04aa337263ab5a2df4936b526dd0b5d9c6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/debug/child/all/target/report.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/debug/child/all/target/report.json",
+      "bytes": 101236,
+      "sha256": "82050fe83f2c47010a52343bf750d1c2d431325940124570773c62886013eda8",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/debug/child/all/target/whole-source.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/debug/child/all/target/whole-source.java",
+      "bytes": 2760,
+      "sha256": "715d7ade41b1ed6bddf0f87bcc5dbe04aa337263ab5a2df4936b526dd0b5d9c6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/debug/child/default/target/report.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/debug/child/default/target/report.json",
+      "bytes": 99552,
+      "sha256": "ca8361c14196812ab4eef1bd9ab56d4f58646a5136f367168261607ba60abdd4",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/debug/child/default/target/whole-source.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/debug/child/default/target/whole-source.java",
+      "bytes": 2760,
+      "sha256": "715d7ade41b1ed6bddf0f87bcc5dbe04aa337263ab5a2df4936b526dd0b5d9c6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/no-debug/bundle-child/all/target/report.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/no-debug/bundle-child/all/target/report.json",
+      "bytes": 161857,
+      "sha256": "8f38d8fc12fc1b73e1605b60778478cf792bd513356443a0814279fab0b1b841",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/no-debug/bundle-child/all/target/whole-source.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/no-debug/bundle-child/all/target/whole-source.java",
+      "bytes": 2775,
+      "sha256": "18a7707642efd6d004ac1843b3cef225e34dd770904641b13a9bef90313f41b5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/no-debug/bundle-child/default/target/report.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/no-debug/bundle-child/default/target/report.json",
+      "bytes": 160168,
+      "sha256": "cbf7bd220140da9e57e1bda4cd8b96de2e6b1842f4ad710da50f490d5f55454f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/no-debug/bundle-child/default/target/whole-source.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/no-debug/bundle-child/default/target/whole-source.java",
+      "bytes": 2775,
+      "sha256": "18a7707642efd6d004ac1843b3cef225e34dd770904641b13a9bef90313f41b5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/no-debug/child/all/target/report.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/no-debug/child/all/target/report.json",
+      "bytes": 101271,
+      "sha256": "f3b13aa1c02a115dedaae51ff146c2b36f8ea6b1ffdda4ff8f50ac96432053d6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/no-debug/child/all/target/whole-source.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/no-debug/child/all/target/whole-source.java",
+      "bytes": 2775,
+      "sha256": "18a7707642efd6d004ac1843b3cef225e34dd770904641b13a9bef90313f41b5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/no-debug/child/default/target/report.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/no-debug/child/default/target/report.json",
+      "bytes": 99582,
+      "sha256": "9d993c8178f23cce91c822919208a5edca36dc8d7320b04d235ec877cc7bdaae",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/jarde/no-debug/child/default/target/whole-source.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/jarde/no-debug/child/default/target/whole-source.java",
+      "bytes": 2775,
+      "sha256": "18a7707642efd6d004ac1843b3cef225e34dd770904641b13a9bef90313f41b5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/1.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/1.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 99552,
+      "sha256": "ca8361c14196812ab4eef1bd9ab56d4f58646a5136f367168261607ba60abdd4",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/10.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/10.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/10.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/10.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/11.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/11.stderr.raw",
+      "bytes": 379,
+      "sha256": "ef2a924f576f1439cba26ff0974d4275459d7854a0e294081b474ea99a36a0b4",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/11.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/12.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/12.stderr.raw",
+      "bytes": 748,
+      "sha256": "98445ed5b5c51d4a180d3df678485c064a20b242c75daaaae785f263a10c4b7a",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/12.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/12.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/13.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/13.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/13.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/13.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/14.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/14.stderr.raw",
+      "bytes": 375,
+      "sha256": "216de77e6534a387a93ade0593569af52e7bb6342d7b865a722fd110ad10296d",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/14.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/15.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/15.stderr.raw",
+      "bytes": 759,
+      "sha256": "5cab15fd8d88b73c5eb341d3e7264d770d93416345410a58acc05eb950d075d5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/15.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/15.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/16.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/16.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/16.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/17.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/17.stderr.raw",
+      "bytes": 386,
+      "sha256": "a8392e38a6477515386e845e8bccc3ccc32ea6a2acd729a76f9759d88a22fb4e",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/17.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/17.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/18.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/18.stderr.raw",
+      "bytes": 755,
+      "sha256": "18f7e942febfd0fe112b95c6ed0f06cc88f567665cac44f254ac4428c10bd970",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/18.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/18.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/19.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/19.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/19.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/19.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/2.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/2.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 101236,
+      "sha256": "82050fe83f2c47010a52343bf750d1c2d431325940124570773c62886013eda8",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/20.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/20.stderr.raw",
+      "bytes": 382,
+      "sha256": "ace4520b245219e7ab966cc8b64b734baac7b07de508a0b0064f60900d17e8e4",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/20.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/20.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/21.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/21.stderr.raw",
+      "bytes": 755,
+      "sha256": "fd10122a070c6d551c6c52d0fec8e0882f3e5a86723986bcec909cd2e6725a0e",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/21.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/21.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/22.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/22.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/22.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/22.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/23.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/23.stderr.raw",
+      "bytes": 382,
+      "sha256": "5c0c1e8bb7aebdf1a26e7d0d44767533936c6356151f2272bf46100bbc86f61f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/23.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/23.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/24.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/24.stderr.raw",
+      "bytes": 751,
+      "sha256": "3c209bb98d47131957e668682cdafba42ac4e55a7cd289da55c2071342ed2cf4",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/24.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/24.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/25.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/25.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/25.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/25.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/26.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/26.stderr.raw",
+      "bytes": 378,
+      "sha256": "6b131aaf56f31ff89b5a878175e345da5f789f4be4c8c9c39953eaa2f0dfb8f3",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/26.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/26.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/27.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/27.stderr.raw",
+      "bytes": 762,
+      "sha256": "5c6fd67b005d2e65fa2108853942d6abc9fad361a5250469562e1a78b09c1a3a",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/27.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/27.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/28.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/28.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/28.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/28.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/29.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/29.stderr.raw",
+      "bytes": 389,
+      "sha256": "83a61c04a2b733a9100a3053f0bdd16749af03939c60d50ba1852318eaedb286",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/29.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/29.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/3.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/3.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/3.stdout.raw",
+      "bytes": 160131,
+      "sha256": "b1c2fe56d97f8500d8119f3918926017af850e785c27c0d952388bff312130d5",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/30.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/30.stderr.raw",
+      "bytes": 758,
+      "sha256": "d76b6381f852850bf0addbb1b5f46f92b229e907bbed91a39bf5b69318bb546a",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/30.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/30.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/31.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/31.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/31.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/31.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/32.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/32.stderr.raw",
+      "bytes": 385,
+      "sha256": "38473f3b931af4bdebbb016f76f8fae51b3355d1b81b3388b205b219c459abc6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/32.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/32.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/33.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/33.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/33.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/33.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/34.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/34.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/34.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/34.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/35.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/35.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/35.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/35.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/36.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/36.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/36.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/36.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/37.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/37.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/37.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/37.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/38.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/38.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/38.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/38.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/39.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/39.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/39.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/39.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/4.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/4.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/4.stdout.raw",
+      "bytes": 161820,
+      "sha256": "507daa046f6875fd7db9b81cc628765b5c91d5c81eacb3c0abac00d0cda4e366",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/40.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/40.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/40.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/40.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/41.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/41.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/41.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/41.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/42.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/42.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/42.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/42.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/43.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/43.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/43.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/43.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/44.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/44.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/44.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/44.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/45.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/45.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/45.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/45.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/46.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/46.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/46.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/46.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/47.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/47.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/47.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/47.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/48.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/48.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/48.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/48.stdout.raw",
+      "bytes": 2319,
+      "sha256": "4cb89c12d4728a2041dc247753fe72cce8feb88e3bdc2d42109d2ff49bedd7cb",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/5.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/5.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/5.stdout.raw",
+      "bytes": 99582,
+      "sha256": "9d993c8178f23cce91c822919208a5edca36dc8d7320b04d235ec877cc7bdaae",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/6.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/6.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/6.stdout.raw",
+      "bytes": 101271,
+      "sha256": "f3b13aa1c02a115dedaae51ff146c2b36f8ea6b1ffdda4ff8f50ac96432053d6",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/7.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/7.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/7.stdout.raw",
+      "bytes": 160168,
+      "sha256": "cbf7bd220140da9e57e1bda4cd8b96de2e6b1842f4ad710da50f490d5f55454f",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/8.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/8.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/8.stdout.raw",
+      "bytes": 161857,
+      "sha256": "8f38d8fc12fc1b73e1605b60778478cf792bd513356443a0814279fab0b1b841",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/9.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/9.stderr.raw",
+      "bytes": 752,
+      "sha256": "a4276badc5ab269ad8aa7730aeca49dcafeea11e4758b50dcbe0bc4d5f08c87e",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/raw/9.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/root-review.json",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/root-review.json",
+      "bytes": 1265,
+      "sha256": "3ae6f1255c0d9001992de299586449f7d527f9d9b2f70a1255f1fc3fa1ded2dd",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/runtime-bound-cwd.py",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/runtime-bound-cwd.py",
+      "bytes": 389,
+      "sha256": "bc917ec08e07ed462c18958f9a0d3b064b7d5bba3adc5fa41d9db49ff6c3de46",
+      "mode": 420
+    },
+    {
+      "archive_path": "actual-baseline/source/jadx/tests/integration/loops/TestBreakInComplexIf2.java",
+      "source_path": "/private/tmp/jarde-testbreakincomplexif2-final-candidate-root-v1-20261019/source/jadx/tests/integration/loops/TestBreakInComplexIf2.java",
+      "bytes": 1125,
+      "sha256": "c51ba62db7e9d9d7df86bbe04fe38f37357fe62e1dc7514edc54701af94ecc92",
+      "mode": 420
+    },
+    {
+      "archive_path": "archive-preparation/pack.py",
+      "source_path": "/private/tmp/jarde-complex-if2-final-archive-prep-root-v1-20261019/pack.py",
+      "bytes": 3557,
+      "sha256": "886876e10bd2952cf581f15c193cfdfb02cc8ab3db0a324aaf284d324c9726d2",
+      "mode": 420
+    }
+  ],
+  "payload_member_count": 153,
+  "accepted_probe": {
+    "status": "root_accepted_complete_complex_if2_candidate_against_original_and_jadx",
+    "receipt_sha256": "51a6ecf5725c2d6368ab7497abdb1214b7a168c7dcdf2a897455c90fc6772084",
+    "independent_review_sha256": "c5137c0c3218522922f435ede282a4b94e8c2478f6b1adfa053545979309e85a",
+    "cli_sha256": "52ff01f7794c962f2fbb9d809612c0cc371ef297de8cb32a29629323d168cbca",
+    "product_revision": "c8af822ef6d929f8ad1221f58d02e27669c63fc7",
+    "commands": 48,
+    "api_cells": 8,
+    "complete_compile_attempts": 16,
+    "jdk23_compiles": 8,
+    "jdk8_existing_framework_boundary_failures": 8,
+    "isolated_positive_vm_cells": 16,
+    "original_equivalent_observations": 176,
+    "wrong_roots_rejected": 8,
+    "target_maps": "33/34; only implicit goto BCI78 missing",
+    "metadata_differences": 0,
+    "source_unchanged": true,
+    "target_absent": true,
+    "own_ci_acceptance_pending": true,
+    "scope": "Same frozen primary AND/body product; no extra production mechanism/fixture/native gate added. Original/JADX immutable baseline exact-reused.",
+    "review_history": [
+      "One root inspection attempted to read the review file while the reviewer process was still running; file absent, no source/CLI/JDK command rerun. Waited for original process exit0 then read and supplemented its result."
+    ]
+  },
+  "notes": [
+    "Accepted complete ComplexIf2 candidate comparison: 48 commands, 176 observations; same frozen AND/body product. Native accepted separately, product own CI pending. Immutable original/JADX baseline archived separately; no rerun claim.",
+    "Historical unexecuted preparations retained. No CLI/toolchain payload."
+  ]
+}
