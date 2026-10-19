@@ -10518,6 +10518,81 @@
       "path": "tests/fixtures/recover-branching-guard-body/v8/Order.class"
     },
     {
+      "blake3": "ba934f194d6eafa245477406812ca9af22dd240604133a067d7f34ddea54c7ba",
+      "bytes": 2363,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/control/javac23/debug/RetryCatchControl.class"
+    },
+    {
+      "blake3": "34e25b56b70b715c99f77b627023e9857baac66ce84d782800d45b7313fffd83",
+      "bytes": 1773,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/control/javac23/no-debug/RetryCatchControl.class"
+    },
+    {
+      "blake3": "76c34cfc7ff0418e0b47bbe3987e2c39fba245f10e61b0781030810f08a286ff",
+      "bytes": 2366,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/control/javac8/debug/RetryCatchControl.class"
+    },
+    {
+      "blake3": "9ee34a004329bf25c07728048f56e453db1e8cddafbf26725a8a5da4c39dffa9",
+      "bytes": 1776,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/control/javac8/no-debug/RetryCatchControl.class"
+    },
+    {
+      "blake3": "fb6b1d1171f32787eec2b6999838747a9e80c7fa581baf0f614484c2a875eae0",
+      "bytes": 11357,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/licenses/JADX-LICENSE"
+    },
+    {
+      "blake3": "d006ec493b8b2457b733149b1779dd1db3bd8314f80e52377749304dafa869b2",
+      "bytes": 10658,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/licenses/JADX-NOTICE"
+    },
+    {
+      "blake3": "8d88d2d2de7803c7810d4fff70a799370a68d92a96c65fb7c2ed9cbd5256f495",
+      "bytes": 1255,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/original/debug/TestBreakInLoop2$TestCls.class"
+    },
+    {
+      "blake3": "456ec181bfffe1f24f8ca8b68302b537e0233aa6447892699c3dbe2e9a879107",
+      "bytes": 772,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/original/no-debug/TestBreakInLoop2$TestCls.class"
+    },
+    {
+      "blake3": "739a43bf4799d48cfe102e6e01039276effbebdf5805d3bf4cdb031751dcfe6d",
+      "bytes": 1263,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/rejections/duplicate-physical-handler-row/TestBreakInLoop2$TestCls.class"
+    },
+    {
+      "blake3": "b1921fc53380d2f33433ee207d67da7243529b589bb052269e7cc46835cb6b69",
+      "bytes": 1248,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/rejections/external-normal-entry-to-retry-leaf/TestBreakInLoop2$TestCls.class"
+    },
+    {
+      "blake3": "e0c11273212ab8b906b4c189db9cec711eb55794609ac1d3bc587cd9765b60bf",
+      "bytes": 1255,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/rejections/retry-throw-leaf-returns/TestBreakInLoop2$TestCls.class"
+    },
+    {
+      "blake3": "e51eab81efa32140269b2f8b87108539a311edf7ca94fc32763e0a63efea0194",
+      "bytes": 1255,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/rejections/wrong-retry-target/TestBreakInLoop2$TestCls.class"
+    },
+    {
+      "blake3": "1f697fbc4c73d944503203f73300fc424688106d5c014e16b53af24c2a033408",
+      "bytes": 2103,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/source/RetryCatchControl.java"
+    },
+    {
+      "blake3": "995d5a09b07c1267377e09c6237f7ae3c0abfcbcf685a385897cc9f0c958bd37",
+      "bytes": 5253,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/source/RetryCatchControlRunner.java"
+    },
+    {
+      "blake3": "884f18be30616ef39c48bc7bf0d23777d092d5b9be313b8c50671f0396e93d84",
+      "bytes": 989,
+      "path": "tests/fixtures/recover-branching-named-catch-retry-loops/source/TestBreakInLoop2.java"
+    },
+    {
       "blake3": "bca1bdb3d5588c2d8f10d12cb9e631a5269055aac1e4571007aca5a7e3c4648f",
       "bytes": 327,
       "path": "tests/fixtures/recover-call-return-loop-finally/CallReturnFinally.java"

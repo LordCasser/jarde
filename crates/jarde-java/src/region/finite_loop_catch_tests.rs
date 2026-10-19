@@ -41,6 +41,31 @@ fn with_frozen_method(
         &Recovered,
     ),
 ) {
+    with_frozen_method_ir(
+        class_bytes,
+        method_name,
+        descriptor,
+        |canonical, view, ssa, operations, code, recovered| {
+            assert!(recovered.fallbacks().is_empty(), "{:#?}", recovered.regions);
+            assert_eq!(recovered.claimed.len(), canonical.blocks().len());
+            check(canonical, view, ssa, operations, code, recovered);
+        },
+    );
+}
+
+fn with_frozen_method_ir(
+    class_bytes: &[u8],
+    method_name: &[u8],
+    descriptor: &[u8],
+    check: impl FnOnce(
+        &CanonicalCfg,
+        &NormalFlowView,
+        &SsaTable,
+        &Operations,
+        &MethodCodeFacts,
+        &Recovered,
+    ),
+) {
     use jarde_jvm::engine::analyze_method_ir;
     use jarde_jvm::environment::ResolutionEnvironment;
     use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
@@ -142,8 +167,6 @@ fn with_frozen_method(
         &mut recovery_budget,
     )
     .expect("frozen method recovery completes");
-    assert!(recovered.fallbacks().is_empty(), "{:#?}", recovered.regions);
-    assert_eq!(recovered.claimed.len(), canonical.blocks().len());
     check(canonical, &view, ssa, &operations, code, &recovered);
 }
 
@@ -1156,6 +1179,672 @@ fn retry_proof_rejects_mutated_physical_and_transfer_evidence() {
                     operations,
                     code,
                     wrong_handler_rows,
+                );
+            },
+        );
+    }
+}
+
+// Candidate additions to finite_loop_catch_tests.rs after the retry proof helpers.
+// These are a private integration draft; adapt only the new RetryLoopFacts leaf fields
+// when the implementation lands. They require no production visibility change.
+const LOOP2_DEBUG: &[u8] = include_bytes!(
+    "../../../../tests/fixtures/recover-branching-named-catch-retry-loops/original/debug/TestBreakInLoop2$TestCls.class"
+);
+const LOOP2_NO_DEBUG: &[u8] = include_bytes!(
+    "../../../../tests/fixtures/recover-branching-named-catch-retry-loops/original/no-debug/TestBreakInLoop2$TestCls.class"
+);
+
+fn loop2_retry_classes() -> [&'static [u8]; 2] {
+    [LOOP2_DEBUG, LOOP2_NO_DEBUG]
+}
+
+fn loop2_node_bcis(view: &NormalFlowView, nodes: &BTreeSet<usize>) -> BTreeSet<u32> {
+    nodes
+        .iter()
+        .map(|node| {
+            view.id_of(*node)
+                .expect("retry fact node maps back to a block")
+                .bci()
+        })
+        .collect()
+}
+
+fn assert_loop2_branching_retry_fixture(class: &[u8]) {
+    with_frozen_method(
+        class,
+        b"test",
+        b"(Ljava/util/List;)V",
+        |canonical, view, ssa, operations, code, recovered| {
+            assert!(
+                recovered.fallbacks().is_empty(),
+                "complete original has no fallback: {:#?}",
+                recovered.regions
+            );
+            assert_eq!(code.exception_handlers.len(), 1);
+            let row = &code.exception_handlers[0];
+            assert_eq!((row.start_bci, row.end_bci, row.handler_bci), (0, 6, 9));
+            assert!(
+                row.catch_type_index.is_some(),
+                "the named Exception row remains named"
+            );
+            assert_eq!(
+                canonical
+                    .blocks()
+                    .iter()
+                    .map(|b| b.id().bci())
+                    .collect::<BTreeSet<_>>(),
+                BTreeSet::from([0, 9, 17, 19, 34])
+            );
+            assert_eq!(
+                view.successor_ids(
+                    canonical
+                        .blocks()
+                        .iter()
+                        .find(|b| b.id().bci() == 0)
+                        .unwrap()
+                        .id()
+                ),
+                vec![
+                    canonical
+                        .blocks()
+                        .iter()
+                        .find(|b| b.id().bci() == 34)
+                        .unwrap()
+                        .id()
+                        .clone()
+                ]
+            );
+            for (from, to) in [(9, 17), (9, 19), (19, 0)] {
+                assert!(
+                    canonical
+                        .edges()
+                        .iter()
+                        .any(|edge| edge.from().bci() == from
+                            && edge.to().bci() == to
+                            && edge.kind() == CanonicalEdgeKind::Normal),
+                    "real normal edge {from}->{to} is present"
+                );
+            }
+            assert!(canonical.edges().iter().any(|edge| edge.from().bci() == 0
+                && edge.to().bci() == 9
+                && edge.kind()
+                    == (CanonicalEdgeKind::Exception {
+                        handler_ordinal: row.ordinal
+                    })));
+            let covered_throw_bcis = canonical
+                .throw_sites()
+                .iter()
+                .filter(|site| row.start_bci <= site.bci() && site.bci() < row.end_bci)
+                .map(|site| site.bci())
+                .collect::<Vec<_>>();
+            assert_eq!(
+                covered_throw_bcis,
+                vec![2],
+                "only funcB is protected by [0,6)"
+            );
+            assert!(
+                matches!(operations.get(18), Some(Operation::Throw)),
+                "throw leaf ends at athrow 18"
+            );
+            assert!(
+                matches!(operations.get(20), Some(Operation::Invoke(target)) if target.name() == "clear")
+            );
+            assert!(
+                matches!(operations.get(28), Some(Operation::Invoke(target)) if target.name() == "sleep")
+            );
+            assert!(
+                matches!(operations.get(31), Some(Operation::Transfer)),
+                "retry leaf ends in goto 31"
+            );
+
+            let owners = recovered
+                .regions
+                .iter()
+                .flat_map(Region::blocks)
+                .map(|b| b.bci())
+                .collect::<Vec<_>>();
+            let expected = BTreeSet::from([0, 9, 17, 19, 34]);
+            assert_eq!(
+                owners.len(),
+                expected.len(),
+                "tree has one occurrence per canonical owner"
+            );
+            assert_eq!(owners.iter().copied().collect::<BTreeSet<_>>(), expected);
+            for bci in &expected {
+                assert_eq!(owners.iter().filter(|owner| **owner == *bci).count(), 1);
+            }
+
+            let tree = Region::Sequence {
+                regions: recovered.regions.clone(),
+            };
+            let retry_loop = find_retry_loop(&tree, 0).expect("one Endless loop owns header 0");
+            let Region::Loop {
+                body: loop_body,
+                exit,
+                ..
+            } = retry_loop
+            else {
+                unreachable!()
+            };
+            assert_eq!(exit.as_ref().map(CanonicalBlockId::bci), Some(34));
+            let [Region::Try { body, catches, .. }] = loop_body.as_slice() else {
+                panic!("retry loop body remains exactly one try/catch");
+            };
+            assert_eq!(
+                body.blocks()
+                    .iter()
+                    .map(|b| b.bci())
+                    .collect::<BTreeSet<_>>(),
+                BTreeSet::from([0])
+            );
+            assert_eq!(catches.len(), 1);
+            assert_eq!(catches[0].handler().bci(), 9);
+            let Region::If {
+                branch,
+                branch_bci,
+                then_arm,
+                else_arm,
+                ..
+            } = catches[0].body()
+            else {
+                panic!("handler 9 remains one conditional with two branch leaves");
+            };
+            assert_eq!(branch.bci(), 9);
+            assert_eq!(*branch_bci, 14);
+            let arms = [then_arm.blocks(), else_arm.blocks()];
+            assert!(arms.iter().any(|arm| arm.iter().any(|b| b.bci() == 17)));
+            assert!(arms.iter().any(|arm| arm.iter().any(|b| b.bci() == 19)));
+            let throw_arm = arms
+                .iter()
+                .find(|arm| arm.iter().any(|b| b.bci() == 17))
+                .unwrap();
+            let retry_arm = arms
+                .iter()
+                .find(|arm| arm.iter().any(|b| b.bci() == 19))
+                .unwrap();
+            assert_eq!(
+                throw_arm.iter().map(|b| b.bci()).collect::<BTreeSet<_>>(),
+                BTreeSet::from([17])
+            );
+            assert_eq!(
+                retry_arm.iter().map(|b| b.bci()).collect::<BTreeSet<_>>(),
+                BTreeSet::from([19])
+            );
+            let mut breaks = Vec::new();
+            let mut continues = Vec::new();
+            collect_retry_transfers(body, &mut breaks, &mut continues);
+            assert_eq!(
+                breaks,
+                vec![(
+                    6,
+                    canonical
+                        .blocks()
+                        .iter()
+                        .find(|b| b.id().bci() == 0)
+                        .unwrap()
+                        .id()
+                        .clone()
+                )]
+            );
+            assert!(
+                continues.is_empty(),
+                "protected break is not a retry continue"
+            );
+            let mut catch_breaks = Vec::new();
+            let mut catch_continues = Vec::new();
+            collect_retry_transfers(catches[0].body(), &mut catch_breaks, &mut catch_continues);
+            assert!(catch_breaks.is_empty());
+            assert_eq!(
+                catch_continues,
+                vec![(
+                    31,
+                    canonical
+                        .blocks()
+                        .iter()
+                        .find(|b| b.id().bci() == 0)
+                        .unwrap()
+                        .id()
+                        .clone()
+                )]
+            );
+
+            let (header, shape) = retry_shape_for_test(canonical, view, ssa, operations, code);
+            let mut budget = ample_budget();
+            let proof = retry_proof_for_test(
+                canonical,
+                view,
+                ssa,
+                operations,
+                code,
+                &code.exception_handlers,
+                &header,
+                &shape,
+                &mut budget,
+            )
+            .expect("branching retry proof completes")
+            .expect("proved exact Loop2 retry facts");
+            assert_eq!(
+                proof.owners,
+                BTreeSet::from([
+                    view.index_of(&header).unwrap(),
+                    view.index_of(
+                        &canonical
+                            .blocks()
+                            .iter()
+                            .find(|b| b.id().bci() == 9)
+                            .unwrap()
+                            .id()
+                            .clone()
+                    )
+                    .unwrap(),
+                    view.index_of(
+                        &canonical
+                            .blocks()
+                            .iter()
+                            .find(|b| b.id().bci() == 17)
+                            .unwrap()
+                            .id()
+                            .clone()
+                    )
+                    .unwrap(),
+                    view.index_of(
+                        &canonical
+                            .blocks()
+                            .iter()
+                            .find(|b| b.id().bci() == 19)
+                            .unwrap()
+                            .id()
+                            .clone()
+                    )
+                    .unwrap(),
+                ])
+            );
+            assert_eq!(
+                loop2_node_bcis(view, &proof.owners),
+                BTreeSet::from([0, 9, 17, 19])
+            );
+        },
+    );
+}
+
+#[test]
+fn loop2_original_retry_tree_has_exact_four_owner_retry_shape_debug_and_nodebug() {
+    for class in loop2_retry_classes() {
+        assert_loop2_branching_retry_fixture(class);
+    }
+}
+
+#[test]
+fn loop2_retry_proof_used_minus_one_and_precancel_are_atomic() {
+    use jarde_reader::budget::{CancellationToken, Limits};
+    for class in loop2_retry_classes() {
+        with_frozen_method(
+            class,
+            b"test",
+            b"(Ljava/util/List;)V",
+            |canonical, view, ssa, operations, code, _| {
+                let (header, shape) = retry_shape_for_test(canonical, view, ssa, operations, code);
+                let mut complete = ample_budget();
+                assert!(
+                    retry_proof_for_test(
+                        canonical,
+                        view,
+                        ssa,
+                        operations,
+                        code,
+                        &code.exception_handlers,
+                        &header,
+                        &shape,
+                        &mut complete
+                    )
+                    .expect("unbounded proof completes")
+                    .is_some()
+                );
+                let used = complete.usage().analysis_steps;
+                assert!(used > 0);
+                let mut short = Budget::new(Limits {
+                    analysis_steps: used - 1,
+                    elapsed_millis: u64::MAX,
+                    ..Limits::default()
+                });
+                assert!(matches!(
+                    retry_proof_for_test(
+                        canonical,
+                        view,
+                        ssa,
+                        operations,
+                        code,
+                        &code.exception_handlers,
+                        &header,
+                        &shape,
+                        &mut short
+                    ),
+                    Err(StopReason::Budget {
+                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        ..
+                    })
+                ));
+                let token = CancellationToken::new();
+                token.cancel();
+                let mut cancelled = Budget::with_cancellation_token(
+                    Limits {
+                        analysis_steps: u64::MAX,
+                        elapsed_millis: u64::MAX,
+                        ..Limits::default()
+                    },
+                    token,
+                );
+                assert!(matches!(
+                    retry_proof_for_test(
+                        canonical,
+                        view,
+                        ssa,
+                        operations,
+                        code,
+                        &code.exception_handlers,
+                        &header,
+                        &shape,
+                        &mut cancelled
+                    ),
+                    Err(StopReason::Cancelled { .. })
+                ));
+            },
+        );
+    }
+}
+
+#[test]
+fn loop2_retry_proof_refuses_mutated_range_shared_rows_wrong_transfer_and_nonthrow_leaf() {
+    for class in loop2_retry_classes() {
+        with_frozen_method(
+            class,
+            b"test",
+            b"(Ljava/util/List;)V",
+            |canonical, view, ssa, operations, code, _| {
+                let (header, shape) = retry_shape_for_test(canonical, view, ssa, operations, code);
+                let row = code.exception_handlers[0].clone();
+                let mut wrong_range = code.exception_handlers.clone();
+                wrong_range[0].end_bci = row.end_bci + 1;
+                assert_retry_facts_refuse(
+                    canonical,
+                    view,
+                    ssa,
+                    operations,
+                    code,
+                    &wrong_range,
+                    &header,
+                    &shape,
+                    "protected end crosses the proved header block",
+                );
+                let mut wrong_shape = shape.clone();
+                wrong_shape.join = None;
+                assert_retry_facts_refuse(
+                    canonical,
+                    view,
+                    ssa,
+                    operations,
+                    code,
+                    &code.exception_handlers,
+                    &header,
+                    &wrong_shape,
+                    "missing normal exit",
+                );
+                let mut shared = code.exception_handlers.clone();
+                let mut second = row.clone();
+                second.ordinal += 1;
+                second.start_bci = row.end_bci;
+                second.end_bci = row.end_bci + 1;
+                shared.push(second);
+                assert_retry_facts_refuse(
+                    canonical,
+                    view,
+                    ssa,
+                    operations,
+                    code,
+                    &shared,
+                    &header,
+                    &shape,
+                    "a second physical row shares handler 9",
+                );
+
+                for (bci, label) in [
+                    (6_u32, "wrong protected exit transfer"),
+                    (31, "wrong retry backedge transfer"),
+                    (18, "throw leaf is no longer throw"),
+                ] {
+                    let changed = jarde_reader::classfile::MethodCodeFacts::from_parts(
+                        code.max_stack,
+                        code.max_locals,
+                        code.code_span.clone(),
+                        code.instructions
+                            .iter()
+                            .cloned()
+                            .zip(code.operands().iter().cloned())
+                            .map(|(mut instruction, mut operands)| {
+                                if instruction.bci == bci {
+                                    instruction.opcode = 0x00;
+                                    operands.effective_opcode = 0x00;
+                                }
+                                (instruction, operands)
+                            })
+                            .collect(),
+                        code.exception_handlers.clone(),
+                        code.exception_handler_count,
+                        code.execution.clone(),
+                        code.stopped_at.clone(),
+                        code.debug().clone(),
+                    );
+                    let changed_operations = Operations::of(&changed, &[]);
+                    assert_retry_facts_refuse(
+                        canonical,
+                        view,
+                        ssa,
+                        &changed_operations,
+                        &changed,
+                        &changed.exception_handlers,
+                        &header,
+                        &shape,
+                        label,
+                    );
+                }
+
+                // The classfile reader builds the canonical graph from the physical branch operands.
+                // A wrong retry target, external predecessor to a leaf, and an extra exceptional
+                // predecessor need graph mutations in the reader input, not a fabricated set passed
+                // only to this proof helper; cover them with dedicated frozen bytecode cases if the
+                // normalizer exposes a narrow test constructor. Do not call a mutated-facts test JVM-valid.
+            },
+        );
+    }
+}
+
+#[test]
+fn loop2_real_reader_graphs_reject_external_entries_wrong_targets_return_leaf_and_shared_rows() {
+    let neighbors: [(&str, &[u8]); 4] = [
+        (
+            "wrong-target",
+            include_bytes!(
+                "../../../../tests/fixtures/recover-branching-named-catch-retry-loops/rejections/wrong-retry-target/TestBreakInLoop2$TestCls.class"
+            ),
+        ),
+        (
+            "external-entry",
+            include_bytes!(
+                "../../../../tests/fixtures/recover-branching-named-catch-retry-loops/rejections/external-normal-entry-to-retry-leaf/TestBreakInLoop2$TestCls.class"
+            ),
+        ),
+        (
+            "return-leaf",
+            include_bytes!(
+                "../../../../tests/fixtures/recover-branching-named-catch-retry-loops/rejections/retry-throw-leaf-returns/TestBreakInLoop2$TestCls.class"
+            ),
+        ),
+        (
+            "shared-row",
+            include_bytes!(
+                "../../../../tests/fixtures/recover-branching-named-catch-retry-loops/rejections/duplicate-physical-handler-row/TestBreakInLoop2$TestCls.class"
+            ),
+        ),
+    ];
+    for (label, class) in neighbors {
+        with_frozen_method_ir(
+            class,
+            b"test",
+            b"(Ljava/util/List;)V",
+            |canonical, view, ssa, operations, code, recovered| {
+                let header = canonical
+                    .blocks()
+                    .iter()
+                    .find(|b| b.id().bci() == 0)
+                    .unwrap()
+                    .id()
+                    .clone();
+                let normal = |from, to| {
+                    canonical.edges().iter().any(|e| {
+                        e.from().bci() == from
+                            && e.to().bci() == to
+                            && e.kind() == CanonicalEdgeKind::Normal
+                    })
+                };
+                match label {
+                    "wrong-target" => {
+                        assert!(normal(19, 34));
+                        assert!(!normal(19, 0));
+                    }
+                    "external-entry" => {
+                        assert!(normal(0, 19));
+                        assert!(normal(9, 19));
+                    }
+                    "return-leaf" => {
+                        assert_eq!(
+                            code.instructions
+                                .iter()
+                                .find(|i| i.bci == 18)
+                                .unwrap()
+                                .opcode,
+                            0xb1
+                        );
+                        assert!(!matches!(operations.get(18), Some(Operation::Throw)));
+                    }
+                    "shared-row" => assert_eq!(code.exception_handlers.len(), 2),
+                    _ => unreachable!(),
+                }
+                let mut budget = ample_budget();
+                let shape = crate::guard::catches(
+                    canonical,
+                    view,
+                    ssa,
+                    operations,
+                    &code.exception_handlers,
+                    None,
+                    None,
+                    &crate::pass::JAVA_8,
+                    &header,
+                    &mut budget,
+                )
+                .expect("real neighbor guard analysis completes");
+                if let Some(shape) = shape {
+                    assert!(
+                        retry_proof_for_test(
+                            canonical,
+                            view,
+                            ssa,
+                            operations,
+                            code,
+                            &code.exception_handlers,
+                            &header,
+                            &shape,
+                            &mut budget
+                        )
+                        .expect("bounded refusal")
+                        .is_none(),
+                        "new retry proof admitted {label}"
+                    );
+                }
+                let owners: Vec<_> = recovered
+                    .regions
+                    .iter()
+                    .flat_map(Region::blocks)
+                    .cloned()
+                    .collect();
+                let unique: BTreeSet<_> = owners.iter().cloned().collect();
+                assert_eq!(
+                    owners.len(),
+                    unique.len(),
+                    "ordinary final ownership gate remains effective: {label}"
+                );
+                assert_eq!(
+                    unique,
+                    canonical
+                        .blocks()
+                        .iter()
+                        .filter(|b| !canonical.unreachable().contains(b.id()))
+                        .map(|b| b.id().clone())
+                        .collect::<BTreeSet<_>>(),
+                    "all real blocks remain owned: {label}"
+                );
+            },
+        );
+    }
+}
+
+#[test]
+fn loop2_late_region_budget_stop_does_not_publish_a_partial_retry_loop() {
+    for class in loop2_retry_classes() {
+        with_frozen_method(
+            class,
+            b"test",
+            b"(Ljava/util/List;)V",
+            |canonical, view, ssa, operations, code, _| {
+                let chains = crate::concat::Plan::empty();
+                let sites = crate::init::Sites::empty();
+                let mut complete = ample_budget();
+                let result = recover(
+                    canonical,
+                    view,
+                    ssa,
+                    operations,
+                    &[],
+                    &chains,
+                    &sites,
+                    code,
+                    Some(false),
+                    false,
+                    &crate::pass::JAVA_8,
+                    &mut complete,
+                )
+                .expect("complete bounded Region recovery");
+                assert!(result.fallbacks().is_empty());
+                let used = complete.usage().analysis_steps;
+                assert!(used > 1);
+                let mut short = Budget::new(jarde_reader::budget::Limits {
+                    analysis_steps: used - 1,
+                    elapsed_millis: u64::MAX,
+                    ..jarde_reader::budget::Limits::default()
+                });
+                assert!(
+                    matches!(
+                        recover(
+                            canonical,
+                            view,
+                            ssa,
+                            operations,
+                            &[],
+                            &chains,
+                            &sites,
+                            code,
+                            Some(false),
+                            false,
+                            &crate::pass::JAVA_8,
+                            &mut short
+                        ),
+                        Err(StopReason::Budget {
+                            dimension: CountedBudgetDimension::AnalysisSteps,
+                            ..
+                        })
+                    ),
+                    "late Stop must leave no returned half-loop"
                 );
             },
         );
