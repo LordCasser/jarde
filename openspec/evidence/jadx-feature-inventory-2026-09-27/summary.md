@@ -1,6 +1,6 @@
 # JADX 测试驱动的 Java 恢复路线
 
-当前2026-10-19检查点见[控制流账本](control-flow.md)：Loop4/5两OpenSpec均8/8，由Luna私有实现、root审查及完整对照接受；产品412245d51/CLId29b6fee两原件各8API/24方法structured、Jarde8及JADX2完整JDK23编译、20生成VM同原；Loop5扩展12例20VM/240CASE通过，JDK8框架55/52边界保留。fresh workspace394目标/3841-0-98和本产品自身CI39251504476全部4jobs/52官方步骤接受，双seed完整3939具名结果一致、141精确门通过，5306来源并集绑定产品。固定13原件为9接受、4待完整基线；Loop5来源59/60缺BCI103单列。finThrow/nestedFin/Loop2旧片不重做；CF09/71/612仍partial。以下为各日期历史记录。
+当前2026-10-19检查点见[控制流账本](control-flow.md)：最后四原件完整三方与同轮IR均接受。DoWhileBreak3现有机制通过8API、16次Jarde整类编译、全部36生成VM/360CASE同原，来源10/10；DoWhileBreak2、BreakInLoop3真实gap已立OpenSpec各2/8，Luna私有并行实现，尚未集成/最终新CLI/广验/自身CI。Loop3的NYI启用状态与当前JADX实际成功严格分开；Loop6原Smali/Dex为Jarde CLASS/ZIP输入边界，不以Java替代。固定13原件为10接受、2JVM gap、1输入边界。已验收旧finThrow/nestedFin/Loop2/Loop4/5不重做；CF09/71/612保持partial。以下为历史。
 
 ## 2026-10-18 CF-11 祖先 Iterator 声明清理产品验收
 

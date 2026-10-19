@@ -4622,14 +4622,15 @@ struct Frame {
 #[derive(Clone, Debug)]
 struct RetryHandlerContinuation {
     protected: CanonicalBlockId,
+    lead: (u32, u32),
     protected_end: u32,
     row_ordinal: u32,
     handler: CanonicalBlockId,
     header: CanonicalBlockId,
     header_node: usize,
     continue_source_bci: u32,
-    /// Only the three-block RetryLoopFacts proof may classify this exact source as the
-    /// enclosing synthetic loop's own-header continue. Prefixed retry proofs keep this false.
+    /// A retry handler branch proof may classify only its exact terminal source as this loop's
+    /// own-header continue; no ordinary edge into the header receives this authorization.
     allow_own_header_continue: bool,
 }
 
@@ -5286,15 +5287,25 @@ fn retry_owner_edges_closed<'a>(
 }
 
 #[derive(Clone, Debug)]
-struct RetryHandlerBranchFacts {
-    branch_bci: u32,
-    throw_block: CanonicalBlockId,
-    retry_block: CanonicalBlockId,
+enum RetryHandlerBranchFacts {
+    ThrowOrRetry {
+        branch_bci: u32,
+        throw_block: CanonicalBlockId,
+        retry_block: CanonicalBlockId,
+    },
+    RetryOrNormal {
+        branch_bci: u32,
+        retry_block: CanonicalBlockId,
+        normal_entry: CanonicalBlockId,
+        normal_join: CanonicalBlockId,
+        normal_owners: BTreeSet<CanonicalBlockId>,
+    },
 }
 
 #[derive(Clone, Debug)]
 struct RetryLoopFacts {
     header: CanonicalBlockId,
+    lead: (u32, u32),
     exit: CanonicalBlockId,
     header_node: usize,
     exit_node: usize,
@@ -5305,7 +5316,10 @@ struct RetryLoopFacts {
     continue_source_bci: u32,
     handler_owners: BTreeSet<usize>,
     handler_branch: Option<RetryHandlerBranchFacts>,
+    /// Owners consumed while reading the Try itself, excluding its normal completion tail.
     owners: BTreeSet<usize>,
+    /// Entry blocks already consumed before the Try; prefixed retry keeps these outside its loop.
+    entry_prefix: Vec<CanonicalBlockId>,
     transfer_sources: BTreeSet<usize>,
 }
 
@@ -5327,12 +5341,10 @@ fn retry_handler_branch_region_complete(
     else {
         return false;
     };
-    if !prefix.is_empty() || branch != handler || *branch_bci != proof.branch_bci || join.is_some()
-    {
+    if !prefix.is_empty() || branch != handler {
         return false;
     }
-    let is_throw_arm = |arm: &Region| matches!(arm, Region::Straight { blocks } if blocks == std::slice::from_ref(&proof.throw_block));
-    let is_retry_arm = |arm: &Region| match arm {
+    let is_retry_arm = |arm: &Region, retry_block: &CanonicalBlockId| match arm {
         Region::Sequence { regions } => matches!(
             regions.as_slice(),
             [
@@ -5341,14 +5353,79 @@ fn retry_handler_branch_region_complete(
                     source_bci,
                     loop_header,
                 },
-            ] if blocks == std::slice::from_ref(&proof.retry_block)
+            ] if blocks == std::slice::from_ref(retry_block)
                 && *source_bci == continue_source_bci
                 && loop_header == header
         ),
         _ => false,
     };
-    (is_throw_arm(then_arm) && is_retry_arm(else_arm))
-        || (is_retry_arm(then_arm) && is_throw_arm(else_arm))
+    match proof {
+        RetryHandlerBranchFacts::ThrowOrRetry {
+            branch_bci: proved_bci,
+            throw_block,
+            retry_block,
+        } => {
+            if *branch_bci != *proved_bci || join.is_some() {
+                return false;
+            }
+            let is_throw_arm = |arm: &Region| matches!(arm, Region::Straight { blocks } if blocks == std::slice::from_ref(throw_block));
+            (is_throw_arm(then_arm) && is_retry_arm(else_arm, retry_block))
+                || (is_retry_arm(then_arm, retry_block) && is_throw_arm(else_arm))
+        }
+        RetryHandlerBranchFacts::RetryOrNormal {
+            branch_bci: proved_bci,
+            retry_block,
+            normal_entry,
+            normal_join,
+            normal_owners,
+        } => {
+            if *branch_bci != *proved_bci || join.as_ref() != Some(normal_join) {
+                return false;
+            }
+            let retry_then = is_retry_arm(then_arm, retry_block);
+            let retry_else = is_retry_arm(else_arm, retry_block);
+            if retry_then == retry_else {
+                return false;
+            }
+            let normal = if retry_then {
+                else_arm.as_ref()
+            } else {
+                then_arm.as_ref()
+            };
+            if !normal_completion_region(normal, header) {
+                return false;
+            }
+            let blocks = normal.blocks();
+            let block_ids: Vec<_> = blocks.into_iter().cloned().collect();
+            let block_set: BTreeSet<_> = block_ids.iter().cloned().collect();
+            block_ids.len() == block_set.len()
+                && block_set == *normal_owners
+                && normal_owners.contains(normal_entry)
+        }
+    }
+}
+
+fn normal_completion_region(region: &Region, loop_header: &CanonicalBlockId) -> bool {
+    match region {
+        Region::Straight { .. } => true,
+        Region::Sequence { regions } => regions
+            .iter()
+            .all(|region| normal_completion_region(region, loop_header)),
+        Region::If {
+            then_arm, else_arm, ..
+        }
+        | Region::CompoundIf {
+            then_arm, else_arm, ..
+        } => {
+            normal_completion_region(then_arm, loop_header)
+                && normal_completion_region(else_arm, loop_header)
+        }
+        Region::LoopBreak {
+            loop_header: target,
+            ..
+        } => target == loop_header,
+        _ => false,
+    }
 }
 
 type OwnedTry = (
@@ -5938,10 +6015,19 @@ impl Walker<'_> {
                 && (frame.own_finally.is_none() || frame.nested_finally_row.is_some())
                 && self.starts_catch(&current)
                 && let Some((body, lead, catches, join, tails, exit_bci, transparent, retry)) =
-                    self.try_region(&current, node, frame, prefix.is_empty())?
+                    self.try_region(&current, node, frame, &prefix)?
             {
+                let loop_entry_prefix = retry
+                    .as_ref()
+                    .map(|proof| proof.entry_prefix.clone())
+                    .unwrap_or_default();
+                let try_prefix = if loop_entry_prefix.is_empty() {
+                    prefix
+                } else {
+                    Vec::new()
+                };
                 let try_region = Region::Try {
-                    prefix,
+                    prefix: try_prefix,
                     lead,
                     body,
                     catches,
@@ -5955,7 +6041,14 @@ impl Walker<'_> {
                     }),
                 };
                 let mut run = if let Some(retry) = retry {
-                    vec![Region::Loop {
+                    let mut regions = if loop_entry_prefix.is_empty() {
+                        Vec::new()
+                    } else {
+                        vec![Region::Straight {
+                            blocks: loop_entry_prefix,
+                        }]
+                    };
+                    regions.push(Region::Loop {
                         header: retry.header,
                         tests: Vec::new(),
                         test_operator: None,
@@ -5964,7 +6057,8 @@ impl Walker<'_> {
                         body: vec![try_region],
                         exit: Some(retry.exit),
                         gateway_origins: Vec::new(),
-                    }]
+                    });
+                    regions
                 } else {
                     vec![try_region]
                 };
@@ -9219,10 +9313,32 @@ impl Walker<'_> {
         }
         let already_visited = self.visited.clone();
         let (tail, tail_next) = self.region_at(next, frame)?;
-        let [Region::Straight { blocks }] = tail.as_slice() else {
-            return Ok(false);
+        let blocks = match tail.as_slice() {
+            [Region::Straight { blocks }] if tail_next.is_none() => blocks,
+            [
+                Region::Straight { blocks },
+                Region::LoopBreak {
+                    source_bci,
+                    loop_header,
+                },
+            ] if tail_next.is_none() => {
+                let Some(target) = frame.loop_targets.last() else {
+                    return Ok(false);
+                };
+                let Some(target_header) = self.view.id_of(target.header) else {
+                    return Ok(false);
+                };
+                if target.break_target != Some(boundary)
+                    || loop_header != target_header
+                    || blocks.last().and_then(|block| self.terminal_bci(block)) != Some(*source_bci)
+                {
+                    return Ok(false);
+                }
+                blocks
+            }
+            _ => return Ok(false),
         };
-        if tail_next.is_some() || blocks.first() != Some(next) {
+        if blocks.first() != Some(next) {
             return Ok(false);
         }
         let newly_visited: BTreeSet<_> = self
@@ -9461,6 +9577,565 @@ impl Walker<'_> {
                 .is_some_and(|last| body_row.start_bci <= last)
     }
 
+    /// Prove the one canonical header whose unprotected lead and protected suffix share a block,
+    /// followed by a named handler that either retries or completes a closed normal DAG.
+    /// This path is entered only after the cheap nonempty-lead shape gate in `try_region`.
+    fn prefixed_catch_retry_facts(
+        &mut self,
+        start: &CanonicalBlockId,
+        shape: &crate::guard::Catches,
+        entry_prefix: &[CanonicalBlockId],
+    ) -> Result<Option<RetryLoopFacts>, StopReason> {
+        if !start.path().is_empty()
+            || shape.lead.0 != start.bci()
+            || shape.lead.1 <= shape.lead.0
+            || shape.protected_end <= shape.lead.1
+            || shape.inner.is_some()
+            || shape.transparent.is_some()
+            || shape.sites.len() != 1
+            || !matches!(&shape.sites[0].types, crate::guard::CatchTypes::Named(types) if types.len() == 1)
+            || entry_prefix.is_empty()
+            || entry_prefix.iter().any(CanonicalBlockId::is_clone)
+        {
+            return Ok(None);
+        }
+        let Some(normal_join) = shape.join.clone() else {
+            return Ok(None);
+        };
+        let Some(header_node) = self.view.index_of(start) else {
+            return Ok(None);
+        };
+        let Some(normal_join_node) = self.view.index_of(&normal_join) else {
+            return Ok(None);
+        };
+        let handler = shape.sites[0].handler.clone();
+        let Some(handler_node) = self.view.index_of(&handler) else {
+            return Ok(None);
+        };
+        if normal_join == *start || normal_join == handler || handler == *start {
+            return Ok(None);
+        }
+        let [row] = self.handlers else {
+            return Ok(None);
+        };
+        let [canonical_row] = self.canonical.handler_rows() else {
+            return Ok(None);
+        };
+        let crate::guard::CatchTypes::Named(types) = &shape.sites[0].types else {
+            return Ok(None);
+        };
+        let [catch_type] = types.as_slice() else {
+            return Ok(None);
+        };
+        if self.code.exception_handler_count != 1
+            || self.code.exception_handlers.len() != 1
+            || self.code.exception_handlers[0].ordinal != row.ordinal
+            || self.code.exception_handlers[0].start_bci != row.start_bci
+            || self.code.exception_handlers[0].end_bci != row.end_bci
+            || self.code.exception_handlers[0].handler_bci != row.handler_bci
+            || self.code.exception_handlers[0].catch_type_index != row.catch_type_index
+            || row.start_bci != shape.lead.1
+            || row.end_bci != shape.protected_end
+            || row.start_bci >= row.end_bci
+            || row.handler_bci != handler.bci()
+            || row.catch_type_index != Some(*catch_type)
+            || canonical_row.ordinal() != row.ordinal
+            || canonical_row.handler_bci() != row.handler_bci
+            || canonical_row.catch_type_index() != row.catch_type_index
+            || canonical_row.handler() != Some(&handler)
+            || canonical_row.protected() != [start.clone()]
+        {
+            return Ok(None);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(
+                self.canonical
+                    .blocks()
+                    .len()
+                    .saturating_add(self.canonical.edges().len())
+                    .saturating_add(self.code.instructions.len())
+                    .saturating_add(self.canonical.throw_sites().len()),
+            )
+            .unwrap_or(u64::MAX),
+            Some(start.bci()),
+        )?;
+        poll(self.budget, Some(start.bci()))?;
+        let Some(header_block) = self
+            .canonical
+            .blocks()
+            .iter()
+            .find(|block| block.id() == start)
+        else {
+            return Ok(None);
+        };
+        if header_block.id().is_clone() || header_block.end_bci() <= row.end_bci {
+            return Ok(None);
+        }
+        let mut protected_blocks = Vec::new();
+        for block in self.canonical.blocks() {
+            poll(self.budget, Some(block.id().bci()))?;
+            if block.id().path().is_empty()
+                && block.id().bci() < row.end_bci
+                && block.end_bci() > row.start_bci
+            {
+                if block.id() != start {
+                    return Ok(None);
+                }
+                protected_blocks.push(block.id().clone());
+            }
+        }
+        if protected_blocks.as_slice() != [start.clone()] {
+            return Ok(None);
+        }
+        let Some(header_ssa) = self.ssa.block(start) else {
+            return Ok(None);
+        };
+        let instructions = header_ssa.instructions();
+        if instructions.is_empty()
+            || instructions[0].bci() != shape.lead.0
+            || instructions
+                .iter()
+                .any(|instruction| instruction.bci() < shape.lead.0)
+        {
+            return Ok(None);
+        }
+        let mut prefix_instruction_count = 0usize;
+        let mut protected_instruction_count = 0usize;
+        let mut suffix = Vec::new();
+        for instruction in instructions {
+            poll(self.budget, Some(instruction.bci()))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(instruction.bci()),
+            )?;
+            if instruction.bci() < row.start_bci {
+                prefix_instruction_count += 1;
+            } else if instruction.bci() < row.end_bci {
+                protected_instruction_count += 1;
+            } else {
+                suffix.push(instruction.bci());
+            }
+        }
+        if prefix_instruction_count == 0
+            || protected_instruction_count == 0
+            || suffix.as_slice() != [row.end_bci]
+            || self.terminal_bci(start) != Some(row.end_bci)
+            || !matches!(self.operations.get(row.end_bci), Some(Operation::Transfer))
+            || self.view.successors(header_node) != [normal_join_node]
+        {
+            return Ok(None);
+        }
+        let Ok(control_flow_targets) = self.code.control_flow_targets() else {
+            return Ok(None);
+        };
+        let mut instructions_by_bci = BTreeMap::new();
+        for instruction in &self.code.instructions {
+            poll(self.budget, Some(instruction.bci))?;
+            if instructions_by_bci
+                .insert(instruction.bci, instruction)
+                .is_some()
+            {
+                return Ok(None);
+            }
+        }
+        let mut branch_targets = BTreeMap::<u32, Vec<u32>>::new();
+        for target in control_flow_targets {
+            poll(self.budget, Some(target.instruction_bci))?;
+            if matches!(
+                target.kind,
+                jarde_reader::classfile::ControlFlowTargetKind::Branch { .. }
+            ) {
+                branch_targets
+                    .entry(target.instruction_bci)
+                    .or_default()
+                    .push(target.target_bci);
+            }
+        }
+        let branch_target_is = |bci: u32, target_bci: u32| {
+            branch_targets
+                .get(&bci)
+                .is_some_and(|targets| targets.as_slice() == [target_bci])
+        };
+        if !branch_target_is(row.end_bci, normal_join.bci()) {
+            return Ok(None);
+        }
+        let prefix_nodes: Vec<_> = entry_prefix
+            .iter()
+            .filter_map(|id| self.view.index_of(id))
+            .collect();
+        let prefix_set: BTreeSet<_> = prefix_nodes.iter().copied().collect();
+        if prefix_nodes.len() != entry_prefix.len()
+            || prefix_nodes.len() != prefix_set.len()
+            || prefix_set.iter().any(|node| !self.visited.contains(node))
+        {
+            return Ok(None);
+        }
+        for (index, node) in prefix_nodes.iter().enumerate() {
+            poll(
+                self.budget,
+                self.view.id_of(*node).map(CanonicalBlockId::bci),
+            )?;
+            let expected = prefix_nodes.get(index + 1).copied().unwrap_or(header_node);
+            if self.view.successors(*node) != [expected] {
+                return Ok(None);
+            }
+        }
+
+        // The exception handler is reached only by the exact row from the protected suffix.
+        let mut throw_sites = 0usize;
+        let mut expected_exception_edges = 0usize;
+        let mut closed_header_edges = true;
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(edge.from().bci()))?;
+            if edge.from() == start {
+                match edge.kind() {
+                    CanonicalEdgeKind::Normal if edge.to() == &normal_join => {}
+                    CanonicalEdgeKind::Exception { handler_ordinal }
+                        if handler_ordinal == row.ordinal && edge.to() == &handler =>
+                    {
+                        expected_exception_edges += 1;
+                    }
+                    _ => closed_header_edges = false,
+                }
+            }
+            if edge.to() == &handler
+                && !(edge.from() == start
+                    && edge.kind()
+                        == (CanonicalEdgeKind::Exception {
+                            handler_ordinal: row.ordinal,
+                        }))
+            {
+                return Ok(None);
+            }
+        }
+        for site in self.canonical.throw_sites() {
+            poll(self.budget, Some(site.bci()))?;
+            if site.handlers().contains(&row.ordinal) {
+                if site.block() != start
+                    || site.bci() < row.start_bci
+                    || site.bci() >= row.end_bci
+                    || site.handlers() != [row.ordinal]
+                {
+                    return Ok(None);
+                }
+                throw_sites += 1;
+            }
+        }
+        if !closed_header_edges || expected_exception_edges != 1 || throw_sites == 0 {
+            return Ok(None);
+        }
+
+        let Some(branch_bci) = self.terminal_bci(&handler) else {
+            return Ok(None);
+        };
+        let Some(branch_instruction) = instructions_by_bci.get(&branch_bci).copied() else {
+            return Ok(None);
+        };
+        let Some((_, comparison_target)) = self
+            .operations
+            .get(branch_bci)
+            .and_then(Operation::comparison)
+        else {
+            return Ok(None);
+        };
+        let Some(fallthrough_bci) = branch_bci.checked_add(branch_instruction.width) else {
+            return Ok(None);
+        };
+        let Some(targets) = branch_targets.get(&branch_bci) else {
+            return Ok(None);
+        };
+        if !matches!(branch_instruction.opcode, 0x99..=0xa6 | 0xc6 | 0xc7)
+            || targets.len() != 1
+            || comparison_target != targets[0]
+            || comparison_target == fallthrough_bci
+        {
+            return Ok(None);
+        }
+        let handler_successors = self.view.successors(handler_node);
+        let [first, second] = handler_successors.as_slice() else {
+            return Ok(None);
+        };
+        if first == second
+            || BTreeSet::from([comparison_target, fallthrough_bci])
+                != BTreeSet::from([
+                    self.view
+                        .id_of(*first)
+                        .map_or(u32::MAX, CanonicalBlockId::bci),
+                    self.view
+                        .id_of(*second)
+                        .map_or(u32::MAX, CanonicalBlockId::bci),
+                ])
+            || !self.view.predecessors(handler_node).is_empty()
+        {
+            return Ok(None);
+        }
+        let mut retry = None;
+        let mut normal_entry_node = None;
+        for successor in [*first, *second] {
+            poll(
+                self.budget,
+                self.view.id_of(successor).map(CanonicalBlockId::bci),
+            )?;
+            let Some(id) = self.view.id_of(successor).cloned() else {
+                return Ok(None);
+            };
+            if !id.path().is_empty() || id.is_clone() {
+                return Ok(None);
+            }
+            if self.view.successors(successor) == [header_node] {
+                let Some(source_bci) = self.terminal_bci(&id) else {
+                    return Ok(None);
+                };
+                let Some(instruction) = instructions_by_bci.get(&source_bci).copied() else {
+                    return Ok(None);
+                };
+                if !matches!(self.operations.get(source_bci), Some(Operation::Transfer))
+                    || !matches!(instruction.opcode, 0xa7 | 0xc8)
+                    || !branch_target_is(source_bci, start.bci())
+                    || retry.replace((successor, id, source_bci)).is_some()
+                {
+                    return Ok(None);
+                }
+            } else {
+                if normal_entry_node.replace(successor).is_some() {
+                    return Ok(None);
+                }
+            }
+        }
+        let Some((retry_node, retry_block, continue_source_bci)) = retry else {
+            return Ok(None);
+        };
+        let Some(normal_entry_node) = normal_entry_node else {
+            return Ok(None);
+        };
+        let Some(normal_entry) = self.view.id_of(normal_entry_node).cloned() else {
+            return Ok(None);
+        };
+        if retry_node == handler_node
+            || normal_entry_node == handler_node
+            || retry_node == normal_entry_node
+        {
+            return Ok(None);
+        }
+        // The Try's exact normal join is the synthetic loop exit. Its canonical owner may
+        // contain post-Try statements and must be emitted once after the loop.
+        let exit_node = normal_join_node;
+        let exit = normal_join.clone();
+
+        // Discover only the normal-completion arm up to its exact join. The closed-edge and DAG
+        // checks below reject foreign entries/exits, cycles, exception/call/return crossings.
+        let forbidden = BTreeSet::from([header_node, handler_node, retry_node, normal_join_node]);
+        let mut normal_nodes = BTreeSet::new();
+        let mut pending = vec![normal_entry_node];
+        while let Some(node) = pending.pop() {
+            poll(
+                self.budget,
+                self.view.id_of(node).map(CanonicalBlockId::bci),
+            )?;
+            if node == normal_join_node {
+                continue;
+            }
+            if forbidden.contains(&node) || !normal_nodes.insert(node) {
+                if normal_nodes.contains(&node) {
+                    continue;
+                }
+                return Ok(None);
+            }
+            let successors = self.view.successors(node);
+            if successors.is_empty() {
+                return Ok(None);
+            }
+            for successor in successors {
+                if successor != normal_join_node {
+                    pending.push(successor);
+                }
+            }
+        }
+        if normal_nodes.is_empty() || normal_nodes.contains(&retry_node) {
+            return Ok(None);
+        }
+        let mut normal_ids = BTreeSet::new();
+        for node in &normal_nodes {
+            let Some(id) = self.view.id_of(*node).cloned() else {
+                return Ok(None);
+            };
+            if !id.path().is_empty() || id.is_clone() || !normal_ids.insert(id) {
+                return Ok(None);
+            }
+        }
+        let all_edges: Vec<_> = self
+            .canonical
+            .edges()
+            .iter()
+            .map(|edge| (edge.kind(), edge.from().clone(), edge.to().clone()))
+            .collect();
+        if !loop_break_body_edges_closed(
+            &handler,
+            &normal_entry,
+            &normal_join,
+            &normal_ids,
+            &all_edges,
+            self.budget,
+        )? || !loop_break_body_acyclic(&normal_ids, &all_edges, self.budget)?
+        {
+            return Ok(None);
+        }
+        // The unique entry of the synthetic loop is the already-walked prefix; the only other
+        // normal predecessor of its header is the certified retry block.
+        let mut expected_header_predecessors = BTreeSet::from([retry_node]);
+        let Some(prefix_tail) = prefix_nodes.last().copied() else {
+            return Ok(None);
+        };
+        expected_header_predecessors.insert(prefix_tail);
+        if self
+            .view
+            .predecessors(header_node)
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>()
+            != expected_header_predecessors
+        {
+            return Ok(None);
+        }
+        let mut expected_join_predecessors = BTreeSet::from([header_node]);
+        expected_join_predecessors.extend(
+            normal_nodes
+                .iter()
+                .copied()
+                .filter(|node| self.view.successors(*node).contains(&normal_join_node)),
+        );
+        if self
+            .view
+            .predecessors(normal_join_node)
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>()
+            != expected_join_predecessors
+        {
+            return Ok(None);
+        }
+        // No canonical edge may enter or leave any proved owner except through its exact role.
+        let owner_nodes: BTreeSet<_> = std::iter::once(header_node)
+            .chain(std::iter::once(handler_node))
+            .chain(std::iter::once(retry_node))
+            .chain(normal_nodes.iter().copied())
+            .collect();
+        let mut header_in = 0usize;
+        if !owner_nodes.is_disjoint(&prefix_set)
+            || owner_nodes.iter().any(|node| self.visited.contains(node))
+        {
+            return Ok(None);
+        }
+        let mut handler_in = 0usize;
+        let mut retry_in = 0usize;
+        let mut handler_out = BTreeSet::new();
+        let mut retry_out = 0usize;
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(edge.from().bci()))?;
+            let from = self.view.index_of(edge.from());
+            let to = self.view.index_of(edge.to());
+            let from_owned = from.is_some_and(|node| owner_nodes.contains(&node));
+            if edge.to() == start {
+                if edge.kind() != CanonicalEdgeKind::Normal
+                    || (edge.from() != &retry_block && from != Some(prefix_tail))
+                {
+                    return Ok(None);
+                }
+                header_in += 1;
+            }
+            if edge.to() == &handler {
+                if edge.from() != start
+                    || edge.kind()
+                        != (CanonicalEdgeKind::Exception {
+                            handler_ordinal: row.ordinal,
+                        })
+                {
+                    return Ok(None);
+                }
+                handler_in += 1;
+            }
+            if edge.to() == &retry_block {
+                if edge.from() != &handler || edge.kind() != CanonicalEdgeKind::Normal {
+                    return Ok(None);
+                }
+                retry_in += 1;
+            }
+            if edge.from() == &handler {
+                if edge.kind() != CanonicalEdgeKind::Normal
+                    || (edge.to() != &retry_block && edge.to() != &normal_entry)
+                {
+                    return Ok(None);
+                }
+                handler_out.insert(edge.to().clone());
+            }
+            if edge.from() == &retry_block {
+                if edge.to() != start || edge.kind() != CanonicalEdgeKind::Normal {
+                    return Ok(None);
+                }
+                retry_out += 1;
+            }
+            if owner_nodes.contains(&from.unwrap_or(usize::MAX))
+                || owner_nodes.contains(&to.unwrap_or(usize::MAX))
+            {
+                if edge.kind() != CanonicalEdgeKind::Normal
+                    && !(edge.from() == start
+                        && edge.to() == &handler
+                        && edge.kind()
+                            == (CanonicalEdgeKind::Exception {
+                                handler_ordinal: row.ordinal,
+                            }))
+                {
+                    return Ok(None);
+                }
+            }
+            if to == Some(normal_join_node)
+                && from_owned
+                && edge.kind() != CanonicalEdgeKind::Normal
+            {
+                return Ok(None);
+            }
+        }
+        if header_in != 2
+            || handler_in != 1
+            || retry_in != 1
+            || retry_out != 1
+            || handler_out != BTreeSet::from([retry_block.clone(), normal_entry.clone()])
+        {
+            return Ok(None);
+        }
+        let mut handler_owners = BTreeSet::from([handler_node, retry_node]);
+        handler_owners.extend(normal_nodes.iter().copied());
+        let mut owners = BTreeSet::from([header_node]);
+        owners.extend(handler_owners.iter().copied());
+        Ok(Some(RetryLoopFacts {
+            header: start.clone(),
+            lead: shape.lead,
+            exit,
+            header_node,
+            exit_node,
+            handler,
+            handler_node,
+            protected_end: row.end_bci,
+            row_ordinal: row.ordinal,
+            continue_source_bci,
+            handler_owners,
+            handler_branch: Some(RetryHandlerBranchFacts::RetryOrNormal {
+                branch_bci,
+                retry_block,
+                normal_entry,
+                normal_join: shape.join.clone().expect("prefixed retry join was checked"),
+                normal_owners: normal_ids,
+            }),
+            owners,
+            entry_prefix: entry_prefix.to_vec(),
+            transfer_sources: BTreeSet::from([header_node, retry_node]),
+        }))
+    }
+
     /// The intentionally narrow, one-protected-block retry shape. The guard reader remains the
     /// authority for named catch binding/SSA; this proof only certifies the exceptional cycle and
     /// the two distinct normal boundaries.
@@ -9468,7 +10143,11 @@ impl Walker<'_> {
         &mut self,
         start: &CanonicalBlockId,
         shape: &crate::guard::Catches,
+        entry_prefix: &[CanonicalBlockId],
     ) -> Result<Option<RetryLoopFacts>, StopReason> {
+        if shape.lead.0 == start.bci() && shape.lead.1 > shape.lead.0 {
+            return self.prefixed_catch_retry_facts(start, shape, entry_prefix);
+        }
         if !start.path().is_empty()
             || shape.inner.is_some()
             || shape.transparent.is_some()
@@ -9929,7 +10608,7 @@ impl Walker<'_> {
             handler_owners.extend([throw_node, retry_block_node]);
             retry_node = retry_block_node;
             continue_source_bci = source_bci;
-            handler_branch = Some(RetryHandlerBranchFacts {
+            handler_branch = Some(RetryHandlerBranchFacts::ThrowOrRetry {
                 branch_bci,
                 throw_block,
                 retry_block,
@@ -9985,6 +10664,7 @@ impl Walker<'_> {
         let transfer_sources = BTreeSet::from([header_node, retry_node]);
         Ok(Some(RetryLoopFacts {
             header: start.clone(),
+            lead: shape.lead,
             exit,
             header_node,
             exit_node,
@@ -9996,6 +10676,7 @@ impl Walker<'_> {
             handler_owners,
             handler_branch,
             owners,
+            entry_prefix: Vec::new(),
             transfer_sources,
         }))
     }
@@ -10096,7 +10777,7 @@ impl Walker<'_> {
         start: &CanonicalBlockId,
         node: usize,
         frame: &Frame,
-        retry_entry: bool,
+        entry_prefix: &[CanonicalBlockId],
     ) -> Result<Option<OwnedTry>, StopReason> {
         let Some(shape) = crate::guard::catches(
             self.canonical,
@@ -10113,7 +10794,15 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        let retry = if retry_entry
+        let retry_entry = entry_prefix.is_empty();
+        let prefixed_retry_shape = shape.lead.0 == start.bci()
+            && shape.lead.1 > shape.lead.0
+            && shape.join.is_some()
+            && shape.inner.is_none()
+            && shape.transparent.is_none()
+            && shape.sites.len() == 1
+            && matches!(&shape.sites[0].types, crate::guard::CatchTypes::Named(types) if types.len() == 1);
+        let retry = if (retry_entry || prefixed_retry_shape)
             && frame.boundary.is_none()
             && frame.if_arm.is_none()
             && frame.shared_tail.is_none()
@@ -10135,13 +10824,24 @@ impl Walker<'_> {
             && !frame.lock_guard_finally
             && self.own_monitor.is_none()
         {
-            self.retry_loop_facts(start, &shape)?
+            self.retry_loop_facts(start, &shape, entry_prefix)?
         } else {
             None
         };
         let previous =
             (shape.transparent.is_some() || retry.is_some()).then(|| self.visited.clone());
         let previous_unclosed_tail = retry.as_ref().map(|_| self.unclosed_tail_at);
+        // The prefixed proof claims several child regions after its entry prefix was already
+        // consumed. Preserve every mutable walker field if that new, wider proof later stops.
+        // The legacy Loop2 proof keeps its historical visited/tail checkpoint and cost.
+        let mut prefixed_retry_trial = if retry
+            .as_ref()
+            .is_some_and(|proof| !proof.entry_prefix.is_empty())
+        {
+            Some(self.loop_body_trial_state(Some(start.bci()))?)
+        } else {
+            None
+        };
         let retry_frame = retry.as_ref().map(|proof| {
             let mut loop_frame = frame.loop_body(
                 &proof.owners,
@@ -10161,13 +10861,14 @@ impl Walker<'_> {
             {
                 target.retry_handler = Some(RetryHandlerContinuation {
                     protected: proof.header.clone(),
+                    lead: proof.lead,
                     protected_end: proof.protected_end,
                     row_ordinal: proof.row_ordinal,
                     handler: proof.handler.clone(),
                     header: proof.header.clone(),
                     header_node: proof.header_node,
                     continue_source_bci: proof.continue_source_bci,
-                    allow_own_header_continue: true,
+                    allow_own_header_continue: proof.handler_branch.is_some(),
                 });
             }
             loop_frame
@@ -10177,11 +10878,15 @@ impl Walker<'_> {
             match self.try_level(start, node, walk_frame, &shape, retry.as_ref()) {
                 Ok(level) => level,
                 Err(stop) => {
-                    if let Some(previous) = previous {
-                        self.visited = previous;
-                    }
-                    if let Some(previous) = previous_unclosed_tail {
-                        self.unclosed_tail_at = previous;
+                    if let Some(state) = prefixed_retry_trial.take() {
+                        self.restore_loop_body_trial_state(state);
+                    } else {
+                        if let Some(previous) = previous.clone() {
+                            self.visited = previous;
+                        }
+                        if let Some(previous) = previous_unclosed_tail {
+                            self.unclosed_tail_at = previous;
+                        }
                     }
                     return Err(stop);
                 }
@@ -10195,14 +10900,23 @@ impl Walker<'_> {
             } {
                 Ok(complete) => complete,
                 Err(stop) => {
-                    self.visited = checkpoint.clone();
-                    self.unclosed_tail_at = previous_unclosed_tail.expect("retry tail checkpoint");
+                    if let Some(state) = prefixed_retry_trial.take() {
+                        self.restore_loop_body_trial_state(state);
+                    } else {
+                        self.visited = checkpoint.clone();
+                        self.unclosed_tail_at =
+                            previous_unclosed_tail.expect("retry tail checkpoint");
+                    }
                     return Err(stop);
                 }
             };
             if !complete {
-                self.visited = checkpoint.clone();
-                self.unclosed_tail_at = previous_unclosed_tail.expect("retry tail checkpoint");
+                if let Some(state) = prefixed_retry_trial.take() {
+                    self.restore_loop_body_trial_state(state);
+                } else {
+                    self.visited = checkpoint.clone();
+                    self.unclosed_tail_at = previous_unclosed_tail.expect("retry tail checkpoint");
+                }
                 return Ok(None);
             }
         }
@@ -10398,7 +11112,7 @@ impl Walker<'_> {
             || target.continue_target != proof.header_node
             || start != &proof.protected
             || !start.path().is_empty()
-            || shape.lead != (start.bci(), start.bci())
+            || shape.lead != proof.lead
             || shape.protected_end != proof.protected_end
             || shape.inner.is_some()
             || shape.transparent.is_some()
@@ -10429,7 +11143,7 @@ impl Walker<'_> {
         for row in self.handlers {
             poll(self.budget, Some(row.start_bci))?;
             if row.ordinal == proof.row_ordinal
-                && row.start_bci == start.bci()
+                && row.start_bci == proof.lead.1
                 && row.end_bci == proof.protected_end
                 && row.handler_bci == proof.handler.bci()
             {
@@ -10914,11 +11628,17 @@ impl Walker<'_> {
                         .as_ref()
                         .map(|proof| (&proof.handler, &proof.header, proof.continue_source_bci))
                 });
+            let proved_normal_join = retry.and_then(|proof| match &proof.handler_branch {
+                Some(RetryHandlerBranchFacts::RetryOrNormal { normal_join, .. }) => {
+                    Some(normal_join)
+                }
+                _ => None,
+            });
             if let Some((handler_id, retry_header, source_bci)) = continuation {
                 if &site.handler != handler_id
-                    || handler_next
-                        .as_ref()
-                        .is_some_and(|next| next != retry_header)
+                    || handler_next.as_ref().is_some_and(|next| {
+                        next != retry_header && Some(next) != proved_normal_join
+                    })
                 {
                     return Ok((
                         sequence_region(Vec::new()),
@@ -10949,11 +11669,18 @@ impl Walker<'_> {
                             None,
                         ));
                     };
-                    if handler_next.is_some()
+                    let branch = proof.handler_branch.as_ref().expect("branch retry proof");
+                    let expected_next = match branch {
+                        RetryHandlerBranchFacts::ThrowOrRetry { .. } => None,
+                        RetryHandlerBranchFacts::RetryOrNormal { normal_join, .. } => {
+                            Some(normal_join)
+                        }
+                    };
+                    if handler_next.as_ref() != expected_next
                         || !retry_handler_branch_region_complete(
                             region,
                             handler_id,
-                            proof.handler_branch.as_ref().expect("branch retry proof"),
+                            branch,
                             source_bci,
                             retry_header,
                         )
@@ -16961,6 +17688,87 @@ impl Walker<'_> {
         }
     }
 
+    /// Keep the full terminal-leaf scan for the fixed return-branch shape only. The certificate
+    /// below still rechecks the exact incoming canonical edge, decoded targets and parent scope.
+    fn loop_terminal_return_edge_candidate(
+        &self,
+        source: usize,
+        prefix: usize,
+        normal_exit: usize,
+        header: usize,
+        latch: usize,
+        blocks: &BTreeSet<usize>,
+        parent: &Frame,
+    ) -> bool {
+        let header_successors = self.view.successors(header);
+        if source != header
+            || header_successors.len() != 2
+            || !header_successors.contains(&prefix)
+            || !header_successors.contains(&latch)
+            || !blocks.contains(&source)
+            || blocks.contains(&prefix)
+            || prefix == normal_exit
+            || prefix == header
+            || prefix == latch
+            || self.visited.contains(&prefix)
+            || parent
+                .scope
+                .as_ref()
+                .is_some_and(|scope| !scope.contains(&source) || !scope.contains(&prefix))
+            || parent.boundary == Some(prefix)
+            || parent.shared_tail == Some(prefix)
+            || parent.own_loop == Some(prefix)
+            || parent.own_try == Some(prefix)
+            || parent.switch_join == Some(prefix)
+            || parent.switch_continue == Some(prefix)
+            || parent
+                .case_entries
+                .as_ref()
+                .is_some_and(|entries| entries.contains(&prefix))
+            || parent.loop_exit == Some(prefix)
+            || parent.if_arm.is_some_and(|(branch, entry, boundary)| {
+                branch == prefix || entry == prefix || boundary == Some(prefix)
+            })
+            || !self.view.successors(prefix).is_empty()
+        {
+            return false;
+        }
+        let Some(source_id) = self.view.id_of(source) else {
+            return false;
+        };
+        let successors = self.view.successors(source);
+        let Some(operation) = self
+            .terminal_bci(source_id)
+            .and_then(|bci| self.operations.get(bci))
+        else {
+            return false;
+        };
+        let is_return_branch = (successors.len() == 2 && operation.comparison().is_some())
+            || (successors.len() >= 2 && operation.switch().is_some());
+        let is_return_leaf = is_return_branch
+            && self
+                .view
+                .id_of(prefix)
+                .and_then(|id| self.ssa.block(id))
+                .and_then(|block| block.instructions().last())
+                .is_some_and(|instruction| {
+                    matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(Operation::Return)
+                    )
+                });
+        if !is_return_leaf {
+            return false;
+        }
+        let Some(test_bci) = self.terminal_bci(source_id) else {
+            return false;
+        };
+        // Preserve the established header-tested loop when its condition already satisfies the
+        // loop pass's StatementFree contract. This return-leaf path is only needed when that
+        // existing header proof refuses the condition (for example, a cast before the test).
+        self.test_is_pure(source_id, test_bci, true).is_err()
+    }
+
     fn loop_region(
         &mut self,
         header: &CanonicalBlockId,
@@ -17013,6 +17821,7 @@ impl Walker<'_> {
                 .and_then(|bci| self.operations.get(bci))
                 .is_some_and(|operation| operation.comparison().is_some());
         let mut header_prefix_edges = BTreeSet::new();
+        let mut terminal_returns = None;
         if body_branch {
             let latch_node = (loop_of.latches().len() == 1)
                 .then(|| *loop_of.latches().first().expect("one latch"));
@@ -17034,6 +17843,33 @@ impl Walker<'_> {
                     body_branch = false;
                     break;
                 };
+                let terminal_return = self.loop_terminal_return_edge_candidate(
+                    header_node,
+                    prefix_node,
+                    exit,
+                    header_node,
+                    latch_node,
+                    &blocks,
+                    frame,
+                );
+                if terminal_return {
+                    if terminal_returns.is_none() {
+                        terminal_returns =
+                            Some(self.loop_terminal_returns(&blocks, Some(exit), frame)?);
+                    }
+                    if terminal_returns
+                        .as_ref()
+                        .is_some_and(|leaves| leaves.contains(&prefix_node))
+                    {
+                        if header_prefix_edges.insert((header_node, prefix_node, exit))
+                            && header_prefix_edges.len() == 1
+                        {
+                            continue;
+                        }
+                    }
+                    body_branch = false;
+                    break;
+                }
                 if !self.post_test_break_prefix_proved(
                     header_node,
                     prefix_node,
@@ -17058,6 +17894,7 @@ impl Walker<'_> {
                 frame,
                 true,
                 &header_prefix_edges,
+                terminal_returns.take(),
             )? {
                 return Ok(region);
             }
@@ -17076,6 +17913,7 @@ impl Walker<'_> {
                 frame,
                 false,
                 &BTreeSet::new(),
+                terminal_returns.take(),
             )?
         {
             return Ok(region);
@@ -17271,6 +18109,7 @@ impl Walker<'_> {
             };
             inner_target.retry_handler = Some(RetryHandlerContinuation {
                 protected: facts.protected.clone(),
+                lead: (facts.protected.bci(), facts.protected.bci()),
                 protected_end: facts.protected_end,
                 row_ordinal: facts.row_ordinal,
                 handler: facts.handler.clone(),
@@ -21443,6 +22282,7 @@ impl Walker<'_> {
         frame: &Frame,
         allow_header_entry: bool,
         prechecked_prefix_edges: &BTreeSet<(usize, usize, usize)>,
+        precomputed_terminal_returns: Option<BTreeSet<usize>>,
     ) -> Result<Option<Run>, StopReason> {
         let latches = self
             .view
@@ -21453,6 +22293,8 @@ impl Walker<'_> {
             return Ok(None);
         }
         let latch_node = *latches.first().expect("one latch");
+        let mut terminal_returns_checked = precomputed_terminal_returns.is_some();
+        let mut terminal_returns = precomputed_terminal_returns.unwrap_or_default();
         let Some(latch) = self.view.id_of(latch_node).cloned() else {
             return Ok(None);
         };
@@ -21516,6 +22358,26 @@ impl Walker<'_> {
                     || self.loop_exit_bridge(header_node, successor, &exit, blocks)
                     || certified_prefix_edges.contains(&(header_node, successor))
                 {
+                    continue;
+                }
+                let terminal_return = self.loop_terminal_return_edge_candidate(
+                    header_node,
+                    successor,
+                    exact_exit_node,
+                    header_node,
+                    latch_node,
+                    blocks,
+                    frame,
+                );
+                if terminal_return {
+                    if !terminal_returns_checked {
+                        terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
+                        terminal_returns_checked = true;
+                    }
+                    if !terminal_returns.contains(&successor) {
+                        return Ok(None);
+                    }
+                    certified_prefix_edges.insert((header_node, successor));
                     continue;
                 }
                 if !self.post_test_break_prefix_proved(
@@ -21621,7 +22483,24 @@ impl Walker<'_> {
                 {
                     continue;
                 }
-                if !self.post_test_break_prefix_proved(
+                let terminal_return = self.loop_terminal_return_edge_candidate(
+                    *source,
+                    successor,
+                    exact_exit_node,
+                    header_node,
+                    latch_node,
+                    blocks,
+                    frame,
+                );
+                if terminal_return {
+                    if !terminal_returns_checked {
+                        terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
+                        terminal_returns_checked = true;
+                    }
+                    if !terminal_returns.contains(&successor) {
+                        return Ok(None);
+                    }
+                } else if !self.post_test_break_prefix_proved(
                     *source,
                     successor,
                     exact_exit_node,
@@ -21665,9 +22544,18 @@ impl Walker<'_> {
         );
         all_exits.extend(exits.iter().copied());
         let transfer_sources = self.loop_transfer_sources(&all_exits);
-        let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
+        if !terminal_returns_checked {
+            terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
+        }
         let terminal_bodies = self.loop_catch_terminal_body(header_node)?;
         self.charge_loop_terminal_scope_copy(header_node, &terminal_bodies)?;
+        // Only the newly admitted return-leaf candidate needs an ownership checkpoint; ordinary
+        // latch/goto candidates keep their existing clone and budget costs.
+        let return_trial = if terminal_returns_checked && !terminal_returns.is_empty() {
+            Some(self.loop_body_trial_state(Some(header.bci()))?)
+        } else {
+            None
+        };
         let mut body_frame = frame.loop_body(
             blocks,
             latch_node,
@@ -21682,7 +22570,15 @@ impl Walker<'_> {
         );
         self.include_fragmented_catch_scope(&mut body_frame, header_node);
         body_frame.allow_own_loop_entry = allow_header_entry;
-        let (mut body, _) = self.loop_body_sequence(header, &body_frame, blocks)?;
+        let (mut body, _) = match self.loop_body_sequence(header, &body_frame, blocks) {
+            Ok(body) => body,
+            Err(stop) => {
+                if let Some(state) = return_trial {
+                    self.restore_loop_body_trial_state(state);
+                }
+                return Err(stop);
+            }
+        };
         if latch_body_prefix {
             body.push(Region::Straight {
                 blocks: vec![latch.clone()],
@@ -21700,6 +22596,10 @@ impl Walker<'_> {
                 .filter(|candidate| Some(*candidate) != exit_node),
         );
         if !self.covers(&expected) {
+            if let Some(state) = return_trial {
+                self.restore_loop_body_trial_state(state);
+                return Ok(None);
+            }
             let reason = FallbackReason::LoopShape {
                 block_bci: header.bci(),
             };
@@ -33461,3 +34361,11 @@ mod statementful_loop_header_tests;
 #[cfg(test)]
 #[path = "region/loop_break_body_tests.rs"]
 mod loop_break_body_tests;
+
+#[cfg(test)]
+#[path = "region/do_while_break2_return_tests.rs"]
+mod do_while_break2_return_tests;
+
+#[cfg(test)]
+#[path = "region/prefixed_catch_retry_tests.rs"]
+mod prefixed_catch_retry_tests;

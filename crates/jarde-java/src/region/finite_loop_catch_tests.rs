@@ -53,7 +53,7 @@ fn with_frozen_method(
     );
 }
 
-fn with_frozen_method_ir(
+pub(super) fn with_frozen_method_ir(
     class_bytes: &[u8],
     method_name: &[u8],
     descriptor: &[u8],
@@ -785,7 +785,7 @@ fn retry_proof_for_test(
         own_monitor: None,
         depth: 0,
     };
-    walker.retry_loop_facts(header, shape)
+    walker.retry_loop_facts(header, shape, &[])
 }
 
 fn assert_retry_facts_refuse(

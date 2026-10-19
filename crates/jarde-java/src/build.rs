@@ -4874,9 +4874,9 @@ fn presented_reference_load_is_independent_of_caught_parameter(
 /// The reference value a cross-exception store can safely present as its own declaration's
 /// initializer. A same-block local Load reuses [`presented_array_operand`] for its actual local read,
 /// single-use and presented-path proof, then requires the Load to immediately precede the store.
-/// This Load may sit outside a protected arm. Constructor and zero-argument static-call shapes keep
-/// their protected-arm requirement and their existing exact-site/run proofs. Every accepted value
-/// stays in its original block and evaluation position.
+/// Loads and verified construction sites may sit outside a protected arm. A constructor still
+/// requires its complete exact site/run proof; zero-argument static calls retain their protected-arm
+/// requirement. Every accepted value stays in its original block and evaluation position.
 #[allow(clippy::too_many_arguments)]
 fn presented_reference_store_value(
     ssa: &SsaTable,
@@ -4953,9 +4953,7 @@ fn presented_reference_store_value(
         Some(Operation::Invoke(target))
             if target.kind() == InvokeKind::Special && target.name() == "<init>" =>
         {
-            if !in_protected_arm
-                || !single_use_at_with_budget(ssa, value, block_id, consumer, budget)?
-            {
+            if !single_use_at_with_budget(ssa, value, block_id, consumer, budget)? {
                 return Ok(false);
             }
             // The construction this value came from: the site's own verified expression is the
@@ -37190,6 +37188,7 @@ pub(crate) fn spell_reference(descriptor: &str) -> Option<String> {
 mod tests {
     use super::*;
     mod field_test_copy_tests;
+    mod loop3_constructor_store_tests;
     mod loop5_catch_binding_tests;
     use crate::names::{AliasReason, SlotEvidence};
 

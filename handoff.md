@@ -2,7 +2,19 @@
 
 更新：2026-10-19。先拉取GitHub并核对工作区；当前事实以本页、Git和对应验收收据为准。[历史快照](docs/history/handoff-through-2026-10-19.md)仅描述过去时点。
 
-## 当前产品：Loop4/5 完整验收通过
+## 当前推进：剩余四固定原件
+
+完整基线与真实IR已经root/独立接受，见[四原件完整三方](openspec/evidence/java-syntax-2026-10-19/cf09-last-four-original-root-v1/README.md)和[同轮真实IR](openspec/evidence/java-syntax-2026-10-19/cf09-last-four-ir-root-v1/README.md)。DoWhileBreak3现有机制通过：8API、16 Jarde整类编译、32 JardeVM加4 JADX VM/360CASE同原，test映射10/10；无check，外层JUnit文本断言未执行。原始do-while与JADX while&&拼写不同不算缺口。
+
+DoWhileBreak2真实gap：8API回退、16Jarde整类编译失败，提前return17被goto-prefix检查早拒绝；应提前复用已有terminal_returns证书。BreakInLoop3虽有NYI/@Test注释，但实际JADX整编/双runtime/check成功；Jarde8API因owner11重叠回退，catch回跳递归重开Try，不能把它当普通自然loop。canonical block11有未保护lead11..17，row17..28/handler31/type32；拟复用精确named retry证书与Try lead，保留正常catch diamond到join82。
+
+两项OpenSpec [return leaves](openspec/changes/recover-proved-post-test-loop-return-leaves/tasks.md)与[prefixed retry](openspec/changes/recover-proved-prefixed-catch-retry-loops/tasks.md)的实现已由Luna完成并经root集成审查。Do2复用既有terminal_returns证明，保留StatementFree已有表头路径优先；Loop3复用named retry/closed DAG，精确拼接Straight+当前LoopBreak，并仅对Sites/SSA已证明构造表达式去除protected-arm位置限制，初始化效果不移动。两项负例和完整ownership回滚通过。
+
+[定向实现及失败历史](openspec/changes/recover-proved-prefixed-catch-retry-loops/results/focused-implementation-root-v1/README.md)：Java核心552、CF12 9、Do2 public1、Loop3 public2及旧Loop4/5 public4通过；旧预算门365@29/130@1未改。最终Clippy/fmt/build通过，target已清理。fixture普查1367/5991/650/4360/16及指纹通过。最终同一CLI的Do2十一例、Loop3原件和Do3十例对照已完成，完整原始流正在归档；Loop3 writeMore来源48/49缺88，独立控制run40/41缺71，保持真实分母，单列映射债务。独立重试控制Jarde行为已通过，JADX默认包重命名导致原驱动未加载，正补齐关闭rename的完整三方；不能把32个Jarde VM算作三方完整。完整workspace和本产品自身CI尚待运行，产品与clean/远端结论等待最终收据。
+
+Loop6原Smali/Dex已实际组装、JADX两输入均保留1break；Jarde直接输入unknown_artifact_kind，Dex-only ZIP为0class候选。此为架构外输入边界，不以等价Java补齐，不新增Dex前端，不冒称原件动态覆盖。固定13原件暂10接受、2JVM真实gap、1输入边界；CF09/71/612仍partial。
+
+## 上一完整产品：Loop4/5 完整验收通过
 
 主线`main`。当前产品`412245d514896b1d0eb9a8fe24388f6a70668637`，由首版恢复a4ccac6b4和最小预算修正412245d51组成。Luna私有实现，root审查、集成及实际对照；无新分支/worktree。
 
@@ -18,9 +30,9 @@ Loop4给自然循环外的闭合break分支DAG建立精确owner证明，复用�
 
 ## 下一步与独立范围
 
-本轮Loop4/5已完成并归档，固定13原件现为9已接受、4待完整基线。CF09、71单元及612文件保持partial，见[JADX账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)。
+Loop4/5旧轮交付时为9/13；当前四原件状态以上方新检查点为准。CF09、71单元及612文件保持partial，见[JADX账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)。
 
-剩余固定原件为BreakInLoop3、BreakInLoop6、DoWhileBreak2/3。按[静态输入边界](openspec/evidence/java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md)先做完整三方基线：3的NYI先核实际JADX，6的Smali/Dex与class/JAR必须分开，不能用JVM构造例代替原输入。finThrow5/5、nestedFin16/16、Loop2与ComplexIf已验收旧片不重做。
+四原件静态输入边界历史见[静态输入边界](openspec/evidence/java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md)；它们的完整基线现已完成，后续按两项真实gap实施，6继续单列输入边界。finThrow5/5、nestedFin16/16、Loop2与ComplexIf已验收旧片不重做。
 
 ## 工作与资源边界
 

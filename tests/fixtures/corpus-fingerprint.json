@@ -12923,6 +12923,106 @@
       "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class"
     },
     {
+      "blake3": "fb6b1d1171f32787eec2b6999838747a9e80c7fa581baf0f614484c2a875eae0",
+      "bytes": 11357,
+      "path": "tests/fixtures/recover-proved-post-test-loop-return-leaves/licenses/JADX-LICENSE"
+    },
+    {
+      "blake3": "d006ec493b8b2457b733149b1779dd1db3bd8314f80e52377749304dafa869b2",
+      "bytes": 10658,
+      "path": "tests/fixtures/recover-proved-post-test-loop-return-leaves/licenses/JADX-NOTICE"
+    },
+    {
+      "blake3": "2baf256bfd117588bb4d8d83cbdcf619549343ca9835293403088854ef8594f6",
+      "bytes": 2042,
+      "path": "tests/fixtures/recover-proved-post-test-loop-return-leaves/manifest.json"
+    },
+    {
+      "blake3": "a3515c3c2770afd0ec8975c0e6200f24ed34c8c3d46d3db45751880822749535",
+      "bytes": 3086,
+      "path": "tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/TestDoWhileBreak2-full-classes.jar"
+    },
+    {
+      "blake3": "cb17c6e5ea5572a73ae1c617a44bb56d197de791372fae8925bc24a02345e3fe",
+      "bytes": 1428,
+      "path": "tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class"
+    },
+    {
+      "blake3": "07e4b366d33a3477605b3773d3901d8c28e3de4c5e5e6cc1e97e6e37b22851a6",
+      "bytes": 1260,
+      "path": "tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class"
+    },
+    {
+      "blake3": "c2284fdbe6d147ba1d55f9ff06de67631018eb1a1e32b42d16259fc7d139f3e7",
+      "bytes": 2549,
+      "path": "tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/TestDoWhileBreak2-full-classes.jar"
+    },
+    {
+      "blake3": "b53e812a8345e765a7adbd5266fc23ca60dfce976f92bdb9da38cfd3cc252074",
+      "bytes": 1118,
+      "path": "tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class"
+    },
+    {
+      "blake3": "e6621e0db098524e4878c484bfef2545ccb6908419dba30b8f4ce06d7a725730",
+      "bytes": 1033,
+      "path": "tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class"
+    },
+    {
+      "blake3": "76d0a01a5e0cc2ceab3a84337a5b245a6309cb4c327efc28bfaf61c59d2a9d6d",
+      "bytes": 1078,
+      "path": "tests/fixtures/recover-proved-post-test-loop-return-leaves/source/TestDoWhileBreak2.java"
+    },
+    {
+      "blake3": "fb6b1d1171f32787eec2b6999838747a9e80c7fa581baf0f614484c2a875eae0",
+      "bytes": 11357,
+      "path": "tests/fixtures/recover-proved-prefixed-catch-retry-loops/licenses/JADX-LICENSE"
+    },
+    {
+      "blake3": "d006ec493b8b2457b733149b1779dd1db3bd8314f80e52377749304dafa869b2",
+      "bytes": 10658,
+      "path": "tests/fixtures/recover-proved-prefixed-catch-retry-loops/licenses/JADX-NOTICE"
+    },
+    {
+      "blake3": "2ccb87ba6b20dbab936cc5d07158c81695552e55a91908055487663a39bc934b",
+      "bytes": 2032,
+      "path": "tests/fixtures/recover-proved-prefixed-catch-retry-loops/manifest.json"
+    },
+    {
+      "blake3": "91b8abe4436fdd2ee17c7c1a6bf7b3ef8dce616db66d57f1506ee7f18a809a58",
+      "bytes": 2855,
+      "path": "tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/TestBreakInLoop3-full-classes.jar"
+    },
+    {
+      "blake3": "8b27cdf30e586ebcb705765985ca9a48699286032603c4289cf98855f794ca4c",
+      "bytes": 1746,
+      "path": "tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop3$TestCls.class"
+    },
+    {
+      "blake3": "1c66a90ff00a9ab2abc62944a69b9ce3e8037499bc3809cf6e807e3a41dca365",
+      "bytes": 715,
+      "path": "tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop3.class"
+    },
+    {
+      "blake3": "ada4a0da3ecb2fbad048064e2726c18a34fb07c0eee1ee9127e05bb3e5fbe6fb",
+      "bytes": 2146,
+      "path": "tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/TestBreakInLoop3-full-classes.jar"
+    },
+    {
+      "blake3": "8ee2da9c345847d0097cfed800086bbe81b8bb807e4d28f17d6a21a55d130a0b",
+      "bytes": 1242,
+      "path": "tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop3$TestCls.class"
+    },
+    {
+      "blake3": "9885065b764636d87793e44e628279e9432a9f774bbe850d92063e9b45f6a6a6",
+      "bytes": 510,
+      "path": "tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop3.class"
+    },
+    {
+      "blake3": "f4c54f781ca705ab15a5530c868c0e8ec5fd5586909a37bb4f90455dba47f5ac",
+      "bytes": 1216,
+      "path": "tests/fixtures/recover-proved-prefixed-catch-retry-loops/source/TestBreakInLoop3.java"
+    },
+    {
       "blake3": "f2e3455cef17bef322545f34438574d2154c870b5b805e696255e80fd9b630de",
       "bytes": 203,
       "path": "tests/fixtures/recover-return-through-nested-finally-cleanup/source/NestedFinally.java"
