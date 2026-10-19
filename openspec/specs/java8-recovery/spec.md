@@ -1324,3 +1324,51 @@ Java 恢复 SHALL 支持一个普通物理保护块的具名 catch 重试循环�
 #### Scenario: Proof work stops without publishing a partial loop
 - **WHEN** 候选证明或结构组装期间达到预算限制或取消
 - **THEN** 恢复 SHALL 保留原停止原因、诊断、真实用量和已允许的可靠前缀，MUST NOT 发布未证明的循环、重复 owner 或在取消后重试收费
+
+### Requirement: Proved conditional break bodies retain their complete loop effects
+
+系统 SHALL 恢复头测循环中有完整证据、单入口无环且所有路径通往本循环同一出口的条件 break 分支体，保留各条件、赋值、循环更新和物理来源。系统 MUST NOT 因分支体不属于自然循环集合而将其写为空臂，也不能只写一条 break 丢弃分支内效果。
+
+#### Scenario: Original Loop4 retains conditional multiplier assignment
+
+- **WHEN** 对冻结的完整 TestBreakInLoop4 debug/no-debug 原件执行 class/JAR、default/all 反编译
+- **THEN** 构造器、test、check SHALL 全部报告 structured；test SHALL 保留 for 初始化与更新、对 a/b 的条件赋值和本循环 break，且不留 17/23/29 的 uncovered 引文。完整生成源码在具备适配框架依赖的编译器下原样重编后，隔离 VM 对点号、a、b、c 分别返回 1、1024、1024、1；原 check 的实际结果及框架版本边界须单独如实记录
+
+#### Scenario: Shared entries and nonclosing exit graphs remain refused
+
+- **WHEN** 候选分支体出现外部额外入口、不同出口、循环回边、未证明的异常边、已占用块，或不能完整表达其控制流
+- **THEN** 系统 MUST NOT 将该体发布为已完整恢复的循环；未被其他证明拥有的原始块、拒绝原因和物理事实 SHALL 保留，不得通过减少覆盖分母或静默去重隐藏缺口
+
+#### Scenario: Break origins and bounded stopping stay faithful
+
+- **WHEN** 恢复该分支体成功，或在证明、复制、遍历和发布途中遇到预算不足或取消
+- **THEN** 成功输出的 break SHALL 指向本循环并保留实际条件/跳转指令来源；停止 SHALL 传播实际原因和用量，不发布部分 owner、不将停止伪装为普通形状拒绝。default/all 的正文、identity、quality 和源码映射 MUST 保持一致，映射引用须为有效 UTF-8 边界和物理方法范围
+
+### Requirement: Proved named catch loop return tails preserve protected expression evaluation
+
+系统 SHALL 在证据完整的普通命名 catch 中恢复初始化前缀、完整循环和单块返回表达式，保持表达式求值的原顺序及其异常处理。系统 MUST 保留原物理异常范围，不能因为范围右边界恰为不能抛异常的 return 指令，就丢弃整个返回表达式或把未受保护的效果移入 catch。
+
+#### Scenario: Original Loop5 keeps parsing and early multiplier selection
+
+- **WHEN** 对完整 TestBreakInLoop5 debug/no-debug 原件执行 class/JAR、default/all 反编译
+- **THEN** 构造器、test、check SHALL 全部报告 structured；完整 test SHALL 保留数字缓冲追加、首个非数字非点字符处的 m/M、g/G 倍率选择和 break，以及随后转换、乘法、ceil、long 返回和 Exception 返回 -1。完整源码原样重编并隔离运行时，1.2、12am、13m、1G4、空串 SHALL 分别返回 2、12、13312、1048576、-1，与同 profile/runtime 原件逐项一致，check 结果与框架边界单独记录
+
+#### Scenario: A sole terminal return can sit at the exclusive protected boundary
+
+- **WHEN** 返回表达式所有可能抛异常和有副作用的指令都在同一已证明命名保护范围内，唯一范围外指令为恰位于右边界的末尾 return
+- **THEN** 输出 SHALL 保持完整 try 中的 return 表达式与独立 catch body；原范围 [0,123)、handler124 和 return123 等物理事实 MUST 保持不变，不得宣称 return123 是受保护指令
+
+#### Scenario: A proved catch binding does not retype the ordinary local sharing its slot
+
+- **WHEN** 已恢复catch在处理器入口把该处理器收到的异常绑定到参数，而同一物理局部槽在正常body中存储double等普通局部值
+- **THEN** catch头部绑定 SHALL 保持自己的词法声明，不得作为普通局部变量的跨类别赋值造成类型冲突；绑定来自错误处理器、错误路径或槽、非入口写入或不能证明为该处理器收到的异常时，MUST 保持原拒绝及逃逸检查，不得把无关值错误认作catch参数或用强制转换掩盖证据缺失
+
+#### Scenario: Foreign exception scope and incomplete owners remain refused
+
+- **WHEN** 出现额外入口/出口、未闭合循环、错误或额外异常行、handler 混入正常 body、越界非 return 指令、重复或遗失 owner，或返回尾不满足唯一末尾条件
+- **THEN** 系统 MUST 拒绝发布该完整组合，保留全部未恢复事实和原原因；已被接受的旧 goto 路径及其它异常语义 SHALL 保持原契约
+
+#### Scenario: Candidate interruption never publishes partial recovery
+
+- **WHEN** 在前缀、循环、返回尾证明及发布期间遇到取消或预算不足
+- **THEN** 系统 SHALL 传播真实停止原因与用量，不提交局部 owner 或泄漏试探状态；成功场景下 default/all 的正文、identity、quality、映射和有效物理引用 MUST 一致

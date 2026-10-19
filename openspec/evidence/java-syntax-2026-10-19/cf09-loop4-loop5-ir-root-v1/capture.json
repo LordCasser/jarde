@@ -1,0 +1,15 @@
+{
+  "schema": "root-archive-capture-v1",
+  "status": "all_members_reopened_and_matched",
+  "archive": {
+    "path": "openspec/evidence/java-syntax-2026-10-19/cf09-loop4-loop5-ir-root-v1/evidence.tar.gz",
+    "bytes": 1205055,
+    "sha256": "c585022c33a24f7e3466a5c57f7ada0da02fc8b2c17b9fda5dfd988d7fd7f42b"
+  },
+  "payload_count": 34,
+  "payload_bytes": 6517415,
+  "probe_test_passed": 1,
+  "probe_test_failed": 0,
+  "scope": "four original test methods; Sites::empty helper; physical class inventories are separate from IR method coverage",
+  "target_absent": true
+}

@@ -1850,3 +1850,6 @@ fn loop2_late_region_budget_stop_does_not_publish_a_partial_retry_loop() {
         );
     }
 }
+
+#[path = "loop5_return_tail_tests.rs"]
+mod loop5_return_tail_tests;
