@@ -1,6 +1,6 @@
 # JADX 测试驱动的 Java 恢复路线
 
-当前2026-10-19检查点优先见[控制流账本](control-flow.md)：CF09布尔局部产品cc1bf已完整验收（192运行观察、当前产品CI39186343472双seed及3896具名结果一致），下一固定原件Continue已完成完整基线与真实IR，OpenSpec2/6、私有实现待审。finThrow/nestedFin已交付不重做；71/612统计口径不变。
+当前2026-10-19检查点优先见[控制流账本](control-flow.md)：DoWhileBreak出口前缀产品79385已完整验收，fresh391目标/3805-0-98、自身CI39200895508双seed105精确门及全部3903具名结果一致，主规范同步。下一固定ComplexIf完整原件/JADX基线已接受，Jarde目标循环回退及整类缺return已定位，真实IR探针尚未执行，待据实立Spec。finThrow/nestedFin已交付不重做；CF09/71/612统计口径不变。
 
 ## 2026-10-18 CF-11 祖先 Iterator 声明清理产品验收
 

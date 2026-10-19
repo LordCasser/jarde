@@ -11,4 +11,4 @@
 ## 3. Complete comparison and delivery
 
 - [x] 3.1 root以冻结最终CLI完成八API、JDK8/23完整源码重编/隔离VM，比较原两有限case的返回/异常/stdout；绑定复用已接受原件/JADX，保留错根、全部失败和来源缺口，逐字归档后接受。
-- [ ] 3.2 root完成fmt/Clippy、一次fresh workspace、当前产品自身CI四jobs/独立官方ZIP/双seed与全部继承具名门，绑定Git/CLI/源码；归档复开后同步主spec/strict/账本/handoff，提交推送clean-main。Cargo继续5GiB/target1GiB/defaultstack/每秒guard/finally exactclean。
+- [x] 3.2 root完成fmt/Clippy、一次fresh workspace、当前产品自身CI四jobs/独立官方ZIP/双seed与全部继承具名门，绑定Git/CLI/源码；归档复开后同步主spec/strict/账本/handoff，提交推送clean-main。Cargo继续5GiB/target1GiB/defaultstack/每秒guard/finally exactclean。

@@ -1,14 +1,18 @@
-## 2026-10-19 当前：DoWhile出口前缀5/6，完整对照已接受
+## 2026-10-19 当前：DoWhileBreak已交付，ComplexIf完整基线已接受
 
-本节优先，下方均为历史时点。finThrow5/5、nestedFin16/16、continue6/6与数组减法4/4已交付，不重做。main上一检查点75d56f050已推送且14aux detached-clean-ancestor/target absent收据在 `/private/tmp/jarde-continue-ladder-final-clean-main-root-v1-20261019/execution.json`。当前是其后的DoWhile产品增量，最终Git以实际状态为准。
+本节优先，下方均为历史时点。finThrow5/5、nestedFin16/16、continue6/6、数组减法4/4与本轮出口前缀6/6均已交付，不重做。产品 `79385b75a3fb0287f9cc545eb756ee8923e46583` 已推main；文档后继HEAD/远端与全部worktree状态以实际Git及外置 `/private/tmp/jarde-post-test-break-prefix-final-clean-main-root-v1-20261019/execution.json` 为准。该审计区分产品提交和文档HEAD，接续先核Git。
 
-`recover-proved-post-test-loop-break-prefixes` 5/6。root逐差异审Luna v2，补引用比较与保守计费后实际通过；只加独占单块出口证明，原纯goto桥、自然集合、LoopTarget、ForHeader、Builder、Region表示均不变。普通If/gateway/最终LoopBreak保留reset→break，未新增全局机制。永久unit真实两profile/owner/最终break、实图goto改指header的scope拒绝及预算取消已实际通过；变体只parser/IR级，不称JVM验证。
+`recover-proved-post-test-loop-break-prefixes` 6/6。root审Luna v2并补两处局部overlay，只加独占单块出口证明；旧纯goto桥、自然集合、LoopTarget、ForHeader、Builder和Region表示不变。复用If/gateway/最终LoopBreak保留reset→break，真实IR正反例、owner与预算取消均实际通过，无新全局机制。完整八API/16整类编译/32VM64观察全同原件、16错根拒绝、目标来源14/14；定向512 Java lib及公开/相邻/Reader/指纹/fmt/Clippy均接受。入口 `openspec/changes/recover-proved-post-test-loop-break-prefixes/results/README.md`。
 
-冻结CLI `/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/candidate-cli`，64,285,120B/SHA8c91115a91a31b041ecaf53a2b964bb57606342d04b524035293ae0b7accd285。3282来源构建零变化；Java lib512/0、新公开2/0、旧continue2/0、gateway15/0、effectful12/0、Reader1/0、指纹5/0/1既有ignored、fmt/完整CI Clippy全部接受。完整72命令八API/16整类重编/32VM64观察全部同原件，16错根拒绝，14/14来源。原件/JADX精确复用，实际采集前置needle失败及全部草稿/overlay保留。入口 `openspec/changes/recover-proved-post-test-loop-break-prefixes/results/README.md`；307payload归档SHA3a21508d09639654e08e9f6ee97feacdb263adb115f70c5a7cf8cb8647e981d9逐bytes/mode复开。Reader实测1334class/5866Code/631handler/4223target/16jsr。
+冻结CLI `/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/candidate-cli`，64,285,120B/SHA `8c91115a91a31b041ecaf53a2b964bb57606342d04b524035293ae0b7accd285`、0555。3282构建来源零变化；一次fresh391 targets/102批/3805-0-98，60精确门与九相邻门各一次，峰值target850873047B，finally exactclean。自身CI39200895508四jobs/52独立官方ZIP步骤、双seed各105精确门、全部3903具名结果一致；5242构建/native来源并集逐Git/bytes/mode绑定79385，无transport失败。最终552payload归档SHA `e816ff52faf4506e176d5a36d87da6c604521c5fedaafb60ba88cf970471212a`逐成员复开；主spec追加1requirement/4scenario，18主规范及384项strict通过。Reader仍1334class/5866Code/631handler/4223target/16jsr。后继纯文档提交不冒称重跑产品CI。
 
-下一必须完成当前产品一次fresh workspace（60精确门及九相邻回归）、本产品自身CI全部四jobs/52独立官方步骤/双seed105精确门及全部具名结果，严格绑定当前零变化build/产品Git/来源，然后主spec同步、strict、最终归档与clean-main。私有prep `/private/tmp/jarde-post-test-break-prefix-own-ci-prep-luna-v3-20261019`，旧workspace checker/binder/ZIP逐字继承，新3门只增不减；实际完整native/CI尚待。不能拿050结果关闭本片，fixture准备时点pending文案由实际root接受收据补充，不改冻结输入。
+下一固定原件TestBreakInComplexIf完整基线已接受：完整1533B源码含outer/TestCls/非静态Point/check，不裁剪。54命令、16目标/Point API、20完整源码编译尝试；原件4VM36观察，JADX两次JDK23整树重编/4VM36观察同原，九case含null短路、99/100边界、99次有限遍历及MAX环绕两步退出。Jarde八组test(Map,int)均fallback，ctor/check/Point均structured；16完整源码编译失败，其中八JDK23缺return，八JDK8保留原始framework55/52边界，没有Jarde VM。目标来源7/33，Point12/12；八对default/all全文/质量/identity/maps相同。13131pin独立审计与root额外隔离核验通过，诊断message/stack按原样保留但只比较异常类别。持久入口 `openspec/evidence/java-syntax-2026-10-19/cf09-testbreakincomplexif-original-root-v1/README.md`，399payload归档SHA `d4b451049977a7881681279c7cb01a912137435204ee366c02376550c5fa7429`已逐bytes/mode复开，所有实际采集/审计失败保留。
 
-固定13原件中，DoWhile现已有完整对照，但全产品广验待做；其余九项完整原件对照仍待，CF09/71/612保持partial。下一TestBreakInComplexIf仅私有源码九case数学计划 `/private/tmp/jarde-testbreakincomplexif-source-plan-luna-v1-20261019`，未编译/运行，不宣称新缺陷或机制。root独占共享写/Git/network/Cargo/JDK/CLI；Luna只共享只读/新私有tmp/Python-B；Cargo5GiB/target1GiB/defaultstack/每秒guard/finally exactclean，期间不共享写/Gitmutation/network/manualJDK或CLI，不建新worktree。当前无本地Cargo/JDK/CLI活动，target absent。
+ComplexIf已见公开首gap：循环header7的候选test block14含BCI15效果，未覆盖72/60。不能仅据消息决定修复。下一先审 `/private/tmp/jarde-testbreakincomplexif-ir-probe-prep-luna-v1-20261019` 冻结真实Reader/IR探针，再按guard执行并精确恢复region源码，核自然loop/latch、实际ForHeader、SSA效果顺序和首失败路径；该探针尚未执行。JADX静态实现参考在 `/private/tmp/jarde-testbreakincomplexif-jadx-reference-luna-v1-20261019`，不当实测结果。确认架构边界后才立最小OpenSpec并派Luna实现/公库tests，root完整对照验收，不先造新机制。下一最终对照保留check/Point与JDK8框架边界，以JDK23 --release8完整重编及双VM验证可执行结果。
+
+固定13原件当前四项已解决、一项ComplexIf已证真实gap、其余八项完整原件对照待做（ComplexIf2、BreakInLoop2..6、DoWhileBreak2/3）；CF09/71单元/612文件仍partial，不增加整项完成数。单列验证工具债务：复制临时collector遗留了路径/方法库存/诊断及证据比较假设，后续单独统一case参数、物理库存和语义投影；不混入当前循环恢复实现。
+
+root独占共享写/Git/network/Cargo/JDK/CLI；Luna只共享只读/新私有tmp/Python-B。Cargo5GiB余量、target1GiB、defaultstack、每秒guard/finally exactclean；本项目Cargo期间不共享写/Gitmutation/network/manualJDK或CLI，不建新分支/worktree。当前本项目无活动工具链，target absent，私有探针不能冒称执行。
 
 ## 2026-10-19 历史：continue与数组减法完整交付；DoWhile出口前缀2/6
 
