@@ -1,6 +1,6 @@
 # JADX 测试驱动的 Java 恢复路线
 
-当前2026-10-19检查点见[控制流账本](control-flow.md)：[Loop2异常重试片6/6](../../changes/recover-branching-named-catch-retry-loops/results/README.md)，产品618b5e20f，完整原件32VM/64观察同原、来源17/17；可达控制32VM/160观察补充原件不可达catch路径。fresh393目标/3823-0-98、78精确门，自身CI39227711617四jobs/官方步骤ZIP/双seed完整具名结果通过，5280源码路径绑定产品，主规格同步。固定13原件7项接受、6项待完整baseline，下一优先BreakInLoop4/5，3的NYI与6的Smali/Dex边界单列。ComplexIf两个原件及BCI69/78独立映射债务保持原结论。finThrow/nestedFin/旧片不重做，CF09/71/612仍partial；以下为各日期历史记录。
+当前2026-10-19检查点见[控制流账本](control-flow.md)：Loop2异常重试片6/6，产品618b5e20f已完整验收。[Loop4/5完整三方基线](../java-syntax-2026-10-19/cf09-loop4-loop5-original-root-v1/README.md)已并行执行并接受：每目标46命令/8API；两个test为uncovered_blocks，分别遗漏3/11块，ctor/check结构化。Jarde16整类编译均失败、无VM；每目标JADX2次JDK23整树编译成功/4隔离VM观察同原，JDK8框架55/52边界保留。下一同轮IR定位后再建OpenSpec派Luna，未推断同根因或实现成功。固定13原件7项接受、2项实际gap、4项待完整基线；3的NYI与6的Smali/Dex边界单列。finThrow/nestedFin/旧片不重做，CF09/71/612仍partial；以下为各日期历史记录。
 
 ## 2026-10-18 CF-11 祖先 Iterator 声明清理产品验收
 

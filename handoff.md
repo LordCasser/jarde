@@ -14,11 +14,17 @@
 
 最终 CLI：`/private/tmp/jarde-loop2-retry-final-focused-root-v2-20261019/candidate-cli`，64,347,312 bytes，模式0555，SHA-256 `7e321a7f4fd6a029540ab169f79572c6ad83e74119900ac6d695290c9c055318`；与完整对照 CLI 同字节。临时目录不保证跨机器存在，持久证据从上面的验收入口读取。
 
+## 当前处理：Loop4/5
+
+[完整三方基线](openspec/evidence/java-syntax-2026-10-19/cf09-loop4-loop5-original-root-v1/README.md)已并行采集并root/独立复核接受：每目标46命令/8API/20完整编译尝试。两个test均fallback `jre_region_uncovered_blocks`，Loop4遗漏3块、Loop5遗漏11块；ctor/check均structured。每目标Jarde16整类编译失败、无VM；JADX2次JDK23整树编译成功/4VM全部case+check同原件，2次JDK8编译框架55/52边界保留。原件check在JDK23通过、JDK8依赖异常独立记录。
+
+下一步运行四个冻结class的同轮IR探针，先证明具体恢复路径，再按OpenSpec派发Luna最小实现，root架构/对抗性/完整对照验收。不得按相同诊断猜同一根因，不重跑已冻结基线。临时探针准备在 `/private/tmp/jarde-loop45-ir-probe-prep-luna-v1-20261019`，尚未执行。
+
 ## 下一步与独立债务
 
-固定13原件中7项已完整接受、6项待完整基线；CF09、71单元、612文件整体仍为 partial。覆盖范围以 [JADX账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md) 为准，不把原件数当作特性数。
+固定13原件中7项已完整接受、2项实际gap、4项待完整基线；CF09、71单元、612文件整体仍为 partial。覆盖范围以 [JADX账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md) 为准，不把原件数当作特性数。
 
-- 按 [BreakInLoop3–6静态计划](openspec/evidence/java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md) 优先运行4/5的完整Java原件/JADX/Jarde基线，先确认实际缺口再建OpenSpec。3含NYI，先查实际JADX；6单列Smali/Dex与class/JAR输入边界，均未算完成。
+- 按 [BreakInLoop3–6静态计划](openspec/evidence/java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md) 4/5已完成完整基线且确认gap，按上述当前处理继续定位。3含NYI，先查实际JADX；6单列Smali/Dex与class/JAR输入边界，均未算完成。
 - [隐式循环转移映射债务](openspec/evidence/java-syntax-2026-10-19/cf09-implicit-loop-transfer-mapping-debt-root-v1/README.md)：BCI69/78缺失仍待实际证明，独立处理。
 - collector 参数、物理库存与语义投影统一属于工具债务，不混入语法修复。
 

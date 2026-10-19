@@ -2,7 +2,7 @@
 
 [最小OpenSpec6/6](../../changes/recover-branching-named-catch-retry-loops/results/README.md)，产品618b5e20f/CLI7e321a7f。同轮IR确认异常handler回跳造成重复owner后，仅扩展已有retry证明和Frame精确转移授权，复用If/Throw/LoopContinue，无新CFG/Region/pass/Builder。完整原件8API、16完整重编、32Jarde VM/64观察同原、四方法结构化、来源17/17；原件catch不可达，由可达控制例32VM/160观察补充重试/同异常重抛/反转/效果异常范围验证。JADX原JDK8 framework55/52边界保留。
 
-[最终native/自身CI](../../changes/recover-branching-named-catch-retry-loops/results/native-and-own-ci-root-v1/README.md)：一次fresh393targets/103批/3823-0-98、78精确门；CI39227711617四jobs、官方步骤ZIP、双seed具名结果均接受；5280来源逐Git blob/bytes/mode绑定产品。主规格同步；严格校验以验收入口为准。固定13原件7项接受、6项待完整baseline，优先[BreakInLoop4/5](../java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md)；3的NYI及6的Smali/Dex边界单列。CF09/71/612仍partial。
+[最终native/自身CI](../../changes/recover-branching-named-catch-retry-loops/results/native-and-own-ci-root-v1/README.md)：一次fresh393targets/103批/3823-0-98、78精确门；CI39227711617四jobs、官方步骤ZIP、双seed具名结果均接受；5280来源逐Git blob/bytes/mode绑定产品。主规格同步；严格校验以验收入口为准。固定13原件7项接受、2项实际gap、4项待完整baseline；[BreakInLoop4/5完整基线](../java-syntax-2026-10-19/cf09-loop4-loop5-original-root-v1/README.md)每目标46命令/8API，两个test均uncovered_blocks（3/11块），Jarde16整编译失败无VM、JADX2整树编译/4VM同原；下一同轮IR定位再建OpenSpec；3的NYI及6的Smali/Dex边界单列。CF09/71/612仍partial。
 
 前一[ComplexIf两原件交付](../../changes/bound-loop-header-chains-at-body-effects/results/README.md)保留；32/33与33/34来源缺口BCI69/78作为独立映射债务，不扩大Loop2范围。finThrow5/5、nestedFin16/16与旧片不重做。以下均为历史。
 
