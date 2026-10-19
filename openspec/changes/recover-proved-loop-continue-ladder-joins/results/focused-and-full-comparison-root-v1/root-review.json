@@ -1,0 +1,51 @@
+{
+  "status": "root_accepted_memberwise_bytes_modes_and_matrix_binding",
+  "archive_sha256": "004dd01900ed5b0fdb51ae59eb89985baab47b514267aac2a8eb40857553a2d7",
+  "archive_bytes": 5031387,
+  "payload_members": 365,
+  "excluded_cli_copies": [
+    {
+      "bytes": 64065312,
+      "input_label": "focused-capture-v4",
+      "mode": 365,
+      "reason": "Matrix CLI or independent build-only byte-identical alias; native binary remains externally pinned.",
+      "relative_path": "candidate-cli",
+      "sha256": "6c83ec82cd4c6caee86c08e7fefddc2fea675952f936c0e4aa3f295ed9be7fc6",
+      "source_path": "/private/tmp/jarde-continue-ladder-focused-root-v4-20261019/candidate-cli"
+    },
+    {
+      "bytes": 64065312,
+      "input_label": "focused-capture-v5",
+      "mode": 365,
+      "reason": "Matrix CLI or independent build-only byte-identical alias; native binary remains externally pinned.",
+      "relative_path": "candidate-cli",
+      "sha256": "6c83ec82cd4c6caee86c08e7fefddc2fea675952f936c0e4aa3f295ed9be7fc6",
+      "source_path": "/private/tmp/jarde-continue-ladder-focused-root-v5-20261019/candidate-cli"
+    }
+  ],
+  "matrix_binding": {
+    "accepted_root_marker": {
+      "bytes": 925,
+      "mode": 420,
+      "path": "/private/tmp/jarde-testcontinueinloop-final-candidate-root-v1-20261019/root-review.json",
+      "sha256": "d049b129d30f53d511220d390d97f0f6bf83a407038a0685fa9574fa85e900a6"
+    },
+    "accepted_status_values": [
+      "root_accepted_full_comparison"
+    ],
+    "current_cli": {
+      "bytes": 64065312,
+      "mode": 365,
+      "path": "/private/tmp/jarde-continue-ladder-focused-root-v4-20261019/candidate-cli",
+      "sha256": "6c83ec82cd4c6caee86c08e7fefddc2fea675952f936c0e4aa3f295ed9be7fc6"
+    },
+    "execution_receipt": {
+      "bytes": 6835467,
+      "mode": 420,
+      "path": "/private/tmp/jarde-testcontinueinloop-final-candidate-root-v1-20261019/execution.json",
+      "sha256": "f1de379cfd1368615327a39522ebb53d83245bb41b1f98d91c513d90d2c1530b"
+    },
+    "input_label": "final-matrix"
+  },
+  "scope": "Focused failures, implementations, root architecture reviews, exact build aliases and final full comparison. Fresh native and product own-CI pending."
+}

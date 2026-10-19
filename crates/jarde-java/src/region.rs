@@ -3475,6 +3475,10 @@ struct ArmRoutes {
     reached_stop: bool,
     /// Whether a route reached the frame's boundary — a route that would run past the join.
     reached_boundary: bool,
+    /// Whether one directly proved edge leaves this arm at its loop's exact update target.
+    reached_continue: bool,
+    /// Whether a route terminates or leaves the bounded scope before its stop.
+    reached_terminal: bool,
 }
 
 /// How many branches a route from a ladder's arm to its join may pass: one, the `else if` step
@@ -6269,6 +6273,22 @@ impl Walker<'_> {
                         None
                     };
                     let join_node = join_node.or(shared_join);
+                    let direct_continue_join = if join_node.is_none_or(|join| {
+                        frame
+                            .scope
+                            .as_ref()
+                            .is_some_and(|scope| !scope.contains(&join))
+                    }) {
+                        self.direct_continue_local_join(
+                            node, then_node, else_node, frame, branch_bci,
+                        )?
+                    } else {
+                        None
+                    };
+                    let join_node = direct_continue_join
+                        .as_ref()
+                        .map(|(boundary, _, _)| *boundary)
+                        .or(join_node);
                     // A branch inside a loop body whose join none of the readings above states
                     // still states its own edges: the second loop jump pulled the arms' meeting
                     // point past an enclosing loop's continue target (the post-dominator was
@@ -6355,13 +6375,32 @@ impl Walker<'_> {
                     // ([`FallbackReason::Loop`]); the completed tree owns that block twice and the
                     // whole method is refused (`jre_region_ownership_overlap`). The join is a fact
                     // of the graph all the same, and [`Self::ladder_join`] is the reading of it.
-                    let ladder_join = if join_node.is_none() {
-                        self.ladder_join(node, then_node, else_node, frame, branch_bci)?
+                    let join_outside_scope = join_node.is_some_and(|join| {
+                        frame
+                            .scope
+                            .as_ref()
+                            .is_some_and(|scope| !scope.contains(&join))
+                    });
+                    let (ladder_join, continue_ladder_elected) = if join_node.is_none() {
+                        (
+                            self.ladder_join(node, then_node, else_node, frame, branch_bci, false)?,
+                            false,
+                        )
+                    } else if join_outside_scope {
+                        // A method-wide post-dominator cannot close an arm of a loop body. Replace
+                        // that outside candidate only when the narrow local route proof succeeds.
+                        let local =
+                            self.ladder_join(node, then_node, else_node, frame, branch_bci, true)?;
+                        (local, local.is_some())
                     } else {
-                        None
+                        (None, false)
                     };
                     let ladder_elected = ladder_join.is_some();
-                    let join_node = join_node.or(ladder_join);
+                    let join_node = if continue_ladder_elected {
+                        ladder_join
+                    } else {
+                        join_node.or(ladder_join)
+                    };
                     // The last two-edge reading: the graph's join already left the loop (the
                     // breaking arm's route exits it), one successor is the proved exit transfer
                     // of a loop this frame knows, and the other successor stays in the loop and
@@ -6668,6 +6707,85 @@ impl Walker<'_> {
                         }];
                         return Ok((run, join));
                     }
+                    if let Some((boundary, continue_arm, expected_chain)) =
+                        direct_continue_join.as_ref()
+                    {
+                        let refusal_bci = branch.bci();
+                        let Some(boundary_id) = self.view.id_of(*boundary).cloned() else {
+                            let reason = FallbackReason::ArmsDoNotMeet {
+                                block_bci: refusal_bci,
+                            };
+                            return Ok(gap(prefix, vec![branch], reason, None));
+                        };
+                        let Some(target) = frame.loop_targets.last() else {
+                            unreachable!("the local continue proof requires its loop owner")
+                        };
+                        if let Err(reason) = self.branch_arity_proved(&branch, branch_bci, op) {
+                            return Ok(gap(prefix, vec![branch], reason, Some(boundary_id)));
+                        }
+                        let other = [then_node, else_node]
+                            .into_iter()
+                            .flatten()
+                            .find(|arm| *arm != *continue_arm)
+                            .expect("a two-way branch has the other arm");
+                        let other_id = self.view.id_of(other).cloned().expect("known arm id");
+                        let before_other = self.visited.clone();
+                        let before_unclosed_tail = self.unclosed_tail_at;
+                        let other_frame = frame.arm(Some(*boundary), Some(branch_bci));
+                        let (other_run, other_next) = match self.region_at(&other_id, &other_frame)
+                        {
+                            Ok(run) => run,
+                            Err(stop) => {
+                                self.visited = before_other;
+                                self.unclosed_tail_at = before_unclosed_tail;
+                                return Err(stop);
+                            }
+                        };
+                        let actual_chain = match other_run.as_slice() {
+                            [Region::Straight { blocks }] if other_next.is_none() => blocks,
+                            _ => {
+                                self.visited = before_other;
+                                self.unclosed_tail_at = before_unclosed_tail;
+                                let reason = FallbackReason::ArmsDoNotMeet {
+                                    block_bci: refusal_bci,
+                                };
+                                return Ok(gap(prefix, vec![branch], reason, Some(boundary_id)));
+                            }
+                        };
+                        if actual_chain != expected_chain {
+                            self.visited = before_other;
+                            self.unclosed_tail_at = before_unclosed_tail;
+                            let reason = FallbackReason::ArmsDoNotMeet {
+                                block_bci: refusal_bci,
+                            };
+                            return Ok(gap(prefix, vec![branch], reason, Some(boundary_id)));
+                        }
+                        let loop_header = self
+                            .view
+                            .id_of(target.header)
+                            .cloned()
+                            .expect("loop target is a canonical node");
+                        let leaf = Region::LoopContinue {
+                            source_bci: branch_bci,
+                            loop_header,
+                        };
+                        let (then_arm, else_arm) = if then_node == Some(*continue_arm) {
+                            (Box::new(leaf), Box::new(sequence_region(other_run)))
+                        } else {
+                            (Box::new(sequence_region(other_run)), Box::new(leaf))
+                        };
+                        return Ok((
+                            vec![Region::If {
+                                prefix,
+                                branch,
+                                branch_bci,
+                                then_arm,
+                                else_arm,
+                                join: Some(boundary_id.clone()),
+                            }],
+                            Some(boundary_id),
+                        ));
+                    }
                     // Two successors that are both the join state no arm at all: nothing in the
                     // graph says which of them an arm would be, so the branch keeps its refusal
                     // rather than becoming an `if` with two empty arms. The same holds when both
@@ -6683,7 +6801,10 @@ impl Walker<'_> {
                         return Ok(gap(prefix, vec![branch], reason, next));
                     }
                     let mut arm_frame = frame.arm(join_node, Some(branch_bci));
-                    if let Some(tail) = shared_join.filter(|_| frame.shared_tail.is_none()) {
+                    if let Some(tail) = shared_join
+                        .or_else(|| continue_ladder_elected.then_some(join_node).flatten())
+                        .filter(|_| frame.shared_tail.is_none())
+                    {
                         arm_frame.shared_tail = Some(tail);
                     }
                     let before_arms = self.visited.clone();
@@ -14995,6 +15116,213 @@ impl Walker<'_> {
         self.forward_join_predecessors(branch, join)
     }
 
+    /// Find one first common route node without asking the whole method graph for reachability.
+    /// This new loop-only reading stays within the already walked route nodes; every node/edge
+    /// query is charged and polled. The legacy ladder continues to use its original helper.
+    fn budgeted_first_common(
+        &mut self,
+        common: &BTreeSet<usize>,
+        route_nodes: &BTreeSet<usize>,
+        at: u32,
+    ) -> Result<Option<usize>, StopReason> {
+        let mut first = None;
+        for &candidate in common {
+            let mut seen = BTreeSet::new();
+            let mut pending = vec![candidate];
+            while let Some(node) = pending.pop() {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                if !route_nodes.contains(&node) || !seen.insert(node) {
+                    continue;
+                }
+                for successor in self.view.successors(node) {
+                    poll(self.budget, Some(at))?;
+                    charge(
+                        self.budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(at),
+                    )?;
+                    if route_nodes.contains(&successor) {
+                        pending.push(successor);
+                    }
+                }
+            }
+            let mut reaches_all = true;
+            for other in common {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                reaches_all &= seen.contains(other);
+            }
+            if reaches_all && first.replace(candidate).is_some() {
+                return Ok(None);
+            }
+        }
+        Ok(first)
+    }
+
+    /// Close every physical edge touching the bounded ladder routes. A normal-flow projection
+    /// alone cannot certify that an exceptional or otherwise unrepresented edge was absent.
+    fn closed_ladder_route_edges(
+        &mut self,
+        branch: usize,
+        candidate: usize,
+        route_nodes: &BTreeSet<usize>,
+        frame: &Frame,
+        at: u32,
+    ) -> Result<bool, StopReason> {
+        let Some(scope) = frame.scope.as_ref() else {
+            return Ok(false);
+        };
+        let Some(branch_id) = self.view.id_of(branch).cloned() else {
+            return Ok(false);
+        };
+        let Some(candidate_id) = self.view.id_of(candidate).cloned() else {
+            return Ok(false);
+        };
+        let Some(target) = frame.loop_targets.last() else {
+            return Ok(false);
+        };
+        let Some(update_id) = self.view.id_of(target.continue_target).cloned() else {
+            return Ok(false);
+        };
+        if !branch_id.path().is_empty()
+            || candidate_id.path() != branch_id.path()
+            || update_id.path() != branch_id.path()
+            || !scope.contains(&branch)
+            || !scope.contains(&candidate)
+            || !scope.contains(&target.continue_target)
+        {
+            return Ok(false);
+        }
+        let mut owners = BTreeSet::new();
+        for &node in route_nodes {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            if node != candidate {
+                if !scope.contains(&node) {
+                    return Ok(false);
+                }
+                owners.insert(node);
+            }
+        }
+        owners.insert(branch);
+        let mut expected_outgoing = BTreeMap::new();
+        let mut has_nonbranch_candidate_predecessor = false;
+        for &owner in &owners {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            let Some(owner_id) = self.view.id_of(owner).cloned() else {
+                return Ok(false);
+            };
+            if owner_id.path() != branch_id.path() {
+                return Ok(false);
+            }
+            let successors = self.view.successors(owner);
+            let mut expected = BTreeSet::new();
+            for successor in successors {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                let Some(successor_id) = self.view.id_of(successor).cloned() else {
+                    return Ok(false);
+                };
+                if !expected.insert(successor_id.clone())
+                    || (!owners.contains(&successor)
+                        && successor != candidate
+                        && successor != target.continue_target)
+                {
+                    return Ok(false);
+                }
+                if successor == target.continue_target
+                    && self.direct_continue_edge(owner, frame, at)? != Some(successor)
+                {
+                    return Ok(false);
+                }
+                if successor == candidate && owner != branch {
+                    has_nonbranch_candidate_predecessor = true;
+                }
+            }
+            expected_outgoing.insert(owner_id, expected);
+        }
+        if !has_nonbranch_candidate_predecessor {
+            return Ok(false);
+        }
+        let edge_count = self.canonical.edges().len();
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(edge_count).unwrap_or(u64::MAX),
+            Some(at),
+        )?;
+        let mut route_destinations = BTreeSet::from([candidate_id.clone()]);
+        for owner_id in expected_outgoing.keys() {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            if owner_id != &branch_id {
+                route_destinations.insert(owner_id.clone());
+            }
+        }
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(at))?;
+            let from_owned = expected_outgoing.contains_key(edge.from());
+            let enters_route = route_destinations.contains(edge.to());
+            if from_owned {
+                if edge.kind() != CanonicalEdgeKind::Normal
+                    || !expected_outgoing
+                        .get_mut(edge.from())
+                        .is_some_and(|expected| expected.remove(edge.to()))
+                {
+                    return Ok(false);
+                }
+            }
+            if enters_route && (edge.kind() != CanonicalEdgeKind::Normal || !from_owned) {
+                return Ok(false);
+            }
+        }
+        let mut closed = true;
+        for expected in expected_outgoing.values() {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            closed &= expected.is_empty();
+        }
+        Ok(closed)
+    }
+
     /// The one block an `if`/`else if` ladder's arms regroup on when one of them terminates the
     /// method.
     ///
@@ -15028,6 +15356,7 @@ impl Walker<'_> {
         else_node: Option<usize>,
         frame: &Frame,
         at: u32,
+        allow_direct_continue: bool,
     ) -> Result<Option<usize>, StopReason> {
         let Some(target) = frame.loop_targets.last() else {
             return Ok(None);
@@ -15050,25 +15379,72 @@ impl Walker<'_> {
         }
         let blocks = loop_of.blocks();
         let (Some(then_routes), Some(else_routes)) = (
-            self.arm_forward_routes(then_node, None, boundary, frame, at)?,
-            self.arm_forward_routes(else_node, None, boundary, frame, at)?,
+            self.arm_forward_routes(then_node, None, boundary, frame, at, allow_direct_continue)?,
+            self.arm_forward_routes(else_node, None, boundary, frame, at, allow_direct_continue)?,
         ) else {
             return Ok(None);
         };
-        let common: BTreeSet<usize> = then_routes
-            .blocks
-            .intersection(&else_routes.blocks)
-            .copied()
-            .collect();
-        let Some(candidate) = unique_first_common(&common, |node| self.view.reachable(node)) else {
+        let common = if allow_direct_continue {
+            let mut common = BTreeSet::new();
+            for node in &then_routes.blocks {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                if else_routes.blocks.contains(node) {
+                    common.insert(*node);
+                }
+            }
+            common
+        } else {
+            then_routes
+                .blocks
+                .intersection(&else_routes.blocks)
+                .copied()
+                .collect()
+        };
+        let candidate = if allow_direct_continue {
+            let mut route_nodes = BTreeSet::new();
+            for node in then_routes.blocks.iter().chain(&else_routes.blocks) {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                route_nodes.insert(*node);
+            }
+            self.budgeted_first_common(&common, &route_nodes, at)?
+        } else {
+            unique_first_common(&common, |node| self.view.reachable(node))
+        };
+        let Some(candidate) = candidate else {
             return Ok(None);
         };
         if candidate == boundary || !blocks.contains(&candidate) {
             return Ok(None);
         }
         let (Some(then_stop), Some(else_stop)) = (
-            self.arm_forward_routes(then_node, Some(candidate), boundary, frame, at)?,
-            self.arm_forward_routes(else_node, Some(candidate), boundary, frame, at)?,
+            self.arm_forward_routes(
+                then_node,
+                Some(candidate),
+                boundary,
+                frame,
+                at,
+                allow_direct_continue,
+            )?,
+            self.arm_forward_routes(
+                else_node,
+                Some(candidate),
+                boundary,
+                frame,
+                at,
+                allow_direct_continue,
+            )?,
         ) else {
             return Ok(None);
         };
@@ -15076,20 +15452,42 @@ impl Walker<'_> {
             || !else_stop.reached_stop
             || then_stop.reached_boundary
             || else_stop.reached_boundary
+            || (allow_direct_continue
+                && (then_stop.reached_terminal
+                    || else_stop.reached_terminal
+                    || !(then_stop.reached_continue || else_stop.reached_continue)))
         {
             return Ok(None);
         }
-        if !self.forward_join_predecessors(branch, candidate) {
+        if allow_direct_continue {
+            let mut route_nodes = BTreeSet::new();
+            for node in then_stop.blocks.iter().chain(&else_stop.blocks) {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                route_nodes.insert(*node);
+            }
+            // Candidate order was proved over the discovery routes. This second pass ends
+            // at that candidate; its exact physical edge closure is the remaining obligation.
+            if !self.closed_ladder_route_edges(branch, candidate, &route_nodes, frame, at)? {
+                return Ok(None);
+            }
+        } else if !self.forward_join_predecessors(branch, candidate) {
             return Ok(None);
         }
         let Some(join) = self.view.id_of(candidate) else {
             return Ok(None);
         };
-        if self
-            .canonical
-            .edges()
-            .iter()
-            .any(|edge| edge.to() == join && edge.kind() != CanonicalEdgeKind::Normal)
+        if !allow_direct_continue
+            && self
+                .canonical
+                .edges()
+                .iter()
+                .any(|edge| edge.to() == join && edge.kind() != CanonicalEdgeKind::Normal)
         {
             return Ok(None);
         }
@@ -15116,11 +15514,14 @@ impl Walker<'_> {
         boundary: usize,
         frame: &Frame,
         at: u32,
+        allow_direct_continue: bool,
     ) -> Result<Option<ArmRoutes>, StopReason> {
         let mut routes = ArmRoutes {
             blocks: BTreeSet::new(),
             reached_stop: false,
             reached_boundary: false,
+            reached_continue: false,
+            reached_terminal: false,
         };
         let mut seen: BTreeMap<usize, usize> = BTreeMap::new();
         let mut pending = vec![(start, 0usize)];
@@ -15147,8 +15548,13 @@ impl Walker<'_> {
                     .as_ref()
                     .is_some_and(|scope| !scope.contains(&node))
             {
-                // A nested loop is a structure of its own, and a block the loop's body does not
-                // hold is one the arm's own walk stops at: neither is a route of this ladder.
+                // During candidate discovery, routes beyond a possible shared stop are not yet
+                // relevant. The second pass ends at the elected stop and rejects any such route
+                // that appears before it.
+                if allow_direct_continue && stop.is_none() {
+                    routes.reached_terminal = true;
+                    continue;
+                }
                 return Ok(None);
             }
             match seen.get(&node) {
@@ -15162,14 +15568,24 @@ impl Walker<'_> {
             if successors.is_empty() {
                 // The route leaves the method: the early-return arm's `return` is where the
                 // ladder's other arm terminates, and nothing after the `if` runs on it.
+                routes.reached_terminal = true;
                 continue;
             }
             let step = usize::from(successors.len() > 1);
             if branches + step > LADDER_MAX_BRANCHES {
+                if allow_direct_continue && stop.is_none() {
+                    routes.reached_terminal = true;
+                    continue;
+                }
                 return Ok(None);
             }
             let Some(block) = self.view.id_of(node) else {
                 return Ok(None);
+            };
+            let direct_continue = if allow_direct_continue {
+                self.direct_continue_edge(node, frame, at)?
+            } else {
+                None
             };
             for successor in successors {
                 poll(self.budget, Some(at))?;
@@ -15185,10 +15601,18 @@ impl Walker<'_> {
                     pending.push((successor, branches + step));
                     continue;
                 }
+                if direct_continue == Some(successor) {
+                    routes.reached_continue = true;
+                    continue;
+                }
                 let Some(destination) = self.view.id_of(successor) else {
                     return Ok(None);
                 };
                 if destination.path() != block.path() || destination.bci() <= block.bci() {
+                    if allow_direct_continue && stop.is_none() {
+                        routes.reached_terminal = true;
+                        continue;
+                    }
                     // A route that does not move forward in this body is no route of a ladder: a
                     // back edge is the loop's own, and a `jsr` clone is another body.
                     return Ok(None);
@@ -15197,6 +15621,228 @@ impl Walker<'_> {
             }
         }
         Ok(Some(routes))
+    }
+
+    /// A conditional edge directly enters the exact update target already owned by this loop.
+    /// Unlike `loop_continue_bridge`, this proof has no transfer block to attribute: the source
+    /// comparison itself is the continue edge. All physical outgoing rows must be the two normal
+    /// successors represented by the view, and the source and destination must both belong to the
+    /// same proved loop body.
+    fn direct_continue_edge(
+        &mut self,
+        source: usize,
+        frame: &Frame,
+        at: u32,
+    ) -> Result<Option<usize>, StopReason> {
+        let Some(target) = frame.loop_targets.last() else {
+            return Ok(None);
+        };
+        let continue_target = target.continue_target;
+        let Some(loop_of) = self.view.loop_entered_at(target.header) else {
+            return Ok(None);
+        };
+        let Some(scope) = frame.scope.as_ref() else {
+            return Ok(None);
+        };
+        let blocks = loop_of.blocks();
+        let successors = self.view.successors(source);
+        if continue_target == target.header
+            || !blocks.contains(&source)
+            || !blocks.contains(&continue_target)
+            || !scope.contains(&source)
+            || !scope.contains(&continue_target)
+            || successors.len() != 2
+            || !successors.contains(&continue_target)
+        {
+            return Ok(None);
+        }
+        let Some(source_id) = self.view.id_of(source) else {
+            return Ok(None);
+        };
+        if !self
+            .terminal_bci(source_id)
+            .and_then(|bci| self.operations.get(bci))
+            .is_some_and(|operation| operation.comparison().is_some())
+        {
+            return Ok(None);
+        }
+        let Some(source_id) = self.view.id_of(source).cloned() else {
+            return Ok(None);
+        };
+        let Some(continue_id) = self.view.id_of(continue_target).cloned() else {
+            return Ok(None);
+        };
+        let expected: BTreeSet<_> = successors
+            .iter()
+            .filter_map(|successor| self.view.id_of(*successor).cloned())
+            .collect();
+        if expected.len() != 2 {
+            return Ok(None);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+            Some(at),
+        )?;
+        let mut actual = BTreeSet::new();
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(at))?;
+            if edge.from() == &source_id
+                && (edge.kind() != CanonicalEdgeKind::Normal || !actual.insert(edge.to().clone()))
+            {
+                return Ok(None);
+            }
+        }
+        let Some(header_id) = self.view.id_of(target.header) else {
+            return Ok(None);
+        };
+        if !source_id.path().is_empty()
+            || source_id.path() != continue_id.path()
+            || source_id.path() != header_id.path()
+            || actual != expected
+            || !actual.contains(&continue_id)
+        {
+            return Ok(None);
+        }
+        Ok(Some(continue_target))
+    }
+
+    /// The local arm elected by a proved parent ladder ends at its shared-tail boundary, while
+    /// one child edge enters this loop's exact update. The other child arm must be one closed
+    /// straight chain to that already-elected boundary. This lets the child be written as an If
+    /// with a LoopContinue leaf without re-owning either the update or the shared tail.
+    fn direct_continue_local_join(
+        &mut self,
+        branch: usize,
+        then_node: Option<usize>,
+        else_node: Option<usize>,
+        frame: &Frame,
+        at: u32,
+    ) -> Result<Option<(usize, usize, Vec<CanonicalBlockId>)>, StopReason> {
+        let (Some(boundary), Some(shared_tail), Some(then_node), Some(else_node)) =
+            (frame.boundary, frame.shared_tail, then_node, else_node)
+        else {
+            return Ok(None);
+        };
+        if boundary != shared_tail || then_node == else_node {
+            return Ok(None);
+        }
+        let Some(target) = frame.loop_targets.last() else {
+            return Ok(None);
+        };
+        let Some(loop_of) = self.view.loop_entered_at(target.header) else {
+            return Ok(None);
+        };
+        let blocks = loop_of.blocks();
+        let Some(scope) = frame.scope.as_ref() else {
+            return Ok(None);
+        };
+        if boundary == target.header
+            || boundary == target.continue_target
+            || boundary == target.break_target.unwrap_or(usize::MAX)
+            || !blocks.contains(&boundary)
+            || !blocks.contains(&branch)
+            || !scope.contains(&boundary)
+            || !scope.contains(&branch)
+        {
+            return Ok(None);
+        }
+        let Some(continue_arm) = self.direct_continue_edge(branch, frame, at)? else {
+            return Ok(None);
+        };
+        let Some(other_arm) = [then_node, else_node]
+            .into_iter()
+            .find(|arm| *arm != continue_arm)
+        else {
+            return Ok(None);
+        };
+        let Some(chain) =
+            self.direct_continue_sibling_chain(branch, other_arm, boundary, frame, at)?
+        else {
+            return Ok(None);
+        };
+        Ok(Some((boundary, continue_arm, chain)))
+    }
+
+    /// Read the sibling's one normal straight route to the parent-selected shared tail. The
+    /// chain is collected before either child is walked, then the canonical edge census proves
+    /// its only entry/exit and excludes exception/call edges or competing owners.
+    fn direct_continue_sibling_chain(
+        &mut self,
+        branch: usize,
+        start: usize,
+        boundary: usize,
+        frame: &Frame,
+        at: u32,
+    ) -> Result<Option<Vec<CanonicalBlockId>>, StopReason> {
+        let (Some(branch_id), Some(boundary_id)) = (
+            self.view.id_of(branch).cloned(),
+            self.view.id_of(boundary).cloned(),
+        ) else {
+            return Ok(None);
+        };
+        let mut chain = Vec::new();
+        let mut seen = BTreeSet::new();
+        let mut previous = branch;
+        let mut current = start;
+        loop {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            if current == boundary {
+                break;
+            }
+            if !seen.insert(current)
+                || self.view.is_loop_header(current)
+                || frame
+                    .scope
+                    .as_ref()
+                    .is_some_and(|scope| !scope.contains(&current))
+                || self.visited.contains(&current)
+            {
+                return Ok(None);
+            }
+            let (Some(id), Some(previous_id)) = (
+                self.view.id_of(current).cloned(),
+                self.view.id_of(previous).cloned(),
+            ) else {
+                return Ok(None);
+            };
+            if id.path() != branch_id.path()
+                || id.path() != boundary_id.path()
+                || id.bci() <= previous_id.bci()
+                || self.view.successors(current).len() != 1
+            {
+                return Ok(None);
+            }
+            chain.push(id);
+            previous = current;
+            current = self.view.successors(current)[0];
+        }
+        if chain.is_empty() {
+            return Ok(None);
+        }
+        let edges = self
+            .canonical
+            .edges()
+            .iter()
+            .map(|edge| (edge.kind(), edge.from().clone(), edge.to().clone()));
+        if !exact_straight_chain_edges(
+            &chain,
+            &branch_id,
+            &boundary_id,
+            edges,
+            self.budget,
+            Some(at),
+        )? {
+            return Ok(None);
+        }
+        Ok(Some(chain))
     }
 
     /// Whether every incoming edge to `join` comes from this branch's forward region, with at
@@ -29057,6 +29703,741 @@ mod tests {
                     );
                 },
             );
+        }
+    }
+
+    #[test]
+    fn continue_ladder_joins_close_the_real_loop_and_stop_on_budget() {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::budget::{CancellationToken, Limits};
+        use jarde_reader::classfile::MethodCodeFacts;
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        const DEBUG_CLASS: &[u8] = include_bytes!(
+            "../../../tests/fixtures/recover-proved-loop-continue-ladder-joins/original/debug/classes/jadx/tests/integration/loops/TestContinueInLoop$TestCls.class"
+        );
+        const NO_DEBUG_CLASS: &[u8] = include_bytes!(
+            "../../../tests/fixtures/recover-proved-loop-continue-ladder-joins/original/no-debug/classes/jadx/tests/integration/loops/TestContinueInLoop$TestCls.class"
+        );
+
+        fn limits(analysis_steps: u64) -> Limits {
+            Limits {
+                input_bytes: 1 << 20,
+                archive_entries: 100,
+                entry_bytes: 1 << 20,
+                read_bytes: 1 << 20,
+                class_bytes: 1 << 20,
+                attribute_bytes: 1 << 20,
+                code_bytes: 1 << 20,
+                result_items: 1 << 20,
+                output_bytes: 1 << 20,
+                class_headers: 100,
+                method_bodies: 100,
+                ir_items: 1 << 20,
+                ir_edges: 1 << 20,
+                analysis_steps,
+                normalization_clones: 1 << 20,
+                nested_depth: 32,
+                dependency_depth: 32,
+                elapsed_millis: u64::MAX,
+            }
+        }
+
+        fn make_walker<'a>(
+            canonical: &'a CanonicalCfg,
+            view: &'a NormalFlowView,
+            ssa: &'a SsaTable,
+            operations: &'a Operations,
+            pool: &'a [CpEntryFacts],
+            chains: &'a crate::concat::Plan,
+            sites: &'a crate::init::Sites,
+            code: &'a MethodCodeFacts,
+            budget: &'a mut Budget,
+        ) -> Walker<'a> {
+            Walker {
+                canonical,
+                view,
+                ssa,
+                operations,
+                pool,
+                chains,
+                sites,
+                code,
+                method_synchronized: Some(false),
+                has_reachable_explicit_monitor: false,
+                return_is_boolean: false,
+                handlers: &code.exception_handlers,
+                profile: &crate::pass::JAVA_8,
+                budget,
+                catch_joins: BTreeSet::new(),
+                loop_catch_terminal_owners: Vec::new(),
+                fragmented: None,
+                excluded_edge_nodes: BTreeSet::new(),
+                visited: BTreeSet::new(),
+                unclosed_tail_at: None,
+                own_monitor: None,
+                depth: 0,
+            }
+        }
+
+        fn contains_continue(region: &Region, leaves: &mut Vec<(u32, CanonicalBlockId)>) {
+            match region {
+                Region::LoopContinue {
+                    source_bci,
+                    loop_header,
+                } => leaves.push((*source_bci, loop_header.clone())),
+                Region::Sequence { regions } => {
+                    for region in regions {
+                        contains_continue(region, leaves);
+                    }
+                }
+                Region::If {
+                    then_arm, else_arm, ..
+                }
+                | Region::CompoundIf {
+                    then_arm, else_arm, ..
+                } => {
+                    contains_continue(then_arm, leaves);
+                    contains_continue(else_arm, leaves);
+                }
+                Region::Loop { body, .. } => {
+                    for region in body {
+                        contains_continue(region, leaves);
+                    }
+                }
+                _ => {}
+            }
+        }
+
+        for bytes in [DEBUG_CLASS, NO_DEBUG_CLASS] {
+            let mut analysis_budget = Budget::new(limits(1 << 20));
+            let snapshot =
+                ArtifactSnapshot::open(ArtifactInput::bytes(bytes.to_vec()), &mut analysis_budget)
+                    .expect("fixture class opens");
+            let definition = PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: snapshot.id().clone(),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest(blake3::hash(bytes).to_hex().to_string()),
+                    length: u64::try_from(bytes.len()).expect("fixture length fits"),
+                },
+                variant: PhysicalVariant::Base,
+            };
+            let domain = LoadDomain {
+                loader: LoaderId("app".to_owned()),
+                parent_loader: None,
+                delegation: DelegationPolicy::ParentFirst,
+                roots: vec![LoadRoot::StandaloneClass {
+                    snapshot: snapshot.id().clone(),
+                }],
+                module_mode: ModuleMode::ClassPath,
+                external_override: RuntimeUncertainty::None,
+                runtime_transformation: RuntimeUncertainty::None,
+            };
+            let analysis = analyze_method_ir(
+                &[snapshot.clone()],
+                &MethodAnalysisRequest {
+                    environment: ResolutionEnvironment {
+                        runtime: RuntimeView {
+                            physical: PhysicalView {
+                                snapshot: snapshot.id().clone(),
+                                scope: PhysicalScope::SnapshotAll,
+                            },
+                            profile: RuntimeProfile {
+                                java_release: 8,
+                                multi_release: MultiReleasePolicy::Disabled,
+                                layout: LayoutMode::Generic,
+                            },
+                            load_domain: domain.clone(),
+                        },
+                        domains: vec![domain],
+                        providers: Vec::new(),
+                    },
+                    method: PhysicalMethodId {
+                        owner: definition,
+                        name: JvmBytes(b"test".to_vec()),
+                        descriptor: JvmBytes(b"([II)V".to_vec()),
+                    },
+                    stages: AnalysisStage::ALL.to_vec(),
+                },
+                &mut analysis_budget,
+            )
+            .expect("the real loop method has complete IR stages");
+            let ir = analysis.ir();
+            let canonical = ir.canonical().expect("canonical CFG");
+            let ssa = ir.ssa().expect("same-run SSA");
+            let code = ir.code().expect("decoded physical Code");
+            let pool = ir.constant_pool();
+            let operations = Operations::of(code, pool);
+            let view = NormalFlowView::build(canonical, &mut analysis_budget)
+                .expect("normal-flow projection builds");
+            let headers: Vec<_> = (0..view.len())
+                .filter(|node| view.loop_entered_at(*node).is_some())
+                .collect();
+            assert_eq!(headers.len(), 1, "the fixed test has one natural loop");
+            let header_node = headers[0];
+            let header = view.id_of(header_node).cloned().expect("loop header id");
+            let blocks = view
+                .loop_entered_at(header_node)
+                .expect("natural loop")
+                .blocks()
+                .clone();
+            let chains = crate::concat::Plan::empty();
+            let sites = crate::init::Sites::empty();
+            let mut proof_budget = Budget::new(limits(1 << 20));
+            let mut walker = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut proof_budget,
+            );
+            let for_header = walker
+                .prove_for_header(&header, header_node, &blocks, &BTreeSet::new())
+                .expect("ample induction proof budget")
+                .expect("the original loop has a proved for-header");
+            let update = view
+                .index_of(&for_header.update_block)
+                .expect("proved update node");
+            let scope_frame = Frame {
+                boundary: Some(header_node),
+                scope: Some(blocks.clone()),
+                loop_targets: vec![LoopTarget {
+                    header: header_node,
+                    exits: BTreeSet::new(),
+                    break_target: None,
+                    continue_target: update,
+                    terminal_returns: Arc::new(BTreeSet::new()),
+                    retry_handler: None,
+                }],
+                ..Frame::default()
+            };
+
+            let mut parent = None;
+            for &node in &blocks {
+                let Some(id) = view.id_of(node) else { continue };
+                let Some(branch_bci) = walker.terminal_bci(id) else {
+                    continue;
+                };
+                let Some((_, target)) = operations.get(branch_bci).and_then(Operation::comparison)
+                else {
+                    continue;
+                };
+                let successors = view.successor_ids(id);
+                let Some((fallthrough, taken)) = walker.split_arms(&successors, target) else {
+                    continue;
+                };
+                let (Some(then_node), Some(else_node)) =
+                    (view.index_of(&fallthrough), view.index_of(&taken))
+                else {
+                    continue;
+                };
+                if let Some(join) = walker
+                    .ladder_join(
+                        node,
+                        Some(then_node),
+                        Some(else_node),
+                        &scope_frame,
+                        branch_bci,
+                        true,
+                    )
+                    .expect("ample route-proof budget")
+                {
+                    let child_frame = Frame {
+                        boundary: Some(join),
+                        shared_tail: Some(join),
+                        scope: Some(blocks.clone()),
+                        loop_targets: scope_frame.loop_targets.clone(),
+                        ..Frame::default()
+                    };
+                    for &child in &blocks {
+                        let Some(child_id) = view.id_of(child) else {
+                            continue;
+                        };
+                        let Some(child_bci) = walker.terminal_bci(child_id) else {
+                            continue;
+                        };
+                        let Some((_, child_target)) =
+                            operations.get(child_bci).and_then(Operation::comparison)
+                        else {
+                            continue;
+                        };
+                        let child_successors = view.successor_ids(child_id);
+                        let Some((child_fall, child_taken)) =
+                            walker.split_arms(&child_successors, child_target)
+                        else {
+                            continue;
+                        };
+                        let (Some(child_then), Some(child_else)) =
+                            (view.index_of(&child_fall), view.index_of(&child_taken))
+                        else {
+                            continue;
+                        };
+                        if let Some((boundary, continue_arm, chain)) = walker
+                            .direct_continue_local_join(
+                                child,
+                                Some(child_then),
+                                Some(child_else),
+                                &child_frame,
+                                child_bci,
+                            )
+                            .expect("ample nested-join budget")
+                        {
+                            parent = Some((
+                                node,
+                                branch_bci,
+                                join,
+                                child,
+                                child_bci,
+                                continue_arm,
+                                boundary,
+                                chain,
+                            ));
+                            break;
+                        }
+                    }
+                    if parent.is_some() {
+                        break;
+                    }
+                }
+            }
+            let (
+                parent_branch,
+                parent_bci,
+                candidate,
+                child_branch,
+                child_bci,
+                continue_arm,
+                boundary,
+                expected_chain,
+            ) = parent.expect("the real branch ladder proves one local join and direct continue");
+            assert_eq!(
+                candidate, boundary,
+                "child consumes only the elected parent tail"
+            );
+            assert_eq!(
+                expected_chain.len(),
+                1,
+                "the sibling is one closed straight arm"
+            );
+            assert!(
+                continue_arm == update,
+                "continue edge enters the proved update"
+            );
+            drop(walker);
+
+            // Parser/IR-only edge control: retarget the condition at BCI 32 from the update
+            // block (50) to the loop header (2). This creates a second backedge that skips the
+            // proved update, so the ForHeader certificate must refuse the altered graph. The
+            // class bytes remain structurally readable; StackMapTable is unchanged, so this is
+            // not claimed to be JVM-verifiable.
+            let transfer = code
+                .instructions
+                .iter()
+                .zip(code.operands())
+                .find(|(instruction, _)| instruction.bci == 32)
+                .expect("the pinned method has the conditional control at BCI 32");
+            assert_eq!(transfer.0.opcode, 0xa4, "control starts at if_icmple");
+            assert_eq!(
+                transfer.1.branch_offset,
+                Some(18),
+                "original condition targets BCI 50"
+            );
+            let mut edge_control_bytes = bytes.to_vec();
+            let operand_offset =
+                usize::try_from(code.code_span.start).expect("class offset fits usize") + 32 + 1;
+            edge_control_bytes[operand_offset..operand_offset + 2]
+                .copy_from_slice(&(-30_i16).to_be_bytes());
+
+            let mut control_analysis_budget = Budget::new(limits(1 << 20));
+            let control_snapshot = ArtifactSnapshot::open(
+                ArtifactInput::bytes(edge_control_bytes.clone()),
+                &mut control_analysis_budget,
+            )
+            .expect("edge-control class remains structurally readable");
+            let control_definition = PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: control_snapshot.id().clone(),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest(blake3::hash(&edge_control_bytes).to_hex().to_string()),
+                    length: u64::try_from(edge_control_bytes.len())
+                        .expect("control class length fits"),
+                },
+                variant: PhysicalVariant::Base,
+            };
+            let control_domain = LoadDomain {
+                loader: LoaderId("app".to_owned()),
+                parent_loader: None,
+                delegation: DelegationPolicy::ParentFirst,
+                roots: vec![LoadRoot::StandaloneClass {
+                    snapshot: control_snapshot.id().clone(),
+                }],
+                module_mode: ModuleMode::ClassPath,
+                external_override: RuntimeUncertainty::None,
+                runtime_transformation: RuntimeUncertainty::None,
+            };
+            let control_analysis = analyze_method_ir(
+                &[control_snapshot.clone()],
+                &MethodAnalysisRequest {
+                    environment: ResolutionEnvironment {
+                        runtime: RuntimeView {
+                            physical: PhysicalView {
+                                snapshot: control_snapshot.id().clone(),
+                                scope: PhysicalScope::SnapshotAll,
+                            },
+                            profile: RuntimeProfile {
+                                java_release: 8,
+                                multi_release: MultiReleasePolicy::Disabled,
+                                layout: LayoutMode::Generic,
+                            },
+                            load_domain: control_domain.clone(),
+                        },
+                        domains: vec![control_domain],
+                        providers: Vec::new(),
+                    },
+                    method: PhysicalMethodId {
+                        owner: control_definition,
+                        name: JvmBytes(b"test".to_vec()),
+                        descriptor: JvmBytes(b"([II)V".to_vec()),
+                    },
+                    stages: AnalysisStage::ALL.to_vec(),
+                },
+                &mut control_analysis_budget,
+            )
+            .expect("edge-control class reaches the canonical and SSA stages");
+            let control_ir = control_analysis.ir();
+            let control_canonical = control_ir.canonical().expect("control canonical CFG");
+            let control_ssa = control_ir.ssa().expect("control same-run SSA");
+            let control_code = control_ir.code().expect("control physical Code");
+            let control_pool = control_ir.constant_pool();
+            let control_operations = Operations::of(control_code, control_pool);
+            let control_view =
+                NormalFlowView::build(control_canonical, &mut control_analysis_budget)
+                    .expect("control normal-flow projection builds");
+            let control_node = |bci| {
+                (0..control_view.len())
+                    .find(|node| control_view.id_of(*node).is_some_and(|id| id.bci() == bci))
+                    .unwrap_or_else(|| panic!("control BCI {bci} has a canonical node"))
+            };
+            let control_header_node = control_node(2);
+            let control_loop = control_view
+                .loop_entered_at(control_header_node)
+                .expect("the altered backedge still forms a natural loop at BCI 2");
+            assert_eq!(control_loop.latches().len(), 2);
+            assert!(control_loop.latches().contains(&control_node(29)));
+            assert!(control_loop.latches().contains(&control_node(50)));
+            assert!(
+                control_view
+                    .successors(control_node(29))
+                    .contains(&control_header_node)
+            );
+            assert!(
+                control_view
+                    .successors(control_node(50))
+                    .contains(&control_header_node)
+            );
+            let control_header = control_view
+                .id_of(control_header_node)
+                .cloned()
+                .expect("control loop header id");
+            let control_blocks = control_loop.blocks().clone();
+            let control_chains = crate::concat::Plan::empty();
+            let control_sites = crate::init::Sites::empty();
+            let mut control_proof_budget = Budget::new(limits(1 << 20));
+            let mut control_walker = make_walker(
+                control_canonical,
+                &control_view,
+                control_ssa,
+                &control_operations,
+                control_pool,
+                &control_chains,
+                &control_sites,
+                control_code,
+                &mut control_proof_budget,
+            );
+            assert_eq!(
+                control_walker
+                    .prove_for_header(
+                        &control_header,
+                        control_header_node,
+                        &control_blocks,
+                        &BTreeSet::new(),
+                    )
+                    .expect("bypass-update refusal is not a budget stop"),
+                None,
+                "a second backedge that skips the update is not a for-header certificate"
+            );
+            drop(control_walker);
+
+            // The full real loop must publish one for-header and exactly one explicit continue.
+            let mut output_budget = Budget::new(limits(1 << 20));
+            let mut output_walker = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut output_budget,
+            );
+            let output = output_walker
+                .header_tested_loop(&header, header_node, &blocks, &Frame::default())
+                .expect("full body proof completes")
+                .expect("the fixed loop is header-tested");
+            let [
+                Region::Loop {
+                    for_header: Some(_),
+                    body,
+                    ..
+                },
+            ] = output.0.as_slice()
+            else {
+                panic!("the actual loop remains a for-header region")
+            };
+            let mut continues = Vec::new();
+            for region in body {
+                contains_continue(region, &mut continues);
+            }
+            assert_eq!(continues.len(), 1, "the proved direct edge is one continue");
+            assert_eq!(continues[0].1, header);
+            assert!(continues[0].0 > 0);
+            let owned: Vec<_> = output.0.iter().flat_map(Region::blocks).cloned().collect();
+            assert_eq!(owned.len(), owned.iter().collect::<BTreeSet<_>>().len());
+
+            // Replaying the exact two local proofs with one unit less than their measured cost
+            // must return Budget, never a partial join certificate or a claimed region.
+            let mut measured_parent_budget = Budget::new(limits(1 << 20));
+            let mut measured_parent = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut measured_parent_budget,
+            );
+            let parent_frame = &scope_frame;
+            let parent_before = measured_parent.budget.usage().analysis_steps;
+            assert!(
+                measured_parent
+                    .ladder_join(
+                        parent_branch,
+                        view.successors(parent_branch).first().copied(),
+                        view.successors(parent_branch).get(1).copied(),
+                        parent_frame,
+                        parent_bci,
+                        true,
+                    )
+                    .expect("same proof succeeds")
+                    .is_some()
+            );
+            let parent_cost = measured_parent.budget.usage().analysis_steps - parent_before;
+            drop(measured_parent);
+            assert!(parent_cost > 1);
+            let mut short_parent_budget = Budget::new(limits(parent_cost - 1));
+            let mut short_parent = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut short_parent_budget,
+            );
+            assert!(matches!(
+                short_parent.ladder_join(
+                    parent_branch,
+                    view.successors(parent_branch).first().copied(),
+                    view.successors(parent_branch).get(1).copied(),
+                    parent_frame,
+                    parent_bci,
+                    true,
+                ),
+                Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    ..
+                })
+            ));
+            assert!(short_parent.visited.is_empty());
+            assert_eq!(short_parent.unclosed_tail_at, None);
+            drop(short_parent);
+
+            let mut measured_child_budget = Budget::new(limits(1 << 20));
+            let mut measured_child = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut measured_child_budget,
+            );
+            let child_frame = Frame {
+                boundary: Some(boundary),
+                shared_tail: Some(boundary),
+                scope: Some(blocks.clone()),
+                loop_targets: scope_frame.loop_targets.clone(),
+                ..Frame::default()
+            };
+            let child_before = measured_child.budget.usage().analysis_steps;
+            assert!(
+                measured_child
+                    .direct_continue_local_join(
+                        child_branch,
+                        view.successors(child_branch).first().copied(),
+                        view.successors(child_branch).get(1).copied(),
+                        &child_frame,
+                        child_bci,
+                    )
+                    .expect("same child proof succeeds")
+                    .is_some()
+            );
+            let child_cost = measured_child.budget.usage().analysis_steps - child_before;
+            drop(measured_child);
+            assert!(child_cost > 1);
+
+            // The direct edge proof is available only in the exact parent-elected scope. A
+            // missing tail, mismatched boundary, unscoped body, or header-as-update cannot turn
+            // an ordinary branch into this continue shape.
+            let child_successors = view.successors(child_branch);
+            let child_target = operations
+                .get(child_bci)
+                .and_then(Operation::comparison)
+                .expect("proved comparison")
+                .1;
+            let child_taken = child_successors
+                .iter()
+                .find(|successor| {
+                    view.id_of(**successor)
+                        .is_some_and(|id| id.bci() == child_target)
+                })
+                .copied();
+            let child_fallthrough = child_successors
+                .iter()
+                .find(|successor| {
+                    view.id_of(**successor)
+                        .is_some_and(|id| id.bci() != child_target)
+                })
+                .copied();
+            let (child_then, child_else) = (child_fallthrough, child_taken);
+            for refusal in 0..4 {
+                let mut frame = child_frame.clone();
+                match refusal {
+                    0 => frame.shared_tail = None,
+                    1 => frame.boundary = Some(child_branch),
+                    2 => frame.scope = None,
+                    3 => frame.loop_targets.last_mut().unwrap().continue_target = header_node,
+                    _ => unreachable!(),
+                }
+                let mut refusal_budget = Budget::new(limits(1 << 20));
+                let mut refusing = make_walker(
+                    canonical,
+                    &view,
+                    ssa,
+                    &operations,
+                    pool,
+                    &chains,
+                    &sites,
+                    code,
+                    &mut refusal_budget,
+                );
+                assert_eq!(
+                    refusing
+                        .direct_continue_local_join(
+                            child_branch,
+                            child_then,
+                            child_else,
+                            &frame,
+                            child_bci,
+                        )
+                        .expect("guard refusal is not a Stop"),
+                    None,
+                    "malformed local context {refusal} is not a certificate"
+                );
+            }
+
+            let mut short_child_budget = Budget::new(limits(child_cost - 1));
+            let mut short_child = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut short_child_budget,
+            );
+            assert!(matches!(
+                short_child.direct_continue_local_join(
+                    child_branch,
+                    view.successors(child_branch).first().copied(),
+                    view.successors(child_branch).get(1).copied(),
+                    &child_frame,
+                    child_bci,
+                ),
+                Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    ..
+                })
+            ));
+            assert!(short_child.visited.is_empty());
+            assert_eq!(short_child.unclosed_tail_at, None);
+            drop(short_child);
+
+            let token = CancellationToken::new();
+            token.cancel();
+            let mut cancelled_budget = Budget::with_cancellation_token(limits(1 << 20), token);
+            let mut cancelled = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut cancelled_budget,
+            );
+            assert_eq!(
+                cancelled.direct_continue_local_join(
+                    child_branch,
+                    view.successors(child_branch).first().copied(),
+                    view.successors(child_branch).get(1).copied(),
+                    &child_frame,
+                    child_bci,
+                ),
+                Err(StopReason::Cancelled {
+                    at: Some(child_bci)
+                })
+            );
+            assert!(cancelled.visited.is_empty());
+            assert_eq!(cancelled.unclosed_tail_at, None);
         }
     }
 }

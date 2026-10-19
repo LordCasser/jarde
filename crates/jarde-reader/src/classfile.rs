@@ -12327,7 +12327,10 @@ mod tests {
             // Full original Boolean flag outer/child debug/no-debug and two literal-2
             // refusal controls add six classes, twenty Code bodies and twenty branch targets;
             // two independent physical decoders agree, with no handler/jsr change.
-            (1326, 5850, 631, 4203, 16),
+            // Original continue-ladder outer/child debug/no-debug add four classes,
+            // eight Code bodies and fourteen branch targets; no handler/jsr change.
+            // Plain JAR copies do not add filesystem class entries to this census.
+            (1330, 5858, 631, 4217, 16),
             "fixture population changed: re-measure these counts"
         );
     }

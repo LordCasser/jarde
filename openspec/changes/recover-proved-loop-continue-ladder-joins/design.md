@@ -30,3 +30,7 @@ root真实同轮IR探针1/0通过：debug/no-debug均为可约自然循环header
 ## Migration Plan
 
 先归档基线和真实IR，再由Luna私有最小实现/真实图tests与公开fixtures并行准备。root逐差异审查后集成、定向构建、完整三方对照、最终fresh工作区及产品自身CI双seed/具名门、源码Git/CLI绑定，最后主spec同步/strict/账本/handoff与clean-main。原件、失败和历史归档不覆写。
+
+## 实际实现验收新增的独立依赖
+
+root实际Java lib510/0后，whole-class公开测试仍在数组减法dup2处Fallback（定向v2公开1/1）。Region局部continue已成立，Builder的既有Array更新仅Add，故新增独立OpenSpec `recover-proved-int-array-subtract-updates`，复用相同Array证明增加非返回值Subtract。父片2.2/3.1在该依赖实际通过前保持未完成，禁止降低Structured/删除decrement。两片共享同一次最终完整对照/native/产品自身CI，避免重复测试。
