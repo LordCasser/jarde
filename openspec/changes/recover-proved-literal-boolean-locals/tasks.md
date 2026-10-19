@@ -11,4 +11,4 @@
 ## 3. Full comparison and delivery
 
 - [x] 3.1 root 用最终 CLI 采集八 API 全文/身份/maps，完整源码 JDK8/23 重编并运行原六有限用例，逐观察对照输出、返回与异常；保留 JADX 原始失败边界并另列剩余未映射 BCI，不把本片当作 CF09 整体完成。
-- [ ] 3.2 root 完成 fmt/Clippy、适用回归和 fresh workspace 一次、最终产品自身 CI 全步骤/双seed/继承具名门，逐字归档并绑定产品/CLI；同步 main spec、strict、账本/handoff、提交推送 clean-main 后关闭。Cargo 全程 5GiB/target1GiB/defaultstack/每秒 guard/finally exact clean。
+- [x] 3.2 root 完成 fmt/Clippy、适用回归和 fresh workspace 一次、最终产品自身 CI 全步骤/双seed/继承具名门，逐字归档并绑定产品/CLI；同步 main spec、strict、账本/handoff、提交推送 clean-main 后关闭。Cargo 全程 5GiB/target1GiB/defaultstack/每秒 guard/finally exact clean。

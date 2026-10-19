@@ -1,3 +1,9 @@
+## 2026-10-19 更新：CF09 布尔局部完整验收；continue ladder 2/6
+
+[布尔局部交付](../../changes/recover-proved-literal-boolean-locals/results/README.md)：产品cc1bf，8API/16整类重编/192观察全同原件，fresh389targets/3798-0-98，自身CI39186343472全部4jobs/52独立官方步骤、双seed98精确门及全部3896具名结果一致，main spec已同步。完整归档逐bytes/mode复开；缺map44不隐去。
+
+下一[固定原件Continue基线](../java-syntax-2026-10-19/cf09-testcontinueinloop-original-root-v1/README.md)实际46命令，原件/JADX各32观察，Jarde16完整重编拒绝；真实IR确认已有ForHeader、内部共享42重复owner，而非缺新的循环机制。[局部continue汇合OpenSpec](../../changes/recover-proved-loop-continue-ladder-joins/tasks.md)2/6，Luna私有实现待root审查/集成/实际对照。CF09/71/612不关闭；以下旧状态仅历史。
+
 ## 2026-10-19 更新：CF09 原始标签跳出布尔标志恢复5/6
 
 [完整对照与定向验收](../../changes/recover-proved-literal-boolean-locals/results/README.md)已接受8API、16整类编译、32VM/192观察全同原件，原打印差异消失，map34/42→41/42只缺BCI44另列。root审Luna窄局部证明，无新solver/CFG机制；所有失败/修正和原始/JADX复用边界已归档。任务3.2的fresh workspace/当前产品自身CI/主spec同步/最终交付仍待，不能引用旧产品CI关闭。下一固定原始TestContinueInLoop仅有限用例数学计划接受，完整baseline私有准备中；CF09/71/612保持部分覆盖。以下旧1/6及未运行是历史时点。
