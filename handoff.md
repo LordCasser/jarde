@@ -1,3 +1,25 @@
+## 2026-10-19 当前推进：if-loop入口来源5/6，定向验收通过，待本产品完整验收
+
+本节优先，下方未编译/1/6等均历史时点。finThrow5/5、nestedFin16/16早已交付，持续goal active。当前main起点a9ebb93989a8575b5f6df97b1e0031130c0e3169，待产品提交。共享生产只Builder父If派生origin，Region/canonical/loop gateway均未改变；三fixture+public测试/Reader/指纹已集成且实际验证。
+
+最终CLI `/private/tmp/jarde-if-loop-entry-focused-root-v4-20261019/candidate-cli`，63956112B/SHA56ed2f31f824187b178082d1045788e5ba09ea8f9ab4e1fe6bffeca37db8efa8，与实际四API的v3逐字同。四API都10/10，整类846B全文不变，唯一新增父If derived8；原derived17保留。复用已接受原8完整编译/JADX2真实失败，不称重跑/目标运行。Java lib508/0、公共2/0（含真实BCI8 IrEdges Stop不发布正文/map/regions且usage保留）、Reader/指纹/fmt/完整CI Clippy通过；初次policy moved及unit预取消计费期望错误的真实失败完整保留。target absent，无工具链待续。
+
+持久入口 `openspec/changes/preserve-proved-if-loop-entry-origins/results/README.md`，100payload归档SHA42b7413819fc41c6c6a6139be218128d12a3ed87749aab263e74641d8764e0d9，root逐字复开。接续必须完成产品提交推送、自身CI全部4jobs/独立官方ZIP步骤、双seed93精确门（含13 inherited extra-critical）、fresh seed1全workspace48精确门及九项周边回归、当前build/native源码Git/CLI绑定、主spec同步/strict和clean-main。私有验收工具 `/private/tmp/jarde-if-loop-entry-native-own-ci-prep-luna-v2-20261019` 已root读审；当前build v4 source unchanged，原严格binder即可，不需要v3新增fingerprint分支。
+
+并行CF09五原始审计已完成：`/private/tmp/jarde-cf09-fixed-audit-luna-v1-20261019/README.md`；旧三方只覆盖Grid/OuterContinue组合，无五原始完整对照。下一TestBreakWithLabel全原始source/check()保留，Luna collector私有v2已root完整读并修import re/identity审计；自引用diff pin错误要求v3修，尚未执行。不得据静态审计宣布新恢复缺陷。
+
+root独占共享/Git/网络/工具链；Luna只私有tmp/只读，Python-B。Cargo5GiB/target1GiB/defaultstack/每秒guard/finally exactclean，期间禁共享写/Gitmutation/network/manualJDK或CLI。不要新建worktree，不重做旧finThrow/nestedFin。
+
+## 2026-10-19 当前推进：if-loop入口来源1/6，root已集成候选，尚未运行Rust
+
+本节优先，下方是已完成上片的主线检查点。起点main==origin/main为a9ebb93989a8575b5f6df97b1e0031130c0e3169（旧产品3fa完整CI/验收已收口），当前共享未提交改动仅来源片：build.rs生产v2+真实IRunit、Reader库存以及12文件fixture树，尚未编译/测试/重建fingerprint，不能声称成功。持续goal active。
+
+root逐字审集成私有 `/private/tmp/jarde-proved-if-loop-entry-origins-impl-luna-v2-20261019`（build SHA72c1d2…）：只普通If，拒绝gateway/header clone，单transfer-only块+紧邻Loop+完整唯一normal边，origin单独计费/Stop原事务；删了未证CompoundIf扩展，旧join exact-edge helper等价抽取。没有Region/canonical/gateway修改。root实际两parser/分支目标/原JAR内容及控制reproducer静态验证后复制fixtures到tests/fixtures/cf08-if-loop-entry，原件148B SHA4fd150…、goto_w150B SHA7f17f0…、effectprefix151B SHA82620d…；三class/三Code/十二branch，Reader期望1320/5830/631/4183/16，待实际Rust核对。证明入口 `/private/tmp/jarde-if-loop-entry-fixture-root-v1-20261019/review.json`。
+
+公共测试v1未集成：错误地在jarde-java后端手工recover方法，再与846B整类源码比较；root已退回Luna typed_foreach_api_tests改root tests/p3_if_loop_entry_origins.rs公共facade四API及真实停止语义v2。不要执行旧draft。nl_baseline_audit正在私有审下一固定CF09五原始类覆盖，不写实现；typed_foreach_impl正在准备本片native/自身CI继承工具（旧45/90门+新unit/2public，保留13extra-critical，预计48/93），未执行。
+
+下一：root读审并集成公共v2，受guard格式化（只允许新source格式变化）→显式regen fingerprint/新unit与公库/Reader与fingerprint/Java lib/Clippy+CLI构建串行验证并finally clean，随后实际四API重绑，sourceMap只多derived8、全文不变则绑定复用已接受8编译。最终fresh/产品CI/源码绑定/主spec/归档仍待。所有源码/Git/网络/工具链root独占；Luna仅私有/tmp，Python-B。无本地Cargo/JDK/CLI待续、target absent；Cargo仍5GiB/target1GiB/defaultstack/每秒guard，期间禁止共享写/Gitmutation/网络/manualJDK或CLI。
+
 ## 2026-10-19 当前主线：双入口循环6/6验收；下一来源片1/6私有候选待root审
 
 本节优先，下方为历史检查点。finThrow5/5、nestedFin16/16及此前循环片已交付，不重做；持续goal active。产品 `3fa7745b0a42b447bf1931bfe052191f24389b29` 已推main；最终CLI `/private/tmp/jarde-entry-split-clippy-final-build-root-v1-20261019/candidate-cli`，63938736B/SHA f7ea5a20173b671f94b46fe4304618cd5fcce0b3e0b327eb8c3e891fb92618ba。

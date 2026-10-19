@@ -10333,6 +10333,87 @@ fn append_quoted_stable_loads(
     Ok(())
 }
 
+/// Prove that one physical block has exactly the requested sole normal successor.
+/// Charge and poll the complete canonical edge list before inspecting it.
+fn has_only_normal_edge_to(
+    source: &CanonicalBlockId,
+    target: &CanonicalBlockId,
+    bci: u32,
+    canonical: &CanonicalCfg,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    charge(
+        budget,
+        CountedBudgetDimension::IrEdges,
+        u64::try_from(canonical.edges().len()).unwrap_or(u64::MAX),
+        Some(bci),
+    )?;
+    poll(budget, Some(bci))?;
+    let mut outgoing = canonical
+        .edges()
+        .iter()
+        .filter(|edge| edge.from() == source);
+    let Some(edge) = outgoing.next() else {
+        return Ok(false);
+    };
+    Ok(
+        outgoing.next().is_none()
+            && edge.kind() == CanonicalEdgeKind::Normal
+            && edge.to() == target,
+    )
+}
+
+/// Return the leading transfer of an if arm only when the first arm child is one
+/// transfer-only straight block and the immediately following child is the loop
+/// that owns its sole normal destination. Region recovery has already established
+/// unique block ownership; this proof adds no owner and never searches the method.
+fn nonempty_if_nested_loop_entry_transfer(
+    arm: &Region,
+    canonical: &CanonicalCfg,
+    ssa: &SsaTable,
+    operations: &Operations,
+    budget: &mut Budget,
+) -> Result<Option<u32>, StopReason> {
+    let Region::Sequence { regions } = arm else {
+        return Ok(None);
+    };
+    let [first, second, ..] = regions.as_slice() else {
+        return Ok(None);
+    };
+    let Region::Straight { blocks } = first else {
+        return Ok(None);
+    };
+    let [gateway] = blocks.as_slice() else {
+        return Ok(None);
+    };
+    let Region::Loop { header, .. } = second else {
+        return Ok(None);
+    };
+    if gateway == header || gateway.is_clone() || header.is_clone() {
+        return Ok(None);
+    }
+    let Some(instructions) = ssa.block(gateway).map(|block| block.instructions()) else {
+        return Ok(None);
+    };
+    let [instruction] = instructions else {
+        return Ok(None);
+    };
+    let bci = instruction.bci();
+    // Transfer is decoded only for an unconditional goto/goto_w.
+    if !matches!(operations.get(bci), Some(Operation::Transfer)) {
+        return Ok(None);
+    }
+    if !has_only_normal_edge_to(gateway, header, bci, canonical, budget)? {
+        return Ok(None);
+    }
+
+    // Account for the additional source origin before constructing it. A stop here
+    // propagates through the existing Builder transaction without publishing an If.
+    charge(budget, CountedBudgetDimension::IrItems, 1, Some(bci))?;
+    poll(budget, Some(bci))?;
+    Ok(Some(bci))
+}
+
 /// Return the last direct `goto` of a nonempty if arm only when its complete canonical
 /// outgoing set is the one normal edge to that if's join. `region::recover` has already checked
 /// non-overlapping ownership on the completed tree, so this reads the terminal arm child without
@@ -10373,23 +10454,7 @@ fn nonempty_if_join_transfer(
         return Ok(None);
     }
 
-    // The edge list is the full canonical outgoing set, including exceptional edges. Bill the
-    // examined list before polling and reading it; any Stop aborts Builder before it can publish.
-    charge(
-        budget,
-        CountedBudgetDimension::IrEdges,
-        u64::try_from(canonical.edges().len()).unwrap_or(u64::MAX),
-        Some(bci),
-    )?;
-    poll(budget, Some(bci))?;
-    let mut outgoing = canonical
-        .edges()
-        .iter()
-        .filter(|edge| edge.from() == terminal);
-    let Some(edge) = outgoing.next() else {
-        return Ok(None);
-    };
-    if outgoing.next().is_some() || edge.kind() != CanonicalEdgeKind::Normal || edge.to() != join {
+    if !has_only_normal_edge_to(terminal, join, bci, canonical, budget)? {
         return Ok(None);
     }
     Ok(Some(bci))
@@ -20574,6 +20639,15 @@ impl Builder<'_> {
                     if let Some(bci) = nonempty_if_join_transfer(
                         arm,
                         join.as_ref(),
+                        self.canonical,
+                        self.ssa,
+                        self.operations,
+                        self.budget,
+                    )? {
+                        origin = origin.plus_derived(Origin::derived(bci));
+                    }
+                    if let Some(bci) = nonempty_if_nested_loop_entry_transfer(
+                        arm,
                         self.canonical,
                         self.ssa,
                         self.operations,
@@ -45154,6 +45228,210 @@ mod tests {
                 assert_eq!(compound_trial_state(&cancelled), before);
             },
         );
+    }
+
+    #[test]
+    fn if_arm_nested_loop_entry_origin_uses_real_transfer_and_edge_facts() {
+        fn probe(
+            class: &[u8],
+            expected_opcode: Option<u8>,
+        ) -> (
+            Vec<(u32, u32, u32)>,
+            crate::report::RecoveryReport,
+            bool,
+            bool,
+        ) {
+            let mut proofs = Vec::new();
+            let mut exercised_stops = false;
+            let mut saw_effect_prefix = false;
+            let (_, _, _, _, report, _, _, _, _) = fixture_value_attempts_with_tree_observing(
+                class,
+                "test",
+                "([I[I)V",
+                None,
+                None,
+                |recovered, canonical, ssa, operations, code, _, _, _, _, _, _, _| {
+                    for root in &recovered.regions {
+                        collect_guards(root, &mut |candidate| {
+                            let Region::If {
+                                branch_bci,
+                                then_arm,
+                                else_arm,
+                                ..
+                            } = candidate
+                            else {
+                                return;
+                            };
+                            for arm in [then_arm.as_ref(), else_arm.as_ref()] {
+                                if expected_opcode.is_none()
+                                    && let Region::Sequence { regions } = arm
+                                    && let [Region::Straight { blocks }, Region::Loop { .. }, ..] =
+                                        regions.as_slice()
+                                    && let [gateway] = blocks.as_slice()
+                                    && let Some(block) = ssa.block(gateway)
+                                    && let [first, last] = block.instructions()
+                                    && matches!(
+                                        operations.get(first.bci()),
+                                        Some(Operation::Increment { .. })
+                                    )
+                                    && matches!(
+                                        operations.get(last.bci()),
+                                        Some(Operation::Transfer)
+                                    )
+                                {
+                                    saw_effect_prefix = true;
+                                    let mut budget = child_array_test_budget();
+                                    assert!(matches!(
+                                        nonempty_if_nested_loop_entry_transfer(
+                                            arm,
+                                            canonical,
+                                            ssa,
+                                            operations,
+                                            &mut budget,
+                                        ),
+                                        Ok(None)
+                                    ));
+                                }
+
+                                let mut budget = child_array_test_budget();
+                                let Ok(Some(bci)) = nonempty_if_nested_loop_entry_transfer(
+                                    arm,
+                                    canonical,
+                                    ssa,
+                                    operations,
+                                    &mut budget,
+                                ) else {
+                                    continue;
+                                };
+                                let Region::Sequence { regions } = arm else {
+                                    unreachable!("a proved arm is a sequence");
+                                };
+                                let Region::Loop { header, .. } = &regions[1] else {
+                                    unreachable!("a proved gateway is adjacent to a loop");
+                                };
+                                let raw = code
+                                    .instructions
+                                    .iter()
+                                    .find(|instruction| instruction.bci == bci)
+                                    .expect("the transfer is a physical Code instruction");
+                                if let Some(expected) = expected_opcode {
+                                    assert_eq!(raw.opcode, expected);
+                                }
+                                proofs.push((*branch_bci, bci, header.bci()));
+
+                                if !exercised_stops {
+                                    let edge_count = u64::try_from(canonical.edges().len())
+                                        .expect("edge count fits u64");
+                                    assert!(edge_count > 0);
+
+                                    let mut edge_limits =
+                                        child_array_test_budget().limits().clone();
+                                    edge_limits.ir_edges = edge_count - 1;
+                                    let mut edge_stopped = Budget::new(edge_limits);
+                                    assert!(matches!(
+                                        nonempty_if_nested_loop_entry_transfer(
+                                            arm, canonical, ssa, operations, &mut edge_stopped,
+                                        ),
+                                        Err(StopReason::Budget {
+                                            dimension: CountedBudgetDimension::IrEdges,
+                                            at: Some(at),
+                                            ..
+                                        }) if at == bci
+                                    ));
+                                    assert_eq!(edge_stopped.usage().ir_edges, 0);
+
+                                    let mut origin_limits =
+                                        child_array_test_budget().limits().clone();
+                                    origin_limits.ir_edges = edge_count;
+                                    origin_limits.ir_items = 0;
+                                    let mut origin_stopped = Budget::new(origin_limits);
+                                    assert!(matches!(
+                                        nonempty_if_nested_loop_entry_transfer(
+                                            arm, canonical, ssa, operations, &mut origin_stopped,
+                                        ),
+                                        Err(StopReason::Budget {
+                                            dimension: CountedBudgetDimension::IrItems,
+                                            at: Some(at),
+                                            ..
+                                        }) if at == bci
+                                    ));
+                                    assert_eq!(origin_stopped.usage().ir_edges, edge_count);
+                                    assert_eq!(origin_stopped.usage().ir_items, 0);
+
+                                    let mut cancelled = child_array_test_budget();
+                                    cancelled.cancellation_token().cancel();
+                                    assert!(matches!(
+                                        nonempty_if_nested_loop_entry_transfer(
+                                            arm, canonical, ssa, operations, &mut cancelled,
+                                        ),
+                                        Err(StopReason::Cancelled { at: Some(at) }) if at == bci
+                                    ));
+                                    // Cancellation is observed before any edge charge.
+                                    assert_eq!(cancelled.usage().ir_edges, 0);
+                                    exercised_stops = true;
+                                }
+                            }
+                        });
+                    }
+                },
+            );
+            (proofs, report, saw_effect_prefix, exercised_stops)
+        }
+
+        let (original, original_report, _, original_stops) = probe(
+            include_bytes!(
+                "../../../tests/fixtures/cf08-if-loop-entry/original/loops/TestLoopRestore2.class"
+            ),
+            Some(0xa7),
+        );
+        let (wide, wide_report, _, wide_stops) = probe(
+            include_bytes!(
+                "../../../tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreGotoW.class"
+            ),
+            Some(0xc8),
+        );
+        let (effect_prefix, _, saw_effect_prefix, _) = probe(
+            include_bytes!(
+                "../../../tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreEffectPrefix.class"
+            ),
+            None,
+        );
+        assert_eq!(
+            original.len(),
+            1,
+            "the original raw class has one proved entry"
+        );
+        assert_eq!(wide.len(), 1, "the goto_w variant has one proved entry");
+        assert_ne!(
+            original[0].2, wide[0].2,
+            "the loop target comes from its actual Region"
+        );
+        assert!(
+            original_stops && wide_stops,
+            "both real positive IRs exercise stops"
+        );
+        assert!(
+            saw_effect_prefix,
+            "the negative input reaches the intended two-op block"
+        );
+        assert!(
+            effect_prefix.is_empty(),
+            "an effect before goto is not transfer-only"
+        );
+        for ((_, bci, _), report) in original
+            .iter()
+            .map(|proof| (proof, &original_report))
+            .chain(wide.iter().map(|proof| (proof, &wide_report)))
+        {
+            assert!(report.produced(), "the full fixture report is produced");
+            assert!(
+                report
+                    .source_map
+                    .derived_of_bci(*bci)
+                    .iter()
+                    .any(|segment| { segment.text(&report.text).trim_start().starts_with("if (") })
+            );
+        }
     }
 
     #[test]

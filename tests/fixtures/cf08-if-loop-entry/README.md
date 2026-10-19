@@ -1,0 +1,7 @@
+# CF08 if臂进入嵌套循环的来源
+
+original/为JADX TestLoopRestore2.raung经官方Raung0.1.1实际装配的148B原class；original.jar包含同一class。原件SHA4fd1503499a049efa8e736a98de4339b6504973f80208987ed0774073df9c447。上游HEAD2fb1b16386941660fda07e9017285aec40fcb37f；源码/工具来源与完整20实际命令证据见openspec/evidence/java-syntax-2026-10-19/cf08-looprestore2-original-root-v1。
+
+controls/仅是原Code替换的构造控制，不能称原Raung/JADX覆盖：GotoW改宽跳转/实际偏移，EffectPrefix在入口goto前加iinc，后者应拒绝single-transfer来源证明。三class均45.3、唯一test([I[I)V，无handler/jsr。两独立物理parser及相对分支目标静态检查通过；尚未据此声称Rust测试或JVM验证通过。库存增3class/3Code/12直接target。
+
+baseline/TestLoopRestore2.java是846B已接受整类输出，原样八次重编成功；没有执行目标方法。JADX整类两次编译因不可达while失败。Python-B make_controls.py从固定原件重建两个控制（输出须先比对manifest）；不需要装配器或target依赖。JADX及Raung许可随源片段保留。

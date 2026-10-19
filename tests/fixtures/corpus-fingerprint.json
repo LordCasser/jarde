@@ -1213,6 +1213,56 @@
       "path": "tests/fixtures/cf08-entry-split/manifest.json"
     },
     {
+      "blake3": "5bdb6ae38e00211a2626138db993c8a8c3b9e3c679556c255cd416877fd482f2",
+      "bytes": 285,
+      "path": "tests/fixtures/cf08-if-loop-entry/TestLoopRestore2.raung"
+    },
+    {
+      "blake3": "38313247cd392c0529eb23e45c8d8b0cfe6f4407625f461de6e20269afe21fc7",
+      "bytes": 846,
+      "path": "tests/fixtures/cf08-if-loop-entry/baseline/TestLoopRestore2.java"
+    },
+    {
+      "blake3": "13f9c0c706bde80fa7ca1df8e1d2d2b35c4fe6a8b343235837f595fe26ed7f72",
+      "bytes": 151,
+      "path": "tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreEffectPrefix.class"
+    },
+    {
+      "blake3": "bb7befc60b1f9cf02eb7cac80c13c2456476a95e42f6a1e94eba1d89f954a1ad",
+      "bytes": 150,
+      "path": "tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreGotoW.class"
+    },
+    {
+      "blake3": "fb6b1d1171f32787eec2b6999838747a9e80c7fa581baf0f614484c2a875eae0",
+      "bytes": 11357,
+      "path": "tests/fixtures/cf08-if-loop-entry/licenses/JADX-LICENSE"
+    },
+    {
+      "blake3": "d006ec493b8b2457b733149b1779dd1db3bd8314f80e52377749304dafa869b2",
+      "bytes": 10658,
+      "path": "tests/fixtures/cf08-if-loop-entry/licenses/JADX-NOTICE"
+    },
+    {
+      "blake3": "88029f548364bd289790d0f03046a38f1d3624c7bc81991ff9e91f08bb995f15",
+      "bytes": 1094,
+      "path": "tests/fixtures/cf08-if-loop-entry/licenses/RAUNG-MIT-LICENSE"
+    },
+    {
+      "blake3": "74531f871a299d0bbad823d95d655d46e6b0a16df98c74dc77e6f2a2b64f301b",
+      "bytes": 5722,
+      "path": "tests/fixtures/cf08-if-loop-entry/manifest.json"
+    },
+    {
+      "blake3": "a060ebde1a5c77d51005956ce8ad1d30ba5467cf33bb7453d29bb6d9ea5b1729",
+      "bytes": 310,
+      "path": "tests/fixtures/cf08-if-loop-entry/original.jar"
+    },
+    {
+      "blake3": "8857958e12fbb45631445bd15a16459cc61547addebbfb7374bf989a611feb41",
+      "bytes": 148,
+      "path": "tests/fixtures/cf08-if-loop-entry/original/loops/TestLoopRestore2.class"
+    },
+    {
       "blake3": "c680045c6f7b0e3a59494e661e4981145f8dbc0a040f8760b6c9c66e6179ac94",
       "bytes": 379,
       "path": "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectful.class"

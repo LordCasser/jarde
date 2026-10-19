@@ -1,3 +1,7 @@
+## 2026-10-19 更新：原始Raung入口来源修正5/6
+
+[if-loop来源片](../../changes/preserve-proved-if-loop-entry-origins/results/README.md)已root定向接受：真实class/JAR四API来源9/10→10/10，完整846B源码不变；窄Builder派生origin，无新Region/CFG机制。508 Java单测、公共2项（含真实BCI8预算停止）、Reader/指纹/fmt/Clippy通过；完整fresh及本产品自身CI/主spec/clean-main待。下方旧“1/6私有候选”是历史时点。CF08及71/612计数不增。
+
 # JADX control-flow syntax inventory
 
 ## 2026-10-19 当前：双入口循环6/6，原始Raung来源片1/6
