@@ -1,10 +1,12 @@
 # 当前五维支持矩阵
 
+本页保留能力维度和阶段边界，开头基线复核日期为 2026-09-20。后续语法交付与未完成范围见 [71 单元账本](../openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md) 和 [handoff](../handoff.md)，不能把历史快照视为最新覆盖结论。
+
 当前复核边界（2026-09-20，`8586356`）：P0–P5、分层、四项 benchmark 后续交付、易用性三阶段与停止传播修正均已按当时范围归档。独立复核发现的 R1/P1（名称选择丢失搜索停止）与 R2/P2（类视图顶层漏汇总 body 停止）已在 `8586356` 关闭：未完成的名称搜索返回独立的 `Incomplete` 选择（保留候选/coverage/诊断/用量，不执行分析，CLI exit 4），类视图的顶层 execution 在库内汇总所请求方法体的停止。反例、正向对照与变异证据见 [修正验证](../openspec/changes/archive/2026-09-20-preserve-task-operation-stops/verification.md) 与 [完成复核](../openspec/completion-review.md)。
 
 已交付的定向 container 访问、显式 prefix root、driver 声明类事实交接和内容分类保持有效；生产 verifier、自动编译和普遍语义等价证明仍未实现。
 
-本页是当前用户可见能力状态的单一事实源。P0 的验收要求以[已生效主规格](../openspec/specs/)和[归档 tasks](../openspec/changes/archive/2026-09-17-establish-p0-foundation/tasks.md)为准；P1 的增量以[归档 tasks](../openspec/changes/archive/2026-09-17-p1-query-xref/tasks.md)和[verification](../openspec/changes/archive/2026-09-17-p1-query-xref/verification.md)为准；P2 的解析、方法 IR 与方法分析报告以主规格 `demand-resolver`、`jvm-ir`、`conservative-output` 与 [verification](../openspec/changes/archive/2026-09-19-p2-jvm-ir/verification.md) 为准。这里只描述实际实现，不是未来路线承诺。
+本页说明能力维度及其历史验证边界。P0 的验收要求以[已生效主规格](../openspec/specs/)和[归档 tasks](../openspec/changes/archive/2026-09-17-establish-p0-foundation/tasks.md)为准；P1 的增量以[归档 tasks](../openspec/changes/archive/2026-09-17-p1-query-xref/tasks.md)和[verification](../openspec/changes/archive/2026-09-17-p1-query-xref/verification.md)为准；P2 的解析、方法 IR 与方法分析报告以主规格 `demand-resolver`、`jvm-ir`、`conservative-output` 与 [verification](../openspec/changes/archive/2026-09-19-p2-jvm-ir/verification.md) 为准。这里只描述实际实现，不是未来路线承诺。
 
 ## 状态词
 

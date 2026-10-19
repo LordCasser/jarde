@@ -1,5 +1,7 @@
 # JVM Rust Engine 阶段路线
 
+本页保留阶段设计与当时的完成判定；正文日期和任务数不代表当前主线。当前进度见 [handoff](../handoff.md)，Java 特性执行范围见 [71 单元账本](evidence/jadx-feature-inventory-2026-09-27/summary.md)。
+
 P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12、P4 10/10、P5 10/10；主规格现为 **18 份**。2026-09-20 对 `cd6f2f0` 的独立复核确认的两条 P1——嵌套表达式旧值重算（P3-R8）与字段生产者在 fallback 中丢失（P3-R9）——已由 `close-recovery-correctness-gaps`（4/4，`fd0aae8`）关闭，两条反例与正向对照进入永久语料；历史归档记录保留。见 [收尾验证](changes/archive/2026-09-20-close-recovery-correctness-gaps/verification.md)。
 
 相关入口：[OpenSpec 规划入口](README.md)、[技术栈与依赖选型](dependencies.md)、[架构验收与阶段映射](acceptance.md)。

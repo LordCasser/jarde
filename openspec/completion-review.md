@@ -1,5 +1,7 @@
 # 实现完成复核（2026-09-21）
 
+本页是按日期保留的历史复核记录，未持续汇总后续交付。当前产品、CI 与下一步见 [handoff](../handoff.md)；各节中的“下一片”“未关闭”均指记录时点。
+
 ## 2026-10-15 接口与 class-source 证明停止产品已验收
 
 产品 `c8718aeff6cc08b686c7b3c3495bfd0bb9efa2b1` 的[自身CI38692921405](https://github.com/LordCasser/jarde/actions/runs/38692921405)成功：4jobs/52steps，两固定seed各367suites、3615/0/98，合计7230/0/196。105指定回归逐seed唯一通过，六条显式JDK/full-class命令九项测试、MSRV/supply/fuzz/既有门及该head strict365/0通过。root848与独立1644项复核无错误，完整API与logs按原字节留存。

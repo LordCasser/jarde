@@ -1,26 +1,13 @@
 # jarde
 
-jarde 是纯 Rust、library-first 的 JVM artifact 分析引擎。P0/P1 已完成并归档：有界不可变快照、CLASS/JAR/WAR 读取、嵌套物理视图、MR 选择、Header/bytecode inspection 和 X0/X1 查询已交付。
+jarde 是纯 Rust、library-first 的 JVM artifact 分析引擎，提供 CLASS/JAR/WAR 读取、物理身份导航、符号查询、JVM 方法 IR 与 Java 源码恢复。核心库离线运行，CLI 是薄适配层。
 
-**当前完成判断（2026-09-20，`8586356`）**：P0–P5、分层、benchmark 四项后续交付与易用性三阶段均已归档；独立复核发现的两项停止语义问题（名称选择丢失搜索停止、类视图顶层忽略 body 停止）已在 `8586356` 关闭并归档验证——未完成的名称搜索返回 `Incomplete` 选择而非执行或报缺失，类视图顶层由库汇总 body 停止。1254 passed / 0 failed / 6 ignored、clippy `-D warnings`、两条 P3 编译执行对照与 OpenSpec strict 通过。性能专项 `optimize-demand-workloads` 仍为 0/22。
+项目正在按 JADX 的测试和实现逐项提高 Java 恢复质量。固定清单包含 **71 个特性单元、612 个 Java 测试文件**，目前仍为部分覆盖；阶段归档不代表任意 JVM 方法均可恢复。最新交付、验收证据和下一步统一见 [handoff.md](handoff.md)，特性范围见 [JADX 对标账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)。
 
-**已关闭的恢复问题（`fd0aae8`）**：P0–P5 与分层均已按各阶段范围归档，`cd6f2f0` 复核出的两条 P1 已由本轮关闭（`close-recovery-correctness-gaps`，4/4）：`(x + 1) + ++x` 不再输出对输入 7 返回 17 的 Java，改为保留被拒读取的可靠降级；被拒 cast 前的字段读取重新出现在产物与 source map 中，含字段链。两条反例、正向对照与执行基线已进入永久语料（`tests/fixtures/p3-nested-eval/`、`tests/fixtures/p3-refused-cast/`）与库/CLI 验收。实施、变异与门禁证据见 [收尾验证](openspec/changes/archive/2026-09-20-close-recovery-correctness-gaps/verification.md)。
+- [能力与边界](docs/support-matrix.md)：按维度阅读能力，结合主规格与各项验收证据。
+- [OpenSpec 入口](openspec/README.md)：现行规格与实施流程。
 
-**P3 恢复（已归档，12/12，`250fe1f`）**：方法体、结构/模式、声明/作用域、按需 accessor 与物理方法映射已交付；原 P3-R1–R7 的具体反例均已关闭，其中直接 `return x++` 通过可靠降级关闭。受控编译/执行对照已经运行；这不等于所有表达式已证明等价，也不等于任意 JVM 方法都能还原为完整 Java 编译单元——R8/R9 的关闭见上方历史收尾记录。
-
-**P4 现代语义（已归档，10/10，`88416ab`）**：1.1–1.3（release registry，以及 record/sealed/condy/concat 事实与非法 fixture、golden diagnostics）、2.1–2.3（`Engine::runtime_matrix` 的多 profile 物理保留、X2 三态与缺失依赖、有界 X3 反射/ServiceLoader 推断）、3.1–3.2（versioned plugin descriptor 与 `META-INF/services` 只读 fixture）已落地，入口与边界见 [五维支持矩阵](docs/support-matrix.md#现代5371能力与-p4-新增入口2026-09-20)；3.4 的门禁数字与「结构支持 vs 源码恢复独立状态」的结论已随归档写进 [P4 验证记录](openspec/changes/archive/2026-09-20-p4-modern-semantics/verification.md)。P4 未触碰恢复层：`OutputLevel` 仍只有 `Java8`；`MethodParameters` 与嵌套等类级 metadata 仍不在载荷（声明类自身的 `this_class`/class flags 由后续 `carry-declaring-class-evidence` 补齐，见下）。
-
-**P5 实测优化（已归档，10/10，`cd6f2f0`）**：已交付固定语料、direct 基线、CP/Header facts cache 与差分门禁。cache 存在但默认关闭；index、parallel、merged、single-flight 未实现。测得范围仍是小样本，性能阈值未定，不承诺普遍加速。**A15/A18 在已实现路径的适用范围通过**；实际 usage 节省单独记录，不存在的路径为不适用，不能用其缺席制造未完成项。实测数字、开关与边界见 [支持矩阵](docs/support-matrix.md#p5-实测边界与启用开关2026-09-20)，历史记录见 [P5 verification](openspec/changes/archive/2026-09-20-p5-measured-optimization/verification.md)。
-
-本次收尾已归档（4/4，`fd0aae8`）；`MethodParameters`、handler 根策略和现代源码输出等仍分别保留为覆盖边界（类级事实里**声明类自身**的 `this_class`/class flags 已由 `carry-declaring-class-evidence` 补齐，嵌套与其它类级 metadata 仍是边界），需要时各自开 change，不混入已关闭的正确性修复。轻量调用方仍可直接依赖 `jarde-reader`/`jarde-query`。
-
-`Engine::query` 保持 physical X0/X1，`references_definition`/`may_dispatch_to` 仍返回 UnsupportedAnalysis；`resolve_symbol`/`declaration_references` 是显式运行环境下的独立入口，回答类/字段/方法的**声明**解析与声明引用，dispatch 报告已知候选与 open-world 证据，不声称完整 JVMS 实现或 runtime selection（契约见主规格 `demand-resolver`）。`Engine::analyze_method` 可调度到 SSA；CLI 的 `analyze_method` 接收同形的 `environment`、`method`、`stages`，返回 `method_analysis`。适配层只提供 `input_path` 打开的单一 snapshot，不重写请求中的身份；方法报告含阶段与结果平面，P2 报告保持 Bytecode 契约；`jarde_jvm::analyze_method_ir` 另以只读 `MethodIr` 交付同次运行的实际表。`Engine::recover_method` 消费该载荷，CLI 同名 operation 返回方法分析与恢复报告，分析不重复执行。
-
-恢复产物目前是**方法体**，包含 `text`、source map、rules/profile、诊断和独立结果平面。报告还带闭合的 `content`（`not_produced`/`explanation_only`/`contains_statements`），从最终提交的结构判断产物是否含实际发射的 Java 语句；`Produced` 仅表示产物已交付，`content` 不证明完整恢复，也不证明可编译或语义等价。完整结构可标记 Java/Structured，有低级引用时为 Mixed/Fallback；生产请求保持 `compile_status=NotAttempted`、`semantic_validation=Unproven`、`verification=NotPerformed`。门面已提供参数/receiver/debug 与按需成员证据（P3 3.1/3.2），accessor 的字段访问可从公开入口直接呈现；`carry-declaring-class-evidence` 又补上 driver Header **同一次**读取里的**声明类自身**两项（`this_class` 与 class `access_flags`，只读、不新增扫描），门面级 `declaration@1` 因此能判定普通实例/static、interface `default`/`static`、构造器与 `<clinit>`，同一事实也让构造器的 `super()`/`this()` 与对未初始化 `this` 的字段写入可达；这些 class flags 是 **parse 事实**，不是 dialect 合法性、runtime 解析成功、JVM verification 或质量结论，方法体自身的 quality/compile/verification 不因此升级。**嵌套**（`InnerClasses`/`NestMembers`）、`MethodParameters` 与其它类级 metadata 仍不在载荷，故不声称嵌套。当前支持范围见 [支持矩阵](docs/support-matrix.md)。
-
-**平面与 `content` 的读法（契约原文，`recovery-validation`／`java8-recovery` 规格）**：每个平面 SHALL 只被读作它自己的结构性问题：representation 说明表示形态，quality 说明区域结构的强度，syntax/compile/semantic/verification 各自说明对应证据是否存在，coverage 与 execution 说明工作范围与完成度，content 说明交付物是否含发射语句。任意组合——包括 quality=Structured、content=contains_statements、execution=complete、coverage=CompleteWithinSchema 且无诊断同时成立——MUST NOT 构成语义等价或值正确的声明；已知反例中存在这样同时成立、却计算了与字节码不同值的产物。需要语义证据的调用方 MUST 执行受控编译/执行对照，或把产物当作假设并保留其未证明状态；MUST NOT 用任一平面组合代替该动作。`Produced` 与 `content` MUST 分开统计与表述：同一轮 sweep 的 182,883 个请求中有 30,452 个是 Produced 而产物不含语句；报告、README、支持矩阵与 benchmark 协议 MUST NOT 把这类计数表述为语句恢复率或语义恢复率，MUST 分别命名「引擎 content 分类」与旧 token/启发式口径。content 与其余平面一样是结构性的，MUST NOT 被读作值等价或语义正确的证据。
-
-`Strict` 的 45.x–51.x 与 52.0 支持只表示结构读取和 version-only gate，不能解释为完整 dialect validation 或 JVM verifier。现代版本、preview、future 与缺失输入分别报告能力限制。实际边界以 [五维支持矩阵](docs/support-matrix.md) 为准。
+恢复报告分别表达结构质量、表示形态、内容、覆盖、执行和验证状态。`Produced` 或 `Structured` 不证明可编译或语义等价；需要语义证据时，必须保留原件并做受控编译和执行对照。库生产请求不会自动运行 JVM 或外部反编译器。接口契约见 [recovery-validation](openspec/specs/recovery-validation/spec.md)。
 
 ## 支持范围
 
@@ -256,6 +243,8 @@ cargo run -q -p jarde-cli -- recover --input $J --method @method.json --policy p
 
 ## Benchmark
 
+以下是历史冻结版本的同机测量，不代表当前主线性能或覆盖率。
+
 jarde 交付的单位是**方法体 + 它的四个平面**（content/quality/representation/诊断），不是整类源码。
 在 vulhub 语料上（10 次交错重复的中位、逐配置预热；原语料 12 个 artifact）：
 
@@ -279,21 +268,20 @@ jarde 交付的单位是**方法体 + 它的四个平面**（content/quality/rep
 
 ## 规格与验证
 
-- [五维支持矩阵](docs/support-matrix.md)
-- [P0 实际验证记录](openspec/changes/archive/2026-09-17-establish-p0-foundation/verification.md)
-- [P1 归档（proposal / design / tasks / verification）](openspec/changes/archive/2026-09-17-p1-query-xref/)
-- [已生效主规格](openspec/specs/)（P0–P5 共 18 份；阶段归档不等于所有输入已验收）
-- [P2 验证记录（含验收映射与 5.4 门禁）](openspec/changes/archive/2026-09-19-p2-jvm-ir/verification.md)
-- [P3 恢复验证记录](openspec/changes/archive/2026-09-20-p3-java8-recovery/verification.md)
-- [OpenSpec 入口](openspec/README.md)
-- [P0 归档 proposal / design / tasks](openspec/changes/archive/2026-09-17-establish-p0-foundation/)
-- [已生效的 P0 主规格](openspec/specs/)
-- [架构验收映射](openspec/acceptance.md)
-- [技术栈与依赖选型](openspec/dependencies.md)
-- [架构基线](JVM_Rust_Engine_Final_Architecture.md)
+| 内容 | 入口 |
+| --- | --- |
+| 当前产品、验收与下一步 | [handoff](handoff.md) |
+| 现行规格与实施流程 | [OpenSpec](openspec/README.md) |
+| 架构、不变量与管线 | [架构基线](JVM_Rust_Engine_Final_Architecture.md) |
+| 技术选型与验收要求 | [依赖选型](openspec/dependencies.md)、[验收映射](openspec/acceptance.md) |
+| 历史阶段与复核 | [阶段路线](openspec/roadmap.md)、[完成复核](openspec/completion-review.md) |
+| 历史交接 | [截至 2026-10-19 的快照](docs/history/handoff-through-2026-10-19.md) |
+| Clippy 专项债务 | [clippy-debt](docs/clippy-debt.md) |
 
-低内存本地验证默认设置 `CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 RUST_TEST_THREADS=1`。OpenSpec 静态验证：
+本地验证使用 `CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 RUST_TEST_THREADS=1`；构建须保留至少 5 GiB 磁盘余量，target 上限 1 GiB，完成后清理编译残留。当前恢复任务沿用 handoff 中的受控验证入口。
+
+OpenSpec 静态验证：
 
 ```sh
-npx --yes @fission-ai/openspec@1.11.0 validate --all --strict --no-interactive
+openspec validate --all --strict --no-interactive
 ```
