@@ -1,43 +1,31 @@
 # Jarde 接续入口
 
-更新：2026-10-19。当前状态以本页和 Git 为准；旧检查点已移入 [历史快照](docs/history/handoff-through-2026-10-19.md)。其他机器接续先拉取 GitHub 并核对工作区。
+更新：2026-10-19。先拉取GitHub并核对工作区；当前事实以本页、Git和对应验收收据为准。[历史快照](docs/history/handoff-through-2026-10-19.md)仅描述过去时点。
 
-## 当前交付
+## 当前产品：Loop4/5 完整验收通过
 
-主线为 `main`。最近完整验收的产品为 `618b5e20f27f94ba28ea2f9e4310648718475f82`；后继为规格、证据和交接文档提交，不代表重新运行产品 CI。finThrow（5/5）、nestedFin（16/16）及旧循环片已完成，不重做。
+主线`main`。当前产品`412245d514896b1d0eb9a8fe24388f6a70668637`，由首版恢复a4ccac6b4和最小预算修正412245d51组成。Luna私有实现，root审查、集成及实际对照；无新分支/worktree。
 
-[条件重抛与异常重试](openspec/changes/recover-branching-named-catch-retry-loops/results/README.md) 已完成（6/6）：扩展既有 RetryLoopFacts/Frame 的三块 handler 证明，复用 If/Throw/LoopContinue；精确保护区、边闭合、owner、预算及取消门保留，无新 CFG/Region/pass/Builder 机制。
+Loop4给自然循环外的闭合break分支DAG建立精确owner证明，复用既有sequence/If/LoopBreak，保留ForHeader。Loop5在精确普通named catch范围内组合prefix+完整While+return-tail；保留effectful latch的append/update。Builder复用已有catch身份，区分handler入口异常绑定与同物理槽普通double，不引入通用槽拆分。外来入口/出口、Call/Return跨owner、异常行漂移、重复/遗失owner及预算/取消/晚期Stop均有拒绝和回滚门。
 
-- 完整 `TestBreakInLoop2`：8 API，16 次 Jarde 完整类重编，32 个隔离 VM、64 次观察均同原件；四个方法结构化、目标来源17/17、default/all恒同。原件 catch 动态不可达，由独立可达控制例的32 VM/160观察验证重试、同一异常重抛、条件反转及 retry 效果自身异常。JADX 原 JDK8 framework 55/52 编译边界保留。
-- [最终完整验收](openspec/changes/recover-branching-named-catch-retry-loops/results/native-and-own-ci-root-v1/README.md)：一次 fresh workspace 为393 targets、103批、3823通过/0失败/98既有忽略，78精确门；[产品自身CI](https://github.com/LordCasser/jarde/actions/runs/39227711617) 四 job 成功，双 seed 全部具名结果一致。5280构建/native来源逐Git blob与实际字节/模式绑定。主规格已同步；严格校验以该验收入口为准。
-- [前一完整交付](openspec/changes/bound-loop-header-chains-at-body-effects/results/README.md)：ComplexIf/ComplexIf2已对照接受，来源32/33与33/34的缺口单列。
+- [完整三方与定向验收](openspec/changes/recover-named-catch-loop-return-tails/results/focused-and-full-comparison-root-v1/README.md)：两原件各70命令/140raw、8API/24方法structured；各Jarde8及JADX2完整JDK23编译成功、20生成VM同原，10次JDK8框架55/52编译边界保留。所有case及实际check按同profile/runtime对照，default/all、identity和映射稳定。Loop5扩展12例的20VM/240case亦同原件，含实际null/M/g/重复点/零/超大数。root与独立raw审计已接受。
+- 最终定向CF12 9、Java核心540、公开API4、Clippy/fmt均通过。首轮native和首版CI39248350582在旧CF12精确预算门失败，因非候选单出口循环被多付完整scan费用；仅前置既有两出口必要条件，保留真实候选收费和取消轮询。旧365@29/130@1测试完全未改。
+- 最终fresh workspace：394 targets、103批、3841通过/0失败/98既有忽略，96精确门通过；5299 source pins前后相等，默认栈及5GiB/1GiB守卫未触发，finally target absent。构建3346/native5299来源并集5306均绑定产品Git blob和实际字节/模式。独立raw审计已接受。[本产品自身CI39251504476](https://github.com/LordCasser/jarde/actions/runs/39251504476)四jobs全部成功，52个官方步骤逐一绑定原始ZIP；双seed各394目标、3841通过/0失败/98既有忽略，全部3939具名结果逐项相等，141精确门各一次通过。root和独立审计均接受；[native/自身CI归档](openspec/changes/recover-named-catch-loop-return-tails/results/native-and-own-ci-root-v1/README.md)保留完整原流、工具与来源绑定。
+- 既有工具债务：runner的`observed_counts`把编译产物顺序与执行摘要错配，影响316个target项/95批。已有verifier及独立审计都按实际Running头重建394目标和3939具名结果，二者逐项相等；原收据不改，不能直接消费其错误计数表。本轮不改语法范围外的runner。
+- 来源覆盖：Loop4 test23/23；Loop5 test59/60，缺BCI103（物理goto14），[独立映射债务](openspec/evidence/java-syntax-2026-10-19/cf09-implicit-loop-transfer-mapping-debt-root-v1/README.md)已记录，不宣称完整来源覆盖，也未推断与旧69/78同根因。
 
-最终 CLI：`/private/tmp/jarde-loop2-retry-final-focused-root-v2-20261019/candidate-cli`，64,347,312 bytes，模式0555，SHA-256 `7e321a7f4fd6a029540ab169f79572c6ad83e74119900ac6d695290c9c055318`；与完整对照 CLI 同字节。临时目录不保证跨机器存在，持久证据从上面的验收入口读取。
+最终CLI：`/private/tmp/jarde-loop45-final-focused-root-v4-20261019/candidate-cli`，64,631,664 bytes、0555、SHA-256 `d29b6fee723d8f59fbecd9fd8be9f15a8ec73de3a90f5a2a29b24ff91e4af607`。临时路径不保证跨机器存在；证据及来源pin进入持久归档，二进制/target不入库。主规格已同步2要求/8场景；两项OpenSpec均8/8完成。严格校验与最终交付检查见验收入口。最终文档提交使用[skip ci]，不冒称另跑产品CI。
 
-## 当前处理：Loop4/5
+## 下一步与独立范围
 
-[完整三方基线](openspec/evidence/java-syntax-2026-10-19/cf09-loop4-loop5-original-root-v1/README.md)已并行采集并root/独立复核接受：每目标46命令/8API/20完整编译尝试。两个test均fallback `jre_region_uncovered_blocks`，Loop4遗漏3块、Loop5遗漏11块；ctor/check均structured。每目标Jarde16整类编译失败、无VM；JADX2次JDK23整树编译成功/4VM全部case+check同原件，2次JDK8编译框架55/52边界保留。原件check在JDK23通过、JDK8依赖异常独立记录。
+本轮Loop4/5已完成并归档，固定13原件现为9已接受、4待完整基线。CF09、71单元及612文件保持partial，见[JADX账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)。
 
-[四原件真实IR](openspec/evidence/java-syntax-2026-10-19/cf09-loop4-loop5-ir-root-v1/README.md)已执行、独立复核并归档：1 test/4 profile，默认栈，helper精确恢复、target清理。Loop4已证明ForHeader却漏外侧条件break体；Loop5普通try的prefix+loop候选只接受末尾goto，原件却为范围右边界return表达式。probe仅test且Sites为空，与公开路径输入边界已单列。
-
-两项OpenSpec已由Luna提交私有补丁、root审查并集成：Loop4仅在闭合、无外部入口/额外出口的break分支DAG内扩展owner并复用既有sequence；Loop5精确绑定普通named catch的物理范围，将prefix+完整While+return-tail组合，保留append/update；Builder复用catch身份，区分handler入口异常绑定与同槽普通double。Call/Return跨owner边、异常行漂移、owner重复/遗漏及晚期Stop均保留拒绝/回滚门，无全局scope或ForHeader放宽。
-
-首版产品a4ccac6b4的完整三方矩阵与Loop5扩展12例已由root/独立接受，但fresh workspace在旧CF12预算精确门失败。已确认单出口循环在必然拒绝前被多付候选扫描费用；Luna最小补丁仅前置原有两出口必要条件，真实候选收费/取消不变，未修改旧测试预算。修正后的CF12全部9项（仍365@29、130@1）、Java核心540、公开API4、Clippy/fmt均通过，构建前后源码一致且target已清理。
-
-新CLI64,631,664 bytes、0555、SHA `d29b6fee723d8f59fbecd9fd8be9f15a8ec73de3a90f5a2a29b24ff91e4af607`。此新产物的完整三方/扩展对照、fresh workspace和自身CI/来源绑定待重新关闭；首版运行结果不能冒充新版本验收。首版实际来源覆盖为Loop4 23/23、Loop5 59/60，缺BCI103（goto14）单列映射债务。主规格2要求/8场景已同步，strict388通过；固定原件状态仍保留待最终验收。
-
-## 下一步与独立债务
-
-固定13原件中7项已完整接受、2项实际gap、4项待完整基线；CF09、71单元、612文件整体仍为 partial。覆盖范围以 [JADX账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md) 为准，不把原件数当作特性数。
-
-- 按 [BreakInLoop3–6静态计划](openspec/evidence/java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md) 4/5已完成完整基线且确认gap，按上述当前处理继续定位。3含NYI，先查实际JADX；6单列Smali/Dex与class/JAR输入边界，均未算完成。
-- [隐式循环转移映射债务](openspec/evidence/java-syntax-2026-10-19/cf09-implicit-loop-transfer-mapping-debt-root-v1/README.md)：BCI69/78缺失仍待实际证明，独立处理。
-- collector 参数、物理库存与语义投影统一属于工具债务，不混入语法修复。
+剩余固定原件为BreakInLoop3、BreakInLoop6、DoWhileBreak2/3。按[静态输入边界](openspec/evidence/java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md)先做完整三方基线：3的NYI先核实际JADX，6的Smali/Dex与class/JAR必须分开，不能用JVM构造例代替原输入。finThrow5/5、nestedFin16/16、Loop2与ComplexIf已验收旧片不重做。
 
 ## 工作与资源边界
 
-root 独占共享写入、Git/网络及Cargo/JDK/JADX/Jarde CLI；Luna只读共享文件，在新私有tmp用Python `-B`准备实现和审计，不建分支或worktree。实现按OpenSpec派发，root做架构、失败路径及完整对照验收。
+root独占共享写、Git/网络及Cargo/JDK/JADX/Jarde CLI；Luna只读共享文件，在新私有tmp用Python`-B`准备实现和审计。按OpenSpec派发，root负责架构、失败路径及完整对照验收。
 
-Cargo串行：可用空间至少5GiB、target上限1GiB、默认Rust stack、每秒进程组守卫、finally精确清理。Cargo期间不得共享写入、Git mutation、网络或手动并行JDK/CLI。shell使用 `login:false`；单独检查退出码。
+Cargo串行：余量≥5GiB、target≤1GiB、默认Rust stack、每秒进程组守卫、finally精确清理。Cargo期间不共享写、不Git mutation、不网络或手动并行JDK/CLI。shell使用`login:false`。所有完成/clean/远端/worktree结论须由最终实时审计核对，不能沿用历史快照。
 
-最终主线/远端/worktree与target状态由交付后的实际审计核对；接续时重新检查实时状态，不将历史clean快照当作当前结论。
+交付审计：主线产品与origin/main的同步、工作区清洁及target absent由最终推送后实时复核；此前14个辅助worktree均detached、干净且HEAD为main祖先，未新增分支/worktree，只有main占用分支。历史干净辅助checkout不作为待完成实现。
