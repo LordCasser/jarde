@@ -1,0 +1,13 @@
+{
+  "status": "root_accepted_memberwise_bytes_modes_inventory_and_exact_cli_exclusion",
+  "archive_bytes": 2413007,
+  "archive_sha256": "d4b451049977a7881681279c7cb01a912137435204ee366c02376550c5fa7429",
+  "inventory_sha256": "605e603eb93cb70328bc771bb690bf03461d0eaf16a990e645c8f80ecbc3c60e",
+  "payload_regular_files": 399,
+  "inventory_regular_files": 1,
+  "input_roots": 21,
+  "candidate_cli_payload_copies": 0,
+  "baseline_receipt_sha256": "f3ef78d507b3e585b84c459fcbde577b1b4e0f864e2dbc74864782c1da19471e",
+  "baseline_root_marker_sha256": "bb5ea6e8e7a7bb639876a037a5ae5e60ed38884724f1595721b16afc24a6490c",
+  "scope": "One complete ComplexIf original baseline, all actual failed collection/review/pack history, full source and helper closure, exact external CLI build provenance. Reused generic Continue archive format; no recovery fix or new IR execution."
+}

@@ -1,0 +1,25 @@
+{
+  "status": "root_accepted_memberwise_bytes_modes_inventory_and_official_ci_zip_bindings",
+  "archive_bytes": 6862618,
+  "archive_sha256": "e816ff52faf4506e176d5a36d87da6c604521c5fedaafb60ba88cf970471212a",
+  "inventory_sha256": "6070fc5d8141ef7fa68c977c9f83a13e539d6e86617d6b2bcc3162cbaf8b1930",
+  "payload_regular_files": 552,
+  "inventory_regular_files": 1,
+  "root_acceptance_sha256": "cb0158526b8df899e2a3af4f14c889d678f10c2788c31dc870ceab9a71789635",
+  "product": "79385b75a3fb0287f9cc545eb756ee8923e46583",
+  "native_targets": 391,
+  "native_totals": [
+    3805,
+    0,
+    98
+  ],
+  "native_exact_gates": 60,
+  "native_adjacent_gates": 9,
+  "own_ci_run": "39200895508",
+  "own_ci_exact_gates_each_seed": 105,
+  "all_named_results_each_seed": 3903,
+  "source_union": 5242,
+  "main_specs_strict": 18,
+  "all_items_strict": 384,
+  "scope": "Current product native/own-CI/build binding and actual main spec synchronization only. Clean-main audit preparation is unexecuted tooling; post-documentation Git state is recorded separately."
+}
