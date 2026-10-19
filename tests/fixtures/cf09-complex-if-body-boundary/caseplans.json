@@ -1,0 +1,620 @@
+{
+  "schema": "test-break-in-complex-if-source-caseplans-v1",
+  "source_pins": {
+    "TestBreakInComplexIf": {
+      "path": "/private/tmp/jarde-testbreakincomplexif-source-plan-luna-v2-20261019/upstream/TestBreakInComplexIf.java",
+      "bytes": 1533,
+      "sha256": "8e31f1cbe056fee54e43bab414f1c3c5ad19803497a80844c20a1d5f50226d4f"
+    }
+  },
+  "case_plans": {
+    "TestBreakInComplexIf": {
+      "cases": [
+        {
+          "id": "source-check-first-map",
+          "input": {
+            "mapX": 2,
+            "map": {
+              "3": {
+                "x": 100,
+                "y": 100
+              },
+              "4": {
+                "x": 60,
+                "y": 100
+              }
+            }
+          },
+          "expected": {
+            "exception": "none",
+            "return": 3,
+            "stdout": ""
+          },
+          "purpose": "Original check() first assertion: two successful entries then missing key 5."
+        },
+        {
+          "id": "source-check-complex-break",
+          "input": {
+            "mapX": 2,
+            "map": {
+              "3": {
+                "x": 100,
+                "y": 100
+              },
+              "4": {
+                "x": 60,
+                "y": 0
+              },
+              "5": {
+                "x": 60,
+                "y": 100
+              }
+            }
+          },
+          "expected": {
+            "exception": "none",
+            "return": 2,
+            "stdout": ""
+          },
+          "purpose": "Original check() second assertion; y mismatch at 4 must break before valid key 5."
+        },
+        {
+          "id": "null-point-short-circuit",
+          "input": {
+            "mapX": 2,
+            "map": {
+              "3": null,
+              "4": {
+                "x": 1,
+                "y": 100
+              }
+            }
+          },
+          "expected": {
+            "exception": "none",
+            "return": 1,
+            "stdout": ""
+          },
+          "purpose": "Null Point should satisfy tile==null and avoid dereferencing tile.y."
+        },
+        {
+          "id": "missing-first-key",
+          "input": {
+            "mapX": 2,
+            "map": {}
+          },
+          "expected": {
+            "exception": "none",
+            "return": 1,
+            "stdout": ""
+          },
+          "purpose": "Missing map entry follows the same null branch on first iteration."
+        },
+        {
+          "id": "last-allowed-index-99",
+          "input": {
+            "mapX": 98,
+            "map": {
+              "99": {
+                "x": 0,
+                "y": 100
+              }
+            }
+          },
+          "expected": {
+            "exception": "none",
+            "return": 2,
+            "stdout": ""
+          },
+          "purpose": "Visits x=99, increments once, then strict x<100 ends the loop."
+        },
+        {
+          "id": "exclusive-upper-bound-does-not-dereference-map",
+          "input": {
+            "mapX": 99,
+            "map": null
+          },
+          "expected": {
+            "exception": "none",
+            "return": 1,
+            "stdout": ""
+          },
+          "purpose": "Start is 100 so body/map access is skipped; null receiver is never touched."
+        },
+        {
+          "id": "null-map-in-range",
+          "input": {
+            "mapX": 98,
+            "map": null
+          },
+          "expected": {
+            "exception": "java.lang.NullPointerException",
+            "return": null,
+            "stdout": ""
+          },
+          "purpose": "Start is 99, so first map.get dereference throws before length changes."
+        },
+        {
+          "id": "bounded-full-traversal",
+          "input": {
+            "mapX": 0,
+            "map": {
+              "1": {
+                "x": 1,
+                "y": 100
+              },
+              "10": {
+                "x": 10,
+                "y": 100
+              },
+              "11": {
+                "x": 11,
+                "y": 100
+              },
+              "12": {
+                "x": 12,
+                "y": 100
+              },
+              "13": {
+                "x": 13,
+                "y": 100
+              },
+              "14": {
+                "x": 14,
+                "y": 100
+              },
+              "15": {
+                "x": 15,
+                "y": 100
+              },
+              "16": {
+                "x": 16,
+                "y": 100
+              },
+              "17": {
+                "x": 17,
+                "y": 100
+              },
+              "18": {
+                "x": 18,
+                "y": 100
+              },
+              "19": {
+                "x": 19,
+                "y": 100
+              },
+              "2": {
+                "x": 2,
+                "y": 100
+              },
+              "20": {
+                "x": 20,
+                "y": 100
+              },
+              "21": {
+                "x": 21,
+                "y": 100
+              },
+              "22": {
+                "x": 22,
+                "y": 100
+              },
+              "23": {
+                "x": 23,
+                "y": 100
+              },
+              "24": {
+                "x": 24,
+                "y": 100
+              },
+              "25": {
+                "x": 25,
+                "y": 100
+              },
+              "26": {
+                "x": 26,
+                "y": 100
+              },
+              "27": {
+                "x": 27,
+                "y": 100
+              },
+              "28": {
+                "x": 28,
+                "y": 100
+              },
+              "29": {
+                "x": 29,
+                "y": 100
+              },
+              "3": {
+                "x": 3,
+                "y": 100
+              },
+              "30": {
+                "x": 30,
+                "y": 100
+              },
+              "31": {
+                "x": 31,
+                "y": 100
+              },
+              "32": {
+                "x": 32,
+                "y": 100
+              },
+              "33": {
+                "x": 33,
+                "y": 100
+              },
+              "34": {
+                "x": 34,
+                "y": 100
+              },
+              "35": {
+                "x": 35,
+                "y": 100
+              },
+              "36": {
+                "x": 36,
+                "y": 100
+              },
+              "37": {
+                "x": 37,
+                "y": 100
+              },
+              "38": {
+                "x": 38,
+                "y": 100
+              },
+              "39": {
+                "x": 39,
+                "y": 100
+              },
+              "4": {
+                "x": 4,
+                "y": 100
+              },
+              "40": {
+                "x": 40,
+                "y": 100
+              },
+              "41": {
+                "x": 41,
+                "y": 100
+              },
+              "42": {
+                "x": 42,
+                "y": 100
+              },
+              "43": {
+                "x": 43,
+                "y": 100
+              },
+              "44": {
+                "x": 44,
+                "y": 100
+              },
+              "45": {
+                "x": 45,
+                "y": 100
+              },
+              "46": {
+                "x": 46,
+                "y": 100
+              },
+              "47": {
+                "x": 47,
+                "y": 100
+              },
+              "48": {
+                "x": 48,
+                "y": 100
+              },
+              "49": {
+                "x": 49,
+                "y": 100
+              },
+              "5": {
+                "x": 5,
+                "y": 100
+              },
+              "50": {
+                "x": 50,
+                "y": 100
+              },
+              "51": {
+                "x": 51,
+                "y": 100
+              },
+              "52": {
+                "x": 52,
+                "y": 100
+              },
+              "53": {
+                "x": 53,
+                "y": 100
+              },
+              "54": {
+                "x": 54,
+                "y": 100
+              },
+              "55": {
+                "x": 55,
+                "y": 100
+              },
+              "56": {
+                "x": 56,
+                "y": 100
+              },
+              "57": {
+                "x": 57,
+                "y": 100
+              },
+              "58": {
+                "x": 58,
+                "y": 100
+              },
+              "59": {
+                "x": 59,
+                "y": 100
+              },
+              "6": {
+                "x": 6,
+                "y": 100
+              },
+              "60": {
+                "x": 60,
+                "y": 100
+              },
+              "61": {
+                "x": 61,
+                "y": 100
+              },
+              "62": {
+                "x": 62,
+                "y": 100
+              },
+              "63": {
+                "x": 63,
+                "y": 100
+              },
+              "64": {
+                "x": 64,
+                "y": 100
+              },
+              "65": {
+                "x": 65,
+                "y": 100
+              },
+              "66": {
+                "x": 66,
+                "y": 100
+              },
+              "67": {
+                "x": 67,
+                "y": 100
+              },
+              "68": {
+                "x": 68,
+                "y": 100
+              },
+              "69": {
+                "x": 69,
+                "y": 100
+              },
+              "7": {
+                "x": 7,
+                "y": 100
+              },
+              "70": {
+                "x": 70,
+                "y": 100
+              },
+              "71": {
+                "x": 71,
+                "y": 100
+              },
+              "72": {
+                "x": 72,
+                "y": 100
+              },
+              "73": {
+                "x": 73,
+                "y": 100
+              },
+              "74": {
+                "x": 74,
+                "y": 100
+              },
+              "75": {
+                "x": 75,
+                "y": 100
+              },
+              "76": {
+                "x": 76,
+                "y": 100
+              },
+              "77": {
+                "x": 77,
+                "y": 100
+              },
+              "78": {
+                "x": 78,
+                "y": 100
+              },
+              "79": {
+                "x": 79,
+                "y": 100
+              },
+              "8": {
+                "x": 8,
+                "y": 100
+              },
+              "80": {
+                "x": 80,
+                "y": 100
+              },
+              "81": {
+                "x": 81,
+                "y": 100
+              },
+              "82": {
+                "x": 82,
+                "y": 100
+              },
+              "83": {
+                "x": 83,
+                "y": 100
+              },
+              "84": {
+                "x": 84,
+                "y": 100
+              },
+              "85": {
+                "x": 85,
+                "y": 100
+              },
+              "86": {
+                "x": 86,
+                "y": 100
+              },
+              "87": {
+                "x": 87,
+                "y": 100
+              },
+              "88": {
+                "x": 88,
+                "y": 100
+              },
+              "89": {
+                "x": 89,
+                "y": 100
+              },
+              "9": {
+                "x": 9,
+                "y": 100
+              },
+              "90": {
+                "x": 90,
+                "y": 100
+              },
+              "91": {
+                "x": 91,
+                "y": 100
+              },
+              "92": {
+                "x": 92,
+                "y": 100
+              },
+              "93": {
+                "x": 93,
+                "y": 100
+              },
+              "94": {
+                "x": 94,
+                "y": 100
+              },
+              "95": {
+                "x": 95,
+                "y": 100
+              },
+              "96": {
+                "x": 96,
+                "y": 100
+              },
+              "97": {
+                "x": 97,
+                "y": 100
+              },
+              "98": {
+                "x": 98,
+                "y": 100
+              },
+              "99": {
+                "x": 99,
+                "y": 100
+              }
+            }
+          },
+          "expected": {
+            "exception": "none",
+            "return": 100,
+            "stdout": ""
+          },
+          "purpose": "Exactly x=1..99 pass and each increments length; next condition x=100 exits."
+        },
+        {
+          "id": "wrapped-start-breaks-immediately",
+          "input": {
+            "mapX": 2147483647,
+            "map": {
+              "-2147483648": {
+                "x": 17,
+                "y": 100
+              },
+              "-2147483647": {
+                "x": 18,
+                "y": 0
+              }
+            }
+          },
+          "expected": {
+            "exception": "none",
+            "return": 2,
+            "stdout": "",
+            "iterations": 2
+          },
+          "purpose": "mapX+1 wraps to Integer.MIN_VALUE. The first value matches and increments length; the next key is present with y=0, so the condition breaks after exactly two iterations. This distinguishes overflow traversal from a wrong-key/missing-key break.",
+          "input_snapshot": {
+            "mapX": 2147483647,
+            "map_entries_in_insertion_order": [
+              {
+                "key": "-2147483648",
+                "point": {
+                  "x": 17,
+                  "y": 100
+                }
+              },
+              {
+                "key": "-2147483647",
+                "point": {
+                  "x": 18,
+                  "y": 0
+                }
+              }
+            ]
+          },
+          "steps": [
+            {
+              "iteration": 1,
+              "x": -2147483648,
+              "key": "-2147483648",
+              "point_y": 100,
+              "result": "length increments from 1 to 2"
+            },
+            {
+              "iteration": 2,
+              "x": -2147483647,
+              "key": "-2147483647",
+              "point_y": 0,
+              "result": "break before length increment; return 2"
+            }
+          ]
+        }
+      ],
+      "declared_nested_methods": [
+        {
+          "name": "test",
+          "descriptor": "(Ljava/util/Map;I)I"
+        },
+        {
+          "name": "check",
+          "descriptor": "()V"
+        }
+      ],
+      "fields": "derive from physical original class; do not guess synthetic members",
+      "outer": "retain complete outer/JUnit source and never invoke it"
+    }
+  }
+}

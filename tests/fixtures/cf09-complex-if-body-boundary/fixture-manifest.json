@@ -1,0 +1,819 @@
+{
+  "accepted_ir_probe_review": {
+    "path": "/private/tmp/jarde-testbreakincomplexif-ir-probe-root-v2-20261019/root-review.json",
+    "sha256": "8a202ac42dafba9901afc9c3da0aacda3ef811034a1c49219ce573986a8a7037"
+  },
+  "fixture_files": [
+    {
+      "bytes": 2348,
+      "path": "README.md",
+      "sha256": "9a298a5c56e5e6881a31157962068dccabd45838a22219b8605a489518f21421"
+    },
+    {
+      "bytes": 14942,
+      "path": "caseplans.json",
+      "sha256": "732d70aad23c295762314fe165692520a0eb1f54fe93dbfd1b07c158331e5ae8"
+    },
+    {
+      "bytes": 845,
+      "path": "debug/class/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point.class",
+      "sha256": "f814a49598be5fdb056562ce27b0991c19429cd18e41fbc90fdc65d4e3b53714"
+    },
+    {
+      "bytes": 2210,
+      "path": "debug/class/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls.class",
+      "sha256": "bb77f87c9a621de2deb8c439e9270a76813445aa77564e547001fb3237ab3a0f"
+    },
+    {
+      "bytes": 1352,
+      "path": "debug/class/jadx/tests/integration/loops/TestBreakInComplexIf.class",
+      "sha256": "ec91386927914eaf1242d6748388f8455ee60cfd67fc38aab3ed04daafe09a42"
+    },
+    {
+      "bytes": 5031,
+      "path": "debug-plain.jar",
+      "sha256": "a8cb0764b9bc9c6339d4ebda782c809b2e00db9558e4c08dabb1bd93db338a5b"
+    },
+    {
+      "bytes": 8368,
+      "path": "driver/TestBreakInComplexIfDriver.java",
+      "sha256": "98419c8b279935d0b3f9bed1fb1a70a773c6cc19c80fc138d91cd9bf0fd5a1cf"
+    },
+    {
+      "bytes": 11357,
+      "path": "licenses/JADX-LICENSE",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "bytes": 10658,
+      "path": "licenses/JADX-NOTICE",
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365"
+    },
+    {
+      "bytes": 610,
+      "path": "no-debug/class/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point.class",
+      "sha256": "33724d27f4cd8f478fbcaa49370f0bb80582e81d97046a3b3b410b11c35f4fa1"
+    },
+    {
+      "bytes": 1519,
+      "path": "no-debug/class/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls.class",
+      "sha256": "b5980efce5b934a5d12851209ab3ad3a5a4a89c5cadc6797087dd8357704abb8"
+    },
+    {
+      "bytes": 1081,
+      "path": "no-debug/class/jadx/tests/integration/loops/TestBreakInComplexIf.class",
+      "sha256": "b5777d52ab19f0ebf2b512266e1e11cde89220f7ff401d71e647876661671e61"
+    },
+    {
+      "bytes": 3834,
+      "path": "no-debug-plain.jar",
+      "sha256": "3fe1724097acea59387b413d2e2fdc2b5e8b841d664a293c9b55871cbe339f99"
+    },
+    {
+      "bytes": 389,
+      "path": "runtime-bound-cwd.py",
+      "sha256": "bc917ec08e07ed462c18958f9a0d3b064b7d5bba3adc5fa41d9db49ff6c3de46"
+    },
+    {
+      "bytes": 1533,
+      "path": "upstream/TestBreakInComplexIf.java",
+      "sha256": "8e31f1cbe056fee54e43bab414f1c3c5ad19803497a80844c20a1d5f50226d4f"
+    },
+    {
+      "path": "controls/HeaderBodyBoundaryControls.class",
+      "bytes": 2085,
+      "sha256": "c1d2c819c8eb659afba3ca15380eeba9cf632179519100d1965a9eb7ec40bf3d"
+    },
+    {
+      "path": "controls/HeaderBodyBoundaryControls.java",
+      "bytes": 1536,
+      "sha256": "5dd21ba36d3dddad9a61268f2273c478b24f7f96deb2cc4e6fa9f1bc8af7cd44"
+    },
+    {
+      "path": "controls/root-compile-receipt.json",
+      "bytes": 2366,
+      "sha256": "c7ed1c22e2b2608c6398cc4b611a5b9b5b33948084640b260ba9153cd87fff7b"
+    }
+  ],
+  "planning": {
+    "delta_spec_sha256": "5cff81306dd2b0d152862e9b1ff94b8662de219a103da365d87958d97fcdfb75",
+    "design_sha256": "076e85934c3729db1c569b44c6a64db3fb7bc3a04f572af1d81fa95819b61dfa",
+    "proposal_sha256": "15ffcae749d30a9b26adb15b3c0e521a820c9b0b9d5b1be87c723f9f0663d1bc",
+    "tasks_sha256": "a2f8916133b19436d573dc978dc18687237e0addffb88f81ce187f2b91070ce2"
+  },
+  "profiles": {
+    "debug": {
+      "class_tree": {
+        "jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point.class": {
+          "bytes": 845,
+          "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point.class",
+          "sha256": "f814a49598be5fdb056562ce27b0991c19429cd18e41fbc90fdc65d4e3b53714"
+        },
+        "jadx/tests/integration/loops/TestBreakInComplexIf$TestCls.class": {
+          "bytes": 2210,
+          "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls.class",
+          "sha256": "bb77f87c9a621de2deb8c439e9270a76813445aa77564e547001fb3237ab3a0f"
+        },
+        "jadx/tests/integration/loops/TestBreakInComplexIf.class": {
+          "bytes": 1352,
+          "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf.class",
+          "sha256": "ec91386927914eaf1242d6748388f8455ee60cfd67fc38aab3ed04daafe09a42"
+        }
+      },
+      "outer_facts": {
+        "access": 33,
+        "attributes": [
+          "InnerClasses",
+          "SourceFile"
+        ],
+        "bytes": 1352,
+        "class_name": "jadx/tests/integration/loops/TestBreakInComplexIf",
+        "fields": [],
+        "major": 52,
+        "methods": [
+          {
+            "access": 1,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                4
+              ],
+              "code_hex": "2ab70001b1",
+              "code_length": 5,
+              "max_locals": 1,
+              "max_stack": 1,
+              "rows": []
+            },
+            "descriptor": "()V",
+            "index": 0,
+            "name": "<init>"
+          },
+          {
+            "access": 1,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                3,
+                6,
+                9,
+                12,
+                14,
+                17,
+                19,
+                22,
+                23
+              ],
+              "code_hex": "2a1207b60009b8000fb60015121bb6001d1223b6001d57b1",
+              "code_length": 24,
+              "max_locals": 1,
+              "max_stack": 2,
+              "rows": []
+            },
+            "descriptor": "()V",
+            "index": 1,
+            "name": "test"
+          },
+          {
+            "access": 1,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                4,
+                5,
+                7,
+                10,
+                13,
+                16,
+                18,
+                21,
+                22
+              ],
+              "code_hex": "2ab600252a1207b60009b8000fb600151223b6001d57b1",
+              "code_length": 23,
+              "max_locals": 1,
+              "max_stack": 2,
+              "rows": []
+            },
+            "descriptor": "()V",
+            "index": 2,
+            "name": "testNoDebug"
+          }
+        ],
+        "minor": 0,
+        "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf.class",
+        "sha256": "ec91386927914eaf1242d6748388f8455ee60cfd67fc38aab3ed04daafe09a42"
+      },
+      "plain_jar": {
+        "bytes": 5031,
+        "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/debug-full-classes.jar",
+        "sha256": "a8cb0764b9bc9c6339d4ebda782c809b2e00db9558e4c08dabb1bd93db338a5b"
+      },
+      "point_facts": {
+        "access": 32,
+        "attributes": [
+          "InnerClasses",
+          "SourceFile"
+        ],
+        "bytes": 845,
+        "class_name": "jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point",
+        "fields": [
+          [
+            "x",
+            "I",
+            17
+          ],
+          [
+            "y",
+            "I",
+            17
+          ],
+          [
+            "this$0",
+            "Ljadx/tests/integration/loops/TestBreakInComplexIf$TestCls;",
+            4112
+          ]
+        ],
+        "major": 52,
+        "methods": [
+          {
+            "access": 0,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                2,
+                5,
+                6,
+                9,
+                10,
+                11,
+                14,
+                15,
+                16,
+                19
+              ],
+              "code_hex": "2a2bb500012ab700072a1cb5000d2a1db50011b1",
+              "code_length": 20,
+              "max_locals": 4,
+              "max_stack": 2,
+              "rows": []
+            },
+            "descriptor": "(Ljadx/tests/integration/loops/TestBreakInComplexIf$TestCls;II)V",
+            "index": 0,
+            "name": "<init>"
+          }
+        ],
+        "minor": 0,
+        "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point.class",
+        "sha256": "f814a49598be5fdb056562ce27b0991c19429cd18e41fbc90fdc65d4e3b53714"
+      },
+      "target_facts": {
+        "access": 33,
+        "attributes": [
+          "InnerClasses",
+          "SourceFile"
+        ],
+        "bytes": 2210,
+        "class_name": "jadx/tests/integration/loops/TestBreakInComplexIf$TestCls",
+        "fields": [],
+        "major": 52,
+        "methods": [
+          {
+            "access": 1,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                4
+              ],
+              "code_hex": "2ab70001b1",
+              "code_length": 5,
+              "max_locals": 1,
+              "max_stack": 1,
+              "rows": []
+            },
+            "descriptor": "()V",
+            "index": 0,
+            "name": "<init>"
+          },
+          {
+            "access": 2,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                7,
+                9,
+                11,
+                14,
+                15,
+                18,
+                19,
+                22,
+                24,
+                27,
+                29,
+                32,
+                35,
+                40,
+                43,
+                45,
+                47,
+                50,
+                52,
+                55,
+                57,
+                60,
+                63,
+                66,
+                69,
+                72,
+                73
+              ],
+              "code_hex": "043e1c0460360415041064a2003d2bbb000759b700091504b6000a120eb60010b60013b900170200c0001d3a051905c600191905b4001f10649f0006a7000c840301840401a7ffc21dac",
+              "code_length": 74,
+              "max_locals": 6,
+              "max_stack": 3,
+              "rows": []
+            },
+            "descriptor": "(Ljava/util/Map;I)I",
+            "index": 1,
+            "name": "test"
+          },
+          {
+            "access": 1,
+            "code": {
+              "bcis": [
+                0,
+                3,
+                4,
+                7,
+                8,
+                9,
+                11,
+                14,
+                15,
+                16,
+                18,
+                20,
+                23,
+                28,
+                29,
+                30,
+                32,
+                35,
+                36,
+                37,
+                39,
+                41,
+                44,
+                49,
+                50,
+                51,
+                52,
+                53,
+                56,
+                59,
+                60,
+                63,
+                64,
+                67,
+                68,
+                71,
+                72,
+                73,
+                75,
+                78,
+                79,
+                80,
+                82,
+                84,
+                87,
+                92,
+                93,
+                94,
+                96,
+                99,
+                100,
+                101,
+                103,
+                104,
+                107,
+                112,
+                113,
+                114,
+                116,
+                119,
+                120,
+                121,
+                123,
+                125,
+                128,
+                133,
+                134,
+                135,
+                136,
+                137,
+                140,
+                143,
+                144,
+                147,
+                148
+              ],
+              "code_hex": "bb002359b700254c2b1226bb001d592a10641064b70028b9002b0300572b122fbb001d592a103c1064b70028b9002b0300572a2b05b70031b8003706b6003d57bb002359b700254d2c1226bb001d592a10641064b70028b9002b0300572c122fbb001d592a103c03b70028b9002b0300572c1242bb001d592a103c1064b70028b9002b0300572a2c05b70031b8003705b6003d57b1",
+              "code_length": 149,
+              "max_locals": 3,
+              "max_stack": 7,
+              "rows": []
+            },
+            "descriptor": "()V",
+            "index": 2,
+            "name": "check"
+          }
+        ],
+        "minor": 0,
+        "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls.class",
+        "sha256": "bb77f87c9a621de2deb8c439e9270a76813445aa77564e547001fb3237ab3a0f"
+      }
+    },
+    "no-debug": {
+      "class_tree": {
+        "jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point.class": {
+          "bytes": 610,
+          "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/no-debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point.class",
+          "sha256": "33724d27f4cd8f478fbcaa49370f0bb80582e81d97046a3b3b410b11c35f4fa1"
+        },
+        "jadx/tests/integration/loops/TestBreakInComplexIf$TestCls.class": {
+          "bytes": 1519,
+          "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/no-debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls.class",
+          "sha256": "b5980efce5b934a5d12851209ab3ad3a5a4a89c5cadc6797087dd8357704abb8"
+        },
+        "jadx/tests/integration/loops/TestBreakInComplexIf.class": {
+          "bytes": 1081,
+          "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/no-debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf.class",
+          "sha256": "b5777d52ab19f0ebf2b512266e1e11cde89220f7ff401d71e647876661671e61"
+        }
+      },
+      "outer_facts": {
+        "access": 33,
+        "attributes": [
+          "InnerClasses"
+        ],
+        "bytes": 1081,
+        "class_name": "jadx/tests/integration/loops/TestBreakInComplexIf",
+        "fields": [],
+        "major": 52,
+        "methods": [
+          {
+            "access": 1,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                4
+              ],
+              "code_hex": "2ab70001b1",
+              "code_length": 5,
+              "max_locals": 1,
+              "max_stack": 1,
+              "rows": []
+            },
+            "descriptor": "()V",
+            "index": 0,
+            "name": "<init>"
+          },
+          {
+            "access": 1,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                3,
+                6,
+                9,
+                12,
+                14,
+                17,
+                19,
+                22,
+                23
+              ],
+              "code_hex": "2a1207b60009b8000fb60015121bb6001d1223b6001d57b1",
+              "code_length": 24,
+              "max_locals": 1,
+              "max_stack": 2,
+              "rows": []
+            },
+            "descriptor": "()V",
+            "index": 1,
+            "name": "test"
+          },
+          {
+            "access": 1,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                4,
+                5,
+                7,
+                10,
+                13,
+                16,
+                18,
+                21,
+                22
+              ],
+              "code_hex": "2ab600252a1207b60009b8000fb600151223b6001d57b1",
+              "code_length": 23,
+              "max_locals": 1,
+              "max_stack": 2,
+              "rows": []
+            },
+            "descriptor": "()V",
+            "index": 2,
+            "name": "testNoDebug"
+          }
+        ],
+        "minor": 0,
+        "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/no-debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf.class",
+        "sha256": "b5777d52ab19f0ebf2b512266e1e11cde89220f7ff401d71e647876661671e61"
+      },
+      "plain_jar": {
+        "bytes": 3834,
+        "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/no-debug-full-classes.jar",
+        "sha256": "3fe1724097acea59387b413d2e2fdc2b5e8b841d664a293c9b55871cbe339f99"
+      },
+      "point_facts": {
+        "access": 32,
+        "attributes": [
+          "InnerClasses"
+        ],
+        "bytes": 610,
+        "class_name": "jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point",
+        "fields": [
+          [
+            "x",
+            "I",
+            17
+          ],
+          [
+            "y",
+            "I",
+            17
+          ],
+          [
+            "this$0",
+            "Ljadx/tests/integration/loops/TestBreakInComplexIf$TestCls;",
+            4112
+          ]
+        ],
+        "major": 52,
+        "methods": [
+          {
+            "access": 0,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                2,
+                5,
+                6,
+                9,
+                10,
+                11,
+                14,
+                15,
+                16,
+                19
+              ],
+              "code_hex": "2a2bb500012ab700072a1cb5000d2a1db50011b1",
+              "code_length": 20,
+              "max_locals": 4,
+              "max_stack": 2,
+              "rows": []
+            },
+            "descriptor": "(Ljadx/tests/integration/loops/TestBreakInComplexIf$TestCls;II)V",
+            "index": 0,
+            "name": "<init>"
+          }
+        ],
+        "minor": 0,
+        "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/no-debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point.class",
+        "sha256": "33724d27f4cd8f478fbcaa49370f0bb80582e81d97046a3b3b410b11c35f4fa1"
+      },
+      "target_facts": {
+        "access": 33,
+        "attributes": [
+          "InnerClasses"
+        ],
+        "bytes": 1519,
+        "class_name": "jadx/tests/integration/loops/TestBreakInComplexIf$TestCls",
+        "fields": [],
+        "major": 52,
+        "methods": [
+          {
+            "access": 1,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                4
+              ],
+              "code_hex": "2ab70001b1",
+              "code_length": 5,
+              "max_locals": 1,
+              "max_stack": 1,
+              "rows": []
+            },
+            "descriptor": "()V",
+            "index": 0,
+            "name": "<init>"
+          },
+          {
+            "access": 2,
+            "code": {
+              "bcis": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                7,
+                9,
+                11,
+                14,
+                15,
+                18,
+                19,
+                22,
+                24,
+                27,
+                29,
+                32,
+                35,
+                40,
+                43,
+                45,
+                47,
+                50,
+                52,
+                55,
+                57,
+                60,
+                63,
+                66,
+                69,
+                72,
+                73
+              ],
+              "code_hex": "043e1c0460360415041064a2003d2bbb000759b700091504b6000a120eb60010b60013b900170200c0001d3a051905c600191905b4001f10649f0006a7000c840301840401a7ffc21dac",
+              "code_length": 74,
+              "max_locals": 6,
+              "max_stack": 3,
+              "rows": []
+            },
+            "descriptor": "(Ljava/util/Map;I)I",
+            "index": 1,
+            "name": "test"
+          },
+          {
+            "access": 1,
+            "code": {
+              "bcis": [
+                0,
+                3,
+                4,
+                7,
+                8,
+                9,
+                11,
+                14,
+                15,
+                16,
+                18,
+                20,
+                23,
+                28,
+                29,
+                30,
+                32,
+                35,
+                36,
+                37,
+                39,
+                41,
+                44,
+                49,
+                50,
+                51,
+                52,
+                53,
+                56,
+                59,
+                60,
+                63,
+                64,
+                67,
+                68,
+                71,
+                72,
+                73,
+                75,
+                78,
+                79,
+                80,
+                82,
+                84,
+                87,
+                92,
+                93,
+                94,
+                96,
+                99,
+                100,
+                101,
+                103,
+                104,
+                107,
+                112,
+                113,
+                114,
+                116,
+                119,
+                120,
+                121,
+                123,
+                125,
+                128,
+                133,
+                134,
+                135,
+                136,
+                137,
+                140,
+                143,
+                144,
+                147,
+                148
+              ],
+              "code_hex": "bb002359b700254c2b1226bb001d592a10641064b70028b9002b0300572b122fbb001d592a103c1064b70028b9002b0300572a2b05b70031b8003706b6003d57bb002359b700254d2c1226bb001d592a10641064b70028b9002b0300572c122fbb001d592a103c03b70028b9002b0300572c1242bb001d592a103c1064b70028b9002b0300572a2c05b70031b8003705b6003d57b1",
+              "code_length": 149,
+              "max_locals": 3,
+              "max_stack": 7,
+              "rows": []
+            },
+            "descriptor": "()V",
+            "index": 2,
+            "name": "check"
+          }
+        ],
+        "minor": 0,
+        "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/no-debug/classes/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls.class",
+        "sha256": "b5980efce5b934a5d12851209ab3ad3a5a4a89c5cadc6797087dd8357704abb8"
+      }
+    }
+  },
+  "public_test": {
+    "bytes": 15480,
+    "execution": "not run; no Rust/toolchain commands permitted",
+    "path": "tests/p3_complex_if_body_boundary.rs",
+    "sha256": "78714a084572ed428cd0c7363fea451a2374d6a598b0d5f248994d3435cac12d"
+  },
+  "source_receipt": {
+    "path": "/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/execution.json",
+    "reported_status": "captured-pending-independent-review",
+    "sha256": "f3ef78d507b3e585b84c459fcbde577b1b4e0f864e2dbc74864782c1da19471e"
+  },
+  "status": "private_uncompiled_public_test_fixture_prep",
+  "target_fields": [],
+  "target_methods": [
+    [
+      "<init>",
+      "()V"
+    ],
+    [
+      "test",
+      "(Ljava/util/Map;I)I"
+    ],
+    [
+      "check",
+      "()V"
+    ]
+  ],
+  "target_owner": "jadx/tests/integration/loops/TestBreakInComplexIf$TestCls",
+  "root_integration": {
+    "public_test_preparation_sha256": "78714a084572ed428cd0c7363fea451a2374d6a598b0d5f248994d3435cac12d",
+    "control_scope": "root-authored compiled IR-only controls; no target execution",
+    "control_compile_receipt": "controls/root-compile-receipt.json",
+    "validation_status": "pending_actual_Rust_and_complete_comparison"
+  }
+}

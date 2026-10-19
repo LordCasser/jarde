@@ -19120,9 +19120,9 @@ impl Walker<'_> {
         Ok(Some((vec![loop_region], Some(loop_exit))))
     }
 
-    /// Proves a homogeneous short-circuit chain of header tests. A candidate chain that fails any
-    /// condition, effect or edge check is returned as a local loop refusal so the legacy
-    /// single-test path cannot publish a loop that loses one of its exits.
+    /// Proves a homogeneous short-circuit chain of header tests. Other failed condition, effect,
+    /// or edge checks remain local loop refusals. A narrowly proved later AND body boundary ends
+    /// the chain; a one-test result stays with the existing single-header path below.
     fn header_test_chain(
         &mut self,
         header: &CanonicalBlockId,
@@ -19199,6 +19199,18 @@ impl Walker<'_> {
                 let (test_bci, target, successors) =
                     match self.proved_header_test(header, &current, current_node)? {
                         Ok(facts) => facts,
+                        Err(reason)
+                            if current_node != header_node
+                                && self.later_and_body_boundary(
+                                    header_node,
+                                    &current,
+                                    current_node,
+                                    exit,
+                                    &reason,
+                                )? =>
+                        {
+                            break current;
+                        }
                         Err(reason) => return Ok(Err(reason)),
                     };
                 if successors.len() != 2 || !successors.contains(exit) {
@@ -19404,6 +19416,77 @@ impl Walker<'_> {
             body,
             exit,
         })))
+    }
+
+    /// A later AND candidate whose only failed evidence is the loop pass's declared
+    /// `StatementFree` precondition can be the first body block. The single-test loop path stays
+    /// with `header_tested_loop` below; this boundary only stops a proved multi-test prefix.
+    fn later_and_body_boundary(
+        &mut self,
+        header_node: usize,
+        block: &CanonicalBlockId,
+        node: usize,
+        exit: &CanonicalBlockId,
+        reason: &FallbackReason,
+    ) -> Result<bool, StopReason> {
+        if node == header_node
+            || !matches!(
+                reason,
+                FallbackReason::UnmetPrecondition {
+                    pass,
+                    requirement: crate::pass::Precondition::StatementFree,
+                    block_bci,
+                    ..
+                } if **pass == crate::pass::LOOP && *block_bci == block.bci()
+            )
+        {
+            return Ok(false);
+        }
+
+        poll(self.budget, Some(block.bci()))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(block.bci()),
+        )?;
+        let Some(test_bci) = self.terminal_bci(block) else {
+            return Ok(false);
+        };
+        poll(self.budget, Some(test_bci))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(test_bci),
+        )?;
+        let Some((_, target)) = self
+            .operations
+            .get(test_bci)
+            .and_then(Operation::comparison)
+        else {
+            return Ok(false);
+        };
+
+        // `proved_header_test` checks purity before it checks the decoded target. Before changing
+        // this candidate's role, recheck the same two normal successors and exact common exit from
+        // the existing view. The later body walk and predecessor closure remain unchanged.
+        charge(
+            self.budget,
+            CountedBudgetDimension::IrItems,
+            2,
+            Some(test_bci),
+        )?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            2,
+            Some(test_bci),
+        )?;
+        let successors = self.view.successor_ids(block);
+        Ok(successors.len() == 2
+            && successors.contains(exit)
+            && successors.iter().any(|successor| successor.bci() == target))
     }
 
     fn header_test_candidate(
@@ -31508,6 +31591,10 @@ mod switch_nonlocal_completion_tests;
 #[cfg(test)]
 #[path = "region/loop_arm_return_tests.rs"]
 mod loop_arm_return_tests;
+
+#[cfg(test)]
+#[path = "region/and_body_boundary_tests.rs"]
+mod and_body_boundary_tests;
 
 #[cfg(test)]
 #[path = "region/statementful_loop_header_tests.rs"]

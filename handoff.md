@@ -1,4 +1,16 @@
-## 2026-10-19 当前：DoWhileBreak已交付，ComplexIf完整基线已接受
+## 2026-10-19 当前：ComplexIf完整对照已接受，body边界片5/6
+
+本节优先，下方为历史。main起点acc8f381，当前产品修改尚未提交；finThrow5/5、nestedFin16/16及旧DoWhile等已完整交付，不重做。`bound-loop-header-chains-at-body-effects`5/6：同轮真实IR确认后续AND候选的StatementFree拒绝；Luna窄实现经root审查/覆盖控制集成，仅让已证AND前缀在后续带效果body处停止吸收并补successor/target核验，复用原body/If/gateway/LoopBreak与ownership。不改变初始header/OR/Stop，不新增Region/pass/CFG/ForHeader/Builder机制。
+
+入口 `openspec/changes/bound-loop-header-chains-at-body-effects/results/README.md`。最终CLI SHA52ff01f7794c962f2fbb9d809612c0cc371ef297de8cb32a29629323d168cbca，64,287,728B/0555；v5 Java lib521/0、fmt/Clippy/build通过，v4公开/周边/Reader/指纹成功由源码精确绑定复用。完整56命令/16 API/16全源码编译尝试，八JDK23成功、八JDK8原framework55/52边界；16隔离VM144观察全同原件，八错根拒绝。生成目标/Point完整源码保留，原件/JADX外围树精确复用。目标Structured8/8，map7/33→32/33，Point12/12；BCI69隐式回跳来源缺口单列债务。392payload归档SHA678997a9923042e2b29b41ff7a2969e2b2964e5668412e2a26d891c9cb02bde0逐bytes/mode复开，全部真实失败及修正保留。
+
+下一必须提交推送当前产品，再执行一次fresh workspace和本产品自身CI四jobs/52独立官方步骤/双seed全部具名结果并绑定Git/CLI/源码，随后主spec同步/strict/最终归档和clean-main。私有own-CI prep为 `/private/tmp/jarde-loop-header-body-boundary-own-ci-prep-luna-v1-20261019`，71native/116CI精确门仅为准备，尚未执行。不得将旧79385产品CI当本次验收。
+
+下一固定ComplexIf2完整原件基线已接受，原件/JADX各44观察同，旧目标fallback/map11/34；179payload已归档。当前最终CLI单API smoke显示Structured，完整候选对照仍由Luna私有准备，尚未接受2修复或扩大当前fixture。固定13原件四项已交付、ComplexIf待最终产品广验、ComplexIf2待完整候选比较、七项待完整原件对照；CF09/71/612仍partial。collector复制引入的路径/库存/诊断审计债务与BCI69映射债务均单列，不混入当前恢复补丁。
+
+root独占共享写/Git/network/Cargo/JDK/CLI，Luna只共享只读和私有tmp/Python-B；不建新branch/worktree。Cargo保持5GiB/target1GiB/defaultstack/每秒guard/finally exactclean，期间无共享写/Gitmutation/network/manualJDK或CLI。当前无活动工具链，target absent。
+
+## 2026-10-19 历史：DoWhileBreak已交付，ComplexIf完整基线已接受
 
 本节优先，下方均为历史时点。finThrow5/5、nestedFin16/16、continue6/6、数组减法4/4与本轮出口前缀6/6均已交付，不重做。产品 `79385b75a3fb0287f9cc545eb756ee8923e46583` 已推main；文档后继HEAD/远端与全部worktree状态以实际Git及外置 `/private/tmp/jarde-post-test-break-prefix-final-clean-main-root-v1-20261019/execution.json` 为准。该审计区分产品提交和文档HEAD，接续先核Git。
 

@@ -1,10 +1,8 @@
-## 2026-10-19 更新：DoWhileBreak完整交付，ComplexIf已定位真实缺口
+## 2026-10-19 更新：ComplexIf完整候选接受，产品广验待完成
 
-[出口前缀片6/6](../../changes/recover-proved-post-test-loop-break-prefixes/results/README.md)，产品79385/CLI8c91115：八API/16整类编译/32VM64观察同原、来源14/14；fresh391 targets/3805-0-98、60精确门与九相邻门；自身CI39200895508四jobs/52独立官方步骤、双seed105门与全部3903具名结果一致，5242来源绑定产品。552payload最终归档逐bytes/mode复开，主spec追加1requirement/4scenario，18主规范及384项strict通过。只补局部独占前缀证明，复用scope/gateway/If/LoopBreak，无新全局机制。
+[body边界片5/6](../../changes/bound-loop-header-chains-at-body-effects/results/README.md)：仅修后续AND带效果body归属，保留已有纯前缀与边/ownership/Stop证明，无新机制。冻结CLI52ff01f，Java lib521/0、公开/周边/Reader/指纹/fmt/Clippy接受。完整56命令、16目标/Point API、16全源码编译尝试；八JDK23成功、八JDK8原框架边界，16VM144观察全同原件，八错根拒绝。目标Structured8/8、map7/33→32/33，Point12/12。BCI69隐式回跳映射单列债务。392payload逐bytes/mode归档；一次fresh/本产品自身CI/Git绑定及最终主spec交付尚待，不冒称完成。
 
-[ComplexIf完整原件基线](../java-syntax-2026-10-19/cf09-testbreakincomplexif-original-root-v1/README.md)实际54命令接受：16目标/Point API、20整类编译尝试；原件/JADX各36观察同。Jarde八目标test回退，ctor/check/Point均structured；16Jarde完整编译失败，JDK23缺return与JDK8原始framework55/52边界分列，无候选VM。目标map7/33、Point12/12；八对default/all稳定，所有真实失败与诊断保留。399payload归档逐成员复开。下一真实同轮IR/实际ForHeader/测试区效果归属，私有probe准备好但未执行；尚无该项实现Spec，不据此造新机制。
-
-固定13原件现四项解决、一项ComplexIf真实gap、其余八项待完整对照。CF09/71/612保持partial；finThrow5/5、nestedFin16/16不重做。以下均为历史时点。
+[ComplexIf原件](../java-syntax-2026-10-19/cf09-testbreakincomplexif-original-root-v1/README.md)与[同轮IR](../../changes/bound-loop-header-chains-at-body-effects/results/same-run-ir-root-v1/README.md)均精确绑定复用。[ComplexIf2原件](../java-syntax-2026-10-19/cf09-testbreakincomplexif2-original-root-v1/README.md)原件/JADX各44观察同，旧目标八fallback/map11/34；当前候选仅单API smoke Structured，完整比较准备中，不能当交付。固定13原件四项已交付、ComplexIf待广验、ComplexIf2待完整候选比较、七项待完整原件对照。CF09/71/612仍partial。finThrow5/5、nestedFin16/16、DoWhile等已交付，不重做。以下均为历史时点。
 
 ## 2026-10-19 历史：Continue完整交付，DoWhileBreak已证真实缺口
 

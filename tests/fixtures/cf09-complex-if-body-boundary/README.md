@@ -1,0 +1,11 @@
+# CF09 TestBreakInComplexIf public-test preparation
+
+This private bundle preserves the complete accepted original inputs for the fixed `TestBreakInComplexIf` case. It is a preparation artifact only: the Rust test has not been compiled or executed, and none of these files have been added to the shared workspace.
+
+The fixture contains the exact debug and no-debug class trees from the completed original capture: the outer test class, `TestCls`, and its `Point` class. Each profile also contains the exact full plain JAR from the accepted capture. The original upstream source, finite case plan, parentless driver, bounded runtime wrapper, and the existing JADX license/notice are copied without edits. The private `fixture-manifest.json` lists every copied file and the accepted class inventories.
+
+The draft public test is `tests/p3_complex_if_body_boundary.rs`. It requests the complete `TestCls` class for standalone-class and plain-JAR inputs under default and all evidence. It requires the physical constructor, `test(Map,int)`, and `check()` members to remain structured, checks exact target identity, validates each emitted source-map origin against the target method and its physical Code, and compares default/all text and maps. It does not require every instruction to receive a source-map entry; the complete comparison matrix will report unmapped BCIs independently. Semantic assertions require one `.get(` expression, a null check before the guarded `.y` read, the constant bound, a break and the later increment path; it intentionally does not require a particular `for` versus `while` spelling. A separate low-output and pre-cancel path requires an explicit stop and no partial class text/body/map.
+
+The complete upstream source and driver are retained for reproducibility. The Point and outer classes are present in both trees and jars; this draft does not issue separate Point/outer class-source requests. No source was trimmed, rewritten, recompiled, or executed here.
+
+Source baseline receipt: `/private/tmp/jarde-testbreakincomplexif-baseline-root-v2-20261019/execution.json` (SHA256 recorded in the manifest). The root-accepted same-run IR review is also SHA-pinned there. The baseline receipt's own status is preserved verbatim; this prep does not claim generated-source, candidate-CLI, runtime, or final feature acceptance.
