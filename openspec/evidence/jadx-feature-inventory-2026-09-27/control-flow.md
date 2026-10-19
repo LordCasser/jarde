@@ -1,4 +1,12 @@
-## 2026-10-19 更新：原始Continue完整对照接受，待当前产品广验
+## 2026-10-19 更新：Continue完整交付，DoWhileBreak已证真实缺口
+
+[continue6/6](../../changes/recover-proved-loop-continue-ladder-joins/results/README.md)与[数组减法4/4](../../changes/recover-proved-int-array-subtract-updates/results/README.md)产品050：8API/16整类编译/32VM256观察全同原件、来源44/44；fresh390targets/3802-0-98，自身CI39193571868四jobs/52独立官方步骤/双seed102精确门及3900具名结果一致，5229来源并集绑定产品。两requirement/九scenario同步、384 strict通过；后续文档提交不冒称重跑产品CI。
+
+[BreakInLoop完整原件](../java-syntax-2026-10-19/cf09-testbreakinloop-original-root-v1/README.md)实际94命令接受，32VM160观察同原、来源26/26，现有机制足够。[DoWhileBreak完整原件](../java-syntax-2026-10-19/cf09-testdowhilebreak-original-root-v1/README.md)实际46命令，八API拒绝、16整类编译失败、无JardeVM；原件/JADX各八观察同。[新出口前缀片](../../changes/recover-proved-post-test-loop-break-prefixes/tasks.md)2/6，真实IR与精确恢复证据已接受；单块独占证明复用已有scope/gateway/LoopBreak，Luna私有实现与公开tests准备中，root尚未集成/运行。
+
+[固定13原件库存与当前证据](../java-syntax-2026-10-19/cf09-fixed-original-coverage-root-v1/README.md)中三项完整对照接受、一项DoWhile已定位gap+IR、另九项仍待完整对照，ComplexIf排在DoWhile后。CF09/71/612保持partial。以下均为历史时点。
+
+## 2026-10-19 历史：原始Continue完整对照接受，待当前产品广验
 
 [局部汇合5/6](../../changes/recover-proved-loop-continue-ladder-joins/results/README.md)及[独立数组减法3/4](../../changes/recover-proved-int-array-subtract-updates/results/README.md)共用最终CLI，8API/16整类编译/32VM256观察全同原件，16错根拒绝，目标map44/44。Luna窄实现经root实际审查/定向验收，无新Region或全局机制。全部失败及边界保留；fresh workspace/本产品自身CI/主spec同步待完成，CF09/71/612不关闭。以下旧状态为历史。
 

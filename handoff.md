@@ -1,4 +1,16 @@
-## 2026-10-19 当前：continue汇合5/6与数组减法3/4，完整对照接受
+## 2026-10-19 当前：continue与数组减法完整交付；DoWhile出口前缀2/6
+
+本节优先，下方均为历史。finThrow5/5、nestedFin16/16已交付，不重做。产品 `050cedbd255ffaddf9e51acf8d2ad52fe573519b` 已推main；continue片6/6、数组减法4/4。冻结CLI v4/v5逐字同64,065,312B，SHA `6c83ec82cd4c6caee86c08e7fefddc2fea675952f936c0e4aa3f295ed9be7fc6`，v5路径 `/private/tmp/jarde-continue-ladder-focused-root-v5-20261019/candidate-cli`。两片复用原局部join/LoopContinue与Array compound证明，无新Region/pass。
+
+完整72命令八API/16整类编译/32VM共256观察全部同原件，目标来源44/44。fresh一次390targets/102批/3802-0-98、57精确门与九邻近回归各一次；自身CI39193571868全部四jobs/52独立官方ZIP步骤、双seed各102精确门及全部3900具名结果一致。5229构建/native来源并集逐Git/bytes/mode绑定050。主spec精确同步两requirement/九scenario，18主spec与全部384项strict通过。入口 `openspec/changes/recover-proved-loop-continue-ladder-joins/results/README.md`；最终496payload归档SHA15cb04c357c994eca6ea40574932c9643a7e1b7da8969652b275248721da7f21逐bytes/mode复开。后续纯文档提交不称另跑产品CI；最终HEAD/远端/main及14aux以外置 `/private/tmp/jarde-continue-ladder-final-clean-main-root-v1-20261019/execution.json` 实际收据为准，接续先核Git。
+
+下一固定原件已实际推进：TestBreakInLoop现有机制足够，94命令、16整类编译/32VM160观察全同原，来源26/26。TestDoWhileBreak完整46命令暴露八API Fallback、16整类编译失败，无Jarde VM；原件/JADX各八观察同。两基线已逐字持久归档 `openspec/evidence/java-syntax-2026-10-19/cf09-test{breakinloop,dowhilebreak}-original-root-v1/`。
+
+`recover-proved-post-test-loop-break-prefixes` 已strict/apply ready、2/6。实际同轮IR1/0确认自然循环2/13、赋值出口前缀8→21、ForHeader=None、首gap13；精确恢复region原SHA19d21dd5…、探针移除/target absent，32payload+八目录归档SHA d841b5ba253bddafb72aebd97acf1bfddf895fe2a18bfcb6963fbf525206f5cc。新设计只证明一个独占单块语句前缀，末尾goto到原最终exit，复用已有scope/gateway/If/latch/LoopBreak。保持纯goto桥边界，不改LoopTarget元数据、自然集合或ForHeader；所有新扫描charge/poll，Stop传播。Luna `nl_baseline_audit` 私有task2.1实现、`typed_foreach_api_tests` 私有task2.2原始fixture/公开tests，尚未集成或运行，root须审实际patch/唯一owner/负例/预算后再执行。
+
+CF09固定13原件已有三项完整接受、一项DoWhile实际gap+IR、其余九项仍待完整原件对照；DoWhile完成后才是ComplexIf。CF09/71单元/612文件仍partial。root独占共享/Git/network/Cargo/JDK/CLI；Luna仅共享只读/新私有tmp/Python-B。Cargo仍5GiB余量、target1GiB、默认栈、每秒guard/finally exactclean，期间不共享写/Gitmutation/network/manualJDK或CLI，不建新worktree。当前生产region19d21dd5…/build4593b653…仍是050，无活动Cargo/target。
+
+## 2026-10-19 历史：continue汇合5/6与数组减法3/4，完整对照接受
 
 本节优先，下方均为历史。finThrow5/5、nestedFin16/16已交付，不重做。当前共享产品待提交：两片Luna实现经root架构与失败路径审查，复用既有局部join/LoopContinue和Array compound计划，无新全局机制。最终CLI v4/v5逐字相同64065312B/SHA6c83ec82cd4c6caee86c08e7fefddc2fea675952f936c0e4aa3f295ed9be7fc6；v5零源码变化构建已实际接受。
 
