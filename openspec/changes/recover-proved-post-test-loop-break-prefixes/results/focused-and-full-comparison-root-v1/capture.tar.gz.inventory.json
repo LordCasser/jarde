@@ -1,0 +1,2266 @@
+{
+  "excluded_external_inputs": [
+    {
+      "bytes": 64285120,
+      "input_label": "focused",
+      "mode": 365,
+      "reason": "External frozen current CLI; bytes/SHA/mode bound to accepted complete comparison, not copied as evidence.",
+      "relative_path": "candidate-cli",
+      "sha256": "8c91115a91a31b041ecaf53a2b964bb57606342d04b524035293ae0b7accd285",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/candidate-cli"
+    }
+  ],
+  "input_roots": [
+    {
+      "label": "impl-v1",
+      "path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v1-20261019"
+    },
+    {
+      "label": "impl-v2",
+      "path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v2-20261019"
+    },
+    {
+      "label": "architecture",
+      "path": "/private/tmp/jarde-post-test-break-prefix-architecture-review-root-v1-20261019"
+    },
+    {
+      "label": "public-prep",
+      "path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019"
+    },
+    {
+      "label": "fixture-root-review",
+      "path": "/private/tmp/jarde-post-test-break-prefix-fixture-review-root-v1-20261019"
+    },
+    {
+      "label": "format",
+      "path": "/private/tmp/jarde-post-test-break-prefix-format-root-v1-20261019"
+    },
+    {
+      "label": "fingerprint-plan",
+      "path": "/private/tmp/jarde-post-test-break-prefix-fingerprint-prep-root-v1-20261019"
+    },
+    {
+      "label": "fingerprint",
+      "path": "/private/tmp/jarde-post-test-break-prefix-fingerprint-root-v1-20261019"
+    },
+    {
+      "label": "focused-plan",
+      "path": "/private/tmp/jarde-post-test-break-prefix-focused-prep-root-v1-20261019"
+    },
+    {
+      "label": "focused",
+      "path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019"
+    },
+    {
+      "label": "matrix-prep-v1",
+      "path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v1-20261019"
+    },
+    {
+      "label": "matrix-prep-v2",
+      "path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v2-20261019"
+    },
+    {
+      "label": "matrix-prep-v3",
+      "path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019"
+    },
+    {
+      "label": "matrix-static-review-v2",
+      "path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-review-root-v2-20261019"
+    },
+    {
+      "label": "matrix-static-review-v3",
+      "path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-review-root-v3-20261019"
+    },
+    {
+      "label": "actual-preflight-failure",
+      "path": "/private/tmp/jarde-testdowhilebreak-final-matrix-launch-root-v1-20261019"
+    },
+    {
+      "label": "matrix",
+      "path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019"
+    }
+  ],
+  "matrix_binding": {
+    "accepted_root_marker": {
+      "bytes": 1531,
+      "mode": 420,
+      "path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/root-review.json",
+      "sha256": "a80ade77996ace1720dc23f538f00e5fa6351e107e0790ab693dd7486c942244"
+    },
+    "accepted_status_values": [
+      "root_accepted_full_do_while_break_comparison"
+    ],
+    "current_cli": {
+      "bytes": 64285120,
+      "mode": 365,
+      "path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/candidate-cli",
+      "sha256": "8c91115a91a31b041ecaf53a2b964bb57606342d04b524035293ae0b7accd285"
+    },
+    "execution_receipt": {
+      "bytes": 5781130,
+      "mode": 420,
+      "path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/execution.json",
+      "sha256": "2079b31760cf1ea987a35a57a565fc8a1997eab7fc0526c267d1a4e61db8f838"
+    },
+    "input_label": "matrix"
+  },
+  "members": [
+    {
+      "archive_path": "actual-preflight-failure/1.stderr.raw",
+      "bytes": 546,
+      "mode": 420,
+      "sha256": "46bd8d81def39d2aab9cbaebe715a438f88d070fd6a3b9cbc79bca173699692a",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-matrix-launch-root-v1-20261019/1.stderr.raw"
+    },
+    {
+      "archive_path": "actual-preflight-failure/1.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-matrix-launch-root-v1-20261019/1.stdout.raw"
+    },
+    {
+      "archive_path": "actual-preflight-failure/execution.json",
+      "bytes": 545,
+      "mode": 420,
+      "sha256": "6fe96f1cde6ad2510c8f23283d994ef742c599da08a8932886371f9f723027e6",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-matrix-launch-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "architecture/region.luna-v2.rs",
+      "bytes": 1301069,
+      "mode": 420,
+      "sha256": "138605b5fbb1a1471570abe508f596b92adb7b6ff517086eb9354ed1b4fc6e10",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-architecture-review-root-v1-20261019/region.luna-v2.rs"
+    },
+    {
+      "archive_path": "architecture/region.root-overlay.rs",
+      "bytes": 1301086,
+      "mode": 420,
+      "sha256": "c312f37bc65669c8575407e539be9c64919ec93db95dc12c869f06c5d7490eb0",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-architecture-review-root-v1-20261019/region.root-overlay.rs"
+    },
+    {
+      "archive_path": "architecture/review.json",
+      "bytes": 1179,
+      "mode": 420,
+      "sha256": "32beb1f6b8eb3d21106f37edb992b50012dc95a5b3596600f3ebf298a7e0b97e",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-architecture-review-root-v1-20261019/review.json"
+    },
+    {
+      "archive_path": "architecture/root-overlay.patch",
+      "bytes": 874,
+      "mode": 420,
+      "sha256": "9699e388419c43455f71bbb2da9ceda5b86601f5a549dfb511262b57bc16430e",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-architecture-review-root-v1-20261019/root-overlay.patch"
+    },
+    {
+      "archive_path": "archive-preparation/README.md",
+      "bytes": 3853,
+      "mode": 420,
+      "sha256": "65e660cb2102cfd74d1013d6215af23946071d57d83fd9ef93b7796566013797",
+      "source_path": "/private/tmp/jarde-continue-ladder-evidence-archive-prep-luna-v2-20261019/README.md"
+    },
+    {
+      "archive_path": "archive-preparation/input-manifest.json",
+      "bytes": 3986,
+      "mode": 420,
+      "sha256": "8d8bb9e220f9f65f5aa62abe2756efff2bf9203da50b04d90ce1af19ae280367",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-archive-manifest-root-v1-20261019/manifest.json"
+    },
+    {
+      "archive_path": "archive-preparation/pack.diff",
+      "bytes": 4905,
+      "mode": 420,
+      "sha256": "ee6144d71521d69be4abbb74a7bf3001679cf1c15126d05f4cabdd03fd4672fe",
+      "source_path": "/private/tmp/jarde-continue-ladder-evidence-archive-prep-luna-v2-20261019/pack.diff"
+    },
+    {
+      "archive_path": "archive-preparation/pack.py",
+      "bytes": 20147,
+      "mode": 420,
+      "sha256": "353f365cd0ff1343de41b9899ae2c91d2ce650776af2ae428d65311ff323974c",
+      "source_path": "/private/tmp/jarde-continue-ladder-evidence-archive-prep-luna-v2-20261019/pack.py"
+    },
+    {
+      "archive_path": "archive-preparation/pins.json",
+      "bytes": 7360,
+      "mode": 420,
+      "sha256": "fa54e4a580e039a45b53da3483ba7014eb5467cf96a20575184b0e068e9a483d",
+      "source_path": "/private/tmp/jarde-continue-ladder-evidence-archive-prep-luna-v2-20261019/pins.json"
+    },
+    {
+      "archive_path": "archive-preparation/schema.json",
+      "bytes": 1673,
+      "mode": 420,
+      "sha256": "88a7a181352a045690022e3510b58778d727063ccccf712488352a5d5a9bedca",
+      "source_path": "/private/tmp/jarde-continue-ladder-evidence-archive-prep-luna-v2-20261019/schema.json"
+    },
+    {
+      "archive_path": "fingerprint-plan/commands.json",
+      "bytes": 279,
+      "mode": 420,
+      "sha256": "d67a18182427e1e0944117aef20d816839d1e2351595d90e3b842d6a76c54629",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-fingerprint-prep-root-v1-20261019/commands.json"
+    },
+    {
+      "archive_path": "fingerprint/execution.json",
+      "bytes": 1602097,
+      "mode": 420,
+      "sha256": "e283f85b9301a365d8f38f0dc4d4b098394accba27651b2fe38cd8ddcb28624a",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-fingerprint-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "fingerprint/raw/1.stderr.raw",
+      "bytes": 2405,
+      "mode": 420,
+      "sha256": "75e1417229eeaa855a466130d8a6d591941dc40bc88a3633e58dd6d2c376caed",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-fingerprint-root-v1-20261019/raw/1.stderr.raw"
+    },
+    {
+      "archive_path": "fingerprint/raw/1.stdout.raw",
+      "bytes": 154,
+      "mode": 420,
+      "sha256": "c73a4cacff9c1a22c6761a9b8cf8df2367ea370ff9787791d0375c40bf9c84d7",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-fingerprint-root-v1-20261019/raw/1.stdout.raw"
+    },
+    {
+      "archive_path": "fingerprint/raw/2.stderr.raw",
+      "bytes": 39,
+      "mode": 420,
+      "sha256": "59db277cebd42b99afb93a9a868fe964b7c25a516542747a090e2230aef12c63",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-fingerprint-root-v1-20261019/raw/2.stderr.raw"
+    },
+    {
+      "archive_path": "fingerprint/raw/2.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-fingerprint-root-v1-20261019/raw/2.stdout.raw"
+    },
+    {
+      "archive_path": "fingerprint/root-review.json",
+      "bytes": 287,
+      "mode": 420,
+      "sha256": "c52f0d834d6f3505ed405f2beb0679896881968e28f621c133f5297e85397ca3",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-fingerprint-root-v1-20261019/root-review.json"
+    },
+    {
+      "archive_path": "fixture-root-review/class-facts.json",
+      "bytes": 5575,
+      "mode": 420,
+      "sha256": "6b8648803d7f02e43623eb517d6bce2abf5bbda69699720bea3194c5c5e5248d",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-fixture-review-root-v1-20261019/class-facts.json"
+    },
+    {
+      "archive_path": "fixture-root-review/review.json",
+      "bytes": 405,
+      "mode": 420,
+      "sha256": "d5507b9377a95772216c5df6ddbc1db3a5ce4ca16b0eef2c190546e258654dad",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-fixture-review-root-v1-20261019/review.json"
+    },
+    {
+      "archive_path": "focused-plan/commands.json",
+      "bytes": 2701,
+      "mode": 420,
+      "sha256": "1e30256348383b6451ac02a5eaacc835ea12b73a23ab5aad572a6dbbeeec21c8",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-prep-root-v1-20261019/commands.json"
+    },
+    {
+      "archive_path": "focused/execution.json",
+      "bytes": 1692796,
+      "mode": 420,
+      "sha256": "3c6e5845fbda171274083c10f4a6fc2c76d2297094768970b7d206ab9b0346e6",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "focused/raw/1.stderr.raw",
+      "bytes": 1459,
+      "mode": 420,
+      "sha256": "e7fe2f5a5b75a7c72f11ffea013c9c7346c61b3df9a04358e7325b8886c8d618",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/1.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/1.stdout.raw",
+      "bytes": 50074,
+      "mode": 420,
+      "sha256": "a4697c47bd398b74751c41b2ddbc8b62e10f61d581b1716c50a507a5e8513f70",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/1.stdout.raw"
+    },
+    {
+      "archive_path": "focused/raw/10.stderr.raw",
+      "bytes": 1008,
+      "mode": 420,
+      "sha256": "f5cdb225a6c874f79f6ce6ed87247aba73f73742721378707a9ad1ad7645fefd",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/10.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/10.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/10.stdout.raw"
+    },
+    {
+      "archive_path": "focused/raw/11.stderr.raw",
+      "bytes": 40,
+      "mode": 420,
+      "sha256": "9254b4cf57e60960b76e17be00529c078b3f31d8c1f66cd54070125f07da3617",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/11.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/11.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/11.stdout.raw"
+    },
+    {
+      "archive_path": "focused/raw/2.stderr.raw",
+      "bytes": 1547,
+      "mode": 420,
+      "sha256": "eb36005e9b1da7819d70ecf4ce50d4e7ad8e23752bab847654261524c807ebd8",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/2.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/2.stdout.raw",
+      "bytes": 289,
+      "mode": 420,
+      "sha256": "93475fcbc991b663dc024e8e3a4debab3376f2d6a73f80a10a5def94e1e5774e",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/2.stdout.raw"
+    },
+    {
+      "archive_path": "focused/raw/3.stderr.raw",
+      "bytes": 241,
+      "mode": 420,
+      "sha256": "3f50fd9d08eb9a93b4b45ac968614aa11a5445587afe06929b353f22c8f9d33b",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/3.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/3.stdout.raw",
+      "bytes": 270,
+      "mode": 420,
+      "sha256": "77c54a64bdd2f41960748e920c3cf192481c5031c507b9a14b9b2ad979be88da",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/3.stdout.raw"
+    },
+    {
+      "archive_path": "focused/raw/4.stderr.raw",
+      "bytes": 258,
+      "mode": 420,
+      "sha256": "50e2c901cde73cdfdf504cbf850be4ba4baa6b6182410ae40a2c06b1c793cf6e",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/4.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/4.stdout.raw",
+      "bytes": 1220,
+      "mode": 420,
+      "sha256": "74bae48b4cf54b03365fc4a30c63ead0385305ae7abd328bb53869f0f927095e",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/4.stdout.raw"
+    },
+    {
+      "archive_path": "focused/raw/5.stderr.raw",
+      "bytes": 252,
+      "mode": 420,
+      "sha256": "e2068dac8a623daaf3f32fe6ca4d27298d6cdc8f0e75155f7d62880bcd948059",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/5.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/5.stdout.raw",
+      "bytes": 901,
+      "mode": 420,
+      "sha256": "c0007546e14891d24e73b03b15fd6ff3bdaa234510c8dacda64efdd1ee4958c9",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/5.stdout.raw"
+    },
+    {
+      "archive_path": "focused/raw/6.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "a4f8c3b67a511aae6ae990fe11919b9919f300705a1f031e0a2ea9669ee5e933",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/6.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/6.stdout.raw",
+      "bytes": 211,
+      "mode": 420,
+      "sha256": "ba0b3e160eeebd3170d54c45f318c64568764d315aa4c91fb5c6e4a68c1d6c9d",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/6.stdout.raw"
+    },
+    {
+      "archive_path": "focused/raw/7.stderr.raw",
+      "bytes": 235,
+      "mode": 420,
+      "sha256": "1b78a5a3a24ebd0876048da2cf648521f78fdf563a026c675c4df4d5520d2804",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/7.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/7.stdout.raw",
+      "bytes": 565,
+      "mode": 420,
+      "sha256": "dc6a518e926395c477e6b27aa091d1036bd1531aea700963a2dd94fe44f36df9",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/7.stdout.raw"
+    },
+    {
+      "archive_path": "focused/raw/8.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/8.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/8.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/8.stdout.raw"
+    },
+    {
+      "archive_path": "focused/raw/9.stderr.raw",
+      "bytes": 2585,
+      "mode": 420,
+      "sha256": "e81b811e5b87535ad1128ff6ef3589ff7b286030fd17364776ea41cf2956e4f1",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/9.stderr.raw"
+    },
+    {
+      "archive_path": "focused/raw/9.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/raw/9.stdout.raw"
+    },
+    {
+      "archive_path": "focused/root-review.json",
+      "bytes": 1352,
+      "mode": 420,
+      "sha256": "7b430295e07cf3466109ff1fb4c9b1cd592aab037dde43c3fae22763d8085619",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/root-review.json"
+    },
+    {
+      "archive_path": "format/execution.json",
+      "bytes": 2060975,
+      "mode": 420,
+      "sha256": "81403154cb56119707f7954181ab8d348f2a46fdc63d44fa063a15b9511b707f",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-format-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "format/format.py",
+      "bytes": 2847,
+      "mode": 420,
+      "sha256": "52d19152016a8fefc7886a3d23af4d3dd756b750f5537952e80d5c710589f9f3",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-format-root-v1-20261019/format.py"
+    },
+    {
+      "archive_path": "format/raw/1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-format-root-v1-20261019/raw/1.stderr.raw"
+    },
+    {
+      "archive_path": "format/raw/1.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-format-root-v1-20261019/raw/1.stdout.raw"
+    },
+    {
+      "archive_path": "format/raw/2.stderr.raw",
+      "bytes": 34,
+      "mode": 420,
+      "sha256": "46bec2d095221d376eb64b03e4b991c1170ad3773ec9245b8095edab69f94927",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-format-root-v1-20261019/raw/2.stderr.raw"
+    },
+    {
+      "archive_path": "format/raw/2.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-format-root-v1-20261019/raw/2.stdout.raw"
+    },
+    {
+      "archive_path": "format/root-review.json",
+      "bytes": 277,
+      "mode": 420,
+      "sha256": "71e4a651c01f514d7558c05c30351bc85c8030e3d17b65d003c30ca88e08e3ba",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-format-root-v1-20261019/root-review.json"
+    },
+    {
+      "archive_path": "impl-v1/README.md",
+      "bytes": 3509,
+      "mode": 420,
+      "sha256": "335dcba75a8046686e8625094c251d1b5c1393590e77327b31765e47ae559601",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "impl-v1/changes.patch",
+      "bytes": 32749,
+      "mode": 420,
+      "sha256": "edc2e4546380b1475c9ff49d17d8f0a0bfe0619e7618d4c78bac5bdd1bf68a09",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v1-20261019/changes.patch"
+    },
+    {
+      "archive_path": "impl-v1/pins.json",
+      "bytes": 3879,
+      "mode": 420,
+      "sha256": "180aa6413b4ee758c1188b1240eee6f7df570b215c5f9616ea2b8b172264367a",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v1-20261019/pins.json"
+    },
+    {
+      "archive_path": "impl-v1/repo/crates/jarde-java/src/region.rs",
+      "bytes": 1292568,
+      "mode": 420,
+      "sha256": "700c443ae423f50b4d5155134093fde05225382a5afab10009c199fd3399fba2",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v1-20261019/repo/crates/jarde-java/src/region.rs"
+    },
+    {
+      "archive_path": "impl-v1/repo/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 677,
+      "mode": 420,
+      "sha256": "037e32820ff9cd17e4d00e9ce9d9c7d764df3d2065b07eb9d5ab0dfa809308b3",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v1-20261019/repo/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "impl-v1/repo/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 412,
+      "mode": 420,
+      "sha256": "151c8d3ad5d4e36c15daa50f12e6cdb10d6a04d90bd92bc05535cca80c6e140c",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v1-20261019/repo/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "impl-v1/unit-test.txt",
+      "bytes": 14831,
+      "mode": 420,
+      "sha256": "c20f0f46545a37d7c7afffcc79c78e5a551c4745db1883650e3f03774fa5e596",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v1-20261019/unit-test.txt"
+    },
+    {
+      "archive_path": "impl-v2/README.md",
+      "bytes": 3194,
+      "mode": 420,
+      "sha256": "10ed115526f69d138f2cf3878aa5746c736efc8ff7b3b174d4615cb416e83a19",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v2-20261019/README.md"
+    },
+    {
+      "archive_path": "impl-v2/base-region.rs",
+      "bytes": 1264790,
+      "mode": 420,
+      "sha256": "19d21dd5f17f48018a5d427a62971b1e4754f1083df3a08cfcc91546705df371",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v2-20261019/base-region.rs"
+    },
+    {
+      "archive_path": "impl-v2/changes.patch",
+      "bytes": 41393,
+      "mode": 420,
+      "sha256": "5fe3d274f203628e1c049ba8f5023433d47ed4d851dc6139b3c20385fad5736d",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v2-20261019/changes.patch"
+    },
+    {
+      "archive_path": "impl-v2/pins.json",
+      "bytes": 4795,
+      "mode": 420,
+      "sha256": "51f1be117548bd8d05e89b5176b2f6342cd56f762833c489e975c7c3f26301bf",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v2-20261019/pins.json"
+    },
+    {
+      "archive_path": "impl-v2/repo/crates/jarde-java/src/region.rs",
+      "bytes": 1301069,
+      "mode": 420,
+      "sha256": "138605b5fbb1a1471570abe508f596b92adb7b6ff517086eb9354ed1b4fc6e10",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v2-20261019/repo/crates/jarde-java/src/region.rs"
+    },
+    {
+      "archive_path": "impl-v2/repo/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 677,
+      "mode": 420,
+      "sha256": "037e32820ff9cd17e4d00e9ce9d9c7d764df3d2065b07eb9d5ab0dfa809308b3",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v2-20261019/repo/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "impl-v2/repo/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 412,
+      "mode": 420,
+      "sha256": "151c8d3ad5d4e36c15daa50f12e6cdb10d6a04d90bd92bc05535cca80c6e140c",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v2-20261019/repo/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "impl-v2/unit-test.txt",
+      "bytes": 23302,
+      "mode": 420,
+      "sha256": "2d730cac63cd3e16d3bfebc4466d80b15b01f1b2d9f5ffd7c3b11b82c2108868",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v2-20261019/unit-test.txt"
+    },
+    {
+      "archive_path": "impl-v2/v1-to-v2.patch",
+      "bytes": 11883,
+      "mode": 420,
+      "sha256": "106d06cfaab90c09acfce2ab58ada72e6bc239007d71ff8cd1ef4f5d669900ee",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-impl-luna-v2-20261019/v1-to-v2.patch"
+    },
+    {
+      "archive_path": "matrix-prep-v1/README.md",
+      "bytes": 3711,
+      "mode": 420,
+      "sha256": "0515715ec32847a438133a5b41f905e0d0cfb407c16f82fff2243208cf251afd",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "matrix-prep-v1/adaptation.diff",
+      "bytes": 36332,
+      "mode": 420,
+      "sha256": "d733c3c0e1db493e1e3314f4a241e6b47aed30c71afd690069c4d3894cc85d45",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v1-20261019/adaptation.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v1/collect_final.py",
+      "bytes": 46008,
+      "mode": 420,
+      "sha256": "71ac577d408c0e549088be466fd7d9934048eda26f93cfa19cbe521a60ac31c2",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v1-20261019/collect_final.py"
+    },
+    {
+      "archive_path": "matrix-prep-v1/collect_final.py.adaptation.diff",
+      "bytes": 14967,
+      "mode": 420,
+      "sha256": "5a4897d0124739a81231edad067495fb3eb0911f998a1a2ec146872310808edd",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v1-20261019/collect_final.py.adaptation.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v1/pins.json",
+      "bytes": 11145,
+      "mode": 420,
+      "sha256": "35340db3ff2f282a761143e1215888b89654de0e940ab2ef28b8e0160f708ed9",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v1-20261019/pins.json"
+    },
+    {
+      "archive_path": "matrix-prep-v1/preflight.json",
+      "bytes": 583,
+      "mode": 420,
+      "sha256": "1cecbe2266705d17e0ff469f47e0668dfc153fbd8aba5a5a2c30939d04bd0a1d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v1-20261019/preflight.json"
+    },
+    {
+      "archive_path": "matrix-prep-v1/review.py",
+      "bytes": 41690,
+      "mode": 420,
+      "sha256": "9f06ad392a7de815711da4167382a23a60716b440dad81a8f0f0efe7e23db710",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v1-20261019/review.py"
+    },
+    {
+      "archive_path": "matrix-prep-v1/review.py.adaptation.diff",
+      "bytes": 21365,
+      "mode": 420,
+      "sha256": "79b8b38018e1641776ba5164981a483e8b1fddbed8bf4defb34c804f7cdd965f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v1-20261019/review.py.adaptation.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v2/README.md",
+      "bytes": 4103,
+      "mode": 420,
+      "sha256": "f09ffa95ea62c0927c8313a761c6826685f364f7cff3712b23b950801ac43c90",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v2-20261019/README.md"
+    },
+    {
+      "archive_path": "matrix-prep-v2/adaptation.diff",
+      "bytes": 36324,
+      "mode": 420,
+      "sha256": "cf81819b0fc7596365bfd72e33bb2725d1114ae38cee96d7bcd81c806f91462e",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v2-20261019/adaptation.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v2/collect_final.py",
+      "bytes": 46008,
+      "mode": 420,
+      "sha256": "71ac577d408c0e549088be466fd7d9934048eda26f93cfa19cbe521a60ac31c2",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v2-20261019/collect_final.py"
+    },
+    {
+      "archive_path": "matrix-prep-v2/collect_final.py.adaptation.diff",
+      "bytes": 14967,
+      "mode": 420,
+      "sha256": "7f772d9d72916be40de09745ecfab96d171f373b99e6c178fb51679294125cfb",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v2-20261019/collect_final.py.adaptation.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v2/pins.json",
+      "bytes": 11719,
+      "mode": 420,
+      "sha256": "4ddae32a9f1cda014469200f99c8b07252ed47c4c703c5e10e8a103c9b5a27e0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v2-20261019/pins.json"
+    },
+    {
+      "archive_path": "matrix-prep-v2/preflight.json",
+      "bytes": 700,
+      "mode": 420,
+      "sha256": "5a68b1975446d0e71643472a73ef6d3f555bf403afb3e14350fdbdd84ccd5053",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v2-20261019/preflight.json"
+    },
+    {
+      "archive_path": "matrix-prep-v2/review.py",
+      "bytes": 41682,
+      "mode": 420,
+      "sha256": "513689e23b1b7ec548fd454cf7582dbf5c7a8c39a465b70c147fffc9ecbbfc5f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v2-20261019/review.py"
+    },
+    {
+      "archive_path": "matrix-prep-v2/review.py.adaptation.diff",
+      "bytes": 21357,
+      "mode": 420,
+      "sha256": "1c7f6b6aeeee1101afb4288201c6509895e9a1074fac0c692c7aaa210ca46d9e",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v2-20261019/review.py.adaptation.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v2/v1-to-v2.diff",
+      "bytes": 2074,
+      "mode": 420,
+      "sha256": "31ecc1d0d45c7290252142be8dedb1fbd5c6e4614449040a422b0bc067a6b0f5",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v2-20261019/v1-to-v2.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v3/README.md",
+      "bytes": 4868,
+      "mode": 420,
+      "sha256": "8fdd8672c768895062d92d0614f5bb4a9d4f05cf8fc326d055848cc6bc7a8112",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019/README.md"
+    },
+    {
+      "archive_path": "matrix-prep-v3/adaptation.diff",
+      "bytes": 36324,
+      "mode": 420,
+      "sha256": "cf81819b0fc7596365bfd72e33bb2725d1114ae38cee96d7bcd81c806f91462e",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019/adaptation.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v3/collect_final.py",
+      "bytes": 46007,
+      "mode": 420,
+      "sha256": "43ffc0c4cfc71888808ae98beadb089159c1b0df878310cadda76c423e5c940f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019/collect_final.py"
+    },
+    {
+      "archive_path": "matrix-prep-v3/collect_final.py.adaptation.diff",
+      "bytes": 14967,
+      "mode": 420,
+      "sha256": "7f772d9d72916be40de09745ecfab96d171f373b99e6c178fb51679294125cfb",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019/collect_final.py.adaptation.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v3/pins.json",
+      "bytes": 13109,
+      "mode": 420,
+      "sha256": "cb26fd09df16cf9112e1cb347d69dc1b566782b0b4011d3786f71143b50cdebd",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019/pins.json"
+    },
+    {
+      "archive_path": "matrix-prep-v3/preflight.json",
+      "bytes": 645,
+      "mode": 420,
+      "sha256": "ad3db2561911281ae4d1b56b6a235c37e1c4d38b72bbfeab769860bacaa4d23a",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019/preflight.json"
+    },
+    {
+      "archive_path": "matrix-prep-v3/review.py",
+      "bytes": 41682,
+      "mode": 420,
+      "sha256": "b54e196fa1568e596593eb535e14b7371fa595a8921e407b81e452147320ceff",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019/review.py"
+    },
+    {
+      "archive_path": "matrix-prep-v3/review.py.adaptation.diff",
+      "bytes": 21357,
+      "mode": 420,
+      "sha256": "1c7f6b6aeeee1101afb4288201c6509895e9a1074fac0c692c7aaa210ca46d9e",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019/review.py.adaptation.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v3/v1-to-v2.diff",
+      "bytes": 2074,
+      "mode": 420,
+      "sha256": "31ecc1d0d45c7290252142be8dedb1fbd5c6e4614449040a422b0bc067a6b0f5",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019/v1-to-v2.diff"
+    },
+    {
+      "archive_path": "matrix-prep-v3/v2-to-v3.diff",
+      "bytes": 8954,
+      "mode": 420,
+      "sha256": "abebd291189c2d1aa5fe6ae484a033095f1c25128840f2f25a75c086ebb3ba46",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-luna-v3-20261019/v2-to-v3.diff"
+    },
+    {
+      "archive_path": "matrix-static-review-v2/review.json",
+      "bytes": 918,
+      "mode": 420,
+      "sha256": "c440de6e96d7ac9c6fd4ebdfbddc07ccefdfbea1bb2992bb5c3081dea10edc09",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-review-root-v2-20261019/review.json"
+    },
+    {
+      "archive_path": "matrix-static-review-v3/review.json",
+      "bytes": 409,
+      "mode": 420,
+      "sha256": "be9c745f2b8889153de5781c06b40b567cb81c8ea2124738edc35acb62da16a0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-prep-review-root-v3-20261019/review.json"
+    },
+    {
+      "archive_path": "matrix/collector.py",
+      "bytes": 46007,
+      "mode": 420,
+      "sha256": "43ffc0c4cfc71888808ae98beadb089159c1b0df878310cadda76c423e5c940f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/collector.py"
+    },
+    {
+      "archive_path": "matrix/driver-classes/TestDoWhileBreakDriver$TypeDescriptor.class",
+      "bytes": 2315,
+      "mode": 420,
+      "sha256": "f3e32c74fbe0ac11602bf4c9b12ec2fe502178b84d9b7731e24922c5f0c8f1b0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/driver-classes/TestDoWhileBreakDriver$TypeDescriptor.class"
+    },
+    {
+      "archive_path": "matrix/driver-classes/TestDoWhileBreakDriver.class",
+      "bytes": 9102,
+      "mode": 420,
+      "sha256": "8d793623b1738b1b436f368d6f1e612aa87bffced9d6565fae8bf84ee925c48b",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/driver-classes/TestDoWhileBreakDriver.class"
+    },
+    {
+      "archive_path": "matrix/execution.json",
+      "bytes": 5781130,
+      "mode": 420,
+      "sha256": "2079b31760cf1ea987a35a57a565fc8a1997eab7fc0526c267d1a4e61db8f838",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "matrix/generated-classes/debug/bundle-child/all/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 598,
+      "mode": 420,
+      "sha256": "35937af7619fc904126938db1f928470a9373e23a8595e3c6e7a17f7e54211ab",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/debug/bundle-child/all/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/debug/bundle-child/all/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 598,
+      "mode": 420,
+      "sha256": "881369e8cb7f2086dc710b2ca6ad06e72112b60656a2f68bee2e5b7c689401d7",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/debug/bundle-child/all/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/debug/bundle-child/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 598,
+      "mode": 420,
+      "sha256": "35937af7619fc904126938db1f928470a9373e23a8595e3c6e7a17f7e54211ab",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/debug/bundle-child/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/debug/bundle-child/default/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 598,
+      "mode": 420,
+      "sha256": "881369e8cb7f2086dc710b2ca6ad06e72112b60656a2f68bee2e5b7c689401d7",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/debug/bundle-child/default/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/debug/child/all/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 598,
+      "mode": 420,
+      "sha256": "35937af7619fc904126938db1f928470a9373e23a8595e3c6e7a17f7e54211ab",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/debug/child/all/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/debug/child/all/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 598,
+      "mode": 420,
+      "sha256": "881369e8cb7f2086dc710b2ca6ad06e72112b60656a2f68bee2e5b7c689401d7",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/debug/child/all/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/debug/child/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 598,
+      "mode": 420,
+      "sha256": "35937af7619fc904126938db1f928470a9373e23a8595e3c6e7a17f7e54211ab",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/debug/child/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/debug/child/default/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 598,
+      "mode": 420,
+      "sha256": "881369e8cb7f2086dc710b2ca6ad06e72112b60656a2f68bee2e5b7c689401d7",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/debug/child/default/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/no-debug/bundle-child/all/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 321,
+      "mode": 420,
+      "sha256": "8c7137f4bd419085ca626637b1b71753874f01a77c4200125eb3bf95f1ec6473",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/no-debug/bundle-child/all/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/no-debug/bundle-child/all/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 321,
+      "mode": 420,
+      "sha256": "efadb01dd83df81fd1f731220d002cb8371e0d449922d0b8c4d83dec0572083b",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/no-debug/bundle-child/all/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/no-debug/bundle-child/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 321,
+      "mode": 420,
+      "sha256": "8c7137f4bd419085ca626637b1b71753874f01a77c4200125eb3bf95f1ec6473",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/no-debug/bundle-child/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/no-debug/bundle-child/default/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 321,
+      "mode": 420,
+      "sha256": "efadb01dd83df81fd1f731220d002cb8371e0d449922d0b8c4d83dec0572083b",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/no-debug/bundle-child/default/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/no-debug/child/all/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 321,
+      "mode": 420,
+      "sha256": "8c7137f4bd419085ca626637b1b71753874f01a77c4200125eb3bf95f1ec6473",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/no-debug/child/all/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/no-debug/child/all/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 321,
+      "mode": 420,
+      "sha256": "efadb01dd83df81fd1f731220d002cb8371e0d449922d0b8c4d83dec0572083b",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/no-debug/child/all/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/no-debug/child/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 321,
+      "mode": 420,
+      "sha256": "8c7137f4bd419085ca626637b1b71753874f01a77c4200125eb3bf95f1ec6473",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/no-debug/child/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-classes/no-debug/child/default/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 321,
+      "mode": 420,
+      "sha256": "efadb01dd83df81fd1f731220d002cb8371e0d449922d0b8c4d83dec0572083b",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-classes/no-debug/child/default/javac8/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "matrix/generated-sources/debug/bundle-child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1290,
+      "mode": 420,
+      "sha256": "836a25047af529b2cf40e5008681eeed91f19f937b18aabf8568a695843eae97",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-sources/debug/bundle-child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "matrix/generated-sources/debug/bundle-child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1290,
+      "mode": 420,
+      "sha256": "836a25047af529b2cf40e5008681eeed91f19f937b18aabf8568a695843eae97",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-sources/debug/bundle-child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "matrix/generated-sources/debug/child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1290,
+      "mode": 420,
+      "sha256": "836a25047af529b2cf40e5008681eeed91f19f937b18aabf8568a695843eae97",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-sources/debug/child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "matrix/generated-sources/debug/child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1290,
+      "mode": 420,
+      "sha256": "836a25047af529b2cf40e5008681eeed91f19f937b18aabf8568a695843eae97",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-sources/debug/child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "matrix/generated-sources/no-debug/bundle-child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1331,
+      "mode": 420,
+      "sha256": "851a983b488fb64541f7ff5cf3bbd27f3f7976205e34fb4bbfd5341c8a4dc48d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-sources/no-debug/bundle-child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "matrix/generated-sources/no-debug/bundle-child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1331,
+      "mode": 420,
+      "sha256": "851a983b488fb64541f7ff5cf3bbd27f3f7976205e34fb4bbfd5341c8a4dc48d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-sources/no-debug/bundle-child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "matrix/generated-sources/no-debug/child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1331,
+      "mode": 420,
+      "sha256": "851a983b488fb64541f7ff5cf3bbd27f3f7976205e34fb4bbfd5341c8a4dc48d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-sources/no-debug/child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "matrix/generated-sources/no-debug/child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1331,
+      "mode": 420,
+      "sha256": "851a983b488fb64541f7ff5cf3bbd27f3f7976205e34fb4bbfd5341c8a4dc48d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/generated-sources/no-debug/child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "matrix/independent-review.json",
+      "bytes": 312,
+      "mode": 420,
+      "sha256": "67b3e5debd5cb907f39095db62fa731cf57c8bec1f0080a43342e65d0762db07",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/independent-review.json"
+    },
+    {
+      "archive_path": "matrix/jarde/debug/bundle-child/all/report.json",
+      "bytes": 36963,
+      "mode": 420,
+      "sha256": "09ca3840a8b6ba53f76a2f8cd0ffeea6f06edcdbb3df72eaa66ae4d78c21cd84",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/debug/bundle-child/all/report.json"
+    },
+    {
+      "archive_path": "matrix/jarde/debug/bundle-child/all/whole-source.java",
+      "bytes": 1290,
+      "mode": 420,
+      "sha256": "836a25047af529b2cf40e5008681eeed91f19f937b18aabf8568a695843eae97",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/debug/bundle-child/all/whole-source.java"
+    },
+    {
+      "archive_path": "matrix/jarde/debug/bundle-child/default/report.json",
+      "bytes": 35731,
+      "mode": 420,
+      "sha256": "21e319783d55d89d9c7b07c6ce4787f0514183c73086e438e8d08e7225e9e9be",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/debug/bundle-child/default/report.json"
+    },
+    {
+      "archive_path": "matrix/jarde/debug/bundle-child/default/whole-source.java",
+      "bytes": 1290,
+      "mode": 420,
+      "sha256": "836a25047af529b2cf40e5008681eeed91f19f937b18aabf8568a695843eae97",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/debug/bundle-child/default/whole-source.java"
+    },
+    {
+      "archive_path": "matrix/jarde/debug/child/all/report.json",
+      "bytes": 27549,
+      "mode": 420,
+      "sha256": "e8ce12ad91c7840094c728aca3911aef982471a0f1bcb5c47acd3aeab77832fc",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/debug/child/all/report.json"
+    },
+    {
+      "archive_path": "matrix/jarde/debug/child/all/whole-source.java",
+      "bytes": 1290,
+      "mode": 420,
+      "sha256": "836a25047af529b2cf40e5008681eeed91f19f937b18aabf8568a695843eae97",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/debug/child/all/whole-source.java"
+    },
+    {
+      "archive_path": "matrix/jarde/debug/child/default/report.json",
+      "bytes": 26317,
+      "mode": 420,
+      "sha256": "e9e7c75e57a5de0623553853b75a575232e883151c1196d61aab8c2a288407c1",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/debug/child/default/report.json"
+    },
+    {
+      "archive_path": "matrix/jarde/debug/child/default/whole-source.java",
+      "bytes": 1290,
+      "mode": 420,
+      "sha256": "836a25047af529b2cf40e5008681eeed91f19f937b18aabf8568a695843eae97",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/debug/child/default/whole-source.java"
+    },
+    {
+      "archive_path": "matrix/jarde/no-debug/bundle-child/all/report.json",
+      "bytes": 37079,
+      "mode": 420,
+      "sha256": "212c054de0659c76255cbb6c0891fd1043db63fdace3addef2d9b2b6e39040b2",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/no-debug/bundle-child/all/report.json"
+    },
+    {
+      "archive_path": "matrix/jarde/no-debug/bundle-child/all/whole-source.java",
+      "bytes": 1331,
+      "mode": 420,
+      "sha256": "851a983b488fb64541f7ff5cf3bbd27f3f7976205e34fb4bbfd5341c8a4dc48d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/no-debug/bundle-child/all/whole-source.java"
+    },
+    {
+      "archive_path": "matrix/jarde/no-debug/bundle-child/default/report.json",
+      "bytes": 35847,
+      "mode": 420,
+      "sha256": "93bf962b690b32e0445e4d27ec9d3ce169fd0826b6ff26a5761187f0a22cf6f8",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/no-debug/bundle-child/default/report.json"
+    },
+    {
+      "archive_path": "matrix/jarde/no-debug/bundle-child/default/whole-source.java",
+      "bytes": 1331,
+      "mode": 420,
+      "sha256": "851a983b488fb64541f7ff5cf3bbd27f3f7976205e34fb4bbfd5341c8a4dc48d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/no-debug/bundle-child/default/whole-source.java"
+    },
+    {
+      "archive_path": "matrix/jarde/no-debug/child/all/report.json",
+      "bytes": 27663,
+      "mode": 420,
+      "sha256": "3fa576ba58a6a48daff525878a476c99d4615e3821c99066c064ab3bbae0b960",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/no-debug/child/all/report.json"
+    },
+    {
+      "archive_path": "matrix/jarde/no-debug/child/all/whole-source.java",
+      "bytes": 1331,
+      "mode": 420,
+      "sha256": "851a983b488fb64541f7ff5cf3bbd27f3f7976205e34fb4bbfd5341c8a4dc48d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/no-debug/child/all/whole-source.java"
+    },
+    {
+      "archive_path": "matrix/jarde/no-debug/child/default/report.json",
+      "bytes": 26436,
+      "mode": 420,
+      "sha256": "6bf48e1a69f9e7ea8cc75ef78988695ff74b3a4bd22437f93f352a14868f39e2",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/no-debug/child/default/report.json"
+    },
+    {
+      "archive_path": "matrix/jarde/no-debug/child/default/whole-source.java",
+      "bytes": 1331,
+      "mode": 420,
+      "sha256": "851a983b488fb64541f7ff5cf3bbd27f3f7976205e34fb4bbfd5341c8a4dc48d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/jarde/no-debug/child/default/whole-source.java"
+    },
+    {
+      "archive_path": "matrix/raw/1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/1.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/1.stdout.raw",
+      "bytes": 26317,
+      "mode": 420,
+      "sha256": "e9e7c75e57a5de0623553853b75a575232e883151c1196d61aab8c2a288407c1",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/1.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/10.stderr.raw",
+      "bytes": 358,
+      "mode": 420,
+      "sha256": "62fdb2818d8516342d9ba7853a8d7203638d1c02139b0aaa4f0908acf29ce250",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/10.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/10.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/10.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/11.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/11.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/11.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/11.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/12.stderr.raw",
+      "bytes": 359,
+      "mode": 420,
+      "sha256": "c00f651a5f2a8c906c96b3f62ee166243a3e40b0654dc9087f43239f46a209c9",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/12.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/12.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/12.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/13.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/13.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/13.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/13.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/14.stderr.raw",
+      "bytes": 354,
+      "mode": 420,
+      "sha256": "ec93899e35063588e0a604c333b12fa0b7255f66545e39443c207e7e2b63b0de",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/14.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/14.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/14.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/15.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/15.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/15.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/15.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/16.stderr.raw",
+      "bytes": 355,
+      "mode": 420,
+      "sha256": "73dd01e57dd54fb1ffdf8a3f825d358a1873d443a64701c978cbccf4c04f11fc",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/16.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/16.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/16.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/17.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/17.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/17.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/17.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/18.stderr.raw",
+      "bytes": 365,
+      "mode": 420,
+      "sha256": "8aae7f50b47acac01257abbbda7a1abe4bb134f30ecf42d85da6d68421794e35",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/18.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/18.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/18.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/19.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/19.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/19.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/19.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/2.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/2.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/2.stdout.raw",
+      "bytes": 27549,
+      "mode": 420,
+      "sha256": "e8ce12ad91c7840094c728aca3911aef982471a0f1bcb5c47acd3aeab77832fc",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/2.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/20.stderr.raw",
+      "bytes": 366,
+      "mode": 420,
+      "sha256": "658c5ed42e6347049e3a6970df4bfede22ddc5bec72c1aaea700cb4b2088ab3d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/20.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/20.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/20.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/21.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/21.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/21.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/21.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/22.stderr.raw",
+      "bytes": 361,
+      "mode": 420,
+      "sha256": "c71883c47a2959372ab02d4ff6ba8076a6ab88f0acc1b7c8d6aa80c37eeb42a3",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/22.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/22.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/22.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/23.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/23.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/23.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/23.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/24.stderr.raw",
+      "bytes": 362,
+      "mode": 420,
+      "sha256": "bf8dcf9bb238f263cbc880a6189a5cd6362061afac4ea891926dd5986e7e05bc",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/24.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/24.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/24.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/25.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/25.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/25.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/25.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/26.stderr.raw",
+      "bytes": 361,
+      "mode": 420,
+      "sha256": "e086d8835280a98a9df5a0834545bb964e5320f93190f6a7139a385b83d6fb6e",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/26.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/26.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/26.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/27.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/27.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/27.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/27.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/28.stderr.raw",
+      "bytes": 362,
+      "mode": 420,
+      "sha256": "63845eab21f10f986426ed8b8c6bb291db886d2cbe8e5d62f257c82fb139bfcf",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/28.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/28.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/28.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/29.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/29.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/29.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/29.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/3.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/3.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/3.stdout.raw",
+      "bytes": 35731,
+      "mode": 420,
+      "sha256": "21e319783d55d89d9c7b07c6ce4787f0514183c73086e438e8d08e7225e9e9be",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/3.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/30.stderr.raw",
+      "bytes": 357,
+      "mode": 420,
+      "sha256": "6c484ca10bbc938a21cf7198888e8e4dfbb872a3d387d9de39db0db7df66a6ec",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/30.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/30.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/30.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/31.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/31.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/31.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/31.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/32.stderr.raw",
+      "bytes": 358,
+      "mode": 420,
+      "sha256": "a5a8d404db5fc07a5940a9744a8cdb731c0e33bd24bc630399df1f95356db08f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/32.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/32.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/32.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/33.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/33.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/33.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/33.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/34.stderr.raw",
+      "bytes": 368,
+      "mode": 420,
+      "sha256": "ced0dc81bd4fc21a83969f56d10debde43ff1ce65948031b4e54dfbc6fe84947",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/34.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/34.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/34.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/35.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/35.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/35.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/35.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/36.stderr.raw",
+      "bytes": 369,
+      "mode": 420,
+      "sha256": "6bfd40b12794322c0f2d6aed006bf8660635a262386f443bd901424862019ce1",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/36.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/36.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/36.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/37.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/37.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/37.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/37.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/38.stderr.raw",
+      "bytes": 364,
+      "mode": 420,
+      "sha256": "5c307c8c9474c2f9d710403dbdeb86ed7801ee8992be6ec1e27a858c6e5c6f63",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/38.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/38.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/38.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/39.stderr.raw",
+      "bytes": 243,
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/39.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/39.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/39.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/4.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/4.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/4.stdout.raw",
+      "bytes": 36963,
+      "mode": 420,
+      "sha256": "09ca3840a8b6ba53f76a2f8cd0ffeea6f06edcdbb3df72eaa66ae4d78c21cd84",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/4.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/40.stderr.raw",
+      "bytes": 365,
+      "mode": 420,
+      "sha256": "c9dc5500d77f950a5d2bb2bd4d6f13b8749994dbbe3d549cceca61cb2b89c32d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/40.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/40.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/40.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/41.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/41.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/41.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/41.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/42.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/42.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/42.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/42.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/43.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/43.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/43.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/43.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/44.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/44.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/44.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/44.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/45.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/45.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/45.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/45.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/46.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/46.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/46.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/46.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/47.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/47.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/47.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/47.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/48.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/48.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/48.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/48.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/49.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/49.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/49.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/49.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/5.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/5.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/5.stdout.raw",
+      "bytes": 26436,
+      "mode": 420,
+      "sha256": "6bf48e1a69f9e7ea8cc75ef78988695ff74b3a4bd22437f93f352a14868f39e2",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/5.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/50.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/50.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/50.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/50.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/51.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/51.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/51.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/51.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/52.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/52.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/52.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/52.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/53.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/53.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/53.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/53.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/54.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/54.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/54.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/54.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/55.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/55.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/55.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/55.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/56.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/56.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/56.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/56.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/57.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/57.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/57.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/57.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/58.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/58.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/58.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/58.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/59.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/59.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/59.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/59.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/6.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/6.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/6.stdout.raw",
+      "bytes": 27663,
+      "mode": 420,
+      "sha256": "3fa576ba58a6a48daff525878a476c99d4615e3821c99066c064ab3bbae0b960",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/6.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/60.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/60.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/60.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/60.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/61.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/61.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/61.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/61.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/62.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/62.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/62.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/62.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/63.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/63.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/63.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/63.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/64.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/64.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/64.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/64.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/65.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/65.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/65.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/65.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/66.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/66.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/66.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/66.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/67.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/67.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/67.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/67.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/68.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/68.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/68.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/68.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/69.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/69.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/69.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/69.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/7.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/7.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/7.stdout.raw",
+      "bytes": 35847,
+      "mode": 420,
+      "sha256": "93bf962b690b32e0445e4d27ec9d3ce169fd0826b6ff26a5761187f0a22cf6f8",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/7.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/70.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/70.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/70.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/70.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/71.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/71.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/71.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/71.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/72.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/72.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/72.stdout.raw",
+      "bytes": 341,
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/72.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/8.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/8.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/8.stdout.raw",
+      "bytes": 37079,
+      "mode": 420,
+      "sha256": "212c054de0659c76255cbb6c0891fd1043db63fdace3addef2d9b2b6e39040b2",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/8.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/raw/9.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/9.stderr.raw"
+    },
+    {
+      "archive_path": "matrix/raw/9.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/raw/9.stdout.raw"
+    },
+    {
+      "archive_path": "matrix/root-review.json",
+      "bytes": 1531,
+      "mode": 420,
+      "sha256": "a80ade77996ace1720dc23f538f00e5fa6351e107e0790ab693dd7486c942244",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/root-review.json"
+    },
+    {
+      "archive_path": "matrix/runtime-bound-cwd.py",
+      "bytes": 389,
+      "mode": 420,
+      "sha256": "bc917ec08e07ed462c18958f9a0d3b064b7d5bba3adc5fa41d9db49ff6c3de46",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/runtime-bound-cwd.py"
+    },
+    {
+      "archive_path": "matrix/source/jadx/tests/integration/loops/TestDoWhileBreak.java",
+      "bytes": 563,
+      "mode": 420,
+      "sha256": "7c8db1024a14626aaafdd977a722665e077f8e17f5751f2249bc7be6e9eba577",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-final-candidate-root-v1-20261019/source/jadx/tests/integration/loops/TestDoWhileBreak.java"
+    },
+    {
+      "archive_path": "public-prep/README.md",
+      "bytes": 1715,
+      "mode": 420,
+      "sha256": "0c455416c3060b859c2891f32c18ee97c386e9792f01ca1b2f496948ee032dbe",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "public-prep/manifest.json",
+      "bytes": 4376,
+      "mode": 420,
+      "sha256": "2907b1903d0e1eb56b5ec7661182228e10f15deee8bf253b751cb9c630670126",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/manifest.json"
+    },
+    {
+      "archive_path": "public-prep/test-adaptation.diff",
+      "bytes": 8895,
+      "mode": 420,
+      "sha256": "f94d169bb78daafd3681b71428f67da9f841426acfe033a47a9fa29c81727c8b",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/test-adaptation.diff"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/README.md",
+      "bytes": 1715,
+      "mode": 420,
+      "sha256": "0c455416c3060b859c2891f32c18ee97c386e9792f01ca1b2f496948ee032dbe",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/README.md"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/manifest.json",
+      "bytes": 4376,
+      "mode": 420,
+      "sha256": "2907b1903d0e1eb56b5ec7661182228e10f15deee8bf253b751cb9c630670126",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/manifest.json"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/LICENSE",
+      "bytes": 11357,
+      "mode": 420,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/LICENSE"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/NOTICE",
+      "bytes": 10658,
+      "mode": 420,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/NOTICE"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/TestDoWhileBreak.java",
+      "bytes": 563,
+      "mode": 420,
+      "sha256": "7c8db1024a14626aaafdd977a722665e077f8e17f5751f2249bc7be6e9eba577",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/TestDoWhileBreak.java"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/TestDoWhileBreakDriver.java",
+      "bytes": 6979,
+      "mode": 420,
+      "sha256": "aef8cf0da2ccf9760e1b9a615c1075675db7f982cda260a9b49f418a97a93b14",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/TestDoWhileBreakDriver.java"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug-plain.jar",
+      "bytes": 2212,
+      "mode": 420,
+      "sha256": "3ec67e2e0e81a227e6c3dedbba5b0fd7865b90d944d18737727cb2fe983886df",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug-plain.jar"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 677,
+      "mode": 420,
+      "sha256": "037e32820ff9cd17e4d00e9ce9d9c7d764df3d2065b07eb9d5ab0dfa809308b3",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class",
+      "bytes": 1141,
+      "mode": 420,
+      "sha256": "289db6487140b5661a19f668e33db75def93b53dbeddebe8b3d93837dee268c5",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug-plain.jar",
+      "bytes": 1734,
+      "mode": 420,
+      "sha256": "e43fcefb543b4e789b1835eac5957997fc85691db929456feeb083f97eb0bb50",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug-plain.jar"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 412,
+      "mode": 420,
+      "sha256": "151c8d3ad5d4e36c15daa50f12e6cdb10d6a04d90bd92bc05535cca80c6e140c",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "public-prep/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class",
+      "bytes": 928,
+      "mode": 420,
+      "sha256": "9a7392ef23cac839f38c5913a011d7b06f1fccb65339bba0520c4bc9d2b948ea",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class"
+    },
+    {
+      "archive_path": "public-prep/tests/p3_post_test_loop_break_prefixes.rs",
+      "bytes": 10612,
+      "mode": 420,
+      "sha256": "08ce238484938640ab50dc91478928e3afab30165154da32ac8b19ed44466797",
+      "source_path": "/private/tmp/jarde-post-test-break-prefix-public-luna-v1-20261019/tests/p3_post_test_loop_break_prefixes.rs"
+    }
+  ],
+  "notes": [
+    "Every explicit input root is required; a missing root or declared exclusion is a hard failure.",
+    "Every explicitly excluded CLI copy matches the matrix current CLI bytes/SHA-256 and has its own pinned mode.",
+    "The exact matrix current CLI path is excluded exactly once; other excluded paths are byte-equivalent copies only.",
+    "All other files, including failed captures and review artifacts, are payload."
+  ],
+  "payload_member_count": 307,
+  "schema": "continue-ladder-evidence-archive-v1"
+}

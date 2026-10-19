@@ -15928,21 +15928,58 @@ impl Walker<'_> {
                 Some(header.bci()),
             )?;
         }
-        let body_branch = header_successors.len() == 2
+        let mut body_branch = header_successors.len() == 2
             && self
                 .terminal_bci(header)
                 .and_then(|bci| self.operations.get(bci))
-                .is_some_and(|operation| operation.comparison().is_some())
-            && header_successors.iter().all(|successor| {
-                blocks.contains(successor)
+                .is_some_and(|operation| operation.comparison().is_some());
+        let mut header_prefix_edges = BTreeSet::new();
+        if body_branch {
+            let latch_node = (loop_of.latches().len() == 1)
+                .then(|| *loop_of.latches().first().expect("one latch"));
+            for successor in &header_successors {
+                if blocks.contains(successor)
                     || latch_exit.as_ref().is_some_and(|exit| {
                         self.loop_exit_bridge(header_node, *successor, exit, &blocks)
                     })
-            });
+                {
+                    continue;
+                }
+                let (Some(latch_node), Some(exit), Some(prefix_node)) = (
+                    latch_node,
+                    latch_exit
+                        .as_ref()
+                        .and_then(|exit| self.view.index_of(exit)),
+                    Some(*successor),
+                ) else {
+                    body_branch = false;
+                    break;
+                };
+                if !self.post_test_break_prefix_proved(
+                    header_node,
+                    prefix_node,
+                    exit,
+                    header_node,
+                    latch_node,
+                    &blocks,
+                    frame,
+                )? || !header_prefix_edges.insert((header_node, prefix_node, exit))
+                    || header_prefix_edges.len() > 1
+                {
+                    body_branch = false;
+                    break;
+                }
+            }
+        }
         if body_branch {
-            if let Some(region) =
-                self.latch_tested_loop(header, header_node, &blocks, frame, true)?
-            {
+            if let Some(region) = self.latch_tested_loop(
+                header,
+                header_node,
+                &blocks,
+                frame,
+                true,
+                &header_prefix_edges,
+            )? {
                 return Ok(region);
             }
         }
@@ -15953,8 +15990,14 @@ impl Walker<'_> {
             return Ok(region);
         }
         if !body_branch
-            && let Some(region) =
-                self.latch_tested_loop(header, header_node, &blocks, frame, false)?
+            && let Some(region) = self.latch_tested_loop(
+                header,
+                header_node,
+                &blocks,
+                frame,
+                false,
+                &BTreeSet::new(),
+            )?
         {
             return Ok(region);
         }
@@ -20191,6 +20234,7 @@ impl Walker<'_> {
         blocks: &BTreeSet<usize>,
         frame: &Frame,
         allow_header_entry: bool,
+        prechecked_prefix_edges: &BTreeSet<(usize, usize, usize)>,
     ) -> Result<Option<Run>, StopReason> {
         let latches = self
             .view
@@ -20238,18 +20282,47 @@ impl Walker<'_> {
         {
             return Ok(None);
         }
+        let exit_node = self.view.index_of(&exit);
+        let Some(exact_exit_node) = exit_node else {
+            return Ok(None);
+        };
+        if prechecked_prefix_edges
+            .iter()
+            .any(|(_, _, prechecked_exit)| *prechecked_exit != exact_exit_node)
+        {
+            return Ok(None);
+        }
+        let mut certified_prefix_edges: BTreeSet<(usize, usize)> = prechecked_prefix_edges
+            .iter()
+            .map(|(source, prefix, _)| (*source, *prefix))
+            .collect();
         if latch_node != header_node
             && let Some(header_bci) = self.terminal_bci(header)
             && self
                 .operations
                 .get(header_bci)
                 .is_some_and(|operation| operation.comparison().is_some())
-            && self.view.successors(header_node).iter().any(|successor| {
-                !blocks.contains(successor)
-                    && !self.loop_exit_bridge(header_node, *successor, &exit, blocks)
-            })
         {
-            return Ok(None);
+            for successor in self.view.successors(header_node) {
+                if blocks.contains(&successor)
+                    || self.loop_exit_bridge(header_node, successor, &exit, blocks)
+                    || certified_prefix_edges.contains(&(header_node, successor))
+                {
+                    continue;
+                }
+                if !self.post_test_break_prefix_proved(
+                    header_node,
+                    successor,
+                    exact_exit_node,
+                    header_node,
+                    latch_node,
+                    blocks,
+                    frame,
+                )? {
+                    return Ok(None);
+                }
+                certified_prefix_edges.insert((header_node, successor));
+            }
         }
         let Some(test_bci) = self.terminal_bci(&latch) else {
             return Ok(None);
@@ -20326,16 +20399,37 @@ impl Walker<'_> {
         } else {
             Continuation::FallThrough
         };
-        let exit_node = self.view.index_of(&exit);
         let exits = self.loop_exit_nodes(blocks);
-        if blocks.iter().any(|source| {
-            self.view.successors(*source).iter().any(|successor| {
-                !blocks.contains(successor)
-                    && !(*source == latch_node && Some(*successor) == exit_node)
-                    && !self.loop_exit_bridge(*source, *successor, &exit, blocks)
-            })
-        }) {
-            return Ok(None);
+        let mut certified_prefix_nodes: BTreeSet<usize> = certified_prefix_edges
+            .iter()
+            .map(|(_, prefix)| *prefix)
+            .collect();
+        for source in blocks {
+            for successor in self.view.successors(*source) {
+                if blocks.contains(&successor)
+                    || (*source == latch_node && Some(successor) == exit_node)
+                    || self.loop_exit_bridge(*source, successor, &exit, blocks)
+                    || certified_prefix_edges.contains(&(*source, successor))
+                {
+                    continue;
+                }
+                if !self.post_test_break_prefix_proved(
+                    *source,
+                    successor,
+                    exact_exit_node,
+                    header_node,
+                    latch_node,
+                    blocks,
+                    frame,
+                )? {
+                    return Ok(None);
+                }
+                certified_prefix_nodes.insert(successor);
+                if certified_prefix_nodes.len() > 1 {
+                    return Ok(None);
+                }
+                certified_prefix_edges.insert((*source, successor));
+            }
         }
         if exits.iter().any(|candidate| Some(*candidate) != exit_node)
             && blocks.iter().any(|node| {
@@ -20510,6 +20604,263 @@ impl Walker<'_> {
                     if matches!(instruction.opcode(), 0xa7 | 0xc8)
                         && matches!(self.operations.get(instruction.bci()), Some(Operation::Transfer)))
             }))
+    }
+
+    /// Prove one statement-bearing block outside a post-test loop as its exclusive break prefix.
+    /// The existing `loop_exit_bridge` remains the preferred proof for an effect-free goto.
+    fn post_test_break_prefix_proved(
+        &mut self,
+        source: usize,
+        prefix: usize,
+        exit: usize,
+        header: usize,
+        latch: usize,
+        blocks: &BTreeSet<usize>,
+        parent: &Frame,
+    ) -> Result<bool, StopReason> {
+        if !blocks.contains(&source)
+            || !blocks.contains(&header)
+            || !blocks.contains(&latch)
+            || blocks.contains(&prefix)
+            || blocks.contains(&exit)
+            || source == latch
+            || prefix == header
+            || prefix == latch
+            || prefix == exit
+            || header == latch
+            || self.visited.contains(&prefix)
+            || parent
+                .scope
+                .as_ref()
+                .is_some_and(|scope| !scope.contains(&source) || !scope.contains(&prefix))
+            || parent.boundary == Some(prefix)
+            || parent.shared_tail == Some(prefix)
+            || parent.own_loop == Some(prefix)
+            || parent.own_try == Some(prefix)
+            || parent.switch_join == Some(prefix)
+            || parent.switch_continue == Some(prefix)
+            || parent
+                .case_entries
+                .as_ref()
+                .is_some_and(|entries| entries.contains(&prefix))
+            || parent.loop_exit == Some(prefix)
+            || parent.if_arm.is_some_and(|(branch, entry, boundary)| {
+                branch == prefix || entry == prefix || boundary == Some(prefix)
+            })
+        {
+            return Ok(false);
+        }
+        if !self.view.loop_entered_at(header).is_some_and(|loop_of| {
+            loop_of.blocks().contains(&header)
+                && loop_of.latches().len() == 1
+                && loop_of.latches().contains(&latch)
+        }) {
+            return Ok(false);
+        }
+        let (Some(source_id), Some(prefix_id), Some(exit_id), Some(header_id), Some(latch_id)) = (
+            self.view.id_of(source),
+            self.view.id_of(prefix),
+            self.view.id_of(exit),
+            self.view.id_of(header),
+            self.view.id_of(latch),
+        ) else {
+            return Ok(false);
+        };
+        if [source_id, prefix_id, exit_id, header_id, latch_id]
+            .iter()
+            .any(|block| !block.path().is_empty())
+        {
+            return Ok(false);
+        }
+        let (Some(source_bci), Some(prefix_bci)) = (
+            self.terminal_bci(source_id),
+            self.ssa.block(prefix_id).and_then(|block| {
+                block
+                    .instructions()
+                    .first()
+                    .map(|instruction| instruction.bci())
+            }),
+        ) else {
+            return Ok(false);
+        };
+        if prefix_bci != prefix_id.bci()
+            || !self
+                .operations
+                .get(source_bci)
+                .is_some_and(|operation| operation.comparison().is_some())
+        {
+            return Ok(false);
+        }
+        if !parent.loop_targets.is_empty() {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(parent.loop_targets.len()).unwrap_or(u64::MAX),
+                Some(source_bci),
+            )?;
+            for target in &parent.loop_targets {
+                poll(self.budget, Some(source_bci))?;
+                if target.header == prefix
+                    || target.exits.contains(&prefix)
+                    || target.break_target == Some(prefix)
+                    || target.continue_target == prefix
+                    || target.terminal_returns.contains(&prefix)
+                    || target.retry_handler.as_ref().is_some_and(|retry| {
+                        retry.header_node == prefix
+                            || self.view.index_of(&retry.protected) == Some(prefix)
+                            || self.view.index_of(&retry.handler) == Some(prefix)
+                    })
+                {
+                    return Ok(false);
+                }
+            }
+        }
+        let Some(prefix_ssa) = self.ssa.block(prefix_id) else {
+            return Ok(false);
+        };
+        let instructions = prefix_ssa.instructions();
+        let Some(terminal) = instructions.last() else {
+            return Ok(false);
+        };
+        if instructions.len() < 2
+            || !matches!(terminal.opcode(), 0xa7 | 0xc8)
+            || !matches!(
+                self.operations.get(terminal.bci()),
+                Some(Operation::Transfer)
+            )
+        {
+            return Ok(false);
+        }
+        let source_id = source_id.clone();
+        let prefix_id = prefix_id.clone();
+        let exit_id = exit_id.clone();
+        let code_work = self.code.instructions.len();
+        let edge_work = self.canonical.edges().len();
+        let work = edge_work
+            .saturating_mul(3)
+            .saturating_add(code_work)
+            .saturating_add(instructions.len().saturating_mul(2));
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(work).unwrap_or(u64::MAX),
+            Some(prefix_bci),
+        )?;
+        let source_successors = self.view.successors(source);
+        let latch_successors = self.view.successors(latch);
+        let mut source_expected = BTreeSet::new();
+        let mut source_has_prefix = false;
+        let mut source_other_stays_inside = true;
+        for successor in &source_successors {
+            poll(
+                self.budget,
+                self.view.id_of(*successor).map(CanonicalBlockId::bci),
+            )?;
+            source_has_prefix |= *successor == prefix;
+            source_other_stays_inside &= *successor == prefix || blocks.contains(successor);
+            if let Some(id) = self.view.id_of(*successor) {
+                source_expected.insert((CanonicalEdgeKind::Normal, id.clone()));
+            }
+        }
+        let mut latch_expected = BTreeSet::new();
+        let mut latch_outside_count = 0;
+        let mut latch_has_exit = false;
+        let mut latch_has_header = false;
+        for successor in &latch_successors {
+            poll(
+                self.budget,
+                self.view.id_of(*successor).map(CanonicalBlockId::bci),
+            )?;
+            latch_outside_count += usize::from(!blocks.contains(successor));
+            latch_has_exit |= *successor == exit;
+            latch_has_header |= *successor == header;
+            if let Some(id) = self.view.id_of(*successor) {
+                latch_expected.insert((CanonicalEdgeKind::Normal, id.clone()));
+            }
+        }
+        if source_successors.len() != 2
+            || !source_has_prefix
+            || !source_other_stays_inside
+            || latch_successors.len() != 2
+            || latch_outside_count != 1
+            || !latch_has_exit
+            || !latch_has_header
+        {
+            return Ok(false);
+        }
+        let mut incoming = Vec::new();
+        let mut outgoing = Vec::new();
+        let mut source_edges = Vec::new();
+        let mut latch_edges = Vec::new();
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(edge.from().bci()))?;
+            if edge.from() == &source_id {
+                source_edges.push((edge.kind(), edge.to().clone()));
+            }
+            if edge.from() == latch_id {
+                latch_edges.push((edge.kind(), edge.to().clone()));
+            }
+            if edge.to() == &prefix_id {
+                incoming.push((edge.kind(), edge.from().clone()));
+            }
+            if edge.from() == &prefix_id {
+                outgoing.push((edge.kind(), edge.to().clone()));
+            }
+        }
+        if incoming != [(CanonicalEdgeKind::Normal, source_id.clone())]
+            || outgoing != [(CanonicalEdgeKind::Normal, exit_id)]
+            || source_edges.iter().cloned().collect::<BTreeSet<_>>() != source_expected
+            || source_edges.len() != source_expected.len()
+            || latch_edges.iter().cloned().collect::<BTreeSet<_>>() != latch_expected
+            || latch_edges.len() != latch_expected.len()
+        {
+            return Ok(false);
+        }
+        let mut has_statement = false;
+        let mut ssa_physical = Vec::with_capacity(instructions.len());
+        for (index, instruction) in instructions.iter().enumerate() {
+            poll(self.budget, Some(instruction.bci()))?;
+            ssa_physical.push((instruction.bci(), instruction.opcode()));
+            if index + 1 < instructions.len() {
+                match self.operations.get(instruction.bci()) {
+                    Some(
+                        Operation::Store { .. }
+                        | Operation::Increment { .. }
+                        | Operation::Field {
+                            access: crate::facts::FieldAccess::Write,
+                            ..
+                        }
+                        | Operation::ArrayStore { .. }
+                        | Operation::Invoke(_)
+                        | Operation::InvokeDynamic(_),
+                    ) => has_statement = true,
+                    None
+                    | Some(
+                        Operation::Other
+                        | Operation::Transfer
+                        | Operation::Comparison { .. }
+                        | Operation::Switch { .. }
+                        | Operation::Return
+                        | Operation::Throw,
+                    ) => return Ok(false),
+                    Some(_) => {}
+                }
+            }
+        }
+        if !has_statement {
+            return Ok(false);
+        }
+        let mut physical = Vec::new();
+        for instruction in &self.code.instructions {
+            poll(self.budget, Some(instruction.bci))?;
+            if instruction.bci >= prefix_bci && instruction.bci <= terminal.bci() {
+                physical.push((instruction.bci, instruction.opcode));
+            }
+        }
+        if physical != ssa_physical {
+            return Ok(false);
+        }
+        Ok(true)
     }
 
     fn loop_exit_bridge(
@@ -29700,6 +30051,706 @@ mod tests {
                             .expect("ample budget completes refusal"),
                         None,
                         "topology control {name} remains outside the exact proof"
+                    );
+                },
+            );
+        }
+    }
+
+    #[test]
+    fn post_test_break_prefix_uses_real_ir_and_stops_without_partial_ownership() {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+        use jarde_reader::classfile::MethodCodeFacts;
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        const DEBUG_CLASS: &[u8] = include_bytes!(
+            "../../../tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+        );
+        const NO_DEBUG_CLASS: &[u8] = include_bytes!(
+            "../../../tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+        );
+
+        fn limits(analysis_steps: u64) -> Limits {
+            Limits {
+                input_bytes: 1 << 20,
+                archive_entries: 100,
+                entry_bytes: 1 << 20,
+                read_bytes: 1 << 20,
+                class_bytes: 1 << 20,
+                attribute_bytes: 1 << 20,
+                code_bytes: 1 << 20,
+                result_items: 1 << 20,
+                output_bytes: 1 << 20,
+                class_headers: 100,
+                method_bodies: 100,
+                ir_items: 1 << 20,
+                ir_edges: 1 << 20,
+                analysis_steps,
+                normalization_clones: 1 << 20,
+                nested_depth: 32,
+                dependency_depth: 32,
+                elapsed_millis: u64::MAX,
+            }
+        }
+
+        fn with_changed_method_ir(
+            bytes: &[u8],
+            inspect: impl FnOnce(
+                &CanonicalCfg,
+                &NormalFlowView,
+                &SsaTable,
+                &Operations,
+                &[CpEntryFacts],
+                &MethodCodeFacts,
+            ),
+        ) {
+            let mut analysis_budget = Budget::new(limits(1 << 20));
+            let snapshot =
+                ArtifactSnapshot::open(ArtifactInput::bytes(bytes.to_vec()), &mut analysis_budget)
+                    .expect("mutated class opens in Reader");
+            let definition = PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: snapshot.id().clone(),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest(blake3::hash(bytes).to_hex().to_string()),
+                    length: u64::try_from(bytes.len()).expect("class length fits u64"),
+                },
+                variant: PhysicalVariant::Base,
+            };
+            let domain = LoadDomain {
+                loader: LoaderId("app".to_owned()),
+                parent_loader: None,
+                delegation: DelegationPolicy::ParentFirst,
+                roots: vec![LoadRoot::StandaloneClass {
+                    snapshot: snapshot.id().clone(),
+                }],
+                module_mode: ModuleMode::ClassPath,
+                external_override: RuntimeUncertainty::None,
+                runtime_transformation: RuntimeUncertainty::None,
+            };
+            let analysis = analyze_method_ir(
+                &[snapshot.clone()],
+                &MethodAnalysisRequest {
+                    environment: ResolutionEnvironment {
+                        runtime: RuntimeView {
+                            physical: PhysicalView {
+                                snapshot: snapshot.id().clone(),
+                                scope: PhysicalScope::SnapshotAll,
+                            },
+                            profile: RuntimeProfile {
+                                java_release: 8,
+                                multi_release: MultiReleasePolicy::Disabled,
+                                layout: LayoutMode::Generic,
+                            },
+                            load_domain: domain.clone(),
+                        },
+                        domains: vec![domain],
+                        providers: Vec::new(),
+                    },
+                    method: PhysicalMethodId {
+                        owner: definition,
+                        name: JvmBytes(b"test".to_vec()),
+                        descriptor: JvmBytes(b"(I)I".to_vec()),
+                    },
+                    stages: AnalysisStage::ALL.to_vec(),
+                },
+                &mut analysis_budget,
+            )
+            .expect("mutated class has complete Reader/SSA stages");
+            let ir = analysis.ir();
+            let canonical = ir.canonical().expect("mutated canonical CFG");
+            let view = NormalFlowView::build(canonical, &mut analysis_budget)
+                .expect("mutated normal-flow view");
+            let ssa = ir.ssa().expect("mutated same-run SSA");
+            let code = ir.code().expect("mutated physical Code");
+            let pool = ir.constant_pool();
+            let operations = Operations::of(code, pool);
+            inspect(canonical, &view, ssa, &operations, pool, code);
+        }
+
+        fn make_walker<'a>(
+            canonical: &'a CanonicalCfg,
+            view: &'a NormalFlowView,
+            ssa: &'a SsaTable,
+            operations: &'a Operations,
+            pool: &'a [CpEntryFacts],
+            chains: &'a crate::concat::Plan,
+            sites: &'a crate::init::Sites,
+            code: &'a MethodCodeFacts,
+            budget: &'a mut Budget,
+        ) -> Walker<'a> {
+            Walker {
+                canonical,
+                view,
+                ssa,
+                operations,
+                pool,
+                chains,
+                sites,
+                code,
+                method_synchronized: Some(false),
+                has_reachable_explicit_monitor: false,
+                return_is_boolean: false,
+                handlers: &code.exception_handlers,
+                profile: &crate::pass::JAVA_8,
+                budget,
+                catch_joins: BTreeSet::new(),
+                loop_catch_terminal_owners: Vec::new(),
+                fragmented: None,
+                excluded_edge_nodes: BTreeSet::new(),
+                visited: BTreeSet::new(),
+                unclosed_tail_at: None,
+                own_monitor: None,
+                depth: 0,
+            }
+        }
+
+        fn count_block(region: &Region, wanted: &CanonicalBlockId) -> usize {
+            match region {
+                Region::Straight { blocks } => {
+                    blocks.iter().filter(|block| *block == wanted).count()
+                }
+                Region::Sequence { regions } => {
+                    regions.iter().map(|child| count_block(child, wanted)).sum()
+                }
+                Region::If {
+                    prefix,
+                    then_arm,
+                    else_arm,
+                    ..
+                }
+                | Region::CompoundIf {
+                    prefix,
+                    then_arm,
+                    else_arm,
+                    ..
+                } => {
+                    prefix.iter().filter(|block| *block == wanted).count()
+                        + count_block(then_arm, wanted)
+                        + count_block(else_arm, wanted)
+                }
+                Region::Loop { body, .. } => {
+                    body.iter().map(|child| count_block(child, wanted)).sum()
+                }
+                _ => 0,
+            }
+        }
+
+        fn collect_breaks(region: &Region, breaks: &mut Vec<(u32, CanonicalBlockId)>) {
+            match region {
+                Region::LoopBreak {
+                    source_bci,
+                    loop_header,
+                } => {
+                    breaks.push((*source_bci, loop_header.clone()));
+                }
+                Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
+                    for child in regions {
+                        collect_breaks(child, breaks);
+                    }
+                }
+                Region::If {
+                    then_arm, else_arm, ..
+                }
+                | Region::CompoundIf {
+                    then_arm, else_arm, ..
+                } => {
+                    collect_breaks(then_arm, breaks);
+                    collect_breaks(else_arm, breaks);
+                }
+                _ => {}
+            }
+        }
+
+        for bytes in [DEBUG_CLASS, NO_DEBUG_CLASS] {
+            let mut analysis_budget = Budget::new(limits(1 << 20));
+            let snapshot =
+                ArtifactSnapshot::open(ArtifactInput::bytes(bytes.to_vec()), &mut analysis_budget)
+                    .expect("frozen complete class opens");
+            let definition = PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: snapshot.id().clone(),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest(blake3::hash(bytes).to_hex().to_string()),
+                    length: u64::try_from(bytes.len()).expect("fixture length fits"),
+                },
+                variant: PhysicalVariant::Base,
+            };
+            let domain = LoadDomain {
+                loader: LoaderId("app".to_owned()),
+                parent_loader: None,
+                delegation: DelegationPolicy::ParentFirst,
+                roots: vec![LoadRoot::StandaloneClass {
+                    snapshot: snapshot.id().clone(),
+                }],
+                module_mode: ModuleMode::ClassPath,
+                external_override: RuntimeUncertainty::None,
+                runtime_transformation: RuntimeUncertainty::None,
+            };
+            let analysis = analyze_method_ir(
+                &[snapshot.clone()],
+                &MethodAnalysisRequest {
+                    environment: ResolutionEnvironment {
+                        runtime: RuntimeView {
+                            physical: PhysicalView {
+                                snapshot: snapshot.id().clone(),
+                                scope: PhysicalScope::SnapshotAll,
+                            },
+                            profile: RuntimeProfile {
+                                java_release: 8,
+                                multi_release: MultiReleasePolicy::Disabled,
+                                layout: LayoutMode::Generic,
+                            },
+                            load_domain: domain.clone(),
+                        },
+                        domains: vec![domain],
+                        providers: Vec::new(),
+                    },
+                    method: PhysicalMethodId {
+                        owner: definition,
+                        name: JvmBytes(b"test".to_vec()),
+                        descriptor: JvmBytes(b"(I)I".to_vec()),
+                    },
+                    stages: AnalysisStage::ALL.to_vec(),
+                },
+                &mut analysis_budget,
+            )
+            .expect("real method has complete IR stages");
+            let ir = analysis.ir();
+            let canonical = ir.canonical().expect("canonical CFG");
+            let view = NormalFlowView::build(canonical, &mut analysis_budget)
+                .expect("normal-flow view builds");
+            let ssa = ir.ssa().expect("same-run SSA");
+            let code = ir.code().expect("decoded physical Code");
+            let pool = ir.constant_pool();
+            let operations = Operations::of(code, pool);
+            let headers: Vec<_> = (0..view.len())
+                .filter(|node| view.loop_entered_at(*node).is_some())
+                .collect();
+            assert_eq!(headers.len(), 1, "fixed method has one natural loop");
+            let header_node = headers[0];
+            let header = view.id_of(header_node).cloned().expect("header id");
+            let natural = view.loop_entered_at(header_node).expect("natural loop");
+            let blocks = natural.blocks().clone();
+            let latches = natural.latches();
+            assert_eq!(latches.len(), 1, "post-test candidate has one latch");
+            let latch_node = *latches.first().expect("one latch");
+            let latch_successors = view.successors(latch_node);
+            let exit_node = latch_successors
+                .into_iter()
+                .find(|node| !blocks.contains(node))
+                .expect("latch has an outside exit");
+            let prefix_nodes: Vec<_> = view
+                .successors(header_node)
+                .into_iter()
+                .filter(|node| !blocks.contains(node))
+                .collect();
+            assert_eq!(
+                prefix_nodes.len(),
+                1,
+                "one header side path owns the prefix"
+            );
+            let prefix_node = prefix_nodes[0];
+            let chains = crate::concat::Plan::empty();
+            let sites = crate::init::Sites::empty();
+
+            let mut ample = Budget::new(limits(1 << 20));
+            let mut walker = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut ample,
+            );
+            assert!(
+                walker
+                    .post_test_break_prefix_proved(
+                        header_node,
+                        prefix_node,
+                        exit_node,
+                        header_node,
+                        latch_node,
+                        &blocks,
+                        &Frame::default()
+                    )
+                    .expect("ample proof budget")
+            );
+            assert!(ample.usage().analysis_steps > 0, "proof scans are charged");
+
+            let mut wrong_owner_budget = Budget::new(limits(1 << 20));
+            let mut wrong_owner = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut wrong_owner_budget,
+            );
+            assert!(
+                !wrong_owner
+                    .post_test_break_prefix_proved(
+                        latch_node,
+                        prefix_node,
+                        exit_node,
+                        header_node,
+                        latch_node,
+                        &blocks,
+                        &Frame::default()
+                    )
+                    .expect("ample wrong-owner check")
+            );
+            assert_eq!(
+                wrong_owner_budget.usage().analysis_steps,
+                0,
+                "role mismatch rejects before scanning"
+            );
+
+            let mut wrong_exit_budget = Budget::new(limits(1 << 20));
+            let mut wrong_exit = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut wrong_exit_budget,
+            );
+            assert!(
+                !wrong_exit
+                    .post_test_break_prefix_proved(
+                        header_node,
+                        prefix_node,
+                        header_node,
+                        header_node,
+                        latch_node,
+                        &blocks,
+                        &Frame::default()
+                    )
+                    .expect("ample wrong-exit check")
+            );
+            assert_eq!(
+                wrong_exit_budget.usage().analysis_steps,
+                0,
+                "role overlap rejects before scanning"
+            );
+
+            let mut parent_stop_budget = Budget::new(limits(1 << 20));
+            let mut parent_stop = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut parent_stop_budget,
+            );
+            let stop_frame = Frame {
+                boundary: Some(prefix_node),
+                ..Frame::default()
+            };
+            assert!(
+                !parent_stop
+                    .post_test_break_prefix_proved(
+                        header_node,
+                        prefix_node,
+                        exit_node,
+                        header_node,
+                        latch_node,
+                        &blocks,
+                        &stop_frame
+                    )
+                    .expect("ample parent-stop check")
+            );
+            assert_eq!(
+                parent_stop_budget.usage().analysis_steps,
+                0,
+                "parent stop is not re-owned"
+            );
+
+            let mut short_budget = Budget::new(limits(1));
+            let mut short = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut short_budget,
+            );
+            assert_eq!(
+                short.post_test_break_prefix_proved(
+                    header_node,
+                    prefix_node,
+                    exit_node,
+                    header_node,
+                    latch_node,
+                    &blocks,
+                    &Frame::default()
+                ),
+                Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    written: 0,
+                    limit: 1,
+                    at: Some(view.id_of(prefix_node).expect("prefix id").bci()),
+                })
+            );
+            assert_eq!(
+                short.budget.usage().analysis_steps,
+                0,
+                "precharge Stop does no proof work"
+            );
+            assert!(short.visited.is_empty(), "a stopped proof claims no prefix");
+            assert_eq!(
+                short.unclosed_tail_at, None,
+                "a stopped proof retains no trial tail"
+            );
+
+            let token = CancellationToken::new();
+            token.cancel();
+            let mut cancelled_budget = Budget::with_cancellation_token(limits(1 << 20), token);
+            let mut cancelled = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut cancelled_budget,
+            );
+            assert_eq!(
+                cancelled.post_test_break_prefix_proved(
+                    header_node,
+                    prefix_node,
+                    exit_node,
+                    header_node,
+                    latch_node,
+                    &blocks,
+                    &Frame::default()
+                ),
+                Err(StopReason::Cancelled {
+                    at: Some(view.id_of(prefix_node).expect("prefix id").bci()),
+                })
+            );
+            assert_eq!(
+                cancelled.budget.usage().analysis_steps,
+                0,
+                "pre-cancel outranks proof charge"
+            );
+            assert!(
+                cancelled.visited.is_empty(),
+                "a cancelled proof claims no prefix"
+            );
+            assert_eq!(
+                cancelled.unclosed_tail_at, None,
+                "a cancelled proof retains no trial tail"
+            );
+
+            let mut loop_budget = Budget::new(limits(1 << 20));
+            let mut loop_walker = make_walker(
+                canonical,
+                &view,
+                ssa,
+                &operations,
+                pool,
+                &chains,
+                &sites,
+                code,
+                &mut loop_budget,
+            );
+            let (regions, next) = loop_walker
+                .loop_region(&header, header_node, &Frame::default())
+                .expect("ample structured walk budget");
+            assert_eq!(next, view.id_of(exit_node).cloned());
+            let [
+                Region::Loop {
+                    form: LoopForm::DoWhile,
+                    body,
+                    exit: Some(exit),
+                    ..
+                },
+            ] = regions.as_slice()
+            else {
+                panic!("the real post-test loop is recovered")
+            };
+            assert_eq!(exit, view.id_of(exit_node).expect("exit id"));
+            let prefix_id = view.id_of(prefix_node).expect("prefix id");
+            assert_eq!(
+                body.iter()
+                    .map(|region| count_block(region, prefix_id))
+                    .sum::<usize>(),
+                1,
+                "statement-bearing prefix has exactly one body owner"
+            );
+            let mut breaks = Vec::new();
+            for region in body {
+                collect_breaks(region, &mut breaks);
+            }
+            assert_eq!(breaks.len(), 1, "the prefix transfer is one loop break");
+            assert_eq!(breaks[0].1, header, "break targets the proved loop");
+            let prefix_terminal = ssa
+                .block(prefix_id)
+                .and_then(|block| block.instructions().last())
+                .expect("prefix terminal instruction");
+            assert_eq!(
+                breaks[0].0,
+                prefix_terminal.bci(),
+                "break retains the physical goto source"
+            );
+
+            // Parser/IR graph control only (the StackMapTable is not rewritten and this is not
+            // a JVM-verification claim): retarget the real prefix's final goto to the loop header.
+            // Reader must rebuild the changed edge and natural-loop ownership from these bytes.
+            let prefix_ssa = ssa.block(prefix_id).expect("same-run prefix SSA");
+            let terminal = prefix_ssa.instructions().last().expect("prefix terminal");
+            let terminal_bci = terminal.bci();
+            let instruction_index = code
+                .instructions
+                .iter()
+                .position(|item| item.bci == terminal_bci)
+                .expect("physical Code contains prefix terminal");
+            let operands = code
+                .operands()
+                .get(instruction_index)
+                .expect("matching operands");
+            assert!(matches!(operands.effective_opcode, 0xa7 | 0xc8));
+            let old_offset = operands
+                .branch_offset
+                .expect("goto has physical branch offset");
+            assert_eq!(
+                i64::from(terminal_bci) + i64::from(old_offset),
+                i64::from(view.id_of(exit_node).expect("exit id").bci())
+            );
+            let changed_offset = i32::try_from(i64::from(header.bci()) - i64::from(terminal_bci))
+                .expect("same-method branch offset fits i32");
+            assert_ne!(
+                changed_offset, old_offset,
+                "control changes the physical target"
+            );
+            let mut changed_class = bytes.to_vec();
+            let class_code_start =
+                usize::try_from(code.code_span.start).expect("Code class offset fits usize");
+            let branch_start =
+                class_code_start + usize::try_from(terminal_bci).expect("BCI fits usize");
+            match operands.effective_opcode {
+                0xa7 => {
+                    let short = i16::try_from(changed_offset)
+                        .expect("goto target is in short range")
+                        .to_be_bytes();
+                    changed_class[branch_start + 1..branch_start + 3].copy_from_slice(&short);
+                }
+                0xc8 => changed_class[branch_start + 1..branch_start + 5]
+                    .copy_from_slice(&changed_offset.to_be_bytes()),
+                _ => unreachable!("checked goto opcode"),
+            }
+
+            with_changed_method_ir(
+                &changed_class,
+                |changed_canonical,
+                 changed_view,
+                 changed_ssa,
+                 changed_operations,
+                 changed_pool,
+                 changed_code| {
+                    let changed_index = changed_code
+                        .instructions
+                        .iter()
+                        .position(|item| item.bci == terminal_bci)
+                        .expect("mutated physical instruction remains present");
+                    let changed_operand = &changed_code.operands()[changed_index];
+                    assert_eq!(changed_operand.effective_opcode, operands.effective_opcode);
+                    assert_eq!(changed_operand.branch_offset, Some(changed_offset));
+                    assert_eq!(
+                        i64::from(terminal_bci) + i64::from(changed_offset),
+                        i64::from(header.bci())
+                    );
+                    let node_at = |bci| {
+                        (0..changed_view.len())
+                            .find(|node| {
+                                changed_view
+                                    .id_of(*node)
+                                    .is_some_and(|id| id.bci() == bci && id.path().is_empty())
+                            })
+                            .expect("Reader produced the requested canonical block")
+                    };
+                    let changed_header_node = node_at(header.bci());
+                    let changed_prefix_node = node_at(prefix_id.bci());
+                    assert!(
+                        changed_view
+                            .successors(changed_prefix_node)
+                            .contains(&changed_header_node),
+                        "the reparsed NormalFlowView contains the new physical edge"
+                    );
+                    let changed_blocks = changed_view
+                        .loop_entered_at(changed_header_node)
+                        .expect("same real header remains a natural loop")
+                        .blocks();
+                    assert!(
+                        changed_blocks.contains(&changed_prefix_node),
+                        "retargeting the prefix into the header changes natural-loop membership"
+                    );
+                    let changed_latch_node =
+                        node_at(view.id_of(latch_node).expect("latch id").bci());
+                    let changed_exit_node = changed_view
+                        .successors(changed_latch_node)
+                        .into_iter()
+                        .find(|node| !changed_blocks.contains(node))
+                        .expect("reparsed latch still has its outside exit");
+                    let changed_chains = crate::concat::Plan::empty();
+                    let changed_sites = crate::init::Sites::empty();
+                    let mut changed_budget = Budget::new(limits(1 << 20));
+                    let mut changed_walker = make_walker(
+                        changed_canonical,
+                        changed_view,
+                        changed_ssa,
+                        changed_operations,
+                        changed_pool,
+                        &changed_chains,
+                        &changed_sites,
+                        changed_code,
+                        &mut changed_budget,
+                    );
+                    assert!(
+                        !changed_walker
+                            .post_test_break_prefix_proved(
+                                changed_header_node,
+                                changed_prefix_node,
+                                changed_exit_node,
+                                changed_header_node,
+                                changed_latch_node,
+                                changed_blocks,
+                                &Frame::default(),
+                            )
+                            .expect("changed graph certificate refusal completes"),
+                        "the real edge mutation makes the prefix part of the natural loop, so it is not an outside break prefix"
                     );
                 },
             );

@@ -1,0 +1,25 @@
+{
+  "status": "root_accepted_memberwise_focused_and_complete_do_while_comparison_archive",
+  "archive_sha256": "3a21508d09639654e08e9f6ee97feacdb263adb115f70c5a7cf8cb8647e981d9",
+  "archive_bytes": 3275580,
+  "payload_members": 307,
+  "inventory_sha256": "68df2fbe111b0d23763f05740a401675528a22fceab41e7258dd75f415c45c28",
+  "cli": {
+    "bytes": 64285120,
+    "mode": 365,
+    "path": "/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/candidate-cli",
+    "sha256": "8c91115a91a31b041ecaf53a2b964bb57606342d04b524035293ae0b7accd285"
+  },
+  "commands": 72,
+  "api_cells": 8,
+  "whole_class_compiles": 16,
+  "vm_runs": 32,
+  "observations": 64,
+  "wrong_root_controls": 16,
+  "target_bci_maps": "14/14 each8cells",
+  "notes": [
+    "Exact accepted generic Continue-ladder archive format reused for current DoWhile evidence; every required root included.",
+    "Actual preflight string-check failure retained; no target command ran in that failed launch. Original/JADX and same-run IR remain in their separate accepted archives.",
+    "No full native or current-product own-CI acceptance claimed yet."
+  ]
+}

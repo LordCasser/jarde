@@ -12330,7 +12330,9 @@ mod tests {
             // Original continue-ladder outer/child debug/no-debug add four classes,
             // eight Code bodies and fourteen branch targets; no handler/jsr change.
             // Plain JAR copies do not add filesystem class entries to this census.
-            (1330, 5858, 631, 4217, 16),
+            // Original post-test break outer/child debug/no-debug add four classes,
+            // eight Code bodies and six direct targets; no handler/jsr change.
+            (1334, 5866, 631, 4223, 16),
             "fixture population changed: re-measure these counts"
         );
     }

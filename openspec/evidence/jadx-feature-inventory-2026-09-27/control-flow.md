@@ -1,4 +1,10 @@
-## 2026-10-19 更新：Continue完整交付，DoWhileBreak已证真实缺口
+## 2026-10-19 更新：DoWhileBreak完整对照接受，当前产品广验待做
+
+[单块出口前缀片5/6](../../changes/recover-proved-post-test-loop-break-prefixes/results/README.md) root审Luna v2并实际验收：复用既有scope/gateway/LoopBreak，无新表示/全局机制。冻结CLI八API、16整类编译、32VM64观察全同原件、16错根拒绝，来源14/14；512 Java lib与公开/旧出口/副作用/Reader/指纹/fmt/Clippy全部接受。307payload归档逐bytes/mode复开，实际采集工具needle失败保留。一次fresh、本产品自身CI/来源绑定/主spec同步仍待，不能借用上一产品CI。
+
+DoWhile完整原件与源码对照已推进，但全产品门待做；固定13原件仍有九项未完成完整对照，下一ComplexIf只有有限源码计划、未运行。CF09/71/612保持partial。以下均为历史时点。
+
+## 2026-10-19 历史：Continue完整交付，DoWhileBreak已证真实缺口
 
 [continue6/6](../../changes/recover-proved-loop-continue-ladder-joins/results/README.md)与[数组减法4/4](../../changes/recover-proved-int-array-subtract-updates/results/README.md)产品050：8API/16整类编译/32VM256观察全同原件、来源44/44；fresh390targets/3802-0-98，自身CI39193571868四jobs/52独立官方步骤/双seed102精确门及3900具名结果一致，5229来源并集绑定产品。两requirement/九scenario同步、384 strict通过；后续文档提交不冒称重跑产品CI。
 
