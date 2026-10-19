@@ -22502,6 +22502,9 @@ impl Walker<'_> {
             self.budget,
             self.view.id_of(header).map(CanonicalBlockId::bci),
         )?;
+        if natural_exits.len() != 2 || !natural_exits.contains(&exit) {
+            return Ok(None);
+        }
         let candidate_scan_bound = blocks
             .len()
             .saturating_mul(self.canonical.edges().len().saturating_add(1));
@@ -22515,9 +22518,6 @@ impl Walker<'_> {
             u64::try_from(candidate_scan_bound).unwrap_or(u64::MAX),
             self.view.id_of(header).map(CanonicalBlockId::bci),
         )?;
-        if natural_exits.len() != 2 || !natural_exits.contains(&exit) {
-            return Ok(None);
-        }
         let mut candidate = None;
         for &branch in blocks {
             poll(

@@ -22,7 +22,9 @@
 
 两项OpenSpec已由Luna提交私有补丁、root审查并集成：Loop4仅在闭合、无外部入口/额外出口的break分支DAG内扩展owner并复用既有sequence；Loop5精确绑定普通named catch的物理范围，将prefix+完整While+return-tail组合，保留append/update；Builder复用catch身份，区分handler入口异常绑定与同槽普通double。Call/Return跨owner边、异常行漂移、owner重复/遗漏及晚期Stop均保留拒绝/回滚门，无全局scope或ForHeader放宽。
 
-定向功能收据为lib540、公开API4、Reader1、fingerprint5通过/1既有忽略；后续测试lint等价修正和项目格式检查已通过，新CLI64,631,664 bytes、0555、SHA `3dfb66010da33478d634cb0022abc18b02d7ee12bc3db095b5a8ddb6b9f8639b`。完整三方新矩阵已闭合：每原件70命令/8API/24方法均structured，各Jarde8及JADX2完整JDK23编译成功、20生成VM同原，10次JDK8框架编译边界保留。Loop5扩展12例的20生成VM亦均同原件；root/独立raw审查及fresh workspace、新产品自身CI和来源绑定仍待最终关闭。主规格已追加2要求/8场景，strict388通过；不能借用旧产品CI记本片完成。
+首版产品a4ccac6b4的完整三方矩阵与Loop5扩展12例已由root/独立接受，但fresh workspace在旧CF12预算精确门失败。已确认单出口循环在必然拒绝前被多付候选扫描费用；Luna最小补丁仅前置原有两出口必要条件，真实候选收费/取消不变，未修改旧测试预算。修正后的CF12全部9项（仍365@29、130@1）、Java核心540、公开API4、Clippy/fmt均通过，构建前后源码一致且target已清理。
+
+新CLI64,631,664 bytes、0555、SHA `d29b6fee723d8f59fbecd9fd8be9f15a8ec73de3a90f5a2a29b24ff91e4af607`。此新产物的完整三方/扩展对照、fresh workspace和自身CI/来源绑定待重新关闭；首版运行结果不能冒充新版本验收。首版实际来源覆盖为Loop4 23/23、Loop5 59/60，缺BCI103（goto14）单列映射债务。主规格2要求/8场景已同步，strict388通过；固定原件状态仍保留待最终验收。
 
 ## 下一步与独立债务
 
