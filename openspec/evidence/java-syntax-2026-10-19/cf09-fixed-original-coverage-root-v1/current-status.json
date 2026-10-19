@@ -1,0 +1,620 @@
+{
+  "schema": "cf09-current-coverage-update-v4",
+  "status": "read_only_current_state_addendum",
+  "prior_v1_inventory": {
+    "directory": "/private/tmp/jarde-cf09-original-coverage-inventory-luna-v1-20261019",
+    "readme_sha256": "86c1594aba00e7d47375fa7cc294df5c817360cd6a74503bcc5e6c4b82409974",
+    "review_json_sha256": "6a1babc7a823d6112b09ca31ac762f74a83ba10262f56d4fb341e34c877941a6"
+  },
+  "current_product_findings": {
+    "TestBreakWithLabel": {
+      "status": "resolved_in_product_cc1bf; accepted full comparison and final native/own-CI evidence",
+      "comparison_review": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-literal-boolean-locals/results/focused-and-full-comparison-root-v1/root-review.json",
+        "bytes": 819,
+        "sha256": "15f9c9f47364fa568123e684c6a846cab87d5f64347ad5d9a5c9b96817beb7f9",
+        "mode": 420
+      },
+      "final_acceptance_review": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-literal-boolean-locals/results/final-native-and-own-ci-root-v1/root-review.json",
+        "bytes": 459,
+        "sha256": "21a6709997b9ea39bd4b55a31d41bbfe5011a7c348975a92e85a0c7d60edb8c8",
+        "mode": 420
+      },
+      "product": "cc1bf5fa37ef51c4d11a78ea1e9dfcabfe169d2c",
+      "api_cells": 8,
+      "successful_whole_source_compiles": 16,
+      "positive_vm_runs": 32,
+      "case_observations": 192,
+      "observation_result": "all match accepted original",
+      "source_map": "41/42 target BCIs; BCI 44 remains missing, recorded separately"
+    },
+    "TestContinueInLoop": {
+      "status": "resolved_in_product_050cedbd; accepted full comparison, fresh native workspace, and own CI",
+      "comparison_review": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-continue-ladder-joins/results/focused-and-full-comparison-root-v1/root-review.json",
+        "bytes": 2202,
+        "sha256": "7123f7e9cbd5ee5244487bcbc1c00eea0ba038023389c4acfbdfa30375919f8a",
+        "mode": 420
+      },
+      "product_binding_review": {
+        "path": "/private/tmp/jarde-continue-ladder-product-binding-root-v1-20261019/review.json",
+        "bytes": 1593221,
+        "sha256": "5d0746c2d691a95510560f10d572f2866bcd5cb04e9f81d4f4184f84a33f08b1",
+        "mode": 420
+      },
+      "workspace_totals": [
+        3802,
+        0,
+        98
+      ],
+      "workspace_critical_gate_count": 57,
+      "ci_run": "39193571868",
+      "ci_state": "accepted; CI run 39193571868 has four accepted jobs and 52 official step ZIPs",
+      "api_cells": 8,
+      "successful_whole_source_compiles": 16,
+      "positive_vm_runs": 32,
+      "case_observations": 256,
+      "mapped_target_bcis": "44/44",
+      "observation_result": "all match accepted original",
+      "workspace_target_count": 390,
+      "workspace_batches": 102,
+      "product_sha": "050cedbd255ffaddf9e51acf8d2ad52fe573519b",
+      "cli_sha256": "6c83ec82cd4c6caee86c08e7fefddc2fea675952f936c0e4aa3f295ed9be7fc6",
+      "ci_jobs": 4,
+      "ci_official_zip_steps": 52,
+      "ci_per_seed_totals": [
+        3802,
+        0,
+        98
+      ],
+      "ci_exact_gates_per_seed": 102,
+      "all_named_ci_outcomes_equal": 3900,
+      "workspace_targets": 390,
+      "workspace_exact_gates": 57,
+      "comparison_and_current_product_status": "The original comparison was accepted; current product native and own-CI acceptance is separately pinned. Do not infer that other CF-09 matrices were rerun on this product."
+    },
+    "TestBreakInLoop": {
+      "status": "accepted full-original capture on the byte-identical current product CLI; no new mechanism indicated",
+      "baseline_root_review": {
+        "path": "/private/tmp/jarde-testbreakinloop-baseline-root-v1-20261019/root-review.json",
+        "bytes": 1218,
+        "sha256": "6fc5e8b35aa5a2f427bfa82ad786dd326b141c60829d4089b263a5262c0fd864",
+        "mode": 420
+      },
+      "actual_commands": 94,
+      "api_cells": 8,
+      "jarde_compiles": 16,
+      "jarde_vm_runs": 32,
+      "jarde_observations": 160,
+      "jadx_vm_runs": 4,
+      "jadx_observations": 20,
+      "result": "original/JADX/Jarde observations accepted; exact source shown by baseline review"
+    },
+    "TestDoWhileBreak": {
+      "status": "accepted actual baseline with a concrete current gap; next priority",
+      "baseline_root_review": {
+        "path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/root-review.json",
+        "bytes": 1338,
+        "sha256": "27b72505573b4154d8c12ff05ab0618518c9f74f1df996457aa5ae8b43a3c2bc",
+        "mode": 420
+      },
+      "actual_commands": 46,
+      "api_cells": 8,
+      "jarde_full_compiles": 0,
+      "jarde_compile_failures": 16,
+      "jarde_vm_runs": 0,
+      "jadx_full_compiles": 2,
+      "jadx_vm_runs": 4,
+      "jadx_observations": 8,
+      "first_refusal": "jre_region_arms_do_not_meet at block 13",
+      "original_vm_runs": 4,
+      "original_observations": 8,
+      "wrong_root_controls": 2,
+      "mapped_bcis": 14
+    },
+    "TestSequentialLoops": "belongs to CF-11 existing accepted evidence; outside explicit 13-file CF-09 list"
+  },
+  "recommended_next_target": "Finish the active DoWhileBreak post-test loop prefix change and its evidence gates; consider TestBreakInComplexIf afterward.",
+  "baseline_pins": [
+    {
+      "directory": "/private/tmp/jarde-testbreakinloop-baseline-root-v1-20261019",
+      "execution": {
+        "path": "/private/tmp/jarde-testbreakinloop-baseline-root-v1-20261019/execution.json",
+        "bytes": 5945591,
+        "sha256": "c5f14ddda2155b5909e7e090e3247c8bf184ae0a4a3c60eb6b712f5d07d8149a",
+        "mode": 420
+      },
+      "root_review": {
+        "path": "/private/tmp/jarde-testbreakinloop-baseline-root-v1-20261019/root-review.json",
+        "bytes": 1218,
+        "sha256": "6fc5e8b35aa5a2f427bfa82ad786dd326b141c60829d4089b263a5262c0fd864",
+        "mode": 420
+      },
+      "accepted_status": "root_accepted_full_original_break_in_loop_no_new_mechanism",
+      "execution_sha_bound": true,
+      "actual_commands": 94,
+      "api_cells": 8,
+      "jarde_complete_compiles": 16,
+      "jarde_compile_failures": null,
+      "jarde_vm_runs": 32,
+      "jarde_observations": 160,
+      "jadx_complete_compiles": 2,
+      "jadx_vm_runs": 4,
+      "jadx_observations": 20,
+      "first_published_refusal": null
+    },
+    {
+      "directory": "/private/tmp/jarde-testbreakwithlabel-baseline-root-v1-20261019",
+      "execution": {
+        "path": "/private/tmp/jarde-testbreakwithlabel-baseline-root-v1-20261019/execution.json",
+        "bytes": 7446236,
+        "sha256": "e2ca55f13812454af5441bcb78a68690e6d9cdf6f114a5e631b014acb9c8f75d",
+        "mode": 420
+      },
+      "root_review": {
+        "path": "/private/tmp/jarde-testbreakwithlabel-baseline-root-v1-20261019/root-review.json",
+        "bytes": 2227,
+        "sha256": "145948b4549989fd3207b306f7e0aa25d097447dd683e5ce96a8fbcb9aa4efb5",
+        "mode": 420
+      },
+      "accepted_status": "root_accepted_complete_original_baseline_with_explicit_boolean_local_stdout_gap",
+      "execution_sha_bound": false,
+      "actual_commands": 94,
+      "api_cells": null,
+      "jarde_complete_compiles": null,
+      "jarde_compile_failures": null,
+      "jarde_vm_runs": null,
+      "jarde_observations": null,
+      "jadx_complete_compiles": null,
+      "jadx_vm_runs": null,
+      "jadx_observations": null,
+      "first_published_refusal": null
+    },
+    {
+      "directory": "/private/tmp/jarde-testcontinueinloop-baseline-root-v1-20261019",
+      "execution": {
+        "path": "/private/tmp/jarde-testcontinueinloop-baseline-root-v1-20261019/execution.json",
+        "bytes": 5029742,
+        "sha256": "d33084ce268c7d3c49a056f120619d7e1786b5f438d5bcf8b30d66911ea2c0ec",
+        "mode": 420
+      },
+      "root_review": {
+        "path": "/private/tmp/jarde-testcontinueinloop-baseline-root-v1-20261019/root-review.json",
+        "bytes": 5808,
+        "sha256": "3c53bac442e35918b04f30da789c26e06dfb3a2ab3f7d65ef24905f7214d62c1",
+        "mode": 420
+      },
+      "accepted_status": "root_accepted_original_baseline_with_explicit_whole_method_refusal_gap",
+      "execution_sha_bound": true,
+      "actual_commands": null,
+      "api_cells": null,
+      "jarde_complete_compiles": null,
+      "jarde_compile_failures": null,
+      "jarde_vm_runs": null,
+      "jarde_observations": null,
+      "jadx_complete_compiles": null,
+      "jadx_vm_runs": null,
+      "jadx_observations": null,
+      "first_published_refusal": null
+    },
+    {
+      "directory": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019",
+      "execution": {
+        "path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/execution.json",
+        "bytes": 5027550,
+        "sha256": "b5e89a48be39df7700d11d663fa02d0ebb22865b3a7ea989589854b330cd9602",
+        "mode": 420
+      },
+      "root_review": {
+        "path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/root-review.json",
+        "bytes": 1338,
+        "sha256": "27b72505573b4154d8c12ff05ab0618518c9f74f1df996457aa5ae8b43a3c2bc",
+        "mode": 420
+      },
+      "accepted_status": "root_accepted_full_original_do_while_break_with_explicit_refusal_gap",
+      "execution_sha_bound": true,
+      "actual_commands": 46,
+      "api_cells": 8,
+      "jarde_complete_compiles": 0,
+      "jarde_compile_failures": 16,
+      "jarde_vm_runs": 0,
+      "jarde_observations": 0,
+      "jadx_complete_compiles": 2,
+      "jadx_vm_runs": 4,
+      "jadx_observations": 8,
+      "first_published_refusal": "jre_region_arms_do_not_meet at block 13"
+    }
+  ],
+  "artifact_pins": {
+    "breakwithlabel_focused_capture": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-literal-boolean-locals/results/focused-and-full-comparison-root-v1/capture.tar.gz",
+      "bytes": 4914620,
+      "sha256": "8200e38eb0646cae1cdc2c1017c6b74c1a0d65c1daf02fcc910c86e9f7a02b17",
+      "mode": 420
+    },
+    "breakwithlabel_final_native_ci_capture": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-literal-boolean-locals/results/final-native-and-own-ci-root-v1/capture.tar.gz",
+      "bytes": 6717912,
+      "sha256": "1b69842821ac1f006bb746ea80d64e74e0369f33a626719978c981bcbad8522e",
+      "mode": 420
+    },
+    "continue_focused_comparison_capture": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-continue-ladder-joins/results/focused-and-full-comparison-root-v1/capture.tar.gz",
+      "bytes": 5031387,
+      "sha256": "004dd01900ed5b0fdb51ae59eb89985baab47b514267aac2a8eb40857553a2d7",
+      "mode": 420
+    },
+    "breakinloop_baseline_capture": {
+      "path": "/private/tmp/jarde-testbreakinloop-archive-root-v1-20261019/capture.tar.gz",
+      "bytes": 1012471,
+      "sha256": "0bbcad9c7c53b0f40528451428165cc85e0fd76177b5799dc4d2b8c39358e164",
+      "mode": 420
+    },
+    "breakinloop_baseline_archive_review": {
+      "path": "/private/tmp/jarde-testbreakinloop-archive-root-v1-20261019/root-review.json",
+      "bytes": 1268,
+      "sha256": "1734b0dfb695347bc2267fcf8d6e77630de11b4b82fcb6ee3e3d582ca9bdf51a",
+      "mode": 420
+    },
+    "dowhilebreak_baseline_capture": {
+      "path": "/private/tmp/jarde-testdowhilebreak-archive-root-v1-20261019/capture.tar.gz",
+      "bytes": 939364,
+      "sha256": "d6e22ae912670e760d00df7051da3fa124fdf712a2918159a622c1446de0d43a",
+      "mode": 420
+    },
+    "dowhilebreak_baseline_archive_review": {
+      "path": "/private/tmp/jarde-testdowhilebreak-archive-root-v1-20261019/root-review.json",
+      "bytes": 1252,
+      "sha256": "247f5e7c588e820fb04babea99c4615403a42fcd31ac453767c5b49540993b8d",
+      "mode": 420
+    }
+  },
+  "scope_note": "The original fixed 13-file inventory is copied from v1 into this package. Three inputs have accepted full-original comparisons; DoWhileBreak has an accepted original baseline with an explicit Jarde compile refusal and an accepted same-run IR archive. Nine listed inputs still lack an accepted full-original comparison.",
+  "tooling_note": "Private Python -B read/write only for this addendum; no shared product sources, Git, network, Cargo, JDK, JADX, or Jarde CLI were run.",
+  "continueinloop_current_product_acceptance": {
+    "status": "root_accepted_current_product_native_and_own_ci",
+    "product_sha": "050cedbd255ffaddf9e51acf8d2ad52fe573519b",
+    "cli_sha256": "6c83ec82cd4c6caee86c08e7fefddc2fea675952f936c0e4aa3f295ed9be7fc6",
+    "ci_run": "39193571868",
+    "ci_jobs": 4,
+    "official_zip_steps": 52,
+    "native": {
+      "workspace_targets": 390,
+      "batches": 102,
+      "totals": [
+        3802,
+        0,
+        98
+      ],
+      "exact_gates": 57
+    },
+    "ci_per_seed_totals": [
+      3802,
+      0,
+      98
+    ],
+    "ci_exact_gates_per_seed": 102,
+    "all_named_outcomes_equal": 3900,
+    "scope": "This is accepted current-product CI/native evidence for ContinueInLoop only. It does not mean earlier matrices for the other CF-09 sources were rerun under product 050."
+  },
+  "accepted_persistent_evidence": {
+    "continueinloop": {
+      "full_comparison_review": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-continue-ladder-joins/results/focused-and-full-comparison-root-v1/root-review.json"
+      },
+      "same_run_ir_archive": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-continue-ladder-joins/results/same-run-ir-root-v1/",
+      "native_workspace_review": {
+        "path": "/private/tmp/jarde-continue-ladder-workspace-root-v1-20261019/review.json"
+      },
+      "final_acceptance_review": {
+        "path": "/private/tmp/jarde-continue-ladder-final-acceptance-root-v1-20261019/root-review.json"
+      },
+      "ci_role_review": {
+        "path": "/private/tmp/jarde-continue-ladder-final-acceptance-root-v1-20261019/ci-role-review.json"
+      }
+    },
+    "breakinloop": {
+      "durable_archive": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-19/cf09-testbreakinloop-original-root-v1/"
+    },
+    "dowhilebreak": {
+      "durable_archive": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-19/cf09-testdowhilebreak-original-root-v1/",
+      "same_run_ir_archive": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-post-test-loop-break-prefixes/results/same-run-ir-root-v1/"
+    }
+  },
+  "v3_artifact_pins": {
+    "continue_focused_comparison_root_review": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-continue-ladder-joins/results/focused-and-full-comparison-root-v1/root-review.json",
+      "bytes": 2202,
+      "sha256": "7123f7e9cbd5ee5244487bcbc1c00eea0ba038023389c4acfbdfa30375919f8a",
+      "mode": 420
+    },
+    "continue_same_run_ir_root_review": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-continue-ladder-joins/results/same-run-ir-root-v1/root-review.json",
+      "bytes": 386,
+      "sha256": "d2b841877a8877888bfca40a3a51d0eb3b92e57dc389c47ec9e12f7fe0660691",
+      "mode": 420
+    },
+    "continue_native_workspace_review": {
+      "path": "/private/tmp/jarde-continue-ladder-workspace-root-v1-20261019/review.json",
+      "bytes": 857357,
+      "sha256": "31be040a8951b47ddb527bc2862be9fe9eef07bdbba68481a002ae9dd74e9c69",
+      "mode": 420
+    },
+    "continue_final_acceptance_root_review": {
+      "path": "/private/tmp/jarde-continue-ladder-final-acceptance-root-v1-20261019/root-review.json",
+      "bytes": 1855,
+      "sha256": "a4d7d6e830039840e9fc572ef60e42b8c9e06055c94348ed9a7d1ba315ace2d7",
+      "mode": 420
+    },
+    "continue_ci_role_review": {
+      "path": "/private/tmp/jarde-continue-ladder-final-acceptance-root-v1-20261019/ci-role-review.json",
+      "bytes": 496,
+      "sha256": "040a553058d061cde182de981e729f3fbb9039a641fa4a9bac20d2d7c0240889",
+      "mode": 420
+    },
+    "breakinloop_durable_capture": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-19/cf09-testbreakinloop-original-root-v1/capture.tar.gz",
+      "bytes": 1012471,
+      "sha256": "0bbcad9c7c53b0f40528451428165cc85e0fd76177b5799dc4d2b8c39358e164",
+      "mode": 420
+    },
+    "breakinloop_durable_root_review": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-19/cf09-testbreakinloop-original-root-v1/root-review.json",
+      "bytes": 1268,
+      "sha256": "1734b0dfb695347bc2267fcf8d6e77630de11b4b82fcb6ee3e3d582ca9bdf51a",
+      "mode": 420
+    },
+    "dowhilebreak_durable_capture": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-19/cf09-testdowhilebreak-original-root-v1/capture.tar.gz",
+      "bytes": 939364,
+      "sha256": "d6e22ae912670e760d00df7051da3fa124fdf712a2918159a622c1446de0d43a",
+      "mode": 420
+    },
+    "dowhilebreak_durable_root_review": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-19/cf09-testdowhilebreak-original-root-v1/root-review.json",
+      "bytes": 1252,
+      "sha256": "247f5e7c588e820fb04babea99c4615403a42fcd31ac453767c5b49540993b8d",
+      "mode": 420
+    },
+    "dowhilebreak_same_run_ir_capture": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-post-test-loop-break-prefixes/results/same-run-ir-root-v1/capture.tar.gz",
+      "bytes": 807880,
+      "sha256": "d841b5ba253bddafb72aebd97acf1bfddf895fe2a18bfcb6963fbf525206f5cc",
+      "mode": 420
+    },
+    "dowhilebreak_same_run_ir_root_review": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-post-test-loop-break-prefixes/results/same-run-ir-root-v1/root-review.json",
+      "bytes": 420,
+      "sha256": "c19cf201724fdb1b54c7cd16a4255ff0d27afce05d125b4ecbf58f07621f9dc1",
+      "mode": 420
+    }
+  },
+  "current_coverage_boundary": {
+    "fixed_source_inventory_count": 13,
+    "accepted_full_original_comparisons": [
+      "TestBreakWithLabel",
+      "TestContinueInLoop",
+      "TestBreakInLoop"
+    ],
+    "accepted_baseline_with_explicit_jarde_gap": [
+      "TestDoWhileBreak"
+    ],
+    "remaining_without_accepted_full_original_comparison_count": 9,
+    "remaining_source_names": [
+      "TestBreakInComplexIf",
+      "TestBreakInComplexIf2",
+      "TestBreakInLoop2",
+      "TestBreakInLoop3",
+      "TestBreakInLoop4",
+      "TestBreakInLoop5",
+      "TestBreakInLoop6",
+      "TestDoWhileBreak2",
+      "TestDoWhileBreak3"
+    ],
+    "next_priority": "Continue the active recover-proved-post-test-loop-break-prefixes change. The accepted same-run IR archive and OpenSpec facts are complete; production task 2.1 is underway. ComplexIf remains a later candidate after DoWhileBreak.",
+    "no_cross_matrix_claim": "The accepted 050 current-product native/CI evidence applies to ContinueInLoop. It does not establish that old full-source comparison matrices for the other fixed inputs were rerun against 050."
+  },
+  "fixed_cf09_source_inventory": [
+    {
+      "name": "TestBreakInComplexIf",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakInComplexIf.java",
+      "bytes": 1533,
+      "sha256": "8e31f1cbe056fee54e43bab414f1c3c5ad19803497a80844c20a1d5f50226d4f",
+      "mode": 420,
+      "inventory": "private test(Map<String, Point>, int):int; Point constructor; public check(); no finite runtime oracle captured"
+    },
+    {
+      "name": "TestBreakInComplexIf2",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakInComplexIf2.java",
+      "bytes": 1125,
+      "sha256": "c51ba62db7e9d9d7df86bbe04fe38f37357fe62e1dc7514edc54701af94ecc92",
+      "mode": 420,
+      "inventory": "private test(List<String>):int; public check() with three finite lists; exercises two break sites, continue, enhanced for"
+    },
+    {
+      "name": "TestBreakInLoop",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakInLoop.java",
+      "bytes": 731,
+      "sha256": "1d2723c3e1ab176684610fc3732e01c0007156d22f8a627114ec0ccf472c6cb0",
+      "mode": 420,
+      "inventory": "public test(int[], int):void; no check(); full original baseline accepted"
+    },
+    {
+      "name": "TestBreakInLoop2",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakInLoop2.java",
+      "bytes": 989,
+      "sha256": "c5ba3e10ad168e2c6a0f0a6385bfc5c12d7332f33ed5a3535dc023b9925b91aa",
+      "mode": 420,
+      "inventory": "public test(List<Integer>):void; funcB(List):boolean, funcC():boolean; no check(); normal call breaks immediately, exception path includes sleep"
+    },
+    {
+      "name": "TestBreakInLoop3",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakInLoop3.java",
+      "bytes": 1216,
+      "sha256": "7426191067f7ec483c191029376a2ee5544ccfdb5f893c2cf0a21f4df219ffc4",
+      "mode": 420,
+      "inventory": "public writeMore(String):void, prt(String):void, public check(); filesystem operation; test43 is disabled and @NotYetImplemented"
+    },
+    {
+      "name": "TestBreakInLoop4",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakInLoop4.java",
+      "bytes": 1068,
+      "sha256": "42b0f55b653b41bc69286e1947c8a19d94b0da810cdcc7cf48bb6d2cd6a256e5",
+      "mode": 420,
+      "inventory": "public test(char):double; public check() on four chars; bounded 0..5 loop iterations"
+    },
+    {
+      "name": "TestBreakInLoop5",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakInLoop5.java",
+      "bytes": 1495,
+      "sha256": "4aef48802b7dc7cc47c7c03d6c2639103c2913345cb8be8818545e63ed1fea64",
+      "mode": 420,
+      "inventory": "public test(String):long; public check() on five strings incl malformed/empty; bounded string scan"
+    },
+    {
+      "name": "TestBreakInLoop6",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakInLoop6.java",
+      "bytes": 534,
+      "sha256": "6b59880e867a7b2c60437233448a65e1f12553154ce15210d606327a98ceada3",
+      "mode": 420,
+      "inventory": "SmaliTest only; fixture test/smali/loops/TestBreakInLoop6.smali; compile disabled, no Java TestCls or runtime check"
+    },
+    {
+      "name": "TestBreakWithLabel",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakWithLabel.java",
+      "bytes": 962,
+      "sha256": "fa38d5b302c0bec8a8424312304b260cfb036e0144f147fad1666aaa358b3a69",
+      "mode": 420,
+      "inventory": "TestCls.test(int[][]):boolean; public check(); accepted complete original baseline, Jarde boolean-local stdout gap retained"
+    },
+    {
+      "name": "TestContinueInLoop",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestContinueInLoop.java",
+      "bytes": 812,
+      "sha256": "9013fc2ce9ac89c4e8967ddef39ead5f66dfc8c692f6529583bb75d96c38d8ec",
+      "mode": 420,
+      "inventory": "public test(int[], int):void; no check(); accepted full original baseline; Jarde whole-method refusal retained"
+    },
+    {
+      "name": "TestDoWhileBreak",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestDoWhileBreak.java",
+      "bytes": 563,
+      "sha256": "7c8db1024a14626aaafdd977a722665e077f8e17f5751f2249bc7be6e9eba577",
+      "mode": 420,
+      "inventory": "public test(int):int; no check(); unexecuted baseline prep with two finite cases (k=9 -> 5, k=10 -> 0)"
+    },
+    {
+      "name": "TestDoWhileBreak2",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestDoWhileBreak2.java",
+      "bytes": 1078,
+      "sha256": "8b936f2645d158c4ddc8c19e3790045fe3bfd26fe49ef54c3141df41fd433666",
+      "mode": 420,
+      "inventory": "public test():Object, Iterator<String> field, public check() on two finite lists (normal end/null sentinel)"
+    },
+    {
+      "name": "TestDoWhileBreak3",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestDoWhileBreak3.java",
+      "bytes": 640,
+      "sha256": "031b252df423c0db4f2198f0b75814dcda6398d83ba7c8c6dc8d2624f9cb662e",
+      "mode": 420,
+      "inventory": "public test():void, Iterator<String> field; no check(); default null field would NPE unless explicitly seeded"
+    }
+  ],
+  "prior_inventory_copy": {
+    "directory": "prior-inventory",
+    "README.md": {
+      "path": "/private/tmp/jarde-cf09-original-coverage-inventory-luna-v4-20261019/prior-inventory/README.md",
+      "bytes": 1759,
+      "sha256": "86c1594aba00e7d47375fa7cc294df5c817360cd6a74503bcc5e6c4b82409974",
+      "mode": 420
+    },
+    "review.json": {
+      "path": "/private/tmp/jarde-cf09-original-coverage-inventory-luna-v4-20261019/prior-inventory/review.json",
+      "bytes": 10578,
+      "sha256": "6a1babc7a823d6112b09ca31ac762f74a83ba10262f56d4fb341e34c877941a6",
+      "mode": 420
+    },
+    "historical_note": "These are byte-identical copies of the v1 files. The v1 README contains historical status statements superseded by this v4 addendum; review.json is the fixed 13-file inventory and original source/evidence pin set."
+  },
+  "post_test_loop_change": {
+    "change": "openspec/changes/recover-proved-post-test-loop-break-prefixes",
+    "task_status_from_current_tasks_md": {
+      "completed": [
+        "1.1",
+        "1.2"
+      ],
+      "remaining": [
+        "2.1",
+        "2.2",
+        "3.1",
+        "3.2"
+      ]
+    },
+    "same_run_probe": "accepted; 1 passed, 0 failed, 0 ignored; debug/no-debug facts archived and source restored",
+    "archive_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-post-test-loop-break-prefixes/results/same-run-ir-root-v1/",
+    "architecture_finding": "Natural post-test loop with first internal gap ArmsDoNotMeet at block 13; accepted evidence does not claim production implementation acceptance."
+  },
+  "v4_persistent_evidence_pins": {
+    "continue_final_root_review": {
+      "path": "/private/tmp/jarde-continue-ladder-final-acceptance-root-v1-20261019/root-review.json",
+      "bytes": 1855,
+      "sha256": "a4d7d6e830039840e9fc572ef60e42b8c9e06055c94348ed9a7d1ba315ace2d7",
+      "mode": 420
+    },
+    "continue_ci_role_review": {
+      "path": "/private/tmp/jarde-continue-ladder-final-acceptance-root-v1-20261019/ci-role-review.json",
+      "bytes": 496,
+      "sha256": "040a553058d061cde182de981e729f3fbb9039a641fa4a9bac20d2d7c0240889",
+      "mode": 420
+    },
+    "continue_native_workspace_review": {
+      "path": "/private/tmp/jarde-continue-ladder-workspace-root-v1-20261019/review.json",
+      "bytes": 857357,
+      "sha256": "31be040a8951b47ddb527bc2862be9fe9eef07bdbba68481a002ae9dd74e9c69",
+      "mode": 420
+    },
+    "continue_comparison_review": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-continue-ladder-joins/results/focused-and-full-comparison-root-v1/root-review.json",
+      "bytes": 2202,
+      "sha256": "7123f7e9cbd5ee5244487bcbc1c00eea0ba038023389c4acfbdfa30375919f8a",
+      "mode": 420
+    },
+    "continue_same_run_ir_root_review": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-continue-ladder-joins/results/same-run-ir-root-v1/root-review.json",
+      "bytes": 386,
+      "sha256": "d2b841877a8877888bfca40a3a51d0eb3b92e57dc389c47ec9e12f7fe0660691",
+      "mode": 420
+    },
+    "dowhile_baseline_archive": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-19/cf09-testdowhilebreak-original-root-v1/capture.tar.gz",
+      "bytes": 939364,
+      "sha256": "d6e22ae912670e760d00df7051da3fa124fdf712a2918159a622c1446de0d43a",
+      "mode": 420
+    },
+    "dowhile_baseline_root_review": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-19/cf09-testdowhilebreak-original-root-v1/root-review.json",
+      "bytes": 1252,
+      "sha256": "247f5e7c588e820fb04babea99c4615403a42fcd31ac453767c5b49540993b8d",
+      "mode": 420
+    },
+    "dowhile_ir_archive": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-post-test-loop-break-prefixes/results/same-run-ir-root-v1/capture.tar.gz",
+      "bytes": 807880,
+      "sha256": "d841b5ba253bddafb72aebd97acf1bfddf895fe2a18bfcb6963fbf525206f5cc",
+      "mode": 420
+    },
+    "dowhile_ir_inventory": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-post-test-loop-break-prefixes/results/same-run-ir-root-v1/capture.tar.gz.inventory.json",
+      "bytes": 14524,
+      "sha256": "dacb3762c89547423d6dadbbd98d2ef376208a8d71377601955d22c906738648",
+      "mode": 420
+    },
+    "dowhile_ir_root_review": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-post-test-loop-break-prefixes/results/same-run-ir-root-v1/root-review.json",
+      "bytes": 420,
+      "sha256": "c19cf201724fdb1b54c7cd16a4255ff0d27afce05d125b4ecbf58f07621f9dc1",
+      "mode": 420
+    }
+  }
+}

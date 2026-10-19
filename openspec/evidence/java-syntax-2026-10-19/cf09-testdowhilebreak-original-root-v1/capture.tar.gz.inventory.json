@@ -1,0 +1,2941 @@
+{
+  "accepted_baseline": {
+    "acceptance_status": "root_accepted_full_original_do_while_break_with_explicit_refusal_gap",
+    "independent_review_path": "/private/tmp/jarde-testdowhilebreak-baseline-review-root-v1-20261019/review.json",
+    "independent_review_sha256": "5e4281051ecefd613d3f7f01d9162f819da06feca983df8eb34b4f06be36c8c6",
+    "receipt_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/execution.json",
+    "receipt_sha256": "b5e89a48be39df7700d11d663fa02d0ebb22865b3a7ea989589854b330cd9602",
+    "receipt_status": "captured-pending-independent-review",
+    "root_marker_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/root-review.json",
+    "root_marker_sha256": "27b72505573b4154d8c12ff05ab0618518c9f74f1df996457aa5ae8b43a3c2bc"
+  },
+  "derived_map_coverage": {
+    "all_api_cells_cover_physical_bcis": true,
+    "target_bcis": 14
+  },
+  "members": [
+    {
+      "archive_path": "archive-preparation/README.md",
+      "bytes": 3090,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "5b2ac0777c01272cd86535da3d718c09981cb692949c488f668e147268e723e5",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-evidence-archive-prep-luna-v2-20261019/README.md"
+    },
+    {
+      "archive_path": "archive-preparation/adaptation.diff",
+      "bytes": 9148,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "2d47efd7cda86b231c9e974edde3ca53b35a779ebc2ccb72bb75cbdedd669867",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-evidence-archive-prep-luna-v2-20261019/adaptation.diff"
+    },
+    {
+      "archive_path": "archive-preparation/pack.py",
+      "bytes": 16193,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "878f7acdc4791ab7d0bc56891c9c2dc49af197d075aaee04b931326f7c041384",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-evidence-archive-prep-luna-v2-20261019/pack.py"
+    },
+    {
+      "archive_path": "archive-preparation/pins.json",
+      "bytes": 9850,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "be8b711a75d23c205f654b97a5a1c71d0d51c05c450e21eaf6978e8c0d094def",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-evidence-archive-prep-luna-v2-20261019/pins.json"
+    },
+    {
+      "archive_path": "archive-preparation/v1-review-return.md",
+      "bytes": 717,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "bad27d7b11933d42297f2a999dca8bc38af56bfdcad0389940d3a19da992079e",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-evidence-archive-prep-luna-v2-20261019/v1-review-return.md"
+    },
+    {
+      "archive_path": "archive-preparation/v1-v2.diff",
+      "bytes": 1450,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "86190fdc4915371a798c1b6a83234863ca1114152c454cb5d59274d893973b44",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-evidence-archive-prep-luna-v2-20261019/v1-v2.diff"
+    },
+    {
+      "archive_path": "baseline",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019"
+    },
+    {
+      "archive_path": "baseline-audit",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-review-root-v1-20261019"
+    },
+    {
+      "archive_path": "baseline-audit-run/audit-run.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-audit-root-v1-20261019.stderr.raw"
+    },
+    {
+      "archive_path": "baseline-audit-run/audit-run.stdout.raw",
+      "bytes": 19156,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "5e4281051ecefd613d3f7f01d9162f819da06feca983df8eb34b4f06be36c8c6",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-audit-root-v1-20261019.stdout.raw"
+    },
+    {
+      "archive_path": "baseline-audit/README.md",
+      "bytes": 211,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "270fdb0ba71389a9802eb09d01dacbf6463d635a10920b3fcd3a3e715c5dbe9b",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-review-root-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "baseline-audit/review.json",
+      "bytes": 19156,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "5e4281051ecefd613d3f7f01d9162f819da06feca983df8eb34b4f06be36c8c6",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-review-root-v1-20261019/review.json"
+    },
+    {
+      "archive_path": "baseline-prep",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019"
+    },
+    {
+      "archive_path": "baseline-prep-review",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-review-root-v1-20261019"
+    },
+    {
+      "archive_path": "baseline-prep-review/review.json",
+      "bytes": 844,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "aab7e3376c68440a3c6c382aa1ae0cc34c91805f96726f535273be92ac283530",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-review-root-v1-20261019/review.json"
+    },
+    {
+      "archive_path": "baseline-prep/README.md",
+      "bytes": 2482,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "8852c34fd1bc33ed347069fe8c1d37db4ec73e1c3e77054b9d765c533914c41f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "baseline-prep/adaptation.diff",
+      "bytes": 29451,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "576a51d2daee4b7e01e8566b8ec7abc6702f742b9ec6fd5552b548ffbe3a4f4e",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/adaptation.diff"
+    },
+    {
+      "archive_path": "baseline-prep/audit.py",
+      "bytes": 60388,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "5b12adf312f9377525d952b5c6ea3a5524d0035945adcb7aa7b3f93b5ddd0f4c",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/audit.py"
+    },
+    {
+      "archive_path": "baseline-prep/caseplans.json",
+      "bytes": 6830,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "41c07aaea29cb457088c3ee4202218a96659b09f5ffbc68b6e335273d17c1a85",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/caseplans.json"
+    },
+    {
+      "archive_path": "baseline-prep/collect_baseline.py",
+      "bytes": 55991,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "4630f5b08fc14a7e7fe83878dd682ce3406effa1a4ba1bdaa1d53cbdb3e9e3d1",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/collect_baseline.py"
+    },
+    {
+      "archive_path": "baseline-prep/driver",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/driver"
+    },
+    {
+      "archive_path": "baseline-prep/driver/TestDoWhileBreakDriver.java",
+      "bytes": 6979,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "aef8cf0da2ccf9760e1b9a615c1075675db7f982cda260a9b49f418a97a93b14",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/driver/TestDoWhileBreakDriver.java"
+    },
+    {
+      "archive_path": "baseline-prep/pins.json",
+      "bytes": 3881,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "cd504401053c19b68c67e4b192de9d36e71ce1cfd24215e87d7e8b27dd2c6215",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/pins.json"
+    },
+    {
+      "archive_path": "baseline-prep/runtime-bound-cwd.py",
+      "bytes": 389,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "bc917ec08e07ed462c18958f9a0d3b064b7d5bba3adc5fa41d9db49ff6c3de46",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/runtime-bound-cwd.py"
+    },
+    {
+      "archive_path": "baseline-prep/source",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/source"
+    },
+    {
+      "archive_path": "baseline-prep/source/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/source/jadx"
+    },
+    {
+      "archive_path": "baseline-prep/source/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/source/jadx/tests"
+    },
+    {
+      "archive_path": "baseline-prep/source/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/source/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline-prep/source/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/source/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline-prep/source/jadx/tests/integration/loops/TestDoWhileBreak.java",
+      "bytes": 563,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "7c8db1024a14626aaafdd977a722665e077f8e17f5751f2249bc7be6e9eba577",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/source/jadx/tests/integration/loops/TestDoWhileBreak.java"
+    },
+    {
+      "archive_path": "baseline-prep/static-math-precheck.json",
+      "bytes": 991,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "14516739fe731fd312e8cdec645d82c1e2928077cb6c202b8134d58056d0be33",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/static-math-precheck.json"
+    },
+    {
+      "archive_path": "baseline/collector.py",
+      "bytes": 55991,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "4630f5b08fc14a7e7fe83878dd682ce3406effa1a4ba1bdaa1d53cbdb3e9e3d1",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/collector.py"
+    },
+    {
+      "archive_path": "baseline/debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/debug"
+    },
+    {
+      "archive_path": "baseline/debug-full-classes.jar",
+      "bytes": 2212,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "3ec67e2e0e81a227e6c3dedbba5b0fd7865b90d944d18737727cb2fe983886df",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/debug-full-classes.jar"
+    },
+    {
+      "archive_path": "baseline/debug/classes",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/debug/classes"
+    },
+    {
+      "archive_path": "baseline/debug/classes/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/debug/classes/jadx"
+    },
+    {
+      "archive_path": "baseline/debug/classes/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/debug/classes/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/debug/classes/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/debug/classes/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/debug/classes/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 677,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "037e32820ff9cd17e4d00e9ce9d9c7d764df3d2065b07eb9d5ab0dfa809308b3",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "baseline/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class",
+      "bytes": 1141,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "289db6487140b5661a19f668e33db75def93b53dbeddebe8b3d93837dee268c5",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class"
+    },
+    {
+      "archive_path": "baseline/driver-classes",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/driver-classes"
+    },
+    {
+      "archive_path": "baseline/driver-classes/TestDoWhileBreakDriver$TypeDescriptor.class",
+      "bytes": 2315,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "f3e32c74fbe0ac11602bf4c9b12ec2fe502178b84d9b7731e24922c5f0c8f1b0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/driver-classes/TestDoWhileBreakDriver$TypeDescriptor.class"
+    },
+    {
+      "archive_path": "baseline/driver-classes/TestDoWhileBreakDriver.class",
+      "bytes": 9102,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "8d793623b1738b1b436f368d6f1e612aa87bffced9d6565fae8bf84ee925c48b",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/driver-classes/TestDoWhileBreakDriver.class"
+    },
+    {
+      "archive_path": "baseline/driver-source",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/driver-source"
+    },
+    {
+      "archive_path": "baseline/driver-source/TestDoWhileBreakDriver.java",
+      "bytes": 6979,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "aef8cf0da2ccf9760e1b9a615c1075675db7f982cda260a9b49f418a97a93b14",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/driver-source/TestDoWhileBreakDriver.java"
+    },
+    {
+      "archive_path": "baseline/empty-classpath",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/empty-classpath"
+    },
+    {
+      "archive_path": "baseline/execution.json",
+      "bytes": 5027550,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "b5e89a48be39df7700d11d663fa02d0ebb22865b3a7ea989589854b330cd9602",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "baseline/generated-classes",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug/whole-outer-child-tree",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug/whole-outer-child-tree"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug/whole-outer-child-tree/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug/whole-outer-child-tree/default"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 675,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "17efcdda74d687d6be0f9acf325462ca7e202d113e035180cd137d81be35b0ac",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak.class",
+      "bytes": 1133,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "3de06ab979e99d2f7709eee2e65c3e7952d13ba148216bc65c8eef233aa59c4e",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak.class"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/debug/whole-outer-child-tree/default/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/debug/whole-outer-child-tree/default/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug/whole-outer-child-tree",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug/whole-outer-child-tree"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug/whole-outer-child-tree/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug/whole-outer-child-tree/default"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 410,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "715217fb1aba2364b9c71fda4c14a5dedd29186e699081e9fac375bd2b84c788",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak.class",
+      "bytes": 928,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "9a7392ef23cac839f38c5913a011d7b06f1fccb65339bba0520c4bc9d2b948ea",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac23/jadx/tests/integration/loops/TestDoWhileBreak.class"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jadx/no-debug/whole-outer-child-tree/default/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/bundle-child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/bundle-child"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/bundle-child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/bundle-child/all"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/bundle-child/all/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/bundle-child/all/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/bundle-child/all/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/bundle-child/all/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/bundle-child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/bundle-child/default"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/bundle-child/default/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/bundle-child/default/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/bundle-child/default/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/bundle-child/default/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/child"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/child/all"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/child/all/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/child/all/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/child/all/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/child/all/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/child/default"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/child/default/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/child/default/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/debug/child/default/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/debug/child/default/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/bundle-child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/bundle-child"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/bundle-child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/bundle-child/all"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/bundle-child/all/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/bundle-child/all/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/bundle-child/all/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/bundle-child/all/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/bundle-child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/bundle-child/default"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/bundle-child/default/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/bundle-child/default/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/bundle-child/default/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/bundle-child/default/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/child"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/child/all"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/child/all/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/child/all/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/child/all/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/child/all/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/child/default"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/child/default/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/child/default/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-classes/jarde/no-debug/child/default/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-classes/jarde/no-debug/child/default/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/debug"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/debug/whole-outer-child-tree",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/debug/whole-outer-child-tree"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/debug/whole-outer-child-tree/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/debug/whole-outer-child-tree/default"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/debug/whole-outer-child-tree/default/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/debug/whole-outer-child-tree/default/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/debug/whole-outer-child-tree/default/javac23/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/debug/whole-outer-child-tree/default/javac23/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/debug/whole-outer-child-tree/default/javac23/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/debug/whole-outer-child-tree/default/javac23/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/debug/whole-outer-child-tree/default/javac23/wrong-root",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/debug/whole-outer-child-tree/default/javac23/wrong-root"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/no-debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/no-debug"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree/default"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree/default/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree/default/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree/default/javac23/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree/default/javac23/javac23"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree/default/javac23/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree/default/javac23/javac8"
+    },
+    {
+      "archive_path": "baseline/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree/default/javac23/wrong-root",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-runtime-cwd/jadx/no-debug/whole-outer-child-tree/default/javac23/wrong-root"
+    },
+    {
+      "archive_path": "baseline/generated-sources",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/debug"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/debug/sources",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/debug/sources"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/debug/sources/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/debug/sources/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/debug/sources/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/debug/sources/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/debug/sources/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/debug/sources/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/debug/sources/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/debug/sources/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/debug/sources/jadx/tests/integration/loops/TestDoWhileBreak.java",
+      "bytes": 900,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "11a32ac9e2d50dc7dd8550e55fdc98e63ec44da90443a822fa55ac4714cda4b4",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/debug/sources/jadx/tests/integration/loops/TestDoWhileBreak.java"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/no-debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/no-debug"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/no-debug/sources",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/no-debug/sources"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/no-debug/sources/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/no-debug/sources/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/no-debug/sources/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/no-debug/sources/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/no-debug/sources/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/no-debug/sources/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/no-debug/sources/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/no-debug/sources/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jadx/no-debug/sources/jadx/tests/integration/loops/TestDoWhileBreak.java",
+      "bytes": 912,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "155725e553319ca4c1f6acc909f84263c7f09fc668e1e9c6d1368755aedb645b",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jadx/no-debug/sources/jadx/tests/integration/loops/TestDoWhileBreak.java"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/all"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/all/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/all/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/all/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/all/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/all/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/all/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/all/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/all/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1372,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "dc7a692a391845e3fd3251887ceceb842d0593dc01fbd5a76f91161e5a06da62",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/default"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/default/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/default/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/default/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/default/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/default/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/default/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/default/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/default/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/bundle-child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1372,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "dc7a692a391845e3fd3251887ceceb842d0593dc01fbd5a76f91161e5a06da62",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/bundle-child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/all"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/all/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/all/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/all/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/all/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/all/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/all/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/all/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/all/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1372,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "dc7a692a391845e3fd3251887ceceb842d0593dc01fbd5a76f91161e5a06da62",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/default"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/default/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/default/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/default/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/default/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/default/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/default/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/default/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/default/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/debug/child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1372,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "dc7a692a391845e3fd3251887ceceb842d0593dc01fbd5a76f91161e5a06da62",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/debug/child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/all"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/all/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/all/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/all/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/all/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/all/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/all/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/all/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/all/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1375,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "8b89ab95f0b760052289344aa9f06fda01df6436334e3e3ab6f858effab602e0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/default"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/default/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/default/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/default/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/default/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/default/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/default/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/default/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/default/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/bundle-child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1375,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "8b89ab95f0b760052289344aa9f06fda01df6436334e3e3ab6f858effab602e0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/bundle-child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/all"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/all/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/all/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/all/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/all/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/all/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/all/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/all/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/all/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1375,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "8b89ab95f0b760052289344aa9f06fda01df6436334e3e3ab6f858effab602e0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/all/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/default"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/default/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/default/jadx"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/default/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/default/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/default/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/default/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/default/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/default/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/generated-sources/jarde/no-debug/child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java",
+      "bytes": 1375,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "8b89ab95f0b760052289344aa9f06fda01df6436334e3e3ab6f858effab602e0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/generated-sources/jarde/no-debug/child/default/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.java"
+    },
+    {
+      "archive_path": "baseline/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx"
+    },
+    {
+      "archive_path": "baseline/jadx/debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/debug"
+    },
+    {
+      "archive_path": "baseline/jadx/debug/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/debug/default"
+    },
+    {
+      "archive_path": "baseline/jadx/debug/default/resources",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/debug/default/resources"
+    },
+    {
+      "archive_path": "baseline/jadx/debug/default/sources",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/debug/default/sources"
+    },
+    {
+      "archive_path": "baseline/jadx/debug/default/sources/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/debug/default/sources/jadx"
+    },
+    {
+      "archive_path": "baseline/jadx/debug/default/sources/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/debug/default/sources/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/jadx/debug/default/sources/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/debug/default/sources/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/jadx/debug/default/sources/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/debug/default/sources/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/jadx/debug/default/sources/jadx/tests/integration/loops/TestDoWhileBreak.java",
+      "bytes": 900,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "11a32ac9e2d50dc7dd8550e55fdc98e63ec44da90443a822fa55ac4714cda4b4",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/debug/default/sources/jadx/tests/integration/loops/TestDoWhileBreak.java"
+    },
+    {
+      "archive_path": "baseline/jadx/no-debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/no-debug"
+    },
+    {
+      "archive_path": "baseline/jadx/no-debug/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/no-debug/default"
+    },
+    {
+      "archive_path": "baseline/jadx/no-debug/default/resources",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/no-debug/default/resources"
+    },
+    {
+      "archive_path": "baseline/jadx/no-debug/default/sources",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/no-debug/default/sources"
+    },
+    {
+      "archive_path": "baseline/jadx/no-debug/default/sources/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/no-debug/default/sources/jadx"
+    },
+    {
+      "archive_path": "baseline/jadx/no-debug/default/sources/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/no-debug/default/sources/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/jadx/no-debug/default/sources/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/no-debug/default/sources/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/jadx/no-debug/default/sources/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/no-debug/default/sources/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/jadx/no-debug/default/sources/jadx/tests/integration/loops/TestDoWhileBreak.java",
+      "bytes": 912,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "155725e553319ca4c1f6acc909f84263c7f09fc668e1e9c6d1368755aedb645b",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jadx/no-debug/default/sources/jadx/tests/integration/loops/TestDoWhileBreak.java"
+    },
+    {
+      "archive_path": "baseline/jarde",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde"
+    },
+    {
+      "archive_path": "baseline/jarde/debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/bundle-child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/bundle-child"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/bundle-child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/bundle-child/all"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/bundle-child/all/report.json",
+      "bytes": 30787,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "f6999c42bfe1374e062077ccfce215f55cfb458a8118ced3b74d11253ad7a206",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/bundle-child/all/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/bundle-child/all/whole-source.java",
+      "bytes": 1372,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "dc7a692a391845e3fd3251887ceceb842d0593dc01fbd5a76f91161e5a06da62",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/bundle-child/all/whole-source.java"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/bundle-child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/bundle-child/default"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/bundle-child/default/report.json",
+      "bytes": 29777,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "a92aeecaafb9a0f61732d62db460c8f8376349b0d31a5499ecd8adf1ae6214e9",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/bundle-child/default/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/bundle-child/default/whole-source.java",
+      "bytes": 1372,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "dc7a692a391845e3fd3251887ceceb842d0593dc01fbd5a76f91161e5a06da62",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/bundle-child/default/whole-source.java"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/child"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/child/all"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/child/all/report.json",
+      "bytes": 23757,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "32baee7b0531ce345927174b4450d62c26eaaa371f6cdca4b8a58bbc81a71b8f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/child/all/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/child/all/whole-source.java",
+      "bytes": 1372,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "dc7a692a391845e3fd3251887ceceb842d0593dc01fbd5a76f91161e5a06da62",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/child/all/whole-source.java"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/child/default"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/child/default/report.json",
+      "bytes": 22752,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "d62edbc33f450a293b0d21dc07b5bbe3a40e69d4737da5a66b28d9f0f808a895",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/child/default/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/debug/child/default/whole-source.java",
+      "bytes": 1372,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "dc7a692a391845e3fd3251887ceceb842d0593dc01fbd5a76f91161e5a06da62",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/debug/child/default/whole-source.java"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/bundle-child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/bundle-child"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/bundle-child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/bundle-child/all/report.json",
+      "bytes": 30789,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "079b8fd5d67b771d279b91dec878b16a328eaafffab990e352e999c960e5baf5",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/bundle-child/all/whole-source.java",
+      "bytes": 1375,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "8b89ab95f0b760052289344aa9f06fda01df6436334e3e3ab6f858effab602e0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/whole-source.java"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/bundle-child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/bundle-child/default/report.json",
+      "bytes": 29779,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "043498726542d85345ae7345d55ab42de10b3f3799dc4d83277bbfb7d8acac80",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/bundle-child/default/whole-source.java",
+      "bytes": 1375,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "8b89ab95f0b760052289344aa9f06fda01df6436334e3e3ab6f858effab602e0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/whole-source.java"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/child",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/child"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/child/all",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/child/all"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/child/all/report.json",
+      "bytes": 23754,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "6663457560bff6d20ea358a5f37b29632e257e693ec801c52260eb76c31f55c7",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/child/all/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/child/all/whole-source.java",
+      "bytes": 1375,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "8b89ab95f0b760052289344aa9f06fda01df6436334e3e3ab6f858effab602e0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/child/all/whole-source.java"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/child/default",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/child/default"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/child/default/report.json",
+      "bytes": 22744,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "d0ec194c67cc116ca66b1fb2cdbeb9cda9678b9a676b29f22fd029a3facf2c63",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/child/default/report.json"
+    },
+    {
+      "archive_path": "baseline/jarde/no-debug/child/default/whole-source.java",
+      "bytes": 1375,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "8b89ab95f0b760052289344aa9f06fda01df6436334e3e3ab6f858effab602e0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/jarde/no-debug/child/default/whole-source.java"
+    },
+    {
+      "archive_path": "baseline/javac8-boundary",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/javac8-boundary"
+    },
+    {
+      "archive_path": "baseline/javac8-boundary/classes",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/javac8-boundary/classes"
+    },
+    {
+      "archive_path": "baseline/no-debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/no-debug"
+    },
+    {
+      "archive_path": "baseline/no-debug-full-classes.jar",
+      "bytes": 1734,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e43fcefb543b4e789b1835eac5957997fc85691db929456feeb083f97eb0bb50",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/no-debug-full-classes.jar"
+    },
+    {
+      "archive_path": "baseline/no-debug/classes",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/no-debug/classes"
+    },
+    {
+      "archive_path": "baseline/no-debug/classes/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/no-debug/classes/jadx"
+    },
+    {
+      "archive_path": "baseline/no-debug/classes/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/no-debug/classes/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/no-debug/classes/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/no-debug/classes/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "bytes": 412,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "151c8d3ad5d4e36c15daa50f12e6cdb10d6a04d90bd92bc05535cca80c6e140c",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "archive_path": "baseline/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class",
+      "bytes": 928,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "9a7392ef23cac839f38c5913a011d7b06f1fccb65339bba0520c4bc9d2b948ea",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class"
+    },
+    {
+      "archive_path": "baseline/raw",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw"
+    },
+    {
+      "archive_path": "baseline/raw/1.stderr.raw",
+      "bytes": 492,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "06a5d4c16bb32173e9ff356f03e49406e73a374b094e34086e953e4f3e559682",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/1.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/1.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/1.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/10.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/10.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/10.stdout.raw",
+      "bytes": 6,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/10.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/11.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/11.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/11.stdout.raw",
+      "bytes": 22752,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "d62edbc33f450a293b0d21dc07b5bbe3a40e69d4737da5a66b28d9f0f808a895",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/11.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/12.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/12.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/12.stdout.raw",
+      "bytes": 23757,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "32baee7b0531ce345927174b4450d62c26eaaa371f6cdca4b8a58bbc81a71b8f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/12.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/13.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/13.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/13.stdout.raw",
+      "bytes": 29777,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "a92aeecaafb9a0f61732d62db460c8f8376349b0d31a5499ecd8adf1ae6214e9",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/13.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/14.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/14.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/14.stdout.raw",
+      "bytes": 30787,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "f6999c42bfe1374e062077ccfce215f55cfb458a8118ced3b74d11253ad7a206",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/14.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/15.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/15.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/15.stdout.raw",
+      "bytes": 22744,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "d0ec194c67cc116ca66b1fb2cdbeb9cda9678b9a676b29f22fd029a3facf2c63",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/15.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/16.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/16.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/16.stdout.raw",
+      "bytes": 23754,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "6663457560bff6d20ea358a5f37b29632e257e693ec801c52260eb76c31f55c7",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/16.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/17.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/17.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/17.stdout.raw",
+      "bytes": 29779,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "043498726542d85345ae7345d55ab42de10b3f3799dc4d83277bbfb7d8acac80",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/17.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/18.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/18.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/18.stdout.raw",
+      "bytes": 30789,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "079b8fd5d67b771d279b91dec878b16a328eaafffab990e352e999c960e5baf5",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/18.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/19.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/19.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/19.stdout.raw",
+      "bytes": 148,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/19.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/2.stderr.raw",
+      "bytes": 243,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/2.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/2.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/2.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/20.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/20.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/20.stdout.raw",
+      "bytes": 148,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/20.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/21.stderr.raw",
+      "bytes": 220,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "c069b9029e936d1f866910b5b3f50a99920f90b6fb048cf36739ed3f0b60dd77",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/21.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/21.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/21.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/22.stderr.raw",
+      "bytes": 463,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "05d7a35898b0a96a9841a821fdb4e48972276e6adf8935703e03f98a8b94c6ff",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/22.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/22.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/22.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/23.stderr.raw",
+      "bytes": 216,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "93c9043afe043932066068285a688bc3796450c3323b9f108b7790dd114e7140",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/23.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/23.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/23.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/24.stderr.raw",
+      "bytes": 459,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "21ced7ed38d5fe1eb0438d23e2b3d204574a239fb6bac78043fa723efa166072",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/24.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/24.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/24.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/25.stderr.raw",
+      "bytes": 227,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "36dda11898ff59f5e0780f81ecf95cd85e61ed728b81c6daeddc88aa7e56827f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/25.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/25.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/25.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/26.stderr.raw",
+      "bytes": 470,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "9f4faf80c66b6d6b83bfbd7fb3efcc9831020df9272954503c31bce831211423",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/26.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/26.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/26.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/27.stderr.raw",
+      "bytes": 223,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "a40ca16b34593c50d509d4b9dbc60be38665b18997b6cb97f1aaca6ec9a7e6d6",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/27.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/27.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/27.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/28.stderr.raw",
+      "bytes": 466,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "c4c69fc81404325a5e6e781af9b1934aa0aa27265f5fadb1b65aeca7be91d7f0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/28.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/28.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/28.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/29.stderr.raw",
+      "bytes": 223,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "56151f2731d2ef58e7e64e2357cd3ff2c90a01db02034d177b3aa199ee788f7e",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/29.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/29.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/29.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/3.stderr.raw",
+      "bytes": 243,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/3.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/3.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/3.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/30.stderr.raw",
+      "bytes": 466,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "d491f2316bd0a3e11463d96e962074ad2bdf5e7be58a93acc3e189cbd16c8d8f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/30.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/30.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/30.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/31.stderr.raw",
+      "bytes": 219,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "cee20a235f3283f7b0a59ca00daed97f4f9d6b48100b26ecc63e35c054bd8529",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/31.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/31.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/31.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/32.stderr.raw",
+      "bytes": 462,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "f571d97f73556878dcb05032a026a9eb8b6d55064ba8ace751411938591514db",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/32.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/32.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/32.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/33.stderr.raw",
+      "bytes": 230,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "88ad17e118fd94e3e13c25b8fc2cfee784cb23c1f4f3d6f87ddc25217a7e4e75",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/33.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/33.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/33.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/34.stderr.raw",
+      "bytes": 473,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "93fd2f20ae2b5fc7ad70ce4a74c487d18303bf64cd497bec8c9b25586ca62495",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/34.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/34.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/34.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/35.stderr.raw",
+      "bytes": 226,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "2fa4300cebf75c0141fb473eeedb654d6abfe331d055910bf3cd7769df51cba9",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/35.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/35.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/35.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/36.stderr.raw",
+      "bytes": 469,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "b1deac2ac2fe0234448c51a15ccfa02fa4a7ca89460d1032991270f1983d193d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/36.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/36.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/36.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/37.stderr.raw",
+      "bytes": 522,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "33ea4f193a687833f3e13260a32858ecd6188948dc38ee660f9534d93143a89c",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/37.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/37.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/37.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/38.stderr.raw",
+      "bytes": 243,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/38.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/38.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/38.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/39.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/39.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/39.stdout.raw",
+      "bytes": 341,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/39.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/4.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/4.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/4.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/4.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/40.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/40.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/40.stdout.raw",
+      "bytes": 341,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/40.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/41.stderr.raw",
+      "bytes": 366,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "724cf62829f29959bcf19bc091f45f60d34b763d4e98e3cfae8d8aaa56c6ba41",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/41.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/41.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/41.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/42.stderr.raw",
+      "bytes": 525,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "25dabae93c622add9f8df747e5dcba91d8141b77257a687e6fdbd8a6d13f25a6",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/42.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/42.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/42.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/43.stderr.raw",
+      "bytes": 243,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/43.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/43.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/43.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/44.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/44.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/44.stdout.raw",
+      "bytes": 341,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/44.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/45.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/45.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/45.stdout.raw",
+      "bytes": 341,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/45.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/46.stderr.raw",
+      "bytes": 369,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "ef63d010976973a9c049f1e7d94a4a1155b78685865269e3be17c9f589d03fe0",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/46.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/46.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/46.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/5.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/5.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/5.stdout.raw",
+      "bytes": 341,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/5.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/6.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/6.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/6.stdout.raw",
+      "bytes": 341,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/6.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/7.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/7.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/7.stdout.raw",
+      "bytes": 341,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/7.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/8.stderr.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/8.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/8.stdout.raw",
+      "bytes": 341,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "37f17c7d60bedbfbf5175ccdb73c3d10564cbeecfdbf4bdc355da1687020714d",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/8.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/raw/9.stderr.raw",
+      "bytes": 312,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "7f9c9fea6a39a06e3057a9e114576b488436f15c8a9b41333f6e88517e147a21",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/9.stderr.raw"
+    },
+    {
+      "archive_path": "baseline/raw/9.stdout.raw",
+      "bytes": 0,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/raw/9.stdout.raw"
+    },
+    {
+      "archive_path": "baseline/root-review.json",
+      "bytes": 1338,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "27b72505573b4154d8c12ff05ab0618518c9f74f1df996457aa5ae8b43a3c2bc",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/root-review.json"
+    },
+    {
+      "archive_path": "baseline/runtime-bound-cwd.py",
+      "bytes": 389,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "bc917ec08e07ed462c18958f9a0d3b064b7d5bba3adc5fa41d9db49ff6c3de46",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/runtime-bound-cwd.py"
+    },
+    {
+      "archive_path": "baseline/runtime-cwd",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/runtime-cwd"
+    },
+    {
+      "archive_path": "baseline/runtime-cwd/debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/runtime-cwd/debug"
+    },
+    {
+      "archive_path": "baseline/runtime-cwd/debug/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/runtime-cwd/debug/javac23"
+    },
+    {
+      "archive_path": "baseline/runtime-cwd/debug/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/runtime-cwd/debug/javac8"
+    },
+    {
+      "archive_path": "baseline/runtime-cwd/no-debug",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/runtime-cwd/no-debug"
+    },
+    {
+      "archive_path": "baseline/runtime-cwd/no-debug/javac23",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/runtime-cwd/no-debug/javac23"
+    },
+    {
+      "archive_path": "baseline/runtime-cwd/no-debug/javac8",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/runtime-cwd/no-debug/javac8"
+    },
+    {
+      "archive_path": "baseline/runtime-cwd/wrong-root",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/runtime-cwd/wrong-root"
+    },
+    {
+      "archive_path": "baseline/source",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/source"
+    },
+    {
+      "archive_path": "baseline/source/jadx",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/source/jadx"
+    },
+    {
+      "archive_path": "baseline/source/jadx/tests",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/source/jadx/tests"
+    },
+    {
+      "archive_path": "baseline/source/jadx/tests/integration",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/source/jadx/tests/integration"
+    },
+    {
+      "archive_path": "baseline/source/jadx/tests/integration/loops",
+      "bytes": 0,
+      "entry_type": "directory",
+      "mode": 493,
+      "sha256": null,
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/source/jadx/tests/integration/loops"
+    },
+    {
+      "archive_path": "baseline/source/jadx/tests/integration/loops/TestDoWhileBreak.java",
+      "bytes": 563,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "7c8db1024a14626aaafdd977a722665e077f8e17f5751f2249bc7be6e9eba577",
+      "source_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/source/jadx/tests/integration/loops/TestDoWhileBreak.java"
+    },
+    {
+      "archive_path": "licenses/JADX-LICENSE",
+      "bytes": 11357,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/cf08-if-loop-entry/licenses/JADX-LICENSE"
+    },
+    {
+      "archive_path": "licenses/JADX-NOTICE",
+      "bytes": 10658,
+      "entry_type": "file",
+      "mode": 420,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/cf08-if-loop-entry/licenses/JADX-NOTICE"
+    }
+  ],
+  "notes": [
+    "Complete prep, case-plan, baseline, baseline audit, raw streams and failed/negative outputs are retained as full trees.",
+    "The accepted root marker binds the exact receipt and independent audit SHA-256.",
+    "External JDK, candidate CLI and dependency artifacts are referenced by receipt pins, not copied.",
+    "Case-plan notes remain source-derived; the archive does not assert new behavior beyond the accepted baseline evidence."
+  ],
+  "payload_bytes": 5850230,
+  "payload_member_count": 362,
+  "receipt_pin_records_reopened": 13935,
+  "root_marker_counts": {
+    "actual_commands": 46,
+    "api_cells": 8,
+    "generated_wrong_root_controls": 2,
+    "jadx_complete_compiles": 2,
+    "jadx_jdk8_framework_failures": 2,
+    "jadx_observations": 8,
+    "jadx_vm_runs": 4,
+    "jarde_compile_failures": 16,
+    "jarde_complete_compiles": 0,
+    "jarde_observations": 0,
+    "jarde_vm_runs": 0,
+    "original_observations": 8,
+    "original_vm_runs": 4,
+    "target_bcis": 14
+  },
+  "schema": "test-do-while-break-evidence-archive-v1",
+  "unique_receipt_pin_paths": 4397
+}

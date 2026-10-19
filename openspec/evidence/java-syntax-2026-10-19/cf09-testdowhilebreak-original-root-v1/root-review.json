@@ -1,0 +1,20 @@
+{
+  "status": "root_accepted_complete_refusal_baseline_archive_memberwise",
+  "archive_bytes": 939364,
+  "archive_sha256": "d6e22ae912670e760d00df7051da3fa124fdf712a2918159a622c1446de0d43a",
+  "member_counts": {
+    "file": 161,
+    "directory": 201
+  },
+  "accepted_baseline": {
+    "acceptance_status": "root_accepted_full_original_do_while_break_with_explicit_refusal_gap",
+    "independent_review_path": "/private/tmp/jarde-testdowhilebreak-baseline-review-root-v1-20261019/review.json",
+    "independent_review_sha256": "5e4281051ecefd613d3f7f01d9162f819da06feca983df8eb34b4f06be36c8c6",
+    "receipt_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/execution.json",
+    "receipt_sha256": "b5e89a48be39df7700d11d663fa02d0ebb22865b3a7ea989589854b330cd9602",
+    "receipt_status": "captured-pending-independent-review",
+    "root_marker_path": "/private/tmp/jarde-testdowhilebreak-baseline-root-v1-20261019/root-review.json",
+    "root_marker_sha256": "27b72505573b4154d8c12ff05ab0618518c9f74f1df996457aa5ae8b43a3c2bc"
+  },
+  "scope": "Original/JADX finite runtime accepted; 16 Jarde whole-class compile failures and zero Jarde runtime preserved. All 14 mapped BCIs are fallback comment coverage. No implementation accepted."
+}

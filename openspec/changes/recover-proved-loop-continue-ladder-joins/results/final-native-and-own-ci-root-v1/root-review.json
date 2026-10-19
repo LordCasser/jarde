@@ -1,0 +1,32 @@
+{
+  "status": "root_accepted_memberwise_native_own_ci_product_binding_and_spec_sync_archive",
+  "archive_sha256": "15cb04c357c994eca6ea40574932c9643a7e1b7da8969652b275248721da7f21",
+  "archive_bytes": 6757205,
+  "payload_members": 496,
+  "inventory_sha256": "5ba1230ebc179dc55c0b85cf794a455e278d47fdd1182bf53b7f52a9c840ca65",
+  "product": "050cedbd255ffaddf9e51acf8d2ad52fe573519b",
+  "native": [
+    3802,
+    0,
+    98
+  ],
+  "ci_run": "39193571868",
+  "ci_jobs": 4,
+  "official_zip_steps": 52,
+  "per_seed_exact_gates": 102,
+  "all_named_outcomes_equal": 3900,
+  "source_union": 5229,
+  "main_spec_sync": {
+    "requirements": 2,
+    "scenarios": 9,
+    "main_specs_strict": [
+      18,
+      0
+    ],
+    "all_strict": [
+      384,
+      0
+    ]
+  },
+  "scope": "050 product code acceptance; documentation-only successors do not imply product CI reruns. No CLI/compiler/build payload copied."
+}

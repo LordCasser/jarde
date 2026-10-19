@@ -1,0 +1,12 @@
+{
+  "status": "root_accepted_fixed_13_source_inventory_and_current_evidence_addendum",
+  "source_pins_reopened": 45,
+  "current_product": "050cedbd255ffaddf9e51acf8d2ad52fe573519b",
+  "accepted_full_original_comparisons": 3,
+  "accepted_gap_and_same_run_ir": 1,
+  "not_yet_compared": 9,
+  "notes": [
+    "v1 inherited source status is historical; current-status.json has no pending 050 CI contradiction. Older matrices are not rerun on050. Current DoWhile spec2/6 is a planning checkpoint, not implementation acceptance."
+  ],
+  "input_sha256": "8ac715bab0505efdd45119921b4bac22b396a98d2d1e9dcd02e787d5d3f5f61e"
+}

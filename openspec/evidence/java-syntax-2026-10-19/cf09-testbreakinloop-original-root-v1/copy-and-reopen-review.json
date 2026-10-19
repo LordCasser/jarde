@@ -1,0 +1,10 @@
+{
+  "status": "root_accepted_memberwise_bytes_modes_and_inventory",
+  "archive_bytes": 1012471,
+  "archive_sha256": "0bbcad9c7c53b0f40528451428165cc85e0fd76177b5799dc4d2b8c39358e164",
+  "member_counts": {
+    "file": 276,
+    "directory": 347
+  },
+  "inventory_sha256": "9fe65ed8cbf67344e519ec00764d4567f30f4803941b865b4537c8668eec6de6"
+}

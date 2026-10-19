@@ -1,0 +1,22 @@
+{
+  "status": "root_accepted_memberwise_complete_baseline_archive",
+  "archive_bytes": 1012471,
+  "archive_sha256": "0bbcad9c7c53b0f40528451428165cc85e0fd76177b5799dc4d2b8c39358e164",
+  "member_counts": {
+    "file": 276,
+    "directory": 347
+  },
+  "accepted_baseline": {
+    "acceptance_status": "root_accepted_full_original_break_in_loop_no_new_mechanism",
+    "independent_review_path": "/private/tmp/jarde-testbreakinloop-baseline-review-root-v1-20261019/review.json/review.json",
+    "independent_review_sha256": "a7e114479d677bd210b0a7287ef1ebace89bb3110e19340843f1294f6449fc7a",
+    "receipt_path": "/private/tmp/jarde-testbreakinloop-baseline-root-v1-20261019/execution.json",
+    "receipt_sha256": "c5f14ddda2155b5909e7e090e3247c8bf184ae0a4a3c60eb6b712f5d07d8149a",
+    "receipt_status": "captured-pending-independent-review",
+    "root_marker_path": "/private/tmp/jarde-testbreakinloop-baseline-root-v1-20261019/root-review.json",
+    "root_marker_sha256": "6fc5e8b35aa5a2f427bfa82ad786dd326b141c60829d4089b263a5262c0fd864"
+  },
+  "notes": [
+    "v1 rejected static compiler count is recoverable from v1-to-v2 diff; no v1 packer execution occurred. Actual compiler failures and complete capture/audit trees preserved. External binaries not included."
+  ]
+}
