@@ -8,6 +8,8 @@
 - [x] 2.1 Luna 提交私有补丁实现闭合 break 分支体证明、候选 join 与精确 owner 扩展；主 agent 审查后运行真实 Reader 测试，验证 owners17/23/29、ForHeader init3/update36、break origins26/33、无重复或 uncovered。
 - [x] 2.2 Luna 补充外部入口/额外出口/回边/未解释异常/switch/已占用或父 scope 负例及预算、预取消、晚期停止；主 agent 运行并检查真实拒绝、完整状态回滚及用量不回退。
 
+- [x] 2.3 修复完整广验发现的非候选收费回归：在完整candidate scan收费前先拒绝自然出口数不为2的循环，保留真实候选全部收费与Stop门；不改旧CF12硬码预算，用真实Reader验证365@29及130@1并重做最终源码广验。
+
 ## 3. Acceptance
 
 - [ ] 3.1 冻结新 CLI，执行完整 Loop4 三方对照：8 API、全部方法/字段、完整生成源码重编、双 JDK 隔离 VM、实际 check、错误 CodeSource 控制、物理 source maps；独立重开 raw 后才能记验收通过。
