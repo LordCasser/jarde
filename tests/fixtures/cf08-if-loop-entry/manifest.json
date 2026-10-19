@@ -1,0 +1,236 @@
+{
+  "schema": "cf08-if-loop-entry-fixture-v1",
+  "source": "upstream original Raung plus two explicitly constructed Code controls",
+  "source_evidence": "openspec/evidence/java-syntax-2026-10-19/cf08-looprestore2-original-root-v1",
+  "files": {
+    "README.md": {
+      "bytes": 1154,
+      "sha256": "6c0f6eaab41c820b4800526171c1b471f77835270369364557de5ac4e4446cea"
+    },
+    "TestLoopRestore2.raung": {
+      "bytes": 285,
+      "sha256": "21857f4a38efbf49a01bb2b7c4738598f83f928e0020b8e4bcb2942dc19fd70f"
+    },
+    "baseline/TestLoopRestore2.java": {
+      "bytes": 846,
+      "sha256": "c7a27b716668454ff0ae9bc728072c1484079d17cd912e05a6fcacc11ca7ff8a"
+    },
+    "controls/LoopRestoreEffectPrefix.class": {
+      "bytes": 151,
+      "sha256": "82620d5b5832c76f68bf71eb2a3b8e3cfe0ae54d7b9d8cead09ffa72bcd6aa4a"
+    },
+    "controls/LoopRestoreGotoW.class": {
+      "bytes": 150,
+      "sha256": "7f17f096d11066e27856c19fdb25fe8aecdc6354f82b45d19fdca4ddce72348c"
+    },
+    "licenses/JADX-LICENSE": {
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    "licenses/JADX-NOTICE": {
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365"
+    },
+    "licenses/RAUNG-MIT-LICENSE": {
+      "bytes": 1094,
+      "sha256": "3f4ce5092a550dde8fa65e97a476629664d0bc4b02106b3ef5fb716341648cb7"
+    },
+    "make_controls.py": {
+      "bytes": 3882,
+      "sha256": "1cbeb41fa57625a2a0ad0357e42f94a41f8872883a8bc28c136f2eb8627ffb79"
+    },
+    "original/loops/TestLoopRestore2.class": {
+      "bytes": 148,
+      "sha256": "4fd1503499a049efa8e736a98de4339b6504973f80208987ed0774073df9c447"
+    },
+    "original.jar": {
+      "bytes": 310,
+      "sha256": "89d1f82e7a1c46db40ddf1631c750817c0e1f920a06794dd0b4f2a7d64a9ac48"
+    }
+  },
+  "class_facts": {
+    "original/loops/TestLoopRestore2.class": {
+      "file": {
+        "bytes": 148,
+        "sha256": "4fd1503499a049efa8e736a98de4339b6504973f80208987ed0774073df9c447"
+      },
+      "physical": {
+        "minor": 3,
+        "major": 45,
+        "access": 33,
+        "class_name": "loops/TestLoopRestore2",
+        "fields": [],
+        "methods": [
+          {
+            "index": 0,
+            "name": "test",
+            "descriptor": "([I[I)V",
+            "access": 1,
+            "code": {
+              "max_stack": 5,
+              "max_locals": 6,
+              "code_length": 24,
+              "code_hex": "033e11000099000fa7000311000199fffda70003840301b1",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                2,
+                5,
+                8,
+                11,
+                14,
+                17,
+                20,
+                23
+              ]
+            }
+          }
+        ]
+      },
+      "targets": [
+        [
+          5,
+          20
+        ],
+        [
+          8,
+          11
+        ],
+        [
+          14,
+          11
+        ],
+        [
+          17,
+          20
+        ]
+      ]
+    },
+    "controls/LoopRestoreGotoW.class": {
+      "file": {
+        "bytes": 150,
+        "sha256": "7f17f096d11066e27856c19fdb25fe8aecdc6354f82b45d19fdca4ddce72348c"
+      },
+      "physical": {
+        "minor": 3,
+        "major": 45,
+        "access": 33,
+        "class_name": "loops/TestLoopRestore2",
+        "fields": [],
+        "methods": [
+          {
+            "index": 0,
+            "name": "test",
+            "descriptor": "([I[I)V",
+            "access": 1,
+            "code": {
+              "max_stack": 5,
+              "max_locals": 6,
+              "code_length": 26,
+              "code_hex": "033e110000990011c80000000511000199fffda70003840301b1",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                2,
+                5,
+                8,
+                13,
+                16,
+                19,
+                22,
+                25
+              ]
+            }
+          }
+        ]
+      },
+      "targets": [
+        [
+          5,
+          22
+        ],
+        [
+          8,
+          13
+        ],
+        [
+          16,
+          13
+        ],
+        [
+          19,
+          22
+        ]
+      ]
+    },
+    "controls/LoopRestoreEffectPrefix.class": {
+      "file": {
+        "bytes": 151,
+        "sha256": "82620d5b5832c76f68bf71eb2a3b8e3cfe0ae54d7b9d8cead09ffa72bcd6aa4a"
+      },
+      "physical": {
+        "minor": 3,
+        "major": 45,
+        "access": 33,
+        "class_name": "loops/TestLoopRestore2",
+        "fields": [],
+        "methods": [
+          {
+            "index": 0,
+            "name": "test",
+            "descriptor": "([I[I)V",
+            "access": 1,
+            "code": {
+              "max_stack": 5,
+              "max_locals": 6,
+              "code_length": 27,
+              "code_hex": "033e110000990012840301a7000311000199fffda70003840301b1",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                2,
+                5,
+                8,
+                11,
+                14,
+                17,
+                20,
+                23,
+                26
+              ]
+            }
+          }
+        ]
+      },
+      "targets": [
+        [
+          5,
+          23
+        ],
+        [
+          11,
+          14
+        ],
+        [
+          17,
+          14
+        ],
+        [
+          20,
+          23
+        ]
+      ]
+    }
+  },
+  "census_delta": {
+    "class_files": 3,
+    "code_bodies": 3,
+    "handlers": 0,
+    "direct_targets": 12,
+    "jsr": 0
+  },
+  "verification": "root static two-parser/targets/reproducer equality; Rust real-IR execution pending"
+}

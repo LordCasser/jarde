@@ -12322,7 +12322,9 @@ mod tests {
             // agrees with both JVM verification legs and the frozen fixture manifest.
             // Independent slot-permutation/counter-up control adds one verified class,
             // three Code bodies and six direct targets, with no handler or jsr.
-            (1317, 5827, 631, 4171, 16),
+            // Original Raung and two explicit Code controls add three classes, three Code
+            // bodies and twelve direct targets; no handler/jsr change.
+            (1320, 5830, 631, 4183, 16),
             "fixture population changed: re-measure these counts"
         );
     }
