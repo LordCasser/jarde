@@ -1,5 +1,9 @@
 # 循环内局部汇合与直接 continue
 
-当前2/6，只有原始事实与架构边界已接受：[完整原始基线](../../../evidence/java-syntax-2026-10-19/cf09-testcontinueinloop-original-root-v1/README.md)、[同轮IR及首次内部gap](same-run-ir-root-v1/README.md)。Luna私有实现/fixtures与公开测试/最终对照脚本正在并行准备，没有生产代码集成或候选验收；当前产品CLI仍为上一布尔片SHA9ea9177b8992c8444c9f9af0158ca7bc99b3e7dfee4696b342aea7da2e295167。
+当前5/6：原始完整基线与同轮IR、Luna实现经root架构审查、公开API/Reader/指纹、最终完整对照均已接受。复用既有局部join/LoopContinue/完整性证明，无新Region或全局pass；Builder减法窄依赖独立列项。
 
-root先完成上一片cc1bf产品自身CI采集闭合，再审私有差异并集成。共享块42的重复占有是原始实际失败，不是放松覆盖门的理由；ForHeader已成功，修复应复用既有局部join/LoopContinue及有界完整性证明。CF09/71/612仍为部分覆盖。
+- [原始46命令基线](../../../evidence/java-syntax-2026-10-19/cf09-testcontinueinloop-original-root-v1/README.md)
+- [真实IR及首gap](same-run-ir-root-v1/README.md)
+- [定向与完整源码对照](focused-and-full-comparison-root-v1/README.md)：8 API、16整类编译、32VM/256观察、44/44 BCI maps。全部失败与修正保留。
+
+待两片共享一次fresh workspace、当前产品自身CI、Git/CLI/源码绑定、主spec同步和clean-main交付。CF09/71/612仍部分覆盖。

@@ -11066,6 +11066,7 @@ enum CompoundUpdate {
         duplicate: u32,
         read: u32,
         add: u32,
+        op: ArithmeticOp,
     },
 }
 
@@ -16868,6 +16869,7 @@ impl CompoundAssignments {
                             duplicate: source_duplicate,
                             read,
                             add: add_bci,
+                            op: _,
                         },
                         rhs_dependencies,
                     )) =
@@ -17203,16 +17205,21 @@ fn prove_array_update(
     let Some(add) = instruction_in_block(block, add_bci) else {
         return Ok(None);
     };
-    if add.opcode() != 0x60
-        || !matches!(
-            operations.get(add_bci),
+    let op = match (add.opcode(), operations.get(add_bci)) {
+        (
+            0x60,
             Some(Operation::Arithmetic {
-                op: ArithmeticOp::Add
-            })
-        )
-    {
-        return Ok(None);
-    }
+                op: ArithmeticOp::Add,
+            }),
+        ) => ArithmeticOp::Add,
+        (
+            0x64,
+            Some(Operation::Arithmetic {
+                op: ArithmeticOp::Subtract,
+            }),
+        ) if return_bci.is_none() => ArithmeticOp::Subtract,
+        _ => return Ok(None),
+    };
     let Some((old, rhs)) = two_stack_values(add) else {
         return Ok(None);
     };
@@ -17535,6 +17542,7 @@ fn prove_array_update(
             duplicate: duplicate_bci,
             read: read_bci,
             add: add_bci,
+            op,
         },
         dependencies,
     )))
@@ -31431,6 +31439,7 @@ impl Builder<'_> {
             duplicate,
             read,
             add,
+            op,
         }) = self.compounds.update_at(at)
         {
             let rendered = self
@@ -31461,12 +31470,26 @@ impl Builder<'_> {
                     return self.fallback(bcis, &reason, at);
                 }
             };
+            let assignment_op = match op {
+                ArithmeticOp::Add => AssignOp::Add,
+                ArithmeticOp::Subtract => AssignOp::Subtract,
+                _ => {
+                    let bcis = self.quoted_bcis(at);
+                    return self.fallback(
+                        bcis,
+                        format!(
+                            "the int array update at BCI {at} has an unapproved arithmetic operator"
+                        ),
+                        at,
+                    );
+                }
+            };
             let origin = compound_origin(at, duplicate, read, add);
             self.push(Stmt::new(
                 StmtKind::IndexAssign {
                     array,
                     index,
-                    op: AssignOp::Add,
+                    op: assignment_op,
                     value,
                 },
                 origin,
@@ -37316,6 +37339,147 @@ mod tests {
                 .expect("the real fixture method completes SSA analysis"),
             method,
         )
+    }
+
+    #[test]
+    fn proved_int_array_subtract_uses_real_ir_and_keeps_existing_boundaries() {
+        use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension};
+
+        const DEBUG: &[u8] = include_bytes!(
+            "../../../tests/fixtures/recover-proved-loop-continue-ladder-joins/original/debug/classes/jadx/tests/integration/loops/TestContinueInLoop$TestCls.class"
+        );
+        const NO_DEBUG: &[u8] = include_bytes!(
+            "../../../tests/fixtures/recover-proved-loop-continue-ladder-joins/original/no-debug/classes/jadx/tests/integration/loops/TestContinueInLoop$TestCls.class"
+        );
+
+        for class in [DEBUG, NO_DEBUG] {
+            let (analysis, _) = analyze_test_method(class, "test", "([II)V", 8);
+            let ir = analysis.ir();
+            let ssa = ir.ssa().expect("same-run SSA");
+            let code = ir.code().expect("decoded physical Code");
+            let operations = Operations::of(code, ir.constant_pool());
+            let fields = field::Plan::empty();
+
+            let mut budget = compound_test_budget(1 << 25);
+            let plan = CompoundAssignments::prove(ssa, &operations, &fields, None, &mut budget)
+                .expect("complete array compound proof");
+            let array_updates: Vec<_> = plan
+                .updates
+                .iter()
+                .filter_map(|(store, update)| match *update {
+                    CompoundUpdate::Array { add, op, .. } => Some((*store, add, op)),
+                    CompoundUpdate::Field { .. } => None,
+                })
+                .collect();
+            assert_eq!(
+                array_updates.len(),
+                2,
+                "the real method has one += and one -="
+            );
+            assert_eq!(
+                array_updates
+                    .iter()
+                    .map(|(_, _, op)| *op)
+                    .collect::<Vec<_>>(),
+                vec![ArithmeticOp::Add, ArithmeticOp::Subtract]
+            );
+            for (store_bci, arithmetic_bci, op) in &array_updates {
+                assert!(matches!(
+                    operations.get(*arithmetic_bci),
+                    Some(Operation::Arithmetic { op: actual }) if actual == op
+                ));
+                assert!(matches!(
+                    operations.get(*store_bci),
+                    Some(Operation::ArrayStore {
+                        element: Some(Type::Int)
+                    })
+                ));
+            }
+
+            // An equal-width arithmetic substitution preserves the reader/SSA shape but is not an
+            // approved compound operator. Reanalyze the changed bytes; do not forge IR facts.
+            let (subtract_store, subtract_bci, _) = array_updates
+                .iter()
+                .find(|entry| entry.2 == ArithmeticOp::Subtract)
+                .copied()
+                .expect("the original subtraction plan exists");
+            let original_instruction = code
+                .instructions
+                .iter()
+                .find(|instruction| instruction.bci == subtract_bci)
+                .expect("subtraction instruction is physical Code");
+            assert_eq!(original_instruction.opcode, 0x64);
+            let mut multiply_class = class.to_vec();
+            let opcode_offset = usize::try_from(code.code_span.start)
+                .expect("Code offset fits usize")
+                + usize::try_from(subtract_bci).expect("BCI fits usize");
+            multiply_class[opcode_offset] = 0x68;
+            let (multiply_analysis, _) = analyze_test_method(&multiply_class, "test", "([II)V", 8);
+            let multiply_ir = multiply_analysis.ir();
+            let multiply_ssa = multiply_ir.ssa().expect("changed method still has SSA");
+            let multiply_code = multiply_ir.code().expect("changed physical Code");
+            let multiply_operations = Operations::of(multiply_code, multiply_ir.constant_pool());
+            assert!(matches!(
+                multiply_operations.get(subtract_bci),
+                Some(Operation::Arithmetic {
+                    op: ArithmeticOp::Multiply
+                })
+            ));
+            let mut multiply_budget = compound_test_budget(1 << 25);
+            let multiply_plan = CompoundAssignments::prove(
+                multiply_ssa,
+                &multiply_operations,
+                &fields,
+                None,
+                &mut multiply_budget,
+            )
+            .expect("unapproved-operator refusal completes normally");
+            assert!(!multiply_plan.updates.contains_key(&subtract_store));
+            assert_eq!(
+                multiply_plan
+                    .updates
+                    .values()
+                    .filter(|update| matches!(**update, CompoundUpdate::Array { .. }))
+                    .count(),
+                1,
+                "the independent original addition remains proved"
+            );
+
+            // The plan is one transaction: an interrupted complete scan yields Stop, never the
+            // earlier addition without the later subtraction decision.
+            let completed_items = budget.usage().ir_items;
+            assert!(completed_items > 1);
+            let item_limit = completed_items - 1;
+            let mut stopped_budget = Budget::new(jarde_reader::budget::Limits {
+                ir_items: item_limit,
+                elapsed_millis: u64::MAX,
+                ..jarde_reader::budget::Limits::default()
+            });
+            assert!(matches!(
+                CompoundAssignments::prove(ssa, &operations, &fields, None, &mut stopped_budget,),
+                Err(crate::stop::StopReason::Budget {
+                    dimension: CountedBudgetDimension::IrItems,
+                    ..
+                })
+            ));
+            assert_eq!(stopped_budget.usage().ir_items, item_limit);
+
+            let token = CancellationToken::new();
+            token.cancel();
+            let mut cancelled_budget = Budget::with_cancellation_token(
+                jarde_reader::budget::Limits {
+                    ir_items: completed_items,
+                    elapsed_millis: u64::MAX,
+                    ..jarde_reader::budget::Limits::default()
+                },
+                token,
+            );
+            assert!(matches!(
+                CompoundAssignments::prove(ssa, &operations, &fields, None, &mut cancelled_budget,),
+                Err(crate::stop::StopReason::Cancelled { .. })
+            ));
+            assert_eq!(cancelled_budget.usage().ir_items, 0);
+        }
     }
 
     fn static_prefix_test_fields(

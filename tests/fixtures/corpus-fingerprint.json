@@ -12523,6 +12523,61 @@
       "path": "tests/fixtures/recover-proved-loop-arm-returns/supplemental/manifest.json"
     },
     {
+      "blake3": "3a6f2251c1305fe9c3f860dbb2615dbd119270defab957fcde8c81ee86718a73",
+      "bytes": 5241,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/manifest.json"
+    },
+    {
+      "blake3": "fb6b1d1171f32787eec2b6999838747a9e80c7fa581baf0f614484c2a875eae0",
+      "bytes": 11357,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/LICENSE"
+    },
+    {
+      "blake3": "d006ec493b8b2457b733149b1779dd1db3bd8314f80e52377749304dafa869b2",
+      "bytes": 10658,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/NOTICE"
+    },
+    {
+      "blake3": "c330848a545e86e6bc55009f4fd56249643ff871e92b9500777196c74a00517e",
+      "bytes": 812,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/TestContinueInLoop.java"
+    },
+    {
+      "blake3": "e7cd767dbcb81fe8997a79c09c05cb1550aafa33c619228ef364210af0735372",
+      "bytes": 8244,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/TestContinueInLoopDriver.java"
+    },
+    {
+      "blake3": "6a6b2730861f007859b01a20a491fa846432bb11c7fc1c48e94cb4650b31d327",
+      "bytes": 2428,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/debug-plain.jar"
+    },
+    {
+      "blake3": "7e744fa8bc38b2017045b6c75d7edf803b8ff76ec146106b7a8d5b55dc2ff770",
+      "bytes": 752,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/debug/classes/jadx/tests/integration/loops/TestContinueInLoop$TestCls.class"
+    },
+    {
+      "blake3": "90a2520e4e1f575e9be6a39f6c595982cd60a1b10427899675baea8aa767d63e",
+      "bytes": 1274,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/debug/classes/jadx/tests/integration/loops/TestContinueInLoop.class"
+    },
+    {
+      "blake3": "f6917c932da0f21333b3c610996d9ddee302d30f23ffe55ca71192bb5237738a",
+      "bytes": 1881,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/no-debug-plain.jar"
+    },
+    {
+      "blake3": "a0ef636ae3e621a37ff8bd202592dad8baca63b9e74659229eb4c426dd1895fd",
+      "bytes": 438,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/no-debug/classes/jadx/tests/integration/loops/TestContinueInLoop$TestCls.class"
+    },
+    {
+      "blake3": "81624832f70d3bfc08b3e46432051b7cae39d5311674105effd499d8828c7b5a",
+      "bytes": 1041,
+      "path": "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/no-debug/classes/jadx/tests/integration/loops/TestContinueInLoop.class"
+    },
+    {
       "blake3": "43f6aded70421d741fd808a46fea086217231120c616a754c74dc650a9f16fe0",
       "bytes": 898,
       "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/BRN.java"

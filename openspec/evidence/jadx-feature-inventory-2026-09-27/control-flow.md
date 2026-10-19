@@ -1,3 +1,7 @@
+## 2026-10-19 更新：原始Continue完整对照接受，待当前产品广验
+
+[局部汇合5/6](../../changes/recover-proved-loop-continue-ladder-joins/results/README.md)及[独立数组减法3/4](../../changes/recover-proved-int-array-subtract-updates/results/README.md)共用最终CLI，8API/16整类编译/32VM256观察全同原件，16错根拒绝，目标map44/44。Luna窄实现经root实际审查/定向验收，无新Region或全局机制。全部失败及边界保留；fresh workspace/本产品自身CI/主spec同步待完成，CF09/71/612不关闭。以下旧状态为历史。
+
 ## 2026-10-19 更新：CF09 布尔局部完整验收；continue ladder 2/6
 
 [布尔局部交付](../../changes/recover-proved-literal-boolean-locals/results/README.md)：产品cc1bf，8API/16整类重编/192观察全同原件，fresh389targets/3798-0-98，自身CI39186343472全部4jobs/52独立官方步骤、双seed98精确门及全部3896具名结果一致，main spec已同步。完整归档逐bytes/mode复开；缺map44不隐去。

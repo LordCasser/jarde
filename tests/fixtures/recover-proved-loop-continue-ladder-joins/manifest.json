@@ -1,0 +1,131 @@
+{
+  "accepted_baseline": {
+    "execution_json_sha256": "d33084ce268c7d3c49a056f120619d7e1786b5f438d5bcf8b30d66911ea2c0ec",
+    "map_boundary": "Accepted original baseline maps 11 of 44 test instructions; the public test checks every emitted anchor and valid UTF-8 span, not complete BCI coverage.",
+    "profiles": {
+      "debug": {
+        "jadx/tests/integration/loops/TestContinueInLoop$TestCls.class": {
+          "bytes": 752,
+          "sha256": "57adb18f7c6398e86daa90be1ffd2576ac47662e973ab8db02e164591aac7ed3"
+        },
+        "jadx/tests/integration/loops/TestContinueInLoop.class": {
+          "bytes": 1274,
+          "sha256": "9bab678de2df9fbfceba32557ba20914aa65e00808b4628b328655623be530a6"
+        }
+      },
+      "no-debug": {
+        "jadx/tests/integration/loops/TestContinueInLoop$TestCls.class": {
+          "bytes": 438,
+          "sha256": "1f2dea241154efa5ad132904cff22ad1290890c189f443bbd528a98023ddaf85"
+        },
+        "jadx/tests/integration/loops/TestContinueInLoop.class": {
+          "bytes": 1041,
+          "sha256": "59068868746d3dc3a06ac7cedc96c25cb7758a7f7ebc27bceae36c293e6d8c47"
+        }
+      }
+    },
+    "root_review_counts": {
+      "commands": 46,
+      "jadx_compile_successes": 2,
+      "jadx_framework_compile_failures": 2,
+      "jadx_observations": 32,
+      "jarde_compile_failures": 16,
+      "jarde_target_runs": 0,
+      "original_observations": 32
+    },
+    "root_review_json_sha256": "3c53bac442e35918b04f30da789c26e06dfb3a2ab3f7d65ef24905f7214d62c1",
+    "root_review_status": "root_accepted_original_baseline_with_explicit_whole_method_refusal_gap",
+    "source": {
+      "bytes": 812,
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestContinueInLoop.java",
+      "sha256": "9013fc2ce9ac89c4e8967ddef39ead5f66dfc8c692f6529583bb75d96c38d8ec"
+    },
+    "source_sha256": "9013fc2ce9ac89c4e8967ddef39ead5f66dfc8c692f6529583bb75d96c38d8ec",
+    "target": {
+      "fields": [
+        {
+          "access": 1,
+          "descriptor": "I",
+          "name": "f"
+        }
+      ],
+      "internal_name": "jadx/tests/integration/loops/TestContinueInLoop$TestCls",
+      "major": 52,
+      "methods": [
+        {
+          "access": 1,
+          "descriptor": "()V",
+          "name": "<init>"
+        },
+        {
+          "access": 1,
+          "descriptor": "([II)V",
+          "name": "test"
+        }
+      ],
+      "test_code_length": 67,
+      "test_physical_instruction_count": 44
+    }
+  },
+  "files": {
+    "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/LICENSE": {
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/NOTICE": {
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365"
+    },
+    "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/TestContinueInLoop.java": {
+      "bytes": 812,
+      "sha256": "9013fc2ce9ac89c4e8967ddef39ead5f66dfc8c692f6529583bb75d96c38d8ec"
+    },
+    "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/TestContinueInLoopDriver.java": {
+      "bytes": 8244,
+      "sha256": "42983ac4ca585dd68627895b420238f95c5960faecc709fc3d7456268faae271"
+    },
+    "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/debug/classes/jadx/tests/integration/loops/TestContinueInLoop$TestCls.class": {
+      "bytes": 752,
+      "sha256": "57adb18f7c6398e86daa90be1ffd2576ac47662e973ab8db02e164591aac7ed3"
+    },
+    "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/debug/classes/jadx/tests/integration/loops/TestContinueInLoop.class": {
+      "bytes": 1274,
+      "sha256": "9bab678de2df9fbfceba32557ba20914aa65e00808b4628b328655623be530a6"
+    },
+    "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/debug-plain.jar": {
+      "bytes": 2428,
+      "sha256": "03252bb2bba222dee9da5151250f23cbe7e518892c29999cc0890207f36f1ace"
+    },
+    "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/no-debug/classes/jadx/tests/integration/loops/TestContinueInLoop$TestCls.class": {
+      "bytes": 438,
+      "sha256": "1f2dea241154efa5ad132904cff22ad1290890c189f443bbd528a98023ddaf85"
+    },
+    "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/no-debug/classes/jadx/tests/integration/loops/TestContinueInLoop.class": {
+      "bytes": 1041,
+      "sha256": "59068868746d3dc3a06ac7cedc96c25cb7758a7f7ebc27bceae36c293e6d8c47"
+    },
+    "tests/fixtures/recover-proved-loop-continue-ladder-joins/original/no-debug-plain.jar": {
+      "bytes": 1881,
+      "sha256": "f3a0afedeab612615082098ee310bd9a75e6831485120a5472b71a14bcc37dd9"
+    }
+  },
+  "schema": "continue-ladder-public-fixture-prep-v1",
+  "status": "root_frozen_original_fixture_bytes",
+  "reader_census": {
+    "delta": [
+      4,
+      8,
+      0,
+      14,
+      0
+    ],
+    "expected_total": [
+      1330,
+      5858,
+      631,
+      4217,
+      16
+    ],
+    "scope": "Independent Python raw Code census; actual Reader execution is accepted only through separate leaf receipts. JAR entries are not counted again."
+  }
+}

@@ -1,3 +1,23 @@
+## 2026-10-19 当前：continue汇合5/6与数组减法3/4，完整对照接受
+
+本节优先，下方均为历史。finThrow5/5、nestedFin16/16已交付，不重做。当前共享产品待提交：两片Luna实现经root架构与失败路径审查，复用既有局部join/LoopContinue和Array compound计划，无新全局机制。最终CLI v4/v5逐字相同64065312B/SHA6c83ec82cd4c6caee86c08e7fefddc2fea675952f936c0e4aa3f295ed9be7fc6；v5零源码变化构建已实际接受。
+
+完整72命令已root接受：8 API、16 JDK8/23整类编译、32隔离VM/256观察全同原件，16错CodeSource根拒绝，目标来源44/44。Java lib511/0、公开2/0、相关旧更新门、Reader/指纹/fmt/完整CI Clippy通过；原件/JADX精确复用，全部实际失败与修正归档。持久入口recover-proved-loop-continue-ladder-joins/results/README.md，定向/矩阵365payload归档SHA004dd01900ed5b0fdb51ae59eb89985baab47b514267aac2a8eb40857553a2d7已root逐bytes/mode复开。
+
+下一必须提交推送产品，fresh workspace一次（57精确门及九邻近回归）和本产品自身CI全部4jobs/52独立官方步骤/双seed102门及全部具名结果，严格绑定v5 build/产品Git/源码，然后主spec同步、strict、最终归档/clean-main。私有验收prep为/private/tmp/jarde-continue-ladder-own-ci-prep-luna-v2-20261019，实际结果尚待。下一TestBreakInLoop只完成五有限case与完整collector静态准备，未运行baseline、不冒称差距。CF09/71/612不关闭。
+
+root独占共享写/Git/network/Cargo/JDK/CLI；Luna只私有tmp/只读Python-B。Cargo5GiB/target1GiB/defaultstack/每秒guard/finally exactclean；Cargo期间不共享写/Gitmutation/network/manualJDK或CLI，不新增worktree。当前target absent。
+
+## 2026-10-19 当前推进：continue Region已实际通过，Builder减法依赖1/4
+
+本节优先，下方“continue2/6/尚未集成”是历史。main已推文档ed5af643f，上一布尔产品cc1bf自身CI39186343472完整接受，finThrow5/5、nestedFin16/16不重做。当前共享有未提交的新Region/Reader/公开tests/原始fixtures/指纹与新依赖spec；禁止当clean-main交接。
+
+`recover-proved-loop-continue-ladder-joins`3/6：root审Luna v1退回旧join优先与边闭合问题，v2集成经root四小overlay；v3仅修物理反例，root再次修指令32≠块29。实际Java lib510/0，完整真实for Region、唯一continue/owner、预算取消及物理绕过update反例通过。定向v1新负控误认42独立块（509/1）与v2公开test1/1均保留，target全部finally exactclean。原始四class/两JAR全同接受基线，Reader预测1330/5858/631/4217/16已改、指纹regen1/0实际通过，但Reader/公开/Clippy/CLI最终构建仍待。
+
+阻塞明确是Builder旧Array compound只认iadd、硬编码+=，原件isub臂37/38/41仍Fallback；不能降低Structured或删decrement。独立 `recover-proved-int-array-subtract-updates`1/4 已strict/apply ready，Luna nl_baseline_audit仅私有实现build.rs非返回值int[] -=，复用现有dup/array/index/RHS/消费和AssignOp，returned+=仍Add，无新机制/fixture/Reader增量。父片task2.2/3.1待此依赖实际过。两片共享同一最终CLI完整八API/16全编译/32VM×八case=256观察及一次native/当前产品自身CI，未运行的不称成功。
+
+实际收据 `/private/tmp/jarde-continue-ladder-focused-root-v1-20261019`、`...-v2-20261019`，架构review `/private/tmp/jarde-continue-ladder-architecture-review-root-v1..v3-20261019`；原件/真实IR已有持久归档。当前无Cargo/JDK/CLI活动，target absent。root独占共享/Git/网络/工具链，Luna私有只读；Cargo5GiB/target1GiB/defaultstack/每秒guard/finally exactclean不变。下一固定TestBreakInLoop只有五case数学计划接受，Luna只私有准备baseline，不冒称已有差距。
+
 ## 2026-10-19 当前：CF09 布尔局部已完整交付，continue ladder 2/6
 
 本节优先，下方均为历史检查点。finThrow5/5、nestedFin16/16已交付，不重做。产品 `cc1bf5fa37ef51c4d11a78ea1e9dfcabfe169d2c` 已推 main；`recover-proved-literal-boolean-locals` 完整对照8API/16整类重编/32VM/192观察全同原件。fresh native389targets/102批/3798-0-98、53精确门与九周边回归；自身CI39186343472四jobs/52独立官方ZIP步骤、双seed各3798-0-98/98精确门及3896全部具名结果一致。5216构建/native源码并集绑定产品。最终CLI SHA9ea9177b8992c8444c9f9af0158ca7bc99b3e7dfee4696b342aea7da2e295167，路径仍为 `/private/tmp/jarde-literal-boolean-focused-root-v4-20261019/candidate-cli`。
