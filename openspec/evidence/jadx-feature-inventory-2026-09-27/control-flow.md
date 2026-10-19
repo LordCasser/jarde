@@ -1,10 +1,10 @@
-## 2026-10-19 更新：ComplexIf两原件交付，下一Loop2确证所有权gap
+## 2026-10-19 当前：Loop2条件重抛与异常重试交付
 
-[body边界片6/6](../../changes/bound-loop-header-chains-at-body-effects/results/README.md)，产品c8af822ef/CLI52ff01f。最小AND/body归属修复复用原Region/If/gateway/LoopBreak，无新机制。ComplexIf完整16 API/八JDK23整源对编译/16VM144观察同原，来源32/33/Point12/12；[ComplexIf2同产品](../java-syntax-2026-10-19/cf09-testbreakincomplexif2-fixed-root-v1/README.md)八API/八JDK23整类编译/16VM176观察同原，来源33/34。各八JDK8原框架边界保留，BCI69/78映射缺口单列，不称全映射。
+[最小OpenSpec6/6](../../changes/recover-branching-named-catch-retry-loops/results/README.md)，产品618b5e20f/CLI7e321a7f。同轮IR确认异常handler回跳造成重复owner后，仅扩展已有retry证明和Frame精确转移授权，复用If/Throw/LoopContinue，无新CFG/Region/pass/Builder。完整原件8API、16完整重编、32Jarde VM/64观察同原、四方法结构化、来源17/17；原件catch不可达，由可达控制例32VM/160观察补充重试/同异常重抛/反转/效果异常范围验证。JADX原JDK8 framework55/52边界保留。
 
-[最终native/自身CI](../../changes/bound-loop-header-chains-at-body-effects/results/native-and-own-ci-root-v1/README.md)：一次fresh392targets/103批/3816-0-98、71精确门；CI39210601042四jobs/52独立官方ZIP步骤，双seed116门及全部3914具名结果一致，无aggregate/transport失败。5263构建/native来源逐Git/bytes/mode绑定产品，593payload逐成员复开；1requirement/4scenario主spec同步、全部385 strict通过。finThrow5/5、nestedFin16/16与旧片不重做，文档后继不冒称重跑产品CI。
+[最终native/自身CI](../../changes/recover-branching-named-catch-retry-loops/results/native-and-own-ci-root-v1/README.md)：一次fresh393targets/103批/3823-0-98、78精确门；CI39227711617四jobs、官方步骤ZIP、双seed具名结果均接受；5280来源逐Git blob/bytes/mode绑定产品。主规格同步；严格校验以验收入口为准。固定13原件7项接受、6项待完整baseline，优先[BreakInLoop4/5](../java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md)；3的NYI及6的Smali/Dex边界单列。CF09/71/612仍partial。
 
-[Loop2原件](../java-syntax-2026-10-19/cf09-testbreakinloop2-original-root-v1/README.md)46命令接受，原件/JADX各八观察同，八目标ownership_overlap BCI0、16Jarde全编译拒绝、无JardeVM；17/17来源只是quote。164payload已逐bytes/mode归档。[同轮trace实测](../../changes/recover-branching-named-catch-retry-loops/results/same-run-ir-root-v1/README.md)已1/0：两模式均无自然循环，retry首拒绝check_20，handler回跳再次进入Try，owners[0,9,17,19,0,9]；独立复核、源码恢复与清理通过。[最小OpenSpec](../../changes/recover-branching-named-catch-retry-loops/tasks.md)4/6，Luna候选经root修订审查，已通过Java526/公开2/Reader指纹Clippy及完整原件32VM64观察、可达控制32VM160观察；fresh393目标/3823-0-98、78精确门通过，最终产品自身CI待验收。固定13原件六项接受、一项真实gap、六项待baseline；[3–6静态范围](../java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md)不计覆盖。CF09/71/612仍partial。以下均为历史。
+前一[ComplexIf两原件交付](../../changes/bound-loop-header-chains-at-body-effects/results/README.md)保留；32/33与33/34来源缺口BCI69/78作为独立映射债务，不扩大Loop2范围。finThrow5/5、nestedFin16/16与旧片不重做。以下均为历史。
 
 ## 2026-10-19 历史：Continue完整交付，DoWhileBreak已证真实缺口
 

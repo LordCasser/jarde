@@ -1,6 +1,6 @@
 # JADX 测试驱动的 Java 恢复路线
 
-当前2026-10-19检查点见[控制流账本](control-flow.md)：ComplexIf AND/body片6/6，产品c8af822ef，两个固定原件分别144/176观察全同原，来源32/33和33/34缺口单列。fresh392目标/3816-0-98，CI39210601042四jobs/52独立官方步骤、双seed116精确门及全部3914具名结果一致，5263来源绑定产品；主规范同步，385 strict通过。下一Loop2完整基线确证BCI0所有权重叠，同轮trace已实际1/0并确认handler分支回跳造成0/9重复；最小OpenSpec4/6，复用既有retry证明的修复已通过定向与完整原件/可达控制例对照，fresh393目标/3823-0-98通过，待最终产品自身CI；固定13原件六项接受、一项gap、六项待baseline。finThrow/nestedFin/旧片不重做，CF09/71/612口径不变。
+当前2026-10-19检查点见[控制流账本](control-flow.md)：[Loop2异常重试片6/6](../../changes/recover-branching-named-catch-retry-loops/results/README.md)，产品618b5e20f，完整原件32VM/64观察同原、来源17/17；可达控制32VM/160观察补充原件不可达catch路径。fresh393目标/3823-0-98、78精确门，自身CI39227711617四jobs/官方步骤ZIP/双seed完整具名结果通过，5280源码路径绑定产品，主规格同步。固定13原件7项接受、6项待完整baseline，下一优先BreakInLoop4/5，3的NYI与6的Smali/Dex边界单列。ComplexIf两个原件及BCI69/78独立映射债务保持原结论。finThrow/nestedFin/旧片不重做，CF09/71/612仍partial；以下为各日期历史记录。
 
 ## 2026-10-18 CF-11 祖先 Iterator 声明清理产品验收
 
