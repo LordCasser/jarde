@@ -772,6 +772,7 @@ fn declarations(
         return_type,
         fields,
         &short_circuit_booleans,
+        &paths.catch_parameters,
         budget,
     )?;
     let generic_locals = prove_debug_generic_locals(
@@ -2452,6 +2453,7 @@ fn decide_types(
     return_type: Option<&Type>,
     fields: &field::Plan,
     short_circuit_booleans: &BTreeSet<LocalVariable>,
+    catch_parameters: &BTreeMap<RegionPath, (u16, CanonicalBlockId)>,
     budget: &mut Budget,
 ) -> Result<BTreeMap<LocalVariable, Decided>, StopReason> {
     // The write each variable's type is decided from: the first one in method order, which is the
@@ -2929,6 +2931,55 @@ fn decide_types(
                         matches!(ssa.value(stored).def(), Definition::Caught { .. })
                     }) {
                         continue;
+                    }
+                    // A catch header may reuse a normal-flow slot. Keep the proof tied to the
+                    // exact recovered clause, then pay for the handler-ID block lookup before
+                    // touching the SSA block table. Only its first instruction can bind the slot.
+                    if !catch_parameters.is_empty()
+                        && let Some(path) = use_.path.as_ref()
+                        && let Some((slot, handler)) = catch_parameters.get(path)
+                        && *slot == variable.slot()
+                        && use_.bci == handler.bci()
+                        && matches!(operations.get(use_.bci), Some(Operation::Store { slot: operation_slot }) if operation_slot == slot)
+                        && let (Some(stored), Some(written_value)) = (use_.stored, use_.written)
+                        && matches!(
+                            ssa.value(stored).def(),
+                            Definition::Phi { block, slot: phi_slot }
+                                if block == handler && *phi_slot == Slot::Stack(0)
+                        )
+                    {
+                        let handler_lookup_cost = u64::try_from(ssa.blocks().len())
+                            .unwrap_or(u64::MAX)
+                            .saturating_add(4);
+                        charge(
+                            budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            handler_lookup_cost,
+                            Some(use_.bci),
+                        )?;
+                        poll(budget, Some(use_.bci))?;
+                        if ssa
+                            .block(handler)
+                            .and_then(|block| block.instructions().first())
+                            .is_some_and(|instruction| {
+                                instruction.bci() == handler.bci()
+                                    && instruction.reads().len() == 1
+                                    && instruction.reads().first().is_some_and(
+                                        |(read_slot, value)| {
+                                            *read_slot == Slot::Stack(0) && *value == stored
+                                        },
+                                    )
+                                    && instruction.writes().len() == 1
+                                    && instruction.writes().first().is_some_and(
+                                        |(write_slot, value)| {
+                                            *write_slot == Slot::Local(*slot)
+                                                && *value == written_value
+                                        },
+                                    )
+                            })
+                        {
+                            continue;
+                        }
                     }
                     if let Ok(Some(observed)) = written_type(ssa, operations, written)
                         && matches!(declared, Type::Reference(_))
@@ -37139,6 +37190,7 @@ pub(crate) fn spell_reference(descriptor: &str) -> Option<String> {
 mod tests {
     use super::*;
     mod field_test_copy_tests;
+    mod loop5_catch_binding_tests;
     use crate::names::{AliasReason, SlotEvidence};
 
     #[test]

@@ -1,4 +1,8 @@
-## 2026-10-19 当前：Loop2条件重抛与异常重试交付
+## 2026-10-19 当前：Loop4/5实现与完整对照待广验
+
+两项OpenSpec `recover-proved-loop-break-branch-bodies` / `recover-named-catch-loop-return-tails` 已由Luna私有实现、root审查集成。闭合break DAG复用既有sequence；named catch保留完整While和范围右边界return表达式；catch入口绑定不再污染同物理槽普通double类型。新CLI SHA3dfb6601，两个原件各8API/24方法structured、Jarde8及JADX2完整JDK23编译、20生成VM同原；JDK8框架55/52边界仍记录。Loop5扩展12例20VM通过；完整独立raw审查、fresh workspace、新产品自身CI与Git来源绑定待最终关闭。主规格已同步2要求/8场景，strict388通过。固定13原件仍按7接受+2待最终验收+4待基线记录，CF09/71/612保持partial。以下为历史。
+
+## 2026-10-19 历史：Loop2条件重抛与异常重试交付
 
 [最小OpenSpec6/6](../../changes/recover-branching-named-catch-retry-loops/results/README.md)，产品618b5e20f/CLI7e321a7f。同轮IR确认异常handler回跳造成重复owner后，仅扩展已有retry证明和Frame精确转移授权，复用If/Throw/LoopContinue，无新CFG/Region/pass/Builder。完整原件8API、16完整重编、32Jarde VM/64观察同原、四方法结构化、来源17/17；原件catch不可达，由可达控制例32VM/160观察补充重试/同异常重抛/反转/效果异常范围验证。JADX原JDK8 framework55/52边界保留。
 

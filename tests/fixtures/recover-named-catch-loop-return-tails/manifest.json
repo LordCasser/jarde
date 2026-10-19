@@ -1,0 +1,100 @@
+{
+  "schema": "complete-upstream-loop-fixtures-v1",
+  "baseline": {
+    "path": "/private/tmp/jarde-testbreakinloop5-baseline-root-v1-20261019/execution.json",
+    "bytes": 6173904,
+    "sha256": "17770c94b51981a432430e285b0658a0da86c6948143a67388f5a77a08bb946a"
+  },
+  "files": [
+    {
+      "relative_path": "source/TestBreakInLoop5.java",
+      "source": {
+        "path": "/private/tmp/jarde-testbreakinloop5-baseline-root-v1-20261019/source/jadx/tests/integration/loops/TestBreakInLoop5.java",
+        "bytes": 1495,
+        "sha256": "4aef48802b7dc7cc47c7c03d6c2639103c2913345cb8be8818545e63ed1fea64"
+      },
+      "bytes": 1495,
+      "sha256": "4aef48802b7dc7cc47c7c03d6c2639103c2913345cb8be8818545e63ed1fea64"
+    },
+    {
+      "relative_path": "original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop5$TestCls.class",
+      "source": {
+        "path": "/private/tmp/jarde-testbreakinloop5-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestBreakInLoop5$TestCls.class",
+        "bytes": 1899,
+        "sha256": "b092395985b9c537219014da5b5fe780061fa68d2d7500f7c202a4b2e03b07a9"
+      },
+      "bytes": 1899,
+      "sha256": "b092395985b9c537219014da5b5fe780061fa68d2d7500f7c202a4b2e03b07a9"
+    },
+    {
+      "relative_path": "original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop5.class",
+      "source": {
+        "path": "/private/tmp/jarde-testbreakinloop5-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestBreakInLoop5.class",
+        "bytes": 1106,
+        "sha256": "6d7c69f02e8d3e095cd9da2298f81f939448204a16fcdae42335ce872f867577"
+      },
+      "bytes": 1106,
+      "sha256": "6d7c69f02e8d3e095cd9da2298f81f939448204a16fcdae42335ce872f867577"
+    },
+    {
+      "relative_path": "original/debug/TestBreakInLoop5-full-classes.jar",
+      "source": {
+        "path": "/private/tmp/jarde-testbreakinloop5-baseline-root-v1-20261019/debug-full-classes.jar",
+        "bytes": 3399,
+        "sha256": "136947b1e8b69c2b2c1ceecf69fc72c4fe5b8bde2d10a606510acd71ca3861b6"
+      },
+      "bytes": 3399,
+      "sha256": "136947b1e8b69c2b2c1ceecf69fc72c4fe5b8bde2d10a606510acd71ca3861b6"
+    },
+    {
+      "relative_path": "original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop5$TestCls.class",
+      "source": {
+        "path": "/private/tmp/jarde-testbreakinloop5-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop5$TestCls.class",
+        "bytes": 1403,
+        "sha256": "96cc7700b0f3bb2129c8e601c494da2def79d623fc010c613d4c63ccff8b6c06"
+      },
+      "bytes": 1403,
+      "sha256": "96cc7700b0f3bb2129c8e601c494da2def79d623fc010c613d4c63ccff8b6c06"
+    },
+    {
+      "relative_path": "original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop5.class",
+      "source": {
+        "path": "/private/tmp/jarde-testbreakinloop5-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop5.class",
+        "bytes": 855,
+        "sha256": "a3b848df78c808982e58fd31c3f5834e52658a096d93d7b55210c9cb0bda4cf3"
+      },
+      "bytes": 855,
+      "sha256": "a3b848df78c808982e58fd31c3f5834e52658a096d93d7b55210c9cb0bda4cf3"
+    },
+    {
+      "relative_path": "original/no-debug/TestBreakInLoop5-full-classes.jar",
+      "source": {
+        "path": "/private/tmp/jarde-testbreakinloop5-baseline-root-v1-20261019/no-debug-full-classes.jar",
+        "bytes": 2652,
+        "sha256": "c8bdeaf20247e939b28c2eda5be46d1a9eec5b69e06fd347d0ca0160d9cc8953"
+      },
+      "bytes": 2652,
+      "sha256": "c8bdeaf20247e939b28c2eda5be46d1a9eec5b69e06fd347d0ca0160d9cc8953"
+    },
+    {
+      "relative_path": "licenses/JADX-LICENSE",
+      "source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-branching-named-catch-retry-loops/licenses/JADX-LICENSE",
+        "bytes": 11357,
+        "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+      },
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "relative_path": "licenses/JADX-NOTICE",
+      "source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-branching-named-catch-retry-loops/licenses/JADX-NOTICE",
+        "bytes": 10658,
+        "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365"
+      },
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365"
+    }
+  ]
+}

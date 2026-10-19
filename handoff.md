@@ -18,7 +18,11 @@
 
 [完整三方基线](openspec/evidence/java-syntax-2026-10-19/cf09-loop4-loop5-original-root-v1/README.md)已并行采集并root/独立复核接受：每目标46命令/8API/20完整编译尝试。两个test均fallback `jre_region_uncovered_blocks`，Loop4遗漏3块、Loop5遗漏11块；ctor/check均structured。每目标Jarde16整类编译失败、无VM；JADX2次JDK23整树编译成功/4VM全部case+check同原件，2次JDK8编译框架55/52边界保留。原件check在JDK23通过、JDK8依赖异常独立记录。
 
-下一步运行四个冻结class的同轮IR探针，先证明具体恢复路径，再按OpenSpec派发Luna最小实现，root架构/对抗性/完整对照验收。不得按相同诊断猜同一根因，不重跑已冻结基线。临时探针准备在 `/private/tmp/jarde-loop45-ir-probe-prep-luna-v1-20261019`，尚未执行。
+[四原件真实IR](openspec/evidence/java-syntax-2026-10-19/cf09-loop4-loop5-ir-root-v1/README.md)已执行、独立复核并归档：1 test/4 profile，默认栈，helper精确恢复、target清理。Loop4已证明ForHeader却漏外侧条件break体；Loop5普通try的prefix+loop候选只接受末尾goto，原件却为范围右边界return表达式。probe仅test且Sites为空，与公开路径输入边界已单列。
+
+两项OpenSpec已由Luna提交私有补丁、root审查并集成：Loop4仅在闭合、无外部入口/额外出口的break分支DAG内扩展owner并复用既有sequence；Loop5精确绑定普通named catch的物理范围，将prefix+完整While+return-tail组合，保留append/update；Builder复用catch身份，区分handler入口异常绑定与同槽普通double。Call/Return跨owner边、异常行漂移、owner重复/遗漏及晚期Stop均保留拒绝/回滚门，无全局scope或ForHeader放宽。
+
+定向功能收据为lib540、公开API4、Reader1、fingerprint5通过/1既有忽略；后续测试lint等价修正和项目格式检查已通过，新CLI64,631,664 bytes、0555、SHA `3dfb66010da33478d634cb0022abc18b02d7ee12bc3db095b5a8ddb6b9f8639b`。完整三方新矩阵已闭合：每原件70命令/8API/24方法均structured，各Jarde8及JADX2完整JDK23编译成功、20生成VM同原，10次JDK8框架编译边界保留。Loop5扩展12例的20生成VM亦均同原件；root/独立raw审查及fresh workspace、新产品自身CI和来源绑定仍待最终关闭。主规格已追加2要求/8场景，strict388通过；不能借用旧产品CI记本片完成。
 
 ## 下一步与独立债务
 

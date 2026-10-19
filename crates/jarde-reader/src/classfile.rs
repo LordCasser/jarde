@@ -12335,7 +12335,11 @@ mod tests {
             // Complete ComplexIf outer/target/Point debug/no-debug add six classes,
             // fourteen Code bodies and ten targets. The compiled five-method header/body
             // control adds one class and twenty-five targets; neither adds handlers or jsr.
-            (1351, 5945, 646, 4312, 16),
+            // Complete Loop4/5 outer and target classes on debug/no-debug profiles add
+            // eight filesystem classes, twenty-four Code bodies, two named-handler rows,
+            // and thirty-two direct branch targets; their full JAR copies do not add
+            // filesystem class entries. Independent raw-Code census pins the same delta.
+            (1359, 5969, 648, 4344, 16),
             "fixture population changed: re-measure these counts"
         );
     }
