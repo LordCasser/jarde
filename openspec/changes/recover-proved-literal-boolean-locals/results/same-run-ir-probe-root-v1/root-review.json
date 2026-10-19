@@ -1,0 +1,70 @@
+{
+  "status": "root_accepted_real_original_debug_and_no_debug_ssa_probe",
+  "archive": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-literal-boolean-locals/results/same-run-ir-probe-root-v1/capture.tar.gz",
+    "bytes": 1152831,
+    "sha256": "9804d20c75a874d29a51639a3f30771e89fd883def206a5e33faab806356f526"
+  },
+  "payload_files": 16,
+  "test_result": "1 passed/0 failed/508 filtered",
+  "peak_target_bytes": 172234200,
+  "source_restored_exact": true,
+  "target_absent": true,
+  "ssa_facts": {
+    "local": "whole slot3 in both profiles",
+    "writes": [
+      [
+        1,
+        20
+      ],
+      [
+        37,
+        52
+      ]
+    ],
+    "reads": [
+      [
+        68,
+        11
+      ],
+      [
+        78,
+        11
+      ]
+    ],
+    "exit_phi": {
+      "block": 53,
+      "value": 11,
+      "inputs": [
+        20,
+        52
+      ]
+    },
+    "loop_phis": {
+      "blocks": [
+        5,
+        15
+      ],
+      "inputs": [
+        "20",
+        "Itself"
+      ],
+      "users": []
+    },
+    "backedges": [
+      [
+        41,
+        15
+      ],
+      [
+        47,
+        5
+      ]
+    ],
+    "BooleanConsumption": {
+      "68_to_append69": false,
+      "78_to_return79": true
+    }
+  },
+  "scope": "Actual IR and existing consumption refusal only. No new Boolean proof implemented; no new proof-site cancellation/budget acceptance yet."
+}

@@ -1,0 +1,117 @@
+{
+  "payload_files": 16,
+  "members": [
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-prep-luna-v1-20261019/README.md",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-prep-luna-v1-20261019/README.md",
+      "bytes": 2181,
+      "sha256": "6f98a8b3b3c1f36391728a748e6c0625f6b4158570fcc94300a5a71090b85b41",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-prep-luna-v1-20261019/pins.json",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-prep-luna-v1-20261019/pins.json",
+      "bytes": 2548,
+      "sha256": "ac9155a5d8e35e2d2a98268f0cfbb4b64de0609c1a1007a38bbae49d2dc2a7ad",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-prep-luna-v1-20261019/probe.patch",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-prep-luna-v1-20261019/probe.patch",
+      "bytes": 8968,
+      "sha256": "0f99eda37917a9b7d5ebc02cc6aab25d464b0605d9dba785c7d78a178a4135f1",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-prep-luna-v1-20261019/probe.rs",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-prep-luna-v1-20261019/probe.rs",
+      "bytes": 8667,
+      "sha256": "9ce16e74edd7b2c693e49b345af4ad4275fd4e9f68e443dfe34e2729310cee2e",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/candidate-build.rs",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/candidate-build.rs",
+      "bytes": 2071272,
+      "sha256": "3728e631c0c22ac9db33433c98a38d1da7bfdd5124773c43ef61665e6e15092b",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/commands.json",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/commands.json",
+      "bytes": 188,
+      "sha256": "cab77422c52b23becc49b9f0f0babd9ce5842b2ba06e642f6f4a7134db35cd40",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/execution.json",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/execution.json",
+      "bytes": 3495,
+      "sha256": "7e1248a1fe7f13133ddfad555d8ad98371bcd3336fcb3fb00689c4bc6628709e",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/original-build.rs",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/original-build.rs",
+      "bytes": 2062604,
+      "sha256": "f99304f609bb86c9c962db6240c24a8f4fee9dd58a197eda35ef6dd001ebf9eb",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/run.py",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/run.py",
+      "bytes": 2907,
+      "sha256": "be9dd1d5b5d26eb294b2c02f0ab1848c49abac6b35b6dae8d0040e73ff084186",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/runner.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/runner.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/runner.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/runner.stdout.raw",
+      "bytes": 138,
+      "sha256": "d44bc6062a69d5c0f360590eaee2fa2ed3afa256305acf3723c54930bab07264",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-v1-20261019/execution.json",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-v1-20261019/execution.json",
+      "bytes": 1579504,
+      "sha256": "0c4b38afec3b7553ddeeb5e5cf2f484e9530c93ea7645b603ec5eced25c5369c",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-v1-20261019/raw/1.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 1459,
+      "sha256": "b047047c022e97b9c137ebf335ea0f455c8004c15dc19609df3b802245e742ce",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-v1-20261019/raw/1.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 2920,
+      "sha256": "e4cf154cd4143143c27b2b60d1b8e8cf35889d1a68cbb99139cc9a422a329e27",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-v1-20261019/raw/2.stderr.raw",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "d8b993a4f0ff22869a67681ddaf722f86fa4f7c3436e7a59cd3481b7647fe54f",
+      "mode": 420
+    },
+    {
+      "archive_path": "jarde-testbreakwithlabel-ir-probe-root-v1-20261019/raw/2.stdout.raw",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-ir-probe-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    }
+  ]
+}

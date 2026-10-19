@@ -1,0 +1,943 @@
+{
+  "scope": "Full original debug/no-debug class trees and plain JARs; independent constructed refusal classes with only true push1 changed to push2.",
+  "baseline_acceptance": "openspec/evidence/java-syntax-2026-10-19/cf09-testbreakwithlabel-original-root-v1/root-review.json",
+  "reader_delta": [
+    6,
+    20,
+    0,
+    20,
+    0
+  ],
+  "root_controls_receipt": "/private/tmp/jarde-literal-boolean-controls-root-v1-20261019/execution.json",
+  "mutated_controls_census": {
+    "schema": "cf09-literal-boolean-controls-generated-class-census-v1",
+    "status": "caller-compiled-classfiles-mutated-no-compiler-invoked-by-this-tool",
+    "outputs": {
+      "jdk8": {
+        "compiled_input": {
+          "path": "/private/tmp/jarde-literal-boolean-controls-root-v1-20261019/javac8/compiled/cf09/literalboolean/BooleanLocalRefusals.class",
+          "bytes": 1329,
+          "sha256": "7b7d91bd76bab62bc14d39d952b33f4314147662e5ad7a9632211fc04f075638"
+        },
+        "mutated_output": {
+          "path": "/private/tmp/jarde-literal-boolean-controls-root-v1-20261019/mutated/jdk8/BooleanLocalRefusals.class",
+          "bytes": 1329,
+          "sha256": "2be0629a6a9003e1ed0e42bb86a077a0bc693daa73927606ad1a1450b3afaedf"
+        },
+        "target_method": "writeTwo(Z)Z",
+        "found_slot": 2,
+        "literal_bci": 6,
+        "store_bci": 7,
+        "method_inventory": [
+          {
+            "name": "<init>",
+            "descriptor": "()V",
+            "access": 1
+          },
+          {
+            "name": "writeTwo",
+            "descriptor": "(Z)Z",
+            "access": 1
+          },
+          {
+            "name": "mixedIntegerSinks",
+            "descriptor": "(Z)I",
+            "access": 1
+          },
+          {
+            "name": "branchOnly",
+            "descriptor": "(I)I",
+            "access": 1
+          },
+          {
+            "name": "parameterOnlyBranch",
+            "descriptor": "(I)I",
+            "access": 1
+          }
+        ],
+        "field_inventory": [],
+        "code_census": {
+          "<init>()V": {
+            "max_stack": 1,
+            "max_locals": 1,
+            "code_length": 5,
+            "code_hex": "2ab70001b1",
+            "exception_rows": [],
+            "instructions": [
+              {
+                "bci": 0,
+                "opcode": 42,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 1,
+                "opcode": 183,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 4,
+                "opcode": 177,
+                "length": 1,
+                "targets": []
+              }
+            ]
+          },
+          "writeTwo(Z)Z": {
+            "max_stack": 3,
+            "max_locals": 3,
+            "code_length": 35,
+            "code_hex": "033d1b990005043db20002bb000359b700041205b600061cb60007b60008b600091cac",
+            "exception_rows": [],
+            "instructions": [
+              {
+                "bci": 0,
+                "opcode": 3,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 1,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 2,
+                "opcode": 27,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 3,
+                "opcode": 153,
+                "length": 3,
+                "targets": [
+                  8
+                ]
+              },
+              {
+                "bci": 6,
+                "opcode": 4,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 7,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 8,
+                "opcode": 178,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 11,
+                "opcode": 187,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 14,
+                "opcode": 89,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 15,
+                "opcode": 183,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 18,
+                "opcode": 18,
+                "length": 2,
+                "targets": []
+              },
+              {
+                "bci": 20,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 23,
+                "opcode": 28,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 24,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 27,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 30,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 33,
+                "opcode": 28,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 34,
+                "opcode": 172,
+                "length": 1,
+                "targets": []
+              }
+            ]
+          },
+          "mixedIntegerSinks(Z)I": {
+            "max_stack": 3,
+            "max_locals": 3,
+            "code_length": 37,
+            "code_hex": "033d1b990005043db20002bb000359b70004120ab600061cb6000bb60008b600091c0660ac",
+            "exception_rows": [],
+            "instructions": [
+              {
+                "bci": 0,
+                "opcode": 3,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 1,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 2,
+                "opcode": 27,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 3,
+                "opcode": 153,
+                "length": 3,
+                "targets": [
+                  8
+                ]
+              },
+              {
+                "bci": 6,
+                "opcode": 4,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 7,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 8,
+                "opcode": 178,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 11,
+                "opcode": 187,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 14,
+                "opcode": 89,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 15,
+                "opcode": 183,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 18,
+                "opcode": 18,
+                "length": 2,
+                "targets": []
+              },
+              {
+                "bci": 20,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 23,
+                "opcode": 28,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 24,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 27,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 30,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 33,
+                "opcode": 28,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 34,
+                "opcode": 6,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 35,
+                "opcode": 96,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 36,
+                "opcode": 172,
+                "length": 1,
+                "targets": []
+              }
+            ]
+          },
+          "branchOnly(I)I": {
+            "max_stack": 1,
+            "max_locals": 3,
+            "code_length": 10,
+            "code_hex": "033d1b990005043d1cac",
+            "exception_rows": [],
+            "instructions": [
+              {
+                "bci": 0,
+                "opcode": 3,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 1,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 2,
+                "opcode": 27,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 3,
+                "opcode": 153,
+                "length": 3,
+                "targets": [
+                  8
+                ]
+              },
+              {
+                "bci": 6,
+                "opcode": 4,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 7,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 8,
+                "opcode": 28,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 9,
+                "opcode": 172,
+                "length": 1,
+                "targets": []
+              }
+            ]
+          },
+          "parameterOnlyBranch(I)I": {
+            "max_stack": 1,
+            "max_locals": 2,
+            "code_length": 8,
+            "code_hex": "1b99000504ac03ac",
+            "exception_rows": [],
+            "instructions": [
+              {
+                "bci": 0,
+                "opcode": 27,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 1,
+                "opcode": 153,
+                "length": 3,
+                "targets": [
+                  6
+                ]
+              },
+              {
+                "bci": 4,
+                "opcode": 4,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 5,
+                "opcode": 172,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 6,
+                "opcode": 3,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 7,
+                "opcode": 172,
+                "length": 1,
+                "targets": []
+              }
+            ]
+          }
+        }
+      },
+      "jdk23": {
+        "compiled_input": {
+          "path": "/private/tmp/jarde-literal-boolean-controls-root-v1-20261019/javac23/compiled/cf09/literalboolean/BooleanLocalRefusals.class",
+          "bytes": 1329,
+          "sha256": "cb8cbfc3ae88f119ebffdda0974cb2f2e1b458740feade0edd50376ce170897c"
+        },
+        "mutated_output": {
+          "path": "/private/tmp/jarde-literal-boolean-controls-root-v1-20261019/mutated/jdk23/BooleanLocalRefusals.class",
+          "bytes": 1329,
+          "sha256": "2e0b922a9abcf735bad7a866b32eeafe8cd0963127006c6f44c3c95b9fb110bc"
+        },
+        "target_method": "writeTwo(Z)Z",
+        "found_slot": 2,
+        "literal_bci": 6,
+        "store_bci": 7,
+        "method_inventory": [
+          {
+            "name": "<init>",
+            "descriptor": "()V",
+            "access": 1
+          },
+          {
+            "name": "writeTwo",
+            "descriptor": "(Z)Z",
+            "access": 1
+          },
+          {
+            "name": "mixedIntegerSinks",
+            "descriptor": "(Z)I",
+            "access": 1
+          },
+          {
+            "name": "branchOnly",
+            "descriptor": "(I)I",
+            "access": 1
+          },
+          {
+            "name": "parameterOnlyBranch",
+            "descriptor": "(I)I",
+            "access": 1
+          }
+        ],
+        "field_inventory": [],
+        "code_census": {
+          "<init>()V": {
+            "max_stack": 1,
+            "max_locals": 1,
+            "code_length": 5,
+            "code_hex": "2ab70001b1",
+            "exception_rows": [],
+            "instructions": [
+              {
+                "bci": 0,
+                "opcode": 42,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 1,
+                "opcode": 183,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 4,
+                "opcode": 177,
+                "length": 1,
+                "targets": []
+              }
+            ]
+          },
+          "writeTwo(Z)Z": {
+            "max_stack": 3,
+            "max_locals": 3,
+            "code_length": 35,
+            "code_hex": "033d1b990005043db20007bb000d59b7000f1210b600121cb60016b60019b6001d1cac",
+            "exception_rows": [],
+            "instructions": [
+              {
+                "bci": 0,
+                "opcode": 3,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 1,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 2,
+                "opcode": 27,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 3,
+                "opcode": 153,
+                "length": 3,
+                "targets": [
+                  8
+                ]
+              },
+              {
+                "bci": 6,
+                "opcode": 4,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 7,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 8,
+                "opcode": 178,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 11,
+                "opcode": 187,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 14,
+                "opcode": 89,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 15,
+                "opcode": 183,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 18,
+                "opcode": 18,
+                "length": 2,
+                "targets": []
+              },
+              {
+                "bci": 20,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 23,
+                "opcode": 28,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 24,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 27,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 30,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 33,
+                "opcode": 28,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 34,
+                "opcode": 172,
+                "length": 1,
+                "targets": []
+              }
+            ]
+          },
+          "mixedIntegerSinks(Z)I": {
+            "max_stack": 3,
+            "max_locals": 3,
+            "code_length": 37,
+            "code_hex": "033d1b990005043db20007bb000d59b7000f1223b600121cb60025b60019b6001d1c0660ac",
+            "exception_rows": [],
+            "instructions": [
+              {
+                "bci": 0,
+                "opcode": 3,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 1,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 2,
+                "opcode": 27,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 3,
+                "opcode": 153,
+                "length": 3,
+                "targets": [
+                  8
+                ]
+              },
+              {
+                "bci": 6,
+                "opcode": 4,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 7,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 8,
+                "opcode": 178,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 11,
+                "opcode": 187,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 14,
+                "opcode": 89,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 15,
+                "opcode": 183,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 18,
+                "opcode": 18,
+                "length": 2,
+                "targets": []
+              },
+              {
+                "bci": 20,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 23,
+                "opcode": 28,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 24,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 27,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 30,
+                "opcode": 182,
+                "length": 3,
+                "targets": []
+              },
+              {
+                "bci": 33,
+                "opcode": 28,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 34,
+                "opcode": 6,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 35,
+                "opcode": 96,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 36,
+                "opcode": 172,
+                "length": 1,
+                "targets": []
+              }
+            ]
+          },
+          "branchOnly(I)I": {
+            "max_stack": 1,
+            "max_locals": 3,
+            "code_length": 10,
+            "code_hex": "033d1b990005043d1cac",
+            "exception_rows": [],
+            "instructions": [
+              {
+                "bci": 0,
+                "opcode": 3,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 1,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 2,
+                "opcode": 27,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 3,
+                "opcode": 153,
+                "length": 3,
+                "targets": [
+                  8
+                ]
+              },
+              {
+                "bci": 6,
+                "opcode": 4,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 7,
+                "opcode": 61,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 8,
+                "opcode": 28,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 9,
+                "opcode": 172,
+                "length": 1,
+                "targets": []
+              }
+            ]
+          },
+          "parameterOnlyBranch(I)I": {
+            "max_stack": 1,
+            "max_locals": 2,
+            "code_length": 8,
+            "code_hex": "1b99000504ac03ac",
+            "exception_rows": [],
+            "instructions": [
+              {
+                "bci": 0,
+                "opcode": 27,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 1,
+                "opcode": 153,
+                "length": 3,
+                "targets": [
+                  6
+                ]
+              },
+              {
+                "bci": 4,
+                "opcode": 4,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 5,
+                "opcode": 172,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 6,
+                "opcode": 3,
+                "length": 1,
+                "targets": []
+              },
+              {
+                "bci": 7,
+                "opcode": 172,
+                "length": 1,
+                "targets": []
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "payload_pins": [
+    {
+      "path": "controls/jdk23/BooleanLocalRefusals.class",
+      "bytes": 1329,
+      "sha256": "2e0b922a9abcf735bad7a866b32eeafe8cd0963127006c6f44c3c95b9fb110bc"
+    },
+    {
+      "path": "controls/jdk8/BooleanLocalRefusals.class",
+      "bytes": 1329,
+      "sha256": "2be0629a6a9003e1ed0e42bb86a077a0bc693daa73927606ad1a1450b3afaedf"
+    },
+    {
+      "path": "controls-src/BooleanLocalRefusals.java",
+      "bytes": 853,
+      "sha256": "610f1eaff2db3b8c9e2e64427e87a04898e759f90e9a97ae3a96bb47a533fc08"
+    },
+    {
+      "path": "original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class",
+      "bytes": 1518,
+      "sha256": "de061b8676da2c2c840335a526bc959b7f63f35e772af94f6d4cea3d6e794a74"
+    },
+    {
+      "path": "original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class",
+      "bytes": 1175,
+      "sha256": "63fbbbb93b2c0194d620a5bd2e6dd61791c753e87ee295d64a2e05422492e10b"
+    },
+    {
+      "path": "original/debug-full-classes.jar",
+      "bytes": 3095,
+      "sha256": "3d03fb1d3fba368430bc3c539a6ce3298bb9a2ca0aefc06be10738d9a6a1b08e"
+    },
+    {
+      "path": "original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class",
+      "bytes": 1115,
+      "sha256": "51a3e2e582eebbfb25689ee4d14c7171916f39dd669dbf46a43977802afad194"
+    },
+    {
+      "path": "original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class",
+      "bytes": 954,
+      "sha256": "35ca5d663a5d22954350e14806c8759e238c1078326fec599181527aed5b45d3"
+    },
+    {
+      "path": "original/no-debug-full-classes.jar",
+      "bytes": 2471,
+      "sha256": "8d90924ff4e91e15b7aab65d6e185926b08bf897a9fb5e8be72c08a43ef975ba"
+    },
+    {
+      "path": "prepare_controls.py",
+      "bytes": 8945,
+      "sha256": "e8828422c9e390d2db6da3ffdbf15a0fcfe10b19d904791f8ed8cf436e93df6b"
+    },
+    {
+      "path": "upstream/LICENSE",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "path": "upstream/NOTICE",
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365"
+    },
+    {
+      "path": "upstream/TestBreakWithLabel.java",
+      "bytes": 962,
+      "sha256": "fa38d5b302c0bec8a8424312304b260cfb036e0144f147fad1666aaa358b3a69"
+    }
+  ]
+}

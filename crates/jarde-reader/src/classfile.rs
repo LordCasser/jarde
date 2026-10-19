@@ -12324,7 +12324,10 @@ mod tests {
             // three Code bodies and six direct targets, with no handler or jsr.
             // Original Raung and two explicit Code controls add three classes, three Code
             // bodies and twelve direct targets; no handler/jsr change.
-            (1320, 5830, 631, 4183, 16),
+            // Full original Boolean flag outer/child debug/no-debug and two literal-2
+            // refusal controls add six classes, twenty Code bodies and twenty branch targets;
+            // two independent physical decoders agree, with no handler/jsr change.
+            (1326, 5850, 631, 4203, 16),
             "fixture population changed: re-measure these counts"
         );
     }

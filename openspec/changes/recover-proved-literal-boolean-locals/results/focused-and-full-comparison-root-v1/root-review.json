@@ -1,0 +1,16 @@
+{
+  "status": "root_reopened_all_payload_bytes_modes_and_exact_inventory",
+  "archive_sha256": "8200e38eb0646cae1cdc2c1017c6b74c1a0d65c1daf02fcc910c86e9f7a02b17",
+  "archive_bytes": 4914620,
+  "payload_files": 357,
+  "inventory_sha256": "ad75c84e315291827df185446802d6b4456d42cb38e916ea4800b3c5e4fc2868",
+  "matrix_receipt_sha256": "0c9a305a49d0c04a13f401da4598e8aa224062904478ca406cdeae3304d61b09",
+  "external_cli": {
+    "bytes": 63983392,
+    "mode": 365,
+    "reason": "Candidate CLI binary is externally pinned in the accepted focused receipt; preserve its pin, not the executable payload.",
+    "relative_path": "candidate-cli",
+    "sha256": "9ea9177b8992c8444c9f9af0158ca7bc99b3e7dfee4696b342aea7da2e295167",
+    "source_path": "/private/tmp/jarde-literal-boolean-focused-root-v4-20261019/candidate-cli"
+  }
+}

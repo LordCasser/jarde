@@ -1,3 +1,7 @@
+## 2026-10-19 更新：CF09 原始标签跳出布尔标志恢复5/6
+
+[完整对照与定向验收](../../changes/recover-proved-literal-boolean-locals/results/README.md)已接受8API、16整类编译、32VM/192观察全同原件，原打印差异消失，map34/42→41/42只缺BCI44另列。root审Luna窄局部证明，无新solver/CFG机制；所有失败/修正和原始/JADX复用边界已归档。任务3.2的fresh workspace/当前产品自身CI/主spec同步/最终交付仍待，不能引用旧产品CI关闭。下一固定原始TestContinueInLoop仅有限用例数学计划接受，完整baseline私有准备中；CF09/71/612保持部分覆盖。以下旧1/6及未运行是历史时点。
+
 ## 2026-10-19 更新：if-loop 来源完整验收；CF09 已发现布尔局部标志缺口
 
 [来源片完整验收](../../changes/preserve-proved-if-loop-entry-origins/results/README.md)产品2684：fresh388目标/3794-0-98、自身CI39178836424全部4jobs/52独立官方步骤、双seed93精确门和全部3892具名结果一致接受；主spec已同步。四API只补真实derived8、全文不变，CF08/71/612不增计数。以下旧5/6、1/6是历史时点。

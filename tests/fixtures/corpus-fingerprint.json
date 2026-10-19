@@ -1303,6 +1303,71 @@
       "path": "tests/fixtures/cf08-two-level-effectful/cf08twolvl/VerifierRunner.java"
     },
     {
+      "blake3": "c2b0e671ebef6fb4dafd37524d9cc1077111776a81ac8831b18251d216f0e7b9",
+      "bytes": 853,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/controls-src/BooleanLocalRefusals.java"
+    },
+    {
+      "blake3": "bd96746b7e2b2e63a77ff5781ac87e27a328702d6828ca6903cbb4560b50213b",
+      "bytes": 1329,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/controls/jdk23/BooleanLocalRefusals.class"
+    },
+    {
+      "blake3": "c9e89ef78aa367a6f63b86425d15613fd0738a612b01a4bee6dcad37884d2d85",
+      "bytes": 1329,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/controls/jdk8/BooleanLocalRefusals.class"
+    },
+    {
+      "blake3": "8d8910a84929d9a78bba3d45abaa52b70506ac42421c5eb846cf34a0640df7d9",
+      "bytes": 25264,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/manifest.json"
+    },
+    {
+      "blake3": "966ff6c17f64767811f706e11f4f65aab37e6ee5f9a428ad25e2e0eba2c7655b",
+      "bytes": 3095,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/original/debug-full-classes.jar"
+    },
+    {
+      "blake3": "7c54f2ef9674b3a969122ad13838f9f746399eb185fc599bd80c746543d79bec",
+      "bytes": 1518,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class"
+    },
+    {
+      "blake3": "33b55d7a8b242be8e698d09e5c7c18377d8c2a120d29811d4c286d6620fe6884",
+      "bytes": 1175,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class"
+    },
+    {
+      "blake3": "789da183c3b493b14a9e414eee568b6da66ab8a26589edd5646efc74ea455ea5",
+      "bytes": 2471,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/original/no-debug-full-classes.jar"
+    },
+    {
+      "blake3": "139ba72c27e4edc520301382d93f9b8526e858a1d9bd7cc2284dbc36bbffd0e7",
+      "bytes": 1115,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class"
+    },
+    {
+      "blake3": "4b920df6883c44086208b74c75fc5ed9ef7fa65d496d7be22304df2ff275a8c1",
+      "bytes": 954,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class"
+    },
+    {
+      "blake3": "fb6b1d1171f32787eec2b6999838747a9e80c7fa581baf0f614484c2a875eae0",
+      "bytes": 11357,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/upstream/LICENSE"
+    },
+    {
+      "blake3": "d006ec493b8b2457b733149b1779dd1db3bd8314f80e52377749304dafa869b2",
+      "bytes": 10658,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/upstream/NOTICE"
+    },
+    {
+      "blake3": "790fc3e0a13c8752407405b1ce4bfdb9bf7f07b19e476092e99c6c8581ebb012",
+      "bytes": 962,
+      "path": "tests/fixtures/cf09-literal-boolean-locals/upstream/TestBreakWithLabel.java"
+    },
+    {
       "blake3": "ac14234d95a3a038c617c566474440a87d9a45ea995ddfc70e5abb42dec1c1d5",
       "bytes": 6887,
       "path": "tests/fixtures/cf11-ordinary-try-list-generic/UpstreamNestedLoops.class"
