@@ -1,0 +1,306 @@
+{
+  "payloads": [
+    {
+      "member": "last-four-ir-probe-prepare-root-v1/candidate-region.rs",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-prepare-root-v1-20261019/candidate-region.rs",
+      "bytes": 1386192,
+      "sha256": "da65a806fac1452bb72d46652f3779dc9e19f94147f79c64dd434b8802bd280a",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-prepare-root-v1/commands.json",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-prepare-root-v1-20261019/commands.json",
+      "bytes": 205,
+      "sha256": "55ebc022ca91292c612148798eb210c9652088a937a5dcf0c63fbd52941a21c0",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-prepare-root-v1/last_four_ir_probe_tests.rs",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-prepare-root-v1-20261019/last_four_ir_probe_tests.rs",
+      "bytes": 7790,
+      "sha256": "b3a3ec2dc0ac252e049ae29740ff429b7199cf7c6888c273f2645a015e8b1564",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-prepare-root-v1/original-region.rs",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-prepare-root-v1-20261019/original-region.rs",
+      "bytes": 1385610,
+      "sha256": "86a20041442a196dfaa83da539d3f301b9b4974907620b3b50da1eb46f037be5",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-prepare-root-v1/pins.json",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-prepare-root-v1-20261019/pins.json",
+      "bytes": 2663,
+      "sha256": "75d38e0a3bd6d70c83b2745b5b970d82aa670dcdf7adab864f23c47a369bb841",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-launch-root-v1/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-launch-root-v1-20261019/execution.json",
+      "bytes": 8682,
+      "sha256": "472d1c9f1ad1c208f6037c5986751b93aebc6833c30eb5653873fd77257fc6b1",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-launch-root-v1/run.py",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-launch-root-v1-20261019/run.py",
+      "bytes": 4438,
+      "sha256": "08270c880788588c84bdadd1c1e74744723144b5ca31f3206db25dbe5f409f2d",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-launch-root-v1/stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-launch-root-v1-20261019/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-launch-root-v1/stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-launch-root-v1-20261019/stdout.raw",
+      "bytes": 138,
+      "sha256": "d44bc6062a69d5c0f360590eaee2fa2ed3afa256305acf3723c54930bab07264",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-run-root-v1/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-run-root-v1-20261019/execution.json",
+      "bytes": 1636806,
+      "sha256": "0d4849276b73aca12ff9b9f039546d2900000fb7504d3f52fab2986fb5a8719f",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-run-root-v1/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-run-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 206780,
+      "sha256": "a803a86b397635280b5164f14a535ccdaf2e0c027ac5b070ea25153982f5ad39",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-run-root-v1/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-run-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 187,
+      "sha256": "9b1a1d7c0e0da0cef45d2801e5b8f110050d91670d611a529db4524dae804c8d",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-run-root-v1/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-run-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "d8b993a4f0ff22869a67681ddaf722f86fa4f7c3436e7a59cd3481b7647fe54f",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-probe-run-root-v1/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-ir-probe-run-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-independent-review-luna-v1/README.md",
+      "original_path": "/private/tmp/jarde-last-four-ir-independent-review-luna-v1-20261019/README.md",
+      "bytes": 1903,
+      "sha256": "4ba38d8ce4db97ef1a8a01ee63cd1a1dc3f6d792013dd6a126cc790bca5c60f3",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-independent-review-luna-v1/audit.py",
+      "original_path": "/private/tmp/jarde-last-four-ir-independent-review-luna-v1-20261019/audit.py",
+      "bytes": 13178,
+      "sha256": "0ebc0e310506452c249d097bd249a005eb086526719748d5014031a8455bfc32",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-independent-review-luna-v1/manifest.json",
+      "original_path": "/private/tmp/jarde-last-four-ir-independent-review-luna-v1-20261019/manifest.json",
+      "bytes": 2614,
+      "sha256": "28b735e41d7e1c49d18658ad6771c95eaab334564d43cfc52bcf83aceaf798fb",
+      "mode": 420
+    },
+    {
+      "member": "last-four-ir-independent-review-luna-v1/review.json",
+      "original_path": "/private/tmp/jarde-last-four-ir-independent-review-luna-v1-20261019/review.json",
+      "bytes": 13866,
+      "sha256": "3a9b42bb888abd167c55208f920072039f795313e36c6dd676c95de904e85369",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/manifest.json",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/manifest.json",
+      "bytes": 12886,
+      "sha256": "91ebc5dc7d59688d498e6da831c034d3d815a432c8c433c7134dd6bea25c47a2",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/prepare.py",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/prepare.py",
+      "bytes": 9649,
+      "sha256": "275f5a4c854286a354fd1da2900eed33500383f4a068881524424f6299c6d2bc",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/README.md",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/README.md",
+      "bytes": 1163,
+      "sha256": "201ff88d57a43b1e98681f077f71bddfe7ac6ca9781edef275efc3283a52d232",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/fixture-metadata.json",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/fixture-metadata.json",
+      "bytes": 44016,
+      "sha256": "5a01cdaff9f294fa9512eb686a026f074eb204bd453fa76bc790dedecb24e297",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/install-manifest.json",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/install-manifest.json",
+      "bytes": 8465,
+      "sha256": "c0934879caa0a824181c2238957ae18b0406c2edc9dcb085361916ec3024d6a7",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-post-test-loop-return-leaves/licenses/JADX-LICENSE",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/licenses/JADX-LICENSE",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-post-test-loop-return-leaves/licenses/JADX-NOTICE",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/licenses/JADX-NOTICE",
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/TestDoWhileBreak2-full-classes.jar",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/TestDoWhileBreak2-full-classes.jar",
+      "bytes": 3086,
+      "sha256": "9caec6282d77c6a0199fc7a6480a26f4ca7f824046bcb902c34f9b99952b3e71",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "bytes": 1428,
+      "sha256": "4ea6155c9761be9b86ce04d223a72ed4e15a6d098717e28c5ce187e9c1097928",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "bytes": 1260,
+      "sha256": "890254317200e2eb792af946edf79bd6a77675457427ad5417b37c402e815b77",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/TestDoWhileBreak2-full-classes.jar",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/TestDoWhileBreak2-full-classes.jar",
+      "bytes": 2549,
+      "sha256": "4b06b49bc6688624c4393468814d3ab96f5eb5cff1114b3120ad04886ce8017c",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "bytes": 1118,
+      "sha256": "0566952e1802967a4a458d405a8dca90ace66f94c2c05e75a676a8e505ce3693",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "bytes": 1033,
+      "sha256": "b1436ca02fa2986aafa77a5409aabe8dcfc94bfd36b0fc66797f2a7e53808fea",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-post-test-loop-return-leaves/source/TestDoWhileBreak2.java",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/source/TestDoWhileBreak2.java",
+      "bytes": 1078,
+      "sha256": "8b936f2645d158c4ddc8c19e3790045fe3bfd26fe49ef54c3141df41fd433666",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-prefixed-catch-retry-loops/licenses/JADX-LICENSE",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/licenses/JADX-LICENSE",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-prefixed-catch-retry-loops/licenses/JADX-NOTICE",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/licenses/JADX-NOTICE",
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/TestBreakInLoop3-full-classes.jar",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/TestBreakInLoop3-full-classes.jar",
+      "bytes": 2855,
+      "sha256": "82917608d17e6aed39e21011d3e06f32e7b95875735a5d608f5f401f152f28b8",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop3$TestCls.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop3$TestCls.class",
+      "bytes": 1746,
+      "sha256": "6286274bde92c070ed47b9e8400e08c9b009d5968c2eb96e6a129f958543557f",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop3.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop3.class",
+      "bytes": 715,
+      "sha256": "e3c394e60673dbde22b5ec541386f1d6a8c0ead0d46e65c643d3456d4842e5f6",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/TestBreakInLoop3-full-classes.jar",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/TestBreakInLoop3-full-classes.jar",
+      "bytes": 2146,
+      "sha256": "52801e2270f438b419694b0ff766c790b4674d76a9778f026f9751137407bfc5",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop3$TestCls.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop3$TestCls.class",
+      "bytes": 1242,
+      "sha256": "a3680b01b61049a4a601838fe2e227da03be38db67e622c69ba00a39725e810c",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop3.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop3.class",
+      "bytes": 510,
+      "sha256": "6985c09e60c4252d8194c9643b0702fbaaffdadb1a6b8f07c496dc911d185dca",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-prepare-luna-v1/tests/fixtures/recover-proved-prefixed-catch-retry-loops/source/TestBreakInLoop3.java",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/source/TestBreakInLoop3.java",
+      "bytes": 1216,
+      "sha256": "7426191067f7ec483c191029376a2ee5544ccfdb5f893c2cf0a21f4df219ffc4",
+      "mode": 420
+    },
+    {
+      "member": "last-four-fixtures-install-root-v1/installation.json",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-install-root-v1-20261019/installation.json",
+      "bytes": 5805,
+      "sha256": "db0f9774726295006c5527dd83103d8e3b6c192d025e43527432716d6d84a528",
+      "mode": 420
+    },
+    {
+      "member": "archive-tool/archive.py",
+      "original_path": "/private/tmp/jarde-loop45-closeout-tools-root-v1-20261019/archive.py",
+      "bytes": 1780,
+      "sha256": "e80e7c6cb43e31885b4f1cd0f35aab260c6fccd326a461ac7607b961053ff177",
+      "mode": 420
+    }
+  ],
+  "excluded": []
+}

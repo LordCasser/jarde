@@ -1,0 +1,11 @@
+{
+  "status": "all_members_reopened_and_matched",
+  "archive": {
+    "path": "/private/tmp/jarde-last-four-focused-archive-root-v1-20261019/evidence.tar.gz",
+    "bytes": 9611546,
+    "sha256": "a94ac7838d8b3a1408edfcbf60e6842c68aeaba12aa235d2a5c43a06648294f1"
+  },
+  "payload_count": 248,
+  "payload_bytes": 49469677,
+  "excluded_count": 1
+}

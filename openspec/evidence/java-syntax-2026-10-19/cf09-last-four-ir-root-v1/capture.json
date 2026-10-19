@@ -1,0 +1,11 @@
+{
+  "status": "all_members_reopened_and_matched",
+  "archive": {
+    "path": "openspec/evidence/java-syntax-2026-10-19/cf09-last-four-ir-root-v1/evidence.tar.gz",
+    "bytes": 866080,
+    "sha256": "ef1d508e1ec2c4f8d79e523421c8c3670a69c3032234e08dc5695ef42a47686c"
+  },
+  "payload_count": 43,
+  "payload_bytes": 4820867,
+  "excluded_count": 0
+}

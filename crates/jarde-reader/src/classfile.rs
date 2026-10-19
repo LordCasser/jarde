@@ -12339,7 +12339,11 @@ mod tests {
             // eight filesystem classes, twenty-four Code bodies, two named-handler rows,
             // and thirty-two direct branch targets; their full JAR copies do not add
             // filesystem class entries. Independent raw-Code census pins the same delta.
-            (1359, 5969, 648, 4344, 16),
+            // Complete DoWhileBreak2 and BreakInLoop3 outer/target classes on both profiles
+            // add eight filesystem classes, twenty-two Code bodies, two named-handler rows
+            // and sixteen direct targets; full JAR copies are not filesystem class entries.
+            // Independent physical Code census agrees; no jsr is introduced.
+            (1367, 5991, 650, 4360, 16),
             "fixture population changed: re-measure these counts"
         );
     }

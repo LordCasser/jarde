@@ -1,0 +1,1749 @@
+{
+  "payloads": [
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/README.md",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/README.md",
+      "bytes": 3940,
+      "sha256": "ff3233aee502d22e509e87c3866740358ef9eeed35fa59c750817b0692bf1463",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/candidate-region.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/candidate-region.rs",
+      "bytes": 1409655,
+      "sha256": "1f82289f9c2c8bda57b120ed6a6546c91993a46f83a06a95a3e0460839f73afa",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/manifest.json",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/manifest.json",
+      "bytes": 3115,
+      "sha256": "89ebdab40689e12c924702034d94716400586e7ad11495c76b07a2c2d02282ec",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/prefixed_catch_retry_tests.copy.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/prefixed_catch_retry_tests.copy.rs",
+      "bytes": 8262,
+      "sha256": "0418658892d46fb805278e9e113cfa64ffca1baa212a8ea770f046687d00308a",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/prefixed_catch_retry_tests.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/prefixed_catch_retry_tests.rs",
+      "bytes": 18223,
+      "sha256": "c974546dbbd58f40d06e021591e076b296c359f4ab5abad4c305db33edd4401b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/public-test.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/public-test.patch",
+      "bytes": 10700,
+      "sha256": "d277f9f2bb642a6c56df6e59dccc9fa80064444edf14ffea94500b8ad8db2d1a",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/recover_prefixed_retry_public.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/recover_prefixed_retry_public.rs",
+      "bytes": 10308,
+      "sha256": "da3d47fe53825a927640146dbdef82c94cab108f6836a4c2b79810d1d2900284",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/region.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/region.patch",
+      "bytes": 32944,
+      "sha256": "9ff03fb7f473ee0702aa573bf283b451ecdb493fdc167fa444b944e0a283db04",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/tests.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v1-20261019/tests.patch",
+      "bytes": 18869,
+      "sha256": "4467593e3c66551aa5efaecf3b8bc89bcc2c8780adc3a9ae0759b818cd424f38",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/README.md",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/README.md",
+      "bytes": 3918,
+      "sha256": "a70736ac007f461592d0e2b309ad91973dc7cd72100fd269a807a0bda0dcf656",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/candidate-region.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/candidate-region.rs",
+      "bytes": 1411646,
+      "sha256": "fcdc11497f2019f17aac088710ff1846d22276e724d680e69a76abac4e923abb",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/manifest.json",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/manifest.json",
+      "bytes": 3510,
+      "sha256": "52f98c4048b7dd71c0f58dca080541db78acfe6e83e94e3b8bbe549693f40333",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/prefixed_catch_retry_tests.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/prefixed_catch_retry_tests.rs",
+      "bytes": 21821,
+      "sha256": "85bfc7fbb1691b650c280bada9c7e1ea9a0b50ad28d2eba47cd85cf9248755ca",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/public-test.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/public-test.patch",
+      "bytes": 10586,
+      "sha256": "886f1a1d75391aa1aedd87669548467873d763c64c654e3d16e804606d916351",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/recover_prefixed_retry_public.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/recover_prefixed_retry_public.rs",
+      "bytes": 10308,
+      "sha256": "da3d47fe53825a927640146dbdef82c94cab108f6836a4c2b79810d1d2900284",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/region.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/region.patch",
+      "bytes": 38281,
+      "sha256": "6b37c68141c9a313264848bdecd6ffc022d4ea3463457292e0dc41cdb357317e",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/tests.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v2-20261019/tests.patch",
+      "bytes": 22345,
+      "sha256": "93e17835b791d38a1b2fb0e09b08eb4b10ee6673038c929b482b2cfe83977ade",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v3-testonly-20261019/README.md",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v3-testonly-20261019/README.md",
+      "bytes": 1024,
+      "sha256": "4a8307c44a97723fcea9f827314f64f237e27de1aba6598121d86043192afe74",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v3-testonly-20261019/manifest.json",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v3-testonly-20261019/manifest.json",
+      "bytes": 984,
+      "sha256": "05f64a45f0fdc03347f8618fb0fa3e1e69767d4510b66954150f9c68fbf2e399",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v3-testonly-20261019/prefixed_catch_retry_tests.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v3-testonly-20261019/prefixed_catch_retry_tests.rs",
+      "bytes": 27758,
+      "sha256": "ba1c58b3486839ff73f4fb8b2f7ba7148dbf9ba379295ce92059858021c698a4",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v3-testonly-20261019/tests.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v3-testonly-20261019/tests.patch",
+      "bytes": 4804,
+      "sha256": "83db7873e6a84df0a700073e7892f5021478a51c4cbd66101dffe0cfdb1c2237",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/README.md",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/README.md",
+      "bytes": 2332,
+      "sha256": "ea7f24442c54a89e2e6aec2330b88f289102a77e61357bd27b78317e9b7af245",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/all-tests.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/all-tests.patch",
+      "bytes": 11398,
+      "sha256": "2b2b4d5c88752c6e236dff9ee7028bdad7115d91d007d1c27db7539592d09f4b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/base-prefixed_catch_retry_tests.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/base-prefixed_catch_retry_tests.rs",
+      "bytes": 27343,
+      "sha256": "cea16fa5ed1cd53af89d3712a0ab478c2d9d43623f12d0cde5d19acfca7e1dce",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/base-region.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/base-region.rs",
+      "bytes": 1420771,
+      "sha256": "4e1104b8c13c212a7a40ede5f8183bf413bef949228f4bb5e6fccac7836b7207",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/candidate-prefixed_catch_retry_tests.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/candidate-prefixed_catch_retry_tests.rs",
+      "bytes": 33606,
+      "sha256": "40c3d8fe2dc3a1c59fa22c20d2dd0b370f8821aa6a5a1f0aae5058d46217de6b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/candidate-region.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/candidate-region.rs",
+      "bytes": 1421685,
+      "sha256": "f077e1b7dded34183923c797fefdbae2bf3d8147abf0eee2ec8bb20c4e844612",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/manifest.json",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/manifest.json",
+      "bytes": 2087,
+      "sha256": "0728e71869b2f98dd58e4b489f19ad2c29de3a0922cfc772ecd0003cb43e4062",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/region.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/region.patch",
+      "bytes": 1609,
+      "sha256": "dfc4d33342a9be6460fff40ced91c00f801bace0b508828daa827bd3b4beaa0c",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/tail-test.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/tail-test.patch",
+      "bytes": 6263,
+      "sha256": "f88c7d7b3444f0701747f561fc447f93f01a8d41b74ecd75afdb7107522222d3",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/v3-tests.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v4-20261019/v3-tests.patch",
+      "bytes": 5265,
+      "sha256": "102624ae23e72f6bbbb0e4c1bf048f93e84a4f0320b004beabc8cbb5953be73c",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v5-testonly-20261019/README.md",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v5-testonly-20261019/README.md",
+      "bytes": 707,
+      "sha256": "3b710feb3fe473c196f4245bf5ee5b1df3bd62c2328fd9bab4a9f400fb959624",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v5-testonly-20261019/candidate-prefixed_catch_retry_tests.rs",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v5-testonly-20261019/candidate-prefixed_catch_retry_tests.rs",
+      "bytes": 34801,
+      "sha256": "b5765c0762b7122df4fd5c00c0c52471fc43b5352741d78e87c218b76d572b49",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v5-testonly-20261019/manifest.json",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v5-testonly-20261019/manifest.json",
+      "bytes": 997,
+      "sha256": "c5d5fa5e2b9072122fe62dc8c6e69798292beef1187f6cb6f1697fffbd411fc2",
+      "mode": 420
+    },
+    {
+      "member": "jarde-breakinloop3-prefixed-retry-impl-luna-v5-testonly-20261019/v5-test.patch",
+      "original_path": "/private/tmp/jarde-breakinloop3-prefixed-retry-impl-luna-v5-testonly-20261019/v5-test.patch",
+      "bytes": 4176,
+      "sha256": "23f838634116741107add2d0b4a80c3452e4d5e9ccd8458480c0ea46e46f4795",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-commands-root-v1-20261019.json/jarde-do2-first-focused-commands-root-v1-20261019.json",
+      "original_path": "/private/tmp/jarde-do2-first-focused-commands-root-v1-20261019.json",
+      "bytes": 314,
+      "sha256": "72d4c6e16b5985819a46760189a8674e7f835707e297946512d839fce5cf5c12",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-root-v1-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-do2-first-focused-root-v1-20261019/execution.json",
+      "bytes": 1648797,
+      "sha256": "c162067f88d625347b01c894ea12b6a93de96c8f029abe2cf9722e1d22802dc9",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-root-v1-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-do2-first-focused-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 1736,
+      "sha256": "061bd0b6a7b0f28bb0aad11b2e38b216a5efffe4b0cc2766d6cf6844a5b892e8",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-root-v1-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-do2-first-focused-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-root-v1-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-do2-first-focused-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "846b3c18fd3fbc72a2114969fded7199331b93fec8cf201e169475ae17cbe2f8",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-root-v1-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-do2-first-focused-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-root-v2-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-do2-first-focused-root-v2-20261019/execution.json",
+      "bytes": 1648802,
+      "sha256": "42f72d555413d6ab5c012de3a59228a20f3a88dad2bcffc7ab9a01d2887298fa",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-root-v2-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-do2-first-focused-root-v2-20261019/raw/1.stderr.raw",
+      "bytes": 1515,
+      "sha256": "11c929f3d1a8631c00a5db0cca5dc2b3da33fe4f132fea0ee568a57060d21b13",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-root-v2-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-do2-first-focused-root-v2-20261019/raw/1.stdout.raw",
+      "bytes": 55893,
+      "sha256": "10518d8618a490415836d07d68107284c71f6fbe4274d44382b2125d239bf4a5",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-root-v2-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-do2-first-focused-root-v2-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "84c282d1374800b4a0aa21593ac5b809767f9abd9c0bc2d8379fa7a941d2db0b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-focused-root-v2-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-do2-first-focused-root-v2-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-public-commands-root-v1-20261019.json/jarde-do2-first-public-commands-root-v1-20261019.json",
+      "original_path": "/private/tmp/jarde-do2-first-public-commands-root-v1-20261019.json",
+      "bytes": 152,
+      "sha256": "407b4e7e6c53b34cae1fa3e08297f3d7528cfe8b7f35c7891a1808f0a7fd7e84",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-public-root-v1-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-do2-first-public-root-v1-20261019/execution.json",
+      "bytes": 1649546,
+      "sha256": "b723187ad89338e754795bb1a68b493b62451e1809dfba51560ada334eb98c1a",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-public-root-v1-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-do2-first-public-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 2830,
+      "sha256": "c9836d61e6ba5107df6daa7adf501b01f914dc0cbca6e30f2f3feb68973976ea",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-public-root-v1-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-do2-first-public-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 208,
+      "sha256": "d612094489b351fe475e06a91cdca0d8ed4e0203874d875ea783438d95c7f94f",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-public-root-v1-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-do2-first-public-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "564d77c3e084587d5ec999cc2ccfab4f94129cd8fc7c287b9c8133f0f23c48f7",
+      "mode": 420
+    },
+    {
+      "member": "jarde-do2-first-public-root-v1-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-do2-first-public-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/README.md",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/README.md",
+      "bytes": 3304,
+      "sha256": "1b6eb91da9f38a3fc808ee6daf1d4c733916b048dd3f994d80c9858855a4cdf3",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/candidate.patch",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/candidate.patch",
+      "bytes": 30346,
+      "sha256": "3b5088c4872d9f64da32f45afa9064c4282f79ef3a26a87cc1a42684856c379b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/commands.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/commands.json",
+      "bytes": 590,
+      "sha256": "9c0dee5593407a25b15dd628057b0873b5d28a3341ecdc7b01fe1ee83fb5c75d",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/crates/jarde-java/src/region/do_while_break2_return_tests.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/crates/jarde-java/src/region/do_while_break2_return_tests.rs",
+      "bytes": 18740,
+      "sha256": "11cc818af9c58da258a21707ee1619b616a33d2a4bb7aabd5177f6b45ad2bf73",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/crates/jarde-java/src/region/finite_loop_catch_tests.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/crates/jarde-java/src/region/finite_loop_catch_tests.rs",
+      "bytes": 66360,
+      "sha256": "82e4b7bc808237b9acaac65e6346f153008fb816f09fb45027269c63032f2bca",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/crates/jarde-java/src/region.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/crates/jarde-java/src/region.rs",
+      "bytes": 1392036,
+      "sha256": "2d22af09a7b16adc933a00a22adfe40c3dc1bf494f7ccbe43e93ba5d3171e443",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/manifest.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/manifest.json",
+      "bytes": 3932,
+      "sha256": "3a3f2d5658c95f55face74b0fefc352223fe5719a7eab0222e7abec885ef9ab3",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/pins.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/pins.json",
+      "bytes": 3479,
+      "sha256": "a41a3d62d1613e121c3136c22d9f4d459ee50099eddee1c7e723444f2fc6ac21",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/static-preflight.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/static-preflight.json",
+      "bytes": 593,
+      "sha256": "dd1c133e7957dca1f706078f70e70747d900aad0451d52dc9808094526f89381",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/TestDoWhileBreak2-full-classes.jar",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/TestDoWhileBreak2-full-classes.jar",
+      "bytes": 3086,
+      "sha256": "9caec6282d77c6a0199fc7a6480a26f4ca7f824046bcb902c34f9b99952b3e71",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "bytes": 1428,
+      "sha256": "4ea6155c9761be9b86ce04d223a72ed4e15a6d098717e28c5ce187e9c1097928",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "bytes": 1260,
+      "sha256": "890254317200e2eb792af946edf79bd6a77675457427ad5417b37c402e815b77",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/TestDoWhileBreak2-full-classes.jar",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/TestDoWhileBreak2-full-classes.jar",
+      "bytes": 2549,
+      "sha256": "4b06b49bc6688624c4393468814d3ab96f5eb5cff1114b3120ad04886ce8017c",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "bytes": 1118,
+      "sha256": "0566952e1802967a4a458d405a8dca90ace66f94c2c05e75a676a8e505ce3693",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "bytes": 1033,
+      "sha256": "b1436ca02fa2986aafa77a5409aabe8dcfc94bfd36b0fc66797f2a7e53808fea",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/README.md",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/README.md",
+      "bytes": 3995,
+      "sha256": "d3080e0bc0f8b2a9c6f7d64e82b1ec9b2c3cac40ddc9541d857b7ec3ce776d3e",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/candidate.patch",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/candidate.patch",
+      "bytes": 42448,
+      "sha256": "eca8d50e61df25c0491847ae5e2cb22d6eb94e7abbf9f15cf4a31d13004a864a",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/commands.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/commands.json",
+      "bytes": 1071,
+      "sha256": "2929701f5b1cbb5afc36c743d64ed0a34ceb828d63ed40cb5bc50a421ebab75b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/crates/jarde-java/src/region/do_while_break2_return_tests.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/crates/jarde-java/src/region/do_while_break2_return_tests.rs",
+      "bytes": 22808,
+      "sha256": "fc78e36b115c492f166f12c1724957c42753ea353596e85f36053d76a6e77d5a",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/crates/jarde-java/src/region/finite_loop_catch_tests.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/crates/jarde-java/src/region/finite_loop_catch_tests.rs",
+      "bytes": 66359,
+      "sha256": "eab94fc6efae610eb9b8ce4ebcb0555e55578c9f6c75810c0a741554066da94d",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/crates/jarde-java/src/region.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/crates/jarde-java/src/region.rs",
+      "bytes": 1392065,
+      "sha256": "d753629e4d3624e86b274843a55da350b06716f2661cd62e55866dc6db743ad7",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/crates/jarde-java/tests/do_while_break2_return_public.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/crates/jarde-java/tests/do_while_break2_return_public.rs",
+      "bytes": 8191,
+      "sha256": "c38c1c67e0a7c31f668b063e2ab0d0642e23a21cc49e750401ad0fd69f438297",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/manifest.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/manifest.json",
+      "bytes": 4727,
+      "sha256": "74c3f1e54f83ef9c485318efa35c31d1dda0181c5192c4ee91a879265138b3db",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/pins.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/pins.json",
+      "bytes": 4285,
+      "sha256": "05c73356d0e9fcf7710c10fc5c2ec2279d2579e2649f2b7e8cfdbf0591f81213",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/static-preflight.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/static-preflight.json",
+      "bytes": 1084,
+      "sha256": "d42a9891edacdd62ada81d7bf8cc4392bc6612cf3a3ed6348a26b3593be7d5e1",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/TestDoWhileBreak2-full-classes.jar",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/TestDoWhileBreak2-full-classes.jar",
+      "bytes": 3086,
+      "sha256": "9caec6282d77c6a0199fc7a6480a26f4ca7f824046bcb902c34f9b99952b3e71",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "bytes": 1428,
+      "sha256": "4ea6155c9761be9b86ce04d223a72ed4e15a6d098717e28c5ce187e9c1097928",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "bytes": 1260,
+      "sha256": "890254317200e2eb792af946edf79bd6a77675457427ad5417b37c402e815b77",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/TestDoWhileBreak2-full-classes.jar",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/TestDoWhileBreak2-full-classes.jar",
+      "bytes": 2549,
+      "sha256": "4b06b49bc6688624c4393468814d3ab96f5eb5cff1114b3120ad04886ce8017c",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "bytes": 1118,
+      "sha256": "0566952e1802967a4a458d405a8dca90ace66f94c2c05e75a676a8e505ce3693",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v2-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "bytes": 1033,
+      "sha256": "b1436ca02fa2986aafa77a5409aabe8dcfc94bfd36b0fc66797f2a7e53808fea",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v3-20261019/README.md",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v3-20261019/README.md",
+      "bytes": 917,
+      "sha256": "7f34b06b888a61c1c14e2c3aab51c92e8c21b90d0dc1052499c41fd899989c7a",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v3-20261019/candidate.patch",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v3-20261019/candidate.patch",
+      "bytes": 9138,
+      "sha256": "fde0680e6ec3538220aa1fef484df5abc77d0d41990345360210b862b34d7a25",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v3-20261019/commands.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v3-20261019/commands.json",
+      "bytes": 264,
+      "sha256": "6842b998934e27960ed0b8ab830bc07aa19fce0fe712bb90e5fcb21abbe49953",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v3-20261019/manifest.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v3-20261019/manifest.json",
+      "bytes": 2253,
+      "sha256": "a23a973f9738448c51317ba329f6decc3832db0952a6cddb1cfa401e024979b1",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v3-20261019/tests/recover_do2_return_public.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v3-20261019/tests/recover_do2_return_public.rs",
+      "bytes": 8903,
+      "sha256": "1ed1d44b166b7782af1df152874a80171484ad57345b6a21eb061cb88b0d84f6",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v4-20261019/README.md",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v4-20261019/README.md",
+      "bytes": 1269,
+      "sha256": "f1d30e6fefa4ada54eab98432622f642530e1b37ef785a5ed3c1f53888bbfe7b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v4-20261019/base/crates/jarde-java/src/region/do_while_break2_return_tests.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v4-20261019/base/crates/jarde-java/src/region/do_while_break2_return_tests.rs",
+      "bytes": 23843,
+      "sha256": "484a702f406987c387f081188564e9e09120a62808b2af1f3f50a2efd5315fc8",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v4-20261019/base/crates/jarde-java/src/region.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v4-20261019/base/crates/jarde-java/src/region.rs",
+      "bytes": 1392052,
+      "sha256": "b695316719ef0da7979ad345f2d52a399ec4670274cc654abf60706410b8d72c",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v4-20261019/candidate/crates/jarde-java/src/region/do_while_break2_return_tests.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v4-20261019/candidate/crates/jarde-java/src/region/do_while_break2_return_tests.rs",
+      "bytes": 24558,
+      "sha256": "7b59726d6d0cf8b6b8fe56ffbc1bfdce0b4f773e4278759a83405a3b5079b895",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v4-20261019/candidate/crates/jarde-java/src/region.rs",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v4-20261019/candidate/crates/jarde-java/src/region.rs",
+      "bytes": 1392828,
+      "sha256": "be223aff854ce1adaf5bd3559afa1d81af4f29e332ec81ad9b35d331c6e8cd33",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v4-20261019/candidate.patch",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v4-20261019/candidate.patch",
+      "bytes": 3808,
+      "sha256": "6bf74204992fd944b68463eea0de3127e888d5b3ae12f01190ca1be180e6d6b4",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v4-20261019/commands.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v4-20261019/commands.json",
+      "bytes": 843,
+      "sha256": "484566cda1bf8e91ac859a974b4a4c35c7aebff3bd5b69bef8dedda5857bcce6",
+      "mode": 420
+    },
+    {
+      "member": "jarde-dowhilebreak2-return-impl-luna-v4-20261019/pins.json",
+      "original_path": "/private/tmp/jarde-dowhilebreak2-return-impl-luna-v4-20261019/pins.json",
+      "bytes": 1695,
+      "sha256": "59f3ee9182bf0733deb16f7724b67efd7f84cbca906cdf46e19697a97083a53b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-cf12-commands-root-v1-20261019.json/jarde-last-four-cf12-commands-root-v1-20261019.json",
+      "original_path": "/private/tmp/jarde-last-four-cf12-commands-root-v1-20261019.json",
+      "bytes": 189,
+      "sha256": "89213962f25803b7b180927f86da8293ef95d6fe8335a4e0c6ab47a8d3714fcc",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-cf12-root-v1-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-cf12-root-v1-20261019/execution.json",
+      "bytes": 1650491,
+      "sha256": "f14b15a83e6ba8c2eeb409abb3bf24dc0d67250cf4c473e877d47f758afa750d",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-cf12-root-v1-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-cf12-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 1498,
+      "sha256": "3ccdf0c7b105782c96f1c31fece86a02a266b0d8b92736e8b70ef40a03029740",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-cf12-root-v1-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-cf12-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 928,
+      "sha256": "2f70049fea4c91f3747acef3e0acf0729fb66d36d6d523703c83519d0a753f19",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-cf12-root-v1-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-cf12-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "671efa822ca37128b90ae6c0701b86d85e91a1a26324ce6cd96b39dc6c8401f8",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-cf12-root-v1-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-cf12-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-commands-root-v1-20261019.json/jarde-last-four-combined-focused-commands-root-v1-20261019.json",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-commands-root-v1-20261019.json",
+      "bytes": 576,
+      "sha256": "6a9539add380c306732bae284944a67b9d48fdedb0d2e3672138d508fabaf5e1",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v1-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v1-20261019/execution.json",
+      "bytes": 1650177,
+      "sha256": "1bf80b1311bccb09941e48616d3282edcf13e711ce76dc5b29d21bba675b22d0",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v1-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 2211,
+      "sha256": "67fb624f94ae317742c33b9142d4ca5a098105374ed7d30edd45d90f251f2f8d",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v1-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v1-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "846b3c18fd3fbc72a2114969fded7199331b93fec8cf201e169475ae17cbe2f8",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v1-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v2-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v2-20261019/execution.json",
+      "bytes": 1650181,
+      "sha256": "85d23305898f05c83be1c44fb18a654e7011b755b3ded46dfc0b415e50ddbb16",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v2-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v2-20261019/raw/1.stderr.raw",
+      "bytes": 1515,
+      "sha256": "64b5bc105a1e5e3b782bbb202166930d20f98259c6626ae9d24d4f273e56f05a",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v2-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v2-20261019/raw/1.stdout.raw",
+      "bytes": 56901,
+      "sha256": "b9bac7779272773745370e8fea274ffb38bf4a797b3f88bf25f532f47927e8d7",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v2-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v2-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "edad4bad80b571d6ed2bef70b4903ec16a8db0f243886ea6bfbd26bf35823dd5",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v2-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v2-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v3-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v3-20261019/execution.json",
+      "bytes": 1650177,
+      "sha256": "1ff63202a8f5103b308f49db519b9bcb80fcaf1fde83f38ef5a43c7cc97bfb34",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v3-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v3-20261019/raw/1.stderr.raw",
+      "bytes": 3016,
+      "sha256": "aac30920667c57aa72a7595896aac2a1aef1b96199f27ddf2bc935f3430a1b54",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v3-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v3-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v3-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v3-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "846b3c18fd3fbc72a2114969fded7199331b93fec8cf201e169475ae17cbe2f8",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v3-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v3-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/execution.json",
+      "bytes": 1655021,
+      "sha256": "a583ae3a65ec802d2ca3db07d20e1eb0802da714515c8a1d1a88b80bf52eea17",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/raw/1.stderr.raw",
+      "bytes": 1459,
+      "sha256": "e776a2f3ca8b40bd44baf9aeba1dead24246ef8678d8e124823fe24ce04e81db",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/raw/1.stdout.raw",
+      "bytes": 54592,
+      "sha256": "88c884357798c26cd20d5804b40d263488672ab0a50141fc4c61532c61217c24",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/raw/2.stderr.raw",
+      "bytes": 277,
+      "sha256": "4dddc720b60ed1f21ae22a6ea84d0da0834c66b47510f1400110086eeeea654b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/raw/2.stdout.raw",
+      "bytes": 928,
+      "sha256": "1632d69d5659aa3a7ea061f397a5e6e3018ad67393b663882787876c000a0628",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/raw/3.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/raw/3.stderr.raw",
+      "bytes": 1950,
+      "sha256": "35c97da0b7a61c27ec98eff4d21a4779a70a87e5c0fe3e06a17b360f1ee248a3",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/raw/3.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/raw/3.stdout.raw",
+      "bytes": 208,
+      "sha256": "3fa126533064ae0954538473308c92710289cba90a494426079cc6268ff79cdf",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/raw/4.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/raw/4.stderr.raw",
+      "bytes": 1952,
+      "sha256": "d74836c65efbee04c73aaf3fcc7e1f6dac7d9690245a4b1eaaab36230882a263",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/raw/4.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/raw/5.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/raw/5.stderr.raw",
+      "bytes": 39,
+      "sha256": "75d6e4106f9080574790ddb77fe0e40513531cca2596a727d9a0d5db0d1a5e46",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-focused-root-v4-20261019/raw/5.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-combined-focused-root-v4-20261019/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-integration-root-v1-20261019/integration.json",
+      "original_path": "/private/tmp/jarde-last-four-combined-integration-root-v1-20261019/integration.json",
+      "bytes": 433,
+      "sha256": "e8dc0991c8547e788da033df6a8c6b1344dea1b544dc32fb1a8fa2513477bc1a",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-combined-integration-root-v1-20261019/loop3-without-module.patch",
+      "original_path": "/private/tmp/jarde-last-four-combined-integration-root-v1-20261019/loop3-without-module.patch",
+      "bytes": 38071,
+      "sha256": "44a714966fca5a1437fa761515331ae5324227472ba0ad3aa8bb08a1ebc69657",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-commands-root-v1-20261019.json/jarde-last-four-final-focused-commands-root-v1-20261019.json",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-commands-root-v1-20261019.json",
+      "bytes": 2452,
+      "sha256": "4d968d1b33261e3729cc0e4feb5ebfb5ce9aa3a26bf86a59eece8d16567882b9",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/execution.json",
+      "bytes": 1660226,
+      "sha256": "7261b4e170d09d89ea8a72d89a4ac53639effc9d8e925f386bfbdc3aeb1c3f8f",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 1459,
+      "sha256": "0efcd9a3f466ddb87d107e98c130b0e85feb261fc5efd8bdff3f46bc9591adf2",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 54841,
+      "sha256": "d790ca33b2ce9fe994f32544c858680f3c811332b79db7605a9b94f10018bd20",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 277,
+      "sha256": "c194ece2c0835e7cb0950f79a1cb41776aa46d6587defb89b428fde844260044",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 928,
+      "sha256": "f998e652b4b33efa1e726d541827d4b5565d7f0db907690169920d5d90494dc6",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/3.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/3.stderr.raw",
+      "bytes": 1950,
+      "sha256": "ba8a381b0becbb0668fc5e286a0d54fee54525348ec74001d4a945f57f3cd213",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/3.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/3.stdout.raw",
+      "bytes": 208,
+      "sha256": "3fa126533064ae0954538473308c92710289cba90a494426079cc6268ff79cdf",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/4.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/4.stderr.raw",
+      "bytes": 251,
+      "sha256": "05b0e1bfbc9105fb36ea412b72e5a9136c4905fc0b37df5c1f9ea212bf8b258b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/4.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/4.stdout.raw",
+      "bytes": 291,
+      "sha256": "236c675315647872db2f8d4b0506c56d79fdac68c7568773605ff5260126004e",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/5.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/5.stderr.raw",
+      "bytes": 253,
+      "sha256": "ffd031d49c80b4d4becf20ee0a14675f113af4092357e1917cf3d91ef76554e6",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/5.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/5.stdout.raw",
+      "bytes": 501,
+      "sha256": "c808c21e8d0b70d5bba10fa7121d8d1a922fb4e527a65a849d06ce8463510ef1",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/6.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/6.stderr.raw",
+      "bytes": 2919,
+      "sha256": "642ec16fddda0b1a8122478e47d47249247e5d0cfad1dd96eae397f76aaab7a0",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/6.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/7.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/7.stderr.raw",
+      "bytes": 40,
+      "sha256": "de81c97dcc9f562864e84b4e91033654c6d8b47c71d858642607e474080a6357",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-root-v1-20261019/raw/7.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-root-v1-20261019/raw/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-v1-independent-audit-luna-20261019/audit.json",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-v1-independent-audit-luna-20261019/audit.json",
+      "bytes": 25430,
+      "sha256": "55b783dba1f775188502c724a685de295133b4bb5ad1f5004c9a644524321fe1",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-focused-v1-independent-audit-luna-20261019/review.md",
+      "original_path": "/private/tmp/jarde-last-four-final-focused-v1-independent-audit-luna-20261019/review.md",
+      "bytes": 1515,
+      "sha256": "96abddb30c5a6e5771eac84ffd303389a2405e62f22d0371b7b617ef66e99a8a",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-commands-root-v1-20261019.json/jarde-last-four-final-static-build-commands-root-v1-20261019.json",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-commands-root-v1-20261019.json",
+      "bytes": 2032,
+      "sha256": "2da2b320dfb85512054a607871866c3c82754cf7fa02c0d05fc550de5067e3e7",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-commands-root-v2-20261019.json/jarde-last-four-final-static-build-commands-root-v2-20261019.json",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-commands-root-v2-20261019.json",
+      "bytes": 1765,
+      "sha256": "fce05ee0f14962f439401566e33df982c49d82f4537026a11dad81b1504a0a06",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v1-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v1-20261019/execution.json",
+      "bytes": 1650196,
+      "sha256": "29fc172ecf1c16a3ce860947bba79369813c48d1179021b002bf3a2c7231e711",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v1-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 2494,
+      "sha256": "9e74abf0d0e480a2956c6229e7a0b2ccf262d1a7c2c0ddb92164783b4e33d55d",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v1-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 1286,
+      "sha256": "a26b3d361c46d2676cf1f285071037e9cbab3d3a1dd56f4fcbdc2dfce52c677c",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v1-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "8069f3dda3540dfd0425dfa2757a852f0ac87294a807ecf03513be6c262e8be6",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v1-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v2-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v2-20261019/execution.json",
+      "bytes": 1731470,
+      "sha256": "069966ef637765ac490d3e6090fc787c2b759b67ce431f744364f86505a54cab",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v2-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v2-20261019/raw/1.stderr.raw",
+      "bytes": 2795,
+      "sha256": "41a2e2c8840539a9f7422fd28e63d39188e588443ad506e708ecf5cb4c2feac9",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v2-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v2-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v2-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v2-20261019/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v2-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v2-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v2-20261019/raw/3.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v2-20261019/raw/3.stderr.raw",
+      "bytes": 1719,
+      "sha256": "51f027af3477b251e4d36b7e5472e484967f89161abcc6243be69197f60dbff4",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v2-20261019/raw/3.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v2-20261019/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v2-20261019/raw/4.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v2-20261019/raw/4.stderr.raw",
+      "bytes": 40,
+      "sha256": "fd7d1bb7291bb2be02db3e48388debd656109f251e322b1447b231bcc2e614a7",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-root-v2-20261019/raw/4.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v2-20261019/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-v2-independent-audit-luna-20261019/audit.json",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-v2-independent-audit-luna-20261019/audit.json",
+      "bytes": 12777,
+      "sha256": "8e4c19a61619e96f24a267f00630b7cc0548fa1b70d6412cd0d34528db1ee084",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-v2-independent-audit-luna-20261019/audit_receipts.py",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-v2-independent-audit-luna-20261019/audit_receipts.py",
+      "bytes": 5620,
+      "sha256": "16de2311e3664251f82bdbd307c21e6ba808af1d013a16000d54f35ffd30b87d",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-final-static-build-v2-independent-audit-luna-20261019/review.md",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-v2-independent-audit-luna-20261019/review.md",
+      "bytes": 1323,
+      "sha256": "03d404073211d05a3c81ef4637d8d5b8136b1808d660fa4311061a86cf1d6ef1",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-review-root-v1-20261019/review.json",
+      "original_path": "/private/tmp/jarde-last-four-fixture-review-root-v1-20261019/review.json",
+      "bytes": 2184,
+      "sha256": "4a458e60dc61760080139c0e2b1a4005782c079109c7a84a9b075c9e1e1e820e",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-validation-commands-root-v1-20261019.json/jarde-last-four-fixture-validation-commands-root-v1-20261019.json",
+      "original_path": "/private/tmp/jarde-last-four-fixture-validation-commands-root-v1-20261019.json",
+      "bytes": 508,
+      "sha256": "a563002d7d46e37de798059e8d9669070e003bb98084007ac37881a26e6cfedb",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-validation-root-v1-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-last-four-fixture-validation-root-v1-20261019/execution.json",
+      "bytes": 1652204,
+      "sha256": "17e9cbfa1b00ba8633f98aab2894b4ae99c6b7538ab771e634e58b6a8092b048",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-validation-root-v1-20261019/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-fixture-validation-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 2405,
+      "sha256": "5a9af52f1057fda2b0a3f561c0970e98f357928a2b15c2733aec66126c23c6c5",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-validation-root-v1-20261019/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-fixture-validation-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 154,
+      "sha256": "1fceb094a7547a0b409d06c3aa4d3e13344a760b308247f5b7b90031faf1a9e8",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-validation-root-v1-20261019/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-fixture-validation-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 243,
+      "sha256": "2832186fddcea0e8dd1661d749cc90fdf6baeb89a6c2325d7c6404eaa29daeb9",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-validation-root-v1-20261019/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-fixture-validation-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 211,
+      "sha256": "9d4c36be0492511b99d31c1199c075001d54b31715715b6046ba2902654c7745",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-validation-root-v1-20261019/raw/3.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-fixture-validation-root-v1-20261019/raw/3.stderr.raw",
+      "bytes": 235,
+      "sha256": "f31db728f1a4799647ab713fc93ee1881b07ae01cc8c7bbe4f2cf1ee8192519b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-validation-root-v1-20261019/raw/3.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-fixture-validation-root-v1-20261019/raw/3.stdout.raw",
+      "bytes": 565,
+      "sha256": "fd1681fc1b00272b2f130a42cb9a04344b50364353b05a708342ae6a6a2c3be7",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-validation-root-v1-20261019/raw/4.stderr.raw",
+      "original_path": "/private/tmp/jarde-last-four-fixture-validation-root-v1-20261019/raw/4.stderr.raw",
+      "bytes": 39,
+      "sha256": "c956a3013387cb54c5a2fc067dea72ea3dd40b47c25556b75202d5ed3da6e91f",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixture-validation-root-v1-20261019/raw/4.stdout.raw",
+      "original_path": "/private/tmp/jarde-last-four-fixture-validation-root-v1-20261019/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-install-root-v1-20261019/installation.json",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-install-root-v1-20261019/installation.json",
+      "bytes": 5805,
+      "sha256": "db0f9774726295006c5527dd83103d8e3b6c192d025e43527432716d6d84a528",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/manifest.json",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/manifest.json",
+      "bytes": 12886,
+      "sha256": "91ebc5dc7d59688d498e6da831c034d3d815a432c8c433c7134dd6bea25c47a2",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/prepare.py",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/prepare.py",
+      "bytes": 9649,
+      "sha256": "275f5a4c854286a354fd1da2900eed33500383f4a068881524424f6299c6d2bc",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/README.md",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/README.md",
+      "bytes": 1163,
+      "sha256": "201ff88d57a43b1e98681f077f71bddfe7ac6ca9781edef275efc3283a52d232",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/fixture-metadata.json",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/fixture-metadata.json",
+      "bytes": 44016,
+      "sha256": "5a01cdaff9f294fa9512eb686a026f074eb204bd453fa76bc790dedecb24e297",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/install-manifest.json",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/install-manifest.json",
+      "bytes": 8465,
+      "sha256": "c0934879caa0a824181c2238957ae18b0406c2edc9dcb085361916ec3024d6a7",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/licenses/JADX-LICENSE",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/licenses/JADX-LICENSE",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/licenses/JADX-NOTICE",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/licenses/JADX-NOTICE",
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/TestDoWhileBreak2-full-classes.jar",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/TestDoWhileBreak2-full-classes.jar",
+      "bytes": 3086,
+      "sha256": "9caec6282d77c6a0199fc7a6480a26f4ca7f824046bcb902c34f9b99952b3e71",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "bytes": 1428,
+      "sha256": "4ea6155c9761be9b86ce04d223a72ed4e15a6d098717e28c5ce187e9c1097928",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "bytes": 1260,
+      "sha256": "890254317200e2eb792af946edf79bd6a77675457427ad5417b37c402e815b77",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/TestDoWhileBreak2-full-classes.jar",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/TestDoWhileBreak2-full-classes.jar",
+      "bytes": 2549,
+      "sha256": "4b06b49bc6688624c4393468814d3ab96f5eb5cff1114b3120ad04886ce8017c",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "bytes": 1118,
+      "sha256": "0566952e1802967a4a458d405a8dca90ace66f94c2c05e75a676a8e505ce3693",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "bytes": 1033,
+      "sha256": "b1436ca02fa2986aafa77a5409aabe8dcfc94bfd36b0fc66797f2a7e53808fea",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/source/TestDoWhileBreak2.java",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-post-test-loop-return-leaves/source/TestDoWhileBreak2.java",
+      "bytes": 1078,
+      "sha256": "8b936f2645d158c4ddc8c19e3790045fe3bfd26fe49ef54c3141df41fd433666",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/licenses/JADX-LICENSE",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/licenses/JADX-LICENSE",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/licenses/JADX-NOTICE",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/licenses/JADX-NOTICE",
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/TestBreakInLoop3-full-classes.jar",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/TestBreakInLoop3-full-classes.jar",
+      "bytes": 2855,
+      "sha256": "82917608d17e6aed39e21011d3e06f32e7b95875735a5d608f5f401f152f28b8",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop3$TestCls.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop3$TestCls.class",
+      "bytes": 1746,
+      "sha256": "6286274bde92c070ed47b9e8400e08c9b009d5968c2eb96e6a129f958543557f",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop3.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/debug/classes/jadx/tests/integration/loops/TestBreakInLoop3.class",
+      "bytes": 715,
+      "sha256": "e3c394e60673dbde22b5ec541386f1d6a8c0ead0d46e65c643d3456d4842e5f6",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/TestBreakInLoop3-full-classes.jar",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/TestBreakInLoop3-full-classes.jar",
+      "bytes": 2146,
+      "sha256": "52801e2270f438b419694b0ff766c790b4674d76a9778f026f9751137407bfc5",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop3$TestCls.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop3$TestCls.class",
+      "bytes": 1242,
+      "sha256": "a3680b01b61049a4a601838fe2e227da03be38db67e622c69ba00a39725e810c",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop3.class",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/original/no-debug/classes/jadx/tests/integration/loops/TestBreakInLoop3.class",
+      "bytes": 510,
+      "sha256": "6985c09e60c4252d8194c9643b0702fbaaffdadb1a6b8f07c496dc911d185dca",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/source/TestBreakInLoop3.java",
+      "original_path": "/private/tmp/jarde-last-four-fixtures-prepare-luna-v1-20261019/tests/fixtures/recover-proved-prefixed-catch-retry-loops/source/TestBreakInLoop3.java",
+      "bytes": 1216,
+      "sha256": "7426191067f7ec483c191029376a2ee5544ccfdb5f893c2cf0a21f4df219ffc4",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-focused-v4-independent-audit-luna-v1-20261019/audit.json",
+      "original_path": "/private/tmp/jarde-last-four-focused-v4-independent-audit-luna-v1-20261019/audit.json",
+      "bytes": 123192,
+      "sha256": "80d99f38ab37cb8019a9405c39ca549f620fe71723ff7a0282ac076d83d82cf0",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-focused-v4-independent-audit-luna-v1-20261019/audit_receipts.py",
+      "original_path": "/private/tmp/jarde-last-four-focused-v4-independent-audit-luna-v1-20261019/audit_receipts.py",
+      "bytes": 6205,
+      "sha256": "5d86f82525e2942e7a1e816d8e17d7cd608068a556abf9b630b7cd0cb0301651",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-focused-v4-independent-audit-luna-v1-20261019/review.md",
+      "original_path": "/private/tmp/jarde-last-four-focused-v4-independent-audit-luna-v1-20261019/review.md",
+      "bytes": 2760,
+      "sha256": "1185aee8169f924d71ca0418c90a6e248a23b83efd50003146c64fd92fb181a9",
+      "mode": 420
+    },
+    {
+      "member": "jarde-last-four-reader-census-root-v1-20261019/census.json",
+      "original_path": "/private/tmp/jarde-last-four-reader-census-root-v1-20261019/census.json",
+      "bytes": 2182,
+      "sha256": "3c7c68883ae0f5056fc8581de1b943130a8cf7c0b146170c5be68853afb75847",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/candidate-build.rs",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/candidate-build.rs",
+      "bytes": 2089610,
+      "sha256": "03fd76ac3a908832e17cb97bc0c135cb33b118f1c3c68303d0293684e5531580",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/commands.json",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/commands.json",
+      "bytes": 189,
+      "sha256": "d64c178e5a80138a91623004b2443525e750552ad88684064ec24cb7e2e39687",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/execution.json",
+      "bytes": 1162,
+      "sha256": "62782b1d1304e03fdb19fac4271cf4b4cf53e8ab5ba3c0010005cb0163e64f09",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/launch.py",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/launch.py",
+      "bytes": 1049,
+      "sha256": "b2772f3e0b80726d266bfcacba1847d7aab30b3f8ed745ca4a028159dd4f33d9",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/original-build.rs",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/original-build.rs",
+      "bytes": 2089472,
+      "sha256": "81c2a0b7b0c24f6ca0f1b6803f0abb421c07d5f06284abd1eb43b9be592cc331",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/run/execution.json",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/run/execution.json",
+      "bytes": 1650596,
+      "sha256": "d689d38e90ebf486d16a3bbbd34736925ba01c545ef06ea5e8dab60aa7fd70b0",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/run/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/run/raw/1.stderr.raw",
+      "bytes": 2421,
+      "sha256": "12e360f18e15f5364cfcbdd698872790ce72a07eac0dcb24f0e9cf59237ff04f",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/run/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/run/raw/1.stdout.raw",
+      "bytes": 291,
+      "sha256": "4b753f9d7ad99b0804d7505e68a9ae6e511da6e235a16345a9a613aa08c07697",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/run/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/run/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "a0dcf6e6fd9080e7154bb9a9ca1af785edeffe168ea3e41afee76a00718cc4bd",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/run/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/run/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/stderr.raw",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-construction-probe-root-v1-20261019/stdout.raw",
+      "original_path": "/private/tmp/jarde-loop3-builder-construction-probe-root-v1-20261019/stdout.raw",
+      "bytes": 138,
+      "sha256": "d44bc6062a69d5c0f360590eaee2fa2ed3afa256305acf3723c54930bab07264",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-constructor-proof-luna-v1-20261019/README.md",
+      "original_path": "/private/tmp/jarde-loop3-builder-constructor-proof-luna-v1-20261019/README.md",
+      "bytes": 1132,
+      "sha256": "0da1fa4317f49db8e5a25e1319b8f52d453fe88aad41f71391854890e3b48fce",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-constructor-proof-luna-v1-20261019/build.patch",
+      "original_path": "/private/tmp/jarde-loop3-builder-constructor-proof-luna-v1-20261019/build.patch",
+      "bytes": 821,
+      "sha256": "939b87adf5ee7fd312b0afb21d012eed13684ef70a6428bf7f6c55d837849c0b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-constructor-proof-luna-v1-20261019/candidate-build.rs",
+      "original_path": "/private/tmp/jarde-loop3-builder-constructor-proof-luna-v1-20261019/candidate-build.rs",
+      "bytes": 2089462,
+      "sha256": "cbebeb87482880e2bb20b12f9f5f07f59b08d516baf1441ec5e52fb19290422b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-constructor-proof-luna-v1-20261019/loop3_constructor_store_tests.rs",
+      "original_path": "/private/tmp/jarde-loop3-builder-constructor-proof-luna-v1-20261019/loop3_constructor_store_tests.rs",
+      "bytes": 5428,
+      "sha256": "1b195bccaaedd13007003469e46ef6d7e0cf98cd4c685e1f18fd40ea645a18d8",
+      "mode": 420
+    },
+    {
+      "member": "jarde-loop3-builder-constructor-proof-luna-v1-20261019/manifest.json",
+      "original_path": "/private/tmp/jarde-loop3-builder-constructor-proof-luna-v1-20261019/manifest.json",
+      "bytes": 1272,
+      "sha256": "61f8124bd0b78f9b50e4b7e611a49c7112bce2bc5fdc8fad8b5c7bf80eebdae7",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/commands.json",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/commands.json",
+      "bytes": 314,
+      "sha256": "db6158f6573f9856270b38c8efb6a9fac4d5938656b23bd85bca61c83638daf2",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/execution.json",
+      "bytes": 1151,
+      "sha256": "836e35408557df0e119f7494c5495211e276894e463573263a2bde7825778778",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/instrumented-region.rs",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/instrumented-region.rs",
+      "bytes": 1421254,
+      "sha256": "8b321d95746ddf5c16be7c955fa0ea67b221ca01fe3309beab6f04b66902e25b",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/launch.py",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/launch.py",
+      "bytes": 1052,
+      "sha256": "d9da295763626b6c1e6dec277fd90d1eb1f36f8c69c1e1a65a73d8daa9052544",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/original-region.rs",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/original-region.rs",
+      "bytes": 1420771,
+      "sha256": "4e1104b8c13c212a7a40ede5f8183bf413bef949228f4bb5e6fccac7836b7207",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/run/execution.json",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/run/execution.json",
+      "bytes": 1650384,
+      "sha256": "90ed3ef80bf45913166e91e44f0396b370016086d92872131bf452163fb7fcdf",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/run/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/run/raw/1.stderr.raw",
+      "bytes": 4071,
+      "sha256": "01b26e758bbfbde83385c9445514f7910510a11a77bdf9d91c172b72723a525c",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/run/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/run/raw/1.stdout.raw",
+      "bytes": 374,
+      "sha256": "6f93b9f9bd68d72cce0d98bf6b6436af016237423289793ee497ec6bb55ed5ba",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/run/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/run/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "edad4bad80b571d6ed2bef70b4903ec16a8db0f243886ea6bfbd26bf35823dd5",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/run/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/run/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/stderr.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v1-20261019/stdout.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v1-20261019/stdout.raw",
+      "bytes": 127,
+      "sha256": "5c38155876a2cb33d85cc216b062f9fbcb4530f505d7b370b277e6837897581a",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/commands.json",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/commands.json",
+      "bytes": 314,
+      "sha256": "db6158f6573f9856270b38c8efb6a9fac4d5938656b23bd85bca61c83638daf2",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/execution.json",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/execution.json",
+      "bytes": 1151,
+      "sha256": "7a544c1c6fe423a4a0c12874a0b0a641f4252f2d98d893eee55977d492dbd4fe",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/instrumented-region.rs",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/instrumented-region.rs",
+      "bytes": 1421320,
+      "sha256": "108caa467c7fdb642dcd89b4a77e8aae706196d29249cad98892cd375d862b31",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/launch.py",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/launch.py",
+      "bytes": 1052,
+      "sha256": "d9da295763626b6c1e6dec277fd90d1eb1f36f8c69c1e1a65a73d8daa9052544",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/original-region.rs",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/original-region.rs",
+      "bytes": 1420771,
+      "sha256": "4e1104b8c13c212a7a40ede5f8183bf413bef949228f4bb5e6fccac7836b7207",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/run/execution.json",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/run/execution.json",
+      "bytes": 1650383,
+      "sha256": "eaea327280e22fbf8ea0d39dbde3acf47682408e3e3e96c52d9753c77b399100",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/run/raw/1.stderr.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/run/raw/1.stderr.raw",
+      "bytes": 4718,
+      "sha256": "98cda6586b4037dfa81fb214eed5252cddf878fbbb6b9659c67f0ccf75762d69",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/run/raw/1.stdout.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/run/raw/1.stdout.raw",
+      "bytes": 374,
+      "sha256": "a9e75fa81884247e985de9dd91b36ea888591040a49ee789564febcf4633adca",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/run/raw/2.stderr.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/run/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "edad4bad80b571d6ed2bef70b4903ec16a8db0f243886ea6bfbd26bf35823dd5",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/run/raw/2.stdout.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/run/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/stderr.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "member": "jarde-prefixed-retry-assembly-probe-root-v2-20261019/stdout.raw",
+      "original_path": "/private/tmp/jarde-prefixed-retry-assembly-probe-root-v2-20261019/stdout.raw",
+      "bytes": 127,
+      "sha256": "5c38155876a2cb33d85cc216b062f9fbcb4530f505d7b370b277e6837897581a",
+      "mode": 420
+    }
+  ],
+  "excluded": [
+    {
+      "member": "jarde-last-four-final-static-build-root-v2-20261019/candidate-cli",
+      "original_path": "/private/tmp/jarde-last-four-final-static-build-root-v2-20261019/candidate-cli",
+      "bytes": 64754240,
+      "sha256": "ed74e005c1bc97bcdf4a15f6a27da9e9d8a1ecdf7fe576836820ed2ce323222d",
+      "mode": 365
+    }
+  ]
+}

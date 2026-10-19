@@ -1372,3 +1372,56 @@ Java 恢复 SHALL 支持一个普通物理保护块的具名 catch 重试循环�
 
 - **WHEN** 在前缀、循环、返回尾证明及发布期间遇到取消或预算不足
 - **THEN** 系统 SHALL 传播真实停止原因与用量，不提交局部 owner 或泄漏试探状态；成功场景下 default/all 的正文、identity、quality、映射和有效物理引用 MUST 一致
+
+### Requirement: Proved post-test loop return leaves preserve evaluation order
+
+Java恢复 SHALL 支持普通后测循环中已证明独占的直接返回分支，保留每次体首取值、转换与赋值、返回分支及体尾测试的求值顺序；提前返回 MUST NOT 执行后续体尾条件或消耗额外输入。
+
+#### Scenario: Original iterator return loop is executable
+
+- **WHEN** 对完整迭代器原件的debug/no-debug class与完整JAR请求恢复，循环先读取并保存元素，空元素直接返回，否则测试是否继续，退出后返回最后元素，且所有路径获证
+- **THEN** 目标方法 SHALL 输出结构化源码且完整生成类可重编；原件两组输入的返回、迭代调用次序、剩余状态、stdout与实际check结果 SHALL 按相同runtime一致，不要求等价循环采用同一种拼写
+
+#### Scenario: Early return and throwing operations keep their boundaries
+
+- **WHEN** 输入首元素为空且后方仍有元素、迭代器为空或缺失，或取值/后测操作实际抛出异常
+- **THEN** 恢复源码 SHALL 保持原件的消费次数、短路顺序和异常类型，空值返回后 MUST NOT 调用后测条件，取值失败后 MUST NOT 继续消费或伪造返回值
+
+#### Scenario: Unproved terminal ownership remains refused
+
+- **WHEN** 返回路径有额外入口、跨越当前作用域、未闭合的非正常转移、非返回终结或与普通出口混淆
+- **THEN** 本能力 MUST NOT 把该路径伪造为安全的提前返回或break，输出 SHALL 保留既有有界降级与可定位诊断
+
+#### Scenario: Evidence and interrupted proof stay reliable
+
+- **WHEN** 同一输入在default/all证据选择下恢复，或候选证明/组装期间发生预算停止或取消
+- **THEN** 证据选择 MUST NOT 改变正文、身份、质量或有效物理来源；停止 SHALL 保留真实原因与用量，MUST NOT 发布半份循环、重复owner或通过退还用量掩盖停止
+
+### Requirement: Proved prefixed named catch retries preserve normal completion
+
+Java恢复 SHALL 支持已证明闭合的普通具名catch重试：每次尝试前有不受该catch保护的效果前缀，handler的一臂更新状态后回到精确尝试入口，另一臂经有限条件汇合正常退出。恢复 SHALL 保留每次效果、异常作用范围、重试及正常完成顺序，每个物理块 SHALL 仅有一个结构位置拥有。
+
+#### Scenario: Complete original with a prefixed retry is recovered
+
+- **WHEN** 完整原件每次先记录尝试，再执行受保护的流操作，首次失败更新标志并重试，后续失败执行条件分支后正常退出，且具名保护区与全部路径均获证
+- **THEN** 目标方法 SHALL 形成可重编的结构化完整类；已声明空路径输入的builder、stdout、异常及实际check SHALL 与原件同runtime一致，不得递归重复发布同一个try正文
+
+#### Scenario: Prefix and handler failures are outside the protected attempt
+
+- **WHEN** 独立有限控制实际触发正常完成、一次失败后成功、再次失败后退出，以及前缀或catch内部效果抛出异常
+- **THEN** 前缀 SHALL 每次尝试恰好执行一次，状态更新 SHALL 只出现在重试路径，正常退出后效果 SHALL 恰好一次；前缀和handler自身抛出的异常 MUST NOT 被扩大的catch再次接管
+
+#### Scenario: A normal catch diamond remains complete
+
+- **WHEN** 非重试分支包含有可观察效果的两臂条件，随后在正常出口前汇合
+- **THEN** 两臂各自的效果、条件求值及汇合后效果 SHALL 保留；未选择臂和重试后的正常尾部 MUST NOT 被执行或复制
+
+#### Scenario: Foreign ownership or exception rows refuse the candidate
+
+- **WHEN** 保护区/handler/捕获类型发生漂移，存在共享handler、额外异常行、外来入口/出口、未解释转移、未闭合分支或未知克隆路径
+- **THEN** 本能力 SHALL 拒绝该候选并保留可定位降级，MUST NOT 因跳过重复块或把异常边改写为普通边而声明完整恢复
+
+#### Scenario: Evidence and stop reporting remain atomic
+
+- **WHEN** 同一输入以default/all恢复，或候选证明与组装遭遇预算耗尽、预取消或晚期停止
+- **THEN** 正文、质量、身份及物理来源 SHALL 不因证据选择改变；停止 SHALL 保留准确原因与已消耗用量，MUST NOT 留下半份循环、重复owner或在取消后继续试探发布

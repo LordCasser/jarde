@@ -1,4 +1,12 @@
-## 2026-10-19 当前：Loop4/5 完整交付
+## 2026-10-19 当前：最后四原件基线已接受，两项真实gap实现中
+
+[完整三方基线](../java-syntax-2026-10-19/cf09-last-four-original-root-v1/README.md)与[同轮IR](../java-syntax-2026-10-19/cf09-last-four-ir-root-v1/README.md)均root/独立接受。DoWhileBreak3现有恢复已通过8API、16 Jarde完整target编译、32 JardeVM加4 JADX VM共360CASE，来源10/10；原始do-while与JADX while&&拼写不同无须新机制。DoWhileBreak2和BreakInLoop3各8API fallback、16 Jarde整类重编失败；JADX每项两JDK23整编/四VM与原件一致。Loop3虽NYI/@Test注释，但当前实际JADX成功，不能据标签排除。
+
+[return leaves](../../changes/recover-proved-post-test-loop-return-leaves/tasks.md)与[prefixed retry](../../changes/recover-proved-prefixed-catch-retry-loops/tasks.md)各2/8，Luna私有并行实现，root尚未集成生产补丁。前者复用已有终端叶证明修正goto gate顺序；后者精确lead11..17/row17..28/handler31及normal catch DAG，保留exception-vs-normal与全树owner查验，无新CFG/AST。新fixture的Reader普查与指纹已通过并clean，最终新CLI/全workspace/自身CI尚待，不借用旧412 CI关闭新片。
+
+Loop6原Smali与组装Dex均被JADX成功解码，Jarde直接输入unknown_artifact_kind、Dex-only ZIP无class候选，作为当前架构外输入边界，不以JVM控制例替代。固定13原件此刻10已接受、2真实JVM gap、1输入边界；CF09/71/612保持partial。以下为历史。
+
+## 2026-10-19 历史：Loop4/5 完整交付
 
 两项OpenSpec `recover-proved-loop-break-branch-bodies` / `recover-named-catch-loop-return-tails` 均8/8，由Luna私有实现、root架构审查和完整对照接受。产品412245d514896b1d0eb9a8fe24388f6a70668637、最终CLId29b6fee：闭合break DAG复用sequence/If/LoopBreak并保留ForHeader；精确named catch持有完整While和return-tail，Builder复用catch身份区分同槽普通double，无新AST/CFG或通用槽拆分。[两原件完整对照](../../changes/recover-named-catch-loop-return-tails/results/README.md)各8API/24方法structured、Jarde8及JADX2完整JDK23编译、20生成VM同原；Loop5扩展12例20VM/240CASE通过，JDK8框架55/52边界保留。Loop4来源23/23，Loop5为59/60，缺BCI103独立登记。
 

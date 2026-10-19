@@ -1,0 +1,60 @@
+{
+  "source_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "source_target": "TestDoWhileBreak2",
+  "files": [
+    {
+      "path": "source/TestDoWhileBreak2.java",
+      "bytes": 1078,
+      "sha256": "8b936f2645d158c4ddc8c19e3790045fe3bfd26fe49ef54c3141df41fd433666",
+      "mode": "0o644"
+    },
+    {
+      "path": "original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "bytes": 1428,
+      "sha256": "4ea6155c9761be9b86ce04d223a72ed4e15a6d098717e28c5ce187e9c1097928",
+      "mode": "0o644"
+    },
+    {
+      "path": "original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "bytes": 1260,
+      "sha256": "890254317200e2eb792af946edf79bd6a77675457427ad5417b37c402e815b77",
+      "mode": "0o644"
+    },
+    {
+      "path": "original/debug/TestDoWhileBreak2-full-classes.jar",
+      "bytes": 3086,
+      "sha256": "9caec6282d77c6a0199fc7a6480a26f4ca7f824046bcb902c34f9b99952b3e71",
+      "mode": "0o644"
+    },
+    {
+      "path": "original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class",
+      "bytes": 1118,
+      "sha256": "0566952e1802967a4a458d405a8dca90ace66f94c2c05e75a676a8e505ce3693",
+      "mode": "0o644"
+    },
+    {
+      "path": "original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2.class",
+      "bytes": 1033,
+      "sha256": "b1436ca02fa2986aafa77a5409aabe8dcfc94bfd36b0fc66797f2a7e53808fea",
+      "mode": "0o644"
+    },
+    {
+      "path": "original/no-debug/TestDoWhileBreak2-full-classes.jar",
+      "bytes": 2549,
+      "sha256": "4b06b49bc6688624c4393468814d3ab96f5eb5cff1114b3120ad04886ce8017c",
+      "mode": "0o644"
+    },
+    {
+      "path": "licenses/JADX-LICENSE",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "mode": "0o644"
+    },
+    {
+      "path": "licenses/JADX-NOTICE",
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "mode": "0o644"
+    }
+  ]
+}
