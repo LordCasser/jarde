@@ -1,0 +1,9 @@
+{
+  "status": "root_reopened_complete_loop4_loop5_baseline_payloads",
+  "payload_count": 352,
+  "payload_bytes": 15318636,
+  "archive_bytes": 2182759,
+  "archive_sha256": "fda350b692e7999c5fbf69c9e0a2128d6c2288bbb69a95ae42bd965e0ba6619c",
+  "root_review_sha256": "dd50e2486365e27473b2252abd244e160609c8da23c7e8e7c8f93b1575b30395",
+  "scope": "both complete collectors and Python/raw audits closed before archive; all payload byte/mode/digests reopened; no CLI binary, external framework jars or target added"
+}
