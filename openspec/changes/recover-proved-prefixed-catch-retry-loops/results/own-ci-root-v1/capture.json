@@ -1,0 +1,11 @@
+{
+  "status": "all_members_reopened_and_matched",
+  "archive": {
+    "path": "/private/tmp/jarde-last-four-own-ci-archive-root-v1-20261020/evidence.tar.gz",
+    "bytes": 8062619,
+    "sha256": "cd6190ccd2d8d4db922c7b30054ab0f2ec2b6b2fc3c448986039827857c218c1"
+  },
+  "payload_count": 874,
+  "payload_bytes": 30076118,
+  "excluded_count": 0
+}

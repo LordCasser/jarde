@@ -33,4 +33,6 @@
 
 ## Migration Plan
 
-两项改动可由Luna在私有base86a200...上并行准备，root逐一审查/合入，冲突由root按函数职责合并。真实fixture/Reader及公开API通过后，冻结同一新CLI重做两缺口完整三方，重开DoWhileBreak3已有正向与Loop4/5/Loop2/finally关键门；完整workspace、本产品提交自身CI、源Git blob绑定与主spec同步后才能交付。所有本机Rust遵守默认stack、≥5GiB余量、1GiB target上限、每秒守卫及finally精确清理，期间禁止共享修改/Git mutation/网络/人工并行工具链。CF09/71/612保持partial，Smali6继续只记输入边界。
+两项改动已在产品8ea98e2e11d64f02092ac200d2b596511dcf5e40中集成并通过完整Reader、公开API、Do2/Do3/Loop3/控制三方、旧Loop2/Loop4/5/finally关键门、完整workspace及产品自身CI验收。Loop3永久实现已集成；先前“永久补丁与全回归待验收”的实验说明是历史过程，不是当前状态。主spec已同步2要求/9场景。两change归档后重跑OpenSpec --strict并检查链接，再提交文档、实时核对main/远端/target。CI ZIP严格完整成员门38/52失败，不代表OpenSpec strict失败。CF09/71/612保持partial，Loop6 Smali/Dex仅为输入边界。
+
+用户要求于2026-10-20提交handoff后停止。当前7/8，3.4归档、归档后strict及最终交付检查尚未完成；目录仍位于active changes。

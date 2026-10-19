@@ -29,4 +29,6 @@
 
 ## Migration Plan
 
-Luna仅写新私有补丁，root审查后集成；真实fixture与公开API先验，再冻结新CLI重做完整三方及扩展Iterator事件控制，执行旧关键门、完整workspace与本产品自身CI。所有本机Rust串行，默认stack、≥5GiB余量、target≤1GiB、每秒进程组守卫及finally精确clean；工具链运行期间不共享修改/Git mutation/网络/人工并行JDK。未通过全部验收保持tasks未完成，CF09/71/612不扩大声明。
+实现、真实Reader/公开API、完整三方、扩展Iterator控制、旧关键门、完整workspace与产品自身CI已按验收入口完成；主spec同步2要求/9场景。归档后重跑OpenSpec --strict并检查归档链接，再提交文档并实时确认clean main、远端相等与target absent。CI的38/52 ZIP成员严格导出失败单独保留，不等同于OpenSpec strict失败。CF09/71/612保持partial。
+
+用户要求于2026-10-20提交handoff后停止。当前7/8，3.4归档、归档后strict及最终交付检查尚未完成；目录仍位于active changes。
