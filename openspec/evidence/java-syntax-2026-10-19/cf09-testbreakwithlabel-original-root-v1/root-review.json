@@ -1,0 +1,11 @@
+{
+  "status": "root_reopened_all_payload_bytes_and_modes",
+  "archive": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-19/cf09-testbreakwithlabel-original-root-v1/capture.tar.gz",
+    "bytes": 1109629,
+    "sha256": "958fe71efa1a384000d638f2cd89a77dcc64834b007471a840b645e319a6f2da"
+  },
+  "regular_payload_files": 286,
+  "directory_records": 351,
+  "scope": "Accepted original baseline evidence; known Boolean-local stdout gap remains unfixed. SequentialLoops is mathematical case planning only."
+}

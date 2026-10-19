@@ -11,4 +11,4 @@
 ## 3. Root acceptance and delivery
 
 - [x] 3.1 root对最终CLI实际4API重新采集完整报告/身份/maps，原始来源10/10闭合；源码逐字相同则精确绑定并复用既有8完整编译及JADX2失败，发生真实源码变化才重编，不执行无oracle目标，不扩成CF08整体完成。
-- [ ] 3.2 root按5GiB/target1GiB/defaultstack/每秒guard/finally clean完成fmt/Clippy/适用回归和fresh全workspace一次，核最终产品/CLI/源码与自身CI全部步骤、双seed和继承具名门；同步spec、strict、归档逐字复开、账本/handoff及提交推送clean-main后关闭。双入口3fa CI/源码采集收口前不集成本片共享生产改动。
+- [x] 3.2 root按5GiB/target1GiB/defaultstack/每秒guard/finally clean完成fmt/Clippy/适用回归和fresh全workspace一次，核最终产品/CLI/源码与自身CI全部步骤、双seed和继承具名门；同步spec、strict、归档逐字复开、账本/handoff及提交推送clean-main后关闭。双入口3fa CI/源码采集收口前不集成本片共享生产改动。

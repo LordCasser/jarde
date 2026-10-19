@@ -1,3 +1,9 @@
+## 2026-10-19 更新：if-loop 来源完整验收；CF09 已发现布尔局部标志缺口
+
+[来源片完整验收](../../changes/preserve-proved-if-loop-entry-origins/results/README.md)产品2684：fresh388目标/3794-0-98、自身CI39178836424全部4jobs/52独立官方步骤、双seed93精确门和全部3892具名结果一致接受；主spec已同步。四API只补真实derived8、全文不变，CF08/71/612不增计数。以下旧5/6、1/6是历史时点。
+
+[CF09 TestBreakWithLabel完整原始基线](../java-syntax-2026-10-19/cf09-testbreakwithlabel-original-root-v1/README.md)实际94命令接受。标签跳出正确，但0/1标志未定为布尔导致打印fallback，Jarde128/192 stdout不同；JADX24观察全同原件。下一[受证局部布尔修复](../../changes/recover-proved-literal-boolean-locals/tasks.md)仅1.1归档完成，真实SSA/实现/完整对照仍待；不把旧Grid/OuterContinue组合当五原始完整覆盖，不关闭CF09。
+
 ## 2026-10-19 更新：原始Raung入口来源修正5/6
 
 [if-loop来源片](../../changes/preserve-proved-if-loop-entry-origins/results/README.md)已root定向接受：真实class/JAR四API来源9/10→10/10，完整846B源码不变；窄Builder派生origin，无新Region/CFG机制。508 Java单测、公共2项（含真实BCI8预算停止）、Reader/指纹/fmt/Clippy通过；完整fresh及本产品自身CI/主spec/clean-main待。下方旧“1/6私有候选”是历史时点。CF08及71/612计数不增。

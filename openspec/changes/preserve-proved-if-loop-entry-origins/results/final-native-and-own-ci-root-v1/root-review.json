@@ -1,0 +1,20 @@
+{
+  "status": "root_reopened_all_payload_bytes_and_modes",
+  "archive": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-loop-entry-origins/results/final-native-and-own-ci-root-v1/capture.tar.gz",
+    "bytes": 13331423,
+    "sha256": "eab834fed317de7432948b5289799f41de2f0229d526186c8fd98d2578e37b65"
+  },
+  "regular_payload_files": 831,
+  "directory_records": 147,
+  "product": "2684b4ee79a263ceb851d73c84e6ce4499dbd4b4",
+  "cli_sha256": "56ed2f31f824187b178082d1045788e5ba09ea8f9ab4e1fe6bffeca37db8efa8",
+  "ci_run": "39178836424",
+  "ci_exact_gates_each_seed": 93,
+  "all_named_outcomes_each_seed": 3892,
+  "official_steps": 52,
+  "aggregate_step_proofs": [],
+  "native": "388 targets/102 batches/3794 pass/0 fail/98 existing ignored; 48 exact gates; 9 adjacent regression gates",
+  "source_binding": "3240 build/5193 native union5200 Git bytes/modes plus frozen CLI",
+  "history": "v1-v6 download EOF retained; v7 ZIP EOF retained; v8 copied collection refused by strict evidence-path check; v9 actual original collection and original ZIP accepted unchanged checker. Initial named observer invoked before review stdout was materialized failed FileNotFoundError; byte-identical verifier stdout then saved as review.json, successful named inspection; no CI/tests rerun."
+}

@@ -1,4 +1,4 @@
-# if臂进入嵌套循环的来源：5/6，待完整产品验收
+# if臂进入嵌套循环的来源：完整产品验收通过
 
 只补普通If父节点的派生来源：单块单Transfer、紧邻实际Loop header、非clone、完整出边唯一且Normal。复用既有edge检查与OriginSet，Java文本/Region/物理owner/Loop.gateway_origins及公共协议不改；不增加语法机制。root审查去掉了初稿未证明的CompoundIf扩展。
 
@@ -8,6 +8,6 @@
 
 永久12文件树由两parser与branch目标核原件及两构造控制；实际Reader新增3class/3Code/12targets，期望1320/5830/631/4183/16。指纹由明确ignored regeneration成功生成。初次public compile的policy moved、随后unit预取消计费错误期望均已修正，生产逻辑不为测试改变。所有实际失败raw保留；v3/v4最终source冻结且target finally clean，峰值分别680341365B/633909298B。
 
-[定向、四API及审查归档](focused-and-four-api-root-v1/README.md)包含100 payload和内嵌库存，root逐字复开bytes/mode；archive SHA `42b7413819fc41c6c6a6139be218128d12a3ed87749aab263e74641d8764e0d9`。原始20命令证据仍见[真实Raung基线](../../../evidence/java-syntax-2026-10-19/cf08-looprestore2-original-root-v1/README.md)。最终fresh全workspace、本产品自身CI/双seed/继承具名门、源码Git绑定、主spec同步及strict、clean-main尚待，不用前片3fa CI代替。
+[定向、四API及审查归档](focused-and-four-api-root-v1/README.md)包含100 payload和内嵌库存，root逐字复开bytes/mode；archive SHA `42b7413819fc41c6c6a6139be218128d12a3ed87749aab263e74641d8764e0d9`。原始20命令证据仍见[真实Raung基线](../../../evidence/java-syntax-2026-10-19/cf08-looprestore2-original-root-v1/README.md)。[最终完整验收](final-native-and-own-ci-root-v1/README.md)实际 fresh 388 targets/3794-0-98、48精确门/九项周边回归，产品2684自身CI39178836424全部4jobs/52独立官方步骤、双seed93精确门/全部3892具名结果一致均接受；5200来源并集逐Git/bytes/mode绑定。主规范已同步本片一requirement/四scenario，保留旧内容。
 
-CF08/71/612整体仍partial；finThrow5/5、nestedFin16/16已交付不重做。并行CF09固定五原始类审计确认旧证据是构造组合输入，下一先补TestBreakWithLabel完整原始类对照，尚无新缺陷结论或实现spec。
+CF08/71/612整体仍partial；finThrow5/5、nestedFin16/16已交付不重做。并行[CF09真实完整基线](../../../evidence/java-syntax-2026-10-19/cf09-testbreakwithlabel-original-root-v1/README.md)已接受：标签跳出正确，局部0/1标志未定型导致打印fallback，128/192 stdout观测不符；独立OpenSpec recover-proved-literal-boolean-locals已严格校验，尚待真实SSA核验和实施，未混入本片。

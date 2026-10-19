@@ -1,3 +1,15 @@
+## 2026-10-19 当前：if-loop 来源完整验收；继续 CF09 布尔局部标志
+
+本节优先，下方是历史检查点。finThrow5/5、nestedFin16/16已交付不重做；持续 goal active。产品 `2684b4ee79a263ceb851d73c84e6ce4499dbd4b4` 已推 main，最终 CLI `/private/tmp/jarde-if-loop-entry-focused-root-v4-20261019/candidate-cli`，SHA `56ed2f31f824187b178082d1045788e5ba09ea8f9ab4e1fe6bffeca37db8efa8`。四 API 来源10/10、846B全文不变，完整编译只做精确复用，没有目标运行。
+
+完整 native 388 targets/102批/3794-0-98，48精确门和九项周边回归各一次；峰值847254836B、defaultstack/每秒guard/finally exactclean。5200 build/native来源并集已逐Git/bytes/mode绑定产品。自身CI39178836424全部4jobs/52独立官方ZIP步骤、双seed各3794-0-98/93精确门及全部3892具名结果一致接受。归档及真实下载/接受器失败见 `openspec/changes/preserve-proved-if-loop-entry-origins/results/README.md`，最终831 regular payload+147目录逐字复开，SHA eab834fed317de7432948b5289799f41de2f0229d526186c8fd98d2578e37b65。主spec一requirement/四scenario已同步，18主spec/全部381 strict通过，本片6/6。后续文档提交不冒称另跑产品CI，最终Git/14aux状态看外置 final-clean-main receipt。
+
+下一 `recover-proved-literal-boolean-locals` strict/apply ready，原始基线任务1.1已完成，其余待做。持久入口 `openspec/evidence/java-syntax-2026-10-19/cf09-testbreakwithlabel-original-root-v1/README.md`，286 regular payload+351目录，SHA958fe71efa1a384000d638f2cd89a77dcc64834b007471a840b645e319a6f2da。完整94命令：Jarde16整类编译成功，32VM/192case中128 stdout差异；标签break/返回/异常正确，int标志导致append(Z)拒绝打印。JADX24case相符；所有原件/JADX JDK8框架失败保留，未裁剪outer/check。map缺8BCI另记，CF09/71/612不关闭。
+
+root已审真实IR探针私有 `/private/tmp/jarde-testbreakwithlabel-ir-probe-prep-luna-v1-20261019`，root执行/恢复wrapper `/private/tmp/jarde-testbreakwithlabel-ir-probe-root-prep-v1-20261019/run.py` 尚未运行。精确filter为 build::tests::test_break_with_label_slot3_boolean_ssa_probe；不可把静态物理事实当SSA闭合。Luna nl_baseline_audit在私有 `/private/tmp/jarde-literal-boolean-impl-luna-v1-20261019` 准备最小候选，尚未编译/集成/接受。先真实SSA全store/load/phi/reuse闭合，复用声明规划、独立descriptor sink与全读安全，不放宽concat gate或新增solver。
+
+当前无本地Cargo/JDK/CLI待续，target absent。root独占共享写/Git/网络/工具链，Luna只私有tmp/只读，Python-B；Cargo 5GiB/target1GiB/defaultstack/每秒guard/finally clean，期间不共享写/Gitmutation/network/manualJDK/CLI，不新增工作树。
+
 ## 2026-10-19 当前推进：if-loop入口来源5/6，定向验收通过，待本产品完整验收
 
 本节优先，下方未编译/1/6等均历史时点。finThrow5/5、nestedFin16/16早已交付，持续goal active。当前main起点a9ebb93989a8575b5f6df97b1e0031130c0e3169，待产品提交。共享生产只Builder父If派生origin，Region/canonical/loop gateway均未改变；三fixture+public测试/Reader/指纹已集成且实际验证。
