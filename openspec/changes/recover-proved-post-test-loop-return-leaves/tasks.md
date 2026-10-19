@@ -10,7 +10,7 @@
 
 ## 3. Acceptance
 
-- [ ] 3.1 冻结新CLI，执行debug/no-debug×class/fullJAR×default/all完整三方，重编所有完整源码、双runtime隔离VM、实际check、wrong-CodeSource、完整方法/字段/有效物理maps与default/all一致，独立重开raw后接受。
-- [ ] 3.2 执行扩展Iterator有限控制并与原始class逐事件对照，覆盖首null留tail、空/缺失iterator、next/hasNext异常与短路；同时重验DoWhileBreak3的10例/正向来源边界。
+- [x] 3.1 冻结新CLI，执行debug/no-debug×class/fullJAR×default/all完整三方，重编所有完整源码、双runtime隔离VM、实际check、wrong-CodeSource、完整方法/字段/有效物理maps与default/all一致，独立重开raw后接受。
+- [x] 3.2 执行扩展Iterator有限控制并与原始class逐事件对照，覆盖首null留tail、空/缺失iterator、next/hasNext异常与短路；同时重验DoWhileBreak3的10例/正向来源边界。
 - [ ] 3.3 执行旧循环/finally关键门、fmt/Clippy、完整workspace与该产品提交自身CI；比对完整具名结果、真实退出码与Git来源绑定，所有本机Rust保留5GiB/1GiB/default-stack/每秒守卫与finally清理回执。
 - [ ] 3.4 同步主spec、严格校验并更新固定原件账本与handoff，归档真实失败/通过及独立债务；提交推送后实时确认主线干净、远端相等、target absent，不扩大CF09/71/612声明。
