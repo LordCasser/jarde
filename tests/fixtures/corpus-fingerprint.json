@@ -1303,6 +1303,91 @@
       "path": "tests/fixtures/cf08-two-level-effectful/cf08twolvl/VerifierRunner.java"
     },
     {
+      "blake3": "41e817c1b1f4d84313a388f54611960a16236129183802b30b8f92c22125c104",
+      "bytes": 14942,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/caseplans.json"
+    },
+    {
+      "blake3": "43b64c51971a5cee0c3c554aa3cf67a77e8166a8d624f79443b981fe8904b568",
+      "bytes": 2085,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/controls/HeaderBodyBoundaryControls.class"
+    },
+    {
+      "blake3": "df8c5464da772018f472541582e5952a6eb9b62951a7531d491a6b633d5f83db",
+      "bytes": 1536,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/controls/HeaderBodyBoundaryControls.java"
+    },
+    {
+      "blake3": "04f83d30be44bff7f4cd2a1f947456ae57d8edd35f23bdf578cf5d991db8f5d9",
+      "bytes": 2366,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/controls/root-compile-receipt.json"
+    },
+    {
+      "blake3": "c91a9c3d4a2c3c7b1befdfdb8d439baeefeae9359ba051596ad3d46c73f80e93",
+      "bytes": 5031,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/debug-plain.jar"
+    },
+    {
+      "blake3": "b70c34f4e8125b9d542193bf2cdaee976ebc3093a25428f2eb691e38eba044a2",
+      "bytes": 845,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/debug/class/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point.class"
+    },
+    {
+      "blake3": "e555e5a6351a2e4a54c4f292655dbb4be535476f317f62931735472b38922e5d",
+      "bytes": 2210,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/debug/class/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls.class"
+    },
+    {
+      "blake3": "32e26239ddd0ddcdd8eb7cbd03ba5f6a3d9cdad38b836ac8aa31036d759afcae",
+      "bytes": 1352,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/debug/class/jadx/tests/integration/loops/TestBreakInComplexIf.class"
+    },
+    {
+      "blake3": "f16bea11adb3c314dbce74b95288f74357c9f6172982898d485ca62a66229c26",
+      "bytes": 8368,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/driver/TestBreakInComplexIfDriver.java"
+    },
+    {
+      "blake3": "508b68cc28c212ab54cfddd090af2a36fc23dbd74eb1c1e1985ec2d2b7f796e2",
+      "bytes": 24168,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/fixture-manifest.json"
+    },
+    {
+      "blake3": "fb6b1d1171f32787eec2b6999838747a9e80c7fa581baf0f614484c2a875eae0",
+      "bytes": 11357,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/licenses/JADX-LICENSE"
+    },
+    {
+      "blake3": "d006ec493b8b2457b733149b1779dd1db3bd8314f80e52377749304dafa869b2",
+      "bytes": 10658,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/licenses/JADX-NOTICE"
+    },
+    {
+      "blake3": "a40b4e17c6d4f3ece01c239f4e4a2107cc1c410958ea1acd4123a7747e59b988",
+      "bytes": 3834,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/no-debug-plain.jar"
+    },
+    {
+      "blake3": "a030ea1a8478d4b20df3614265cf7f4083ca6807b83325c6483d47c4a6275f77",
+      "bytes": 610,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/no-debug/class/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls$Point.class"
+    },
+    {
+      "blake3": "8280bdc62eae2a7e2face43443aea82a3bfb1b12edf42641b059817cf0e670ae",
+      "bytes": 1519,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/no-debug/class/jadx/tests/integration/loops/TestBreakInComplexIf$TestCls.class"
+    },
+    {
+      "blake3": "61619167451bcd0a2f002db7a8fdac742fea52db3e893f6e9a778ce1ef982b4a",
+      "bytes": 1081,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/no-debug/class/jadx/tests/integration/loops/TestBreakInComplexIf.class"
+    },
+    {
+      "blake3": "037352bd2961e37110e766fcd6eeb5e6b3486169e6ea582464a706bf5f4b80d9",
+      "bytes": 1533,
+      "path": "tests/fixtures/cf09-complex-if-body-boundary/upstream/TestBreakInComplexIf.java"
+    },
+    {
       "blake3": "c2b0e671ebef6fb4dafd37524d9cc1077111776a81ac8831b18251d216f0e7b9",
       "bytes": 853,
       "path": "tests/fixtures/cf09-literal-boolean-locals/controls-src/BooleanLocalRefusals.java"
