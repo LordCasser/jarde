@@ -17,4 +17,4 @@
 
 归档保留全部实际收集失败、审计适配失败、诊断和已拒绝版本。Luna v6脚本首次执行因并行native重新创建target而失败，该回执仍为FAILED；root在native清理后原样重跑v6，真实argv/exit0与root v3 review一起接受，不把Luna旧失败产物改称通过。根聚合接受和独立归档/物理映射审计均有原流。1522成员逐bytes/hash/mode重开，tar SHA256 `b197c34f9a4291d1af3a7288bede6a5c8d0e9f8064912ecb06cf9fed17722b7f`。
 
-[本机完整workspace](../native-accepted-root-v1/README.md)独立于本包；本产品自身CI及最终交付另行闭合，不以本包替代。
+[本机完整workspace](../native-accepted-root-v1/README.md)与[产品自身CI](../own-ci-root-v1/README.md)分别保留本机和官方执行原流。CI为4 jobs/52 API步骤complete-success；每seed 396 targets、3856通过/0失败/98 ignored、3954具名结果与156 exact gates。Counter按source-bound identity处理should_panic后缀和一个GitHub脱敏名；不声称raw spelling或未经归一化Counter字面一致。官方ZIP有38/52独立step成员，私有ZIP完整成员严格门FAILED；这是归档覆盖差额，不等同于OpenSpec --strict或tasks 3.3合同的失败。root contract auditor v3已按API、按jobID采集原流、原ZIP aggregate、52官方成功状态、stable双seed完整Counter及源绑定接受。fuzz CLI原流不完整，不拼造缺失正文。

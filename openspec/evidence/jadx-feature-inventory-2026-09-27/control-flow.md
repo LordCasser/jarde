@@ -1,8 +1,10 @@
-## 2026-10-19 当前：四原件本机验收完成，自身CI待闭合
+## 2026-10-20 停止交接：四原件本机与CI验收完成，两项7/8未归档
 
-两项OpenSpec各6/8；产品8ea98e2e11d64f02092ac200d2b596511dcf5e40已推。Luna实现、root审查及[最终四组对照](../../changes/recover-proved-prefixed-catch-retry-loops/results/final-comparison-root-v1/README.md)接受：Do2十一例20VM220CASE、Loop3原件36VM与actualcheck/builder12135678、Do3十例36VM360CASE、无文件副作用retry十例40VM400CASE。各8API，完整原样源码重编/双runtime/parentless/CodeSource与wrong-root对照，框架边界及失败历史均保留。
+两项OpenSpec实现与验收证据已接受，各7/8；用户要求交接停止，3.4归档、归档后strict及最终主线交付仍未完成，详见[handoff](../../../handoff.md)。产品8ea98e2e11d64f02092ac200d2b596511dcf5e40。Do2、Loop3、Do3与独立重试控制的完整三方入口见[最终四组对照](../../changes/recover-proved-prefixed-catch-retry-loops/results/final-comparison-root-v1/README.md)，native入口见[本机验收](../../changes/recover-proved-prefixed-catch-retry-loops/results/native-accepted-root-v1/README.md)。Do2 20VM/220CASE，Loop3原件36VM并含actualcheck/builder12135678，Do3 36VM/360CASE，控制40VM/400CASE；完整源码重编、成功产物隔离VM、8API/default-all稳定和框架边界均逐项记录。
 
-[native](../../changes/recover-proved-prefixed-catch-retry-loops/results/native-accepted-root-v1/README.md)396targets/104批、3856-0-98、111门与5333 Git/live来源绑定已独立接受；本产品CI39278336384及最终交付待完成，不借旧CI关闭。来源Loop3 48/49缺88、控制40/41缺71，均goto并单列债务；[成本模型审查](../java-syntax-2026-10-19/cf09-prefixed-retry-cost-model-debt-root-v1/README.md)另列，不扩大当前实现。Loop3 NYI与实际JADX成功分开；Loop6原Smali/Dex输入边界，不以Java替代且无VM oracle。最终固定13计数待CI；CF09/71/612保持partial。以下为历史。
+CI39278336384四jobs/52 API步骤complete-success；每seed 396 targets、3856通过/0失败/98 ignored、3954具名结果和156 exact gates。完整Counter审计按源码绑定身份处理should_panic后缀及GitHub脱敏名差异，不宣称raw-name字节或未经归一化Counter字面相等。官方ZIP仅有38/52个独立step成员，私有ZIP全成员严格门FAILED；它不等于OpenSpec --strict校验，也不改变root已按tasks 3.3合同重跑接受的API、四job raw、full Counter及源绑定。[自身CI证据页](../../changes/recover-proved-prefixed-catch-retry-loops/results/own-ci-root-v1/README.md)保存来源。
+
+13个固定原件中12项接受，Loop6保留Smali/Dex输入边界且无JVM oracle。Loop3 writeMore缺BCI 88、独立控制run缺BCI 71，均为各自goto映射债务，不推断与旧Loop5 BCI103同根因；Loop3 NYI/@Test标记不代表实际JADX失败。Iterator泛型字段与runner observed_counts债务独立保留。CF09/71/612保持partial；两项OpenSpec主spec同步2要求/9场景，此前OpenSpec --strict实际390 pass/0 fail；归档后重跑并记录结果及最终路径检查。以下为历史。
 
 ## 2026-10-19 历史：Loop4/5 完整交付
 

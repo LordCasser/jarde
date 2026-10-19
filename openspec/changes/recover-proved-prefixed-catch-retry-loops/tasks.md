@@ -12,5 +12,5 @@
 
 - [x] 3.1 用最终同一CLI执行完整原件8API、所有生成源码整编及成功产物双runtime隔离VM，复核builder12135678、actualcheck、wrong-CodeSource、完整field/method/physicalmaps/default-all；独立raw接受后才勾选。
 - [x] 3.2 执行独立有限控制的原/JADX/Jarde完整对照：正常成功、首次失败重试成功、再次失败正常完成、diamond两臂、prefix/handler自身异常；比较完整事件与状态，明确原件空路径未覆盖的File.exists真分支。
-- [ ] 3.3 执行旧Loop2/Loop4/5/finally及精确预算门、fmt/Clippy、完整workspace和该产品自身CI，逐具名结果及Git来源绑定验收；所有本机Rust保留5GiB/1GiB/default-stack/每秒守卫和finally清理。
+- [x] 3.3 执行旧Loop2/Loop4/5/finally及精确预算门、fmt/Clippy、完整workspace和该产品自身CI，逐具名结果及Git来源绑定验收；所有本机Rust保留5GiB/1GiB/default-stack/每秒守卫和finally清理。
 - [ ] 3.4 同步主spec、strict验证、持久归档并更新handoff/固定71单元账本，提交推送并检查clean main/远端相等/target absent；保留原Smali6输入边界，不把NYI文本或未执行JUnit算成运行结果，CF09/71/612保持partial。

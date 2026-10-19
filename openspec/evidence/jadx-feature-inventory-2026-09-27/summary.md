@@ -1,5 +1,9 @@
 # JADX 测试驱动的 Java 恢复路线
 
+用户于2026-10-20要求提交handoff后停止。两项当前OpenSpec各7/8，3.4归档与最终交付未完成；接续步骤和封存证据见[handoff](../../../handoff.md)。以下验收结论不代表两项change已归档。
+
+当前2026-10-20见[控制流账本](control-flow.md)：产品8ea98e2e1的Do2/Loop3两项修复、本机完整对照及自身CI合同已接受；CI39278336384四jobs/52 API步骤成功，双seed各396 targets、3856通过/0失败/98 ignored、3954具名结果和156 exact gates。CI raw Counter保留should_panic后缀与一个GitHub脱敏名称差异，按源绑定身份审计，不宣称原始字符串Counter无条件相等；ZIP导出38/52成员的私有严格门失败，与OpenSpec --strict不同。固定13原件为12项接受+Loop6 Smali/Dex输入边界；CF09/71/612保持partial。映射88/71与旧Loop5 103分开，NYI注释不等于当前JADX失败，Iterator字段与observed_counts债务保留。以下为历史。
+
 当前2026-10-19见[控制流账本](control-flow.md)：产品8ea98e2e1的Do2/Loop3两项修复、Do3现有能力回归与Loop6原Smali/Dex边界已完成本机完整对照；两OpenSpec各6/8，最终同CLI四矩阵和fresh396targets/3856-0-98/111门独立接受，5333来源绑定。自身CI39278336384及最终主线交付待闭合，暂不以本机结果关闭产品。NYI启用状态与当前实际JADX能力分开，来源缺88/71和成本模型债务独立记录；原始Dex不由Java替代。最终固定13计数待CI，CF09/71/612保持partial。以下为历史。
 
 ## 2026-10-18 CF-11 祖先 Iterator 声明清理产品验收
