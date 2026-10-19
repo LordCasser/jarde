@@ -11,6 +11,6 @@
 
 ## 3. Full acceptance
 
-- [ ] 3.1 冻结最终 CLI，重做两原件各8 API/20完整编译尝试和全部成功产物的双 VM 对照、实际 check、wrong-CodeSource 控制、default/all 与物理 source maps；另以已实际冻结的12例Loop5 oracle验证M/g/null/重复点/零/超大数。独立重开 raw，不以单方法、裁剪 outer 或 JDK8 框架不兼容掩盖恢复失败。
-- [ ] 3.2 通过完整工作区、旧关键 gates、该产品提交自身 CI；精确核对 named outcomes、source binding 和退出码，所有 Rust 执行保留5 GiB/1 GiB守卫与最终 target 清理收据。
-- [ ] 3.3 同步主 spec 并严格验证，更新 handoff/固定71单元账本中的两原件局部状态，提交推送 main；以干净工作区、无 target、无新分支/worktree为最终检查，不扩大 CF09/71/612 完成声明。
+- [x] 3.1 冻结最终 CLI，重做两原件各8 API/20完整编译尝试和全部成功产物的双 VM 对照、实际 check、wrong-CodeSource 控制、default/all 与物理 source maps；另以已实际冻结的12例Loop5 oracle验证M/g/null/重复点/零/超大数。独立重开 raw，不以单方法、裁剪 outer 或 JDK8 框架不兼容掩盖恢复失败。
+- [x] 3.2 通过完整工作区、旧关键 gates、该产品提交自身 CI；精确核对 named outcomes、source binding 和退出码，所有本机 Rust 执行保留5 GiB/1 GiB守卫与最终 target 清理收据。
+- [x] 3.3 同步主 spec 并严格验证，更新 handoff/固定71单元账本中的两原件局部状态，提交推送 main；以干净工作区、无 target、无新分支/worktree为最终检查，不扩大 CF09/71/612 完成声明。

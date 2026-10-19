@@ -1,0 +1,12 @@
+{
+  "status": "all_members_reopened_and_matched",
+  "archive": {
+    "path": "openspec/changes/recover-named-catch-loop-return-tails/results/focused-and-full-comparison-root-v1/evidence.tar.gz",
+    "bytes": 19621166,
+    "sha256": "4ebf0886dd49eb3c7d2430efbf23232a982ae008844990436e6f1ef51023ebe0"
+  },
+  "payload_count": 1377,
+  "payload_bytes": 121403194,
+  "excluded_count": 2,
+  "durable_copy_reopened_all_members": true
+}

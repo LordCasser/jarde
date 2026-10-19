@@ -12,6 +12,6 @@
 
 ## 3. Acceptance
 
-- [ ] 3.1 冻结新 CLI，执行完整 Loop4 三方对照：8 API、全部方法/字段、完整生成源码重编、双 JDK 隔离 VM、实际 check、错误 CodeSource 控制、物理 source maps；独立重开 raw 后才能记验收通过。
-- [ ] 3.2 执行完整工作区和该产品提交自身的 CI，保留旧关键 gate 与 Loop2/ComplexIf/finally 回归；比对实际 named outcomes、source bindings 与退出码，不借用前版 CI。
-- [ ] 3.3 同步主 spec、严格验证并更新 handoff/71 单元账本中的精确局部状态；提交推送 main 后检查工作区干净、target 不存在，保留未完成 CF09 范围。
+- [x] 3.1 冻结新 CLI，执行完整 Loop4 三方对照：8 API、全部方法/字段、完整生成源码重编、双 JDK 隔离 VM、实际 check、错误 CodeSource 控制、物理 source maps；独立重开 raw 后才能记验收通过。
+- [x] 3.2 执行完整工作区和该产品提交自身的 CI，保留旧关键 gate 与 Loop2/ComplexIf/finally 回归；比对实际 named outcomes、source bindings 与退出码，不借用前版 CI。
+- [x] 3.3 同步主 spec、严格验证并更新 handoff/71 单元账本中的精确局部状态；提交推送 main 后检查工作区干净、target 不存在，保留未完成 CF09 范围。

@@ -1,0 +1,11 @@
+{
+  "status": "all_members_reopened_and_matched",
+  "archive": {
+    "path": "openspec/changes/recover-named-catch-loop-return-tails/results/native-and-own-ci-root-v1/evidence.tar.gz",
+    "bytes": 8336857,
+    "sha256": "33981500b6bf8eb7316a361220e11360bde95d85a1a075525c4abb3a23e0da34"
+  },
+  "payload_count": 908,
+  "payload_bytes": 46121981,
+  "excluded_count": 0
+}

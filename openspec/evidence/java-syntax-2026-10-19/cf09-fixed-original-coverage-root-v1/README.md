@@ -1,4 +1,6 @@
-# CF-09 固定原件覆盖状态（v4）
+# CF-09 固定原件覆盖历史（v4）
+
+本目录的v4/current-status.json是历史收据，不是最新完成状态。2026-10-19当前固定13原件为9接受、4待完整基线；Loop4/5产品412245d51完整验收见[最新控制流账本](../../jadx-feature-inventory-2026-09-27/control-flow.md)及[交接入口](../../../../handoff.md)。下面保留v4时点原文，不覆盖冻结JSON。
 
 本包保留 v1 固定清单、加入 v2/v3 状态演进，并把 v1 的 `README.md` 与 `review.json` 原样复制到 `prior-inventory/`。v1 README 里的状态描述是历史记录；固定 13 项源文件清单及原始路径、大小、SHA-256 见该目录的 `review.json`。本版 `current-status.json` 也内嵌完整清单，附 v4 新收据的现场 pin。
 

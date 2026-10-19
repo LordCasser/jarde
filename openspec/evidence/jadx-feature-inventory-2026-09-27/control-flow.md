@@ -1,6 +1,8 @@
-## 2026-10-19 当前：Loop4/5实现与完整对照待广验
+## 2026-10-19 当前：Loop4/5 完整交付
 
-两项OpenSpec `recover-proved-loop-break-branch-bodies` / `recover-named-catch-loop-return-tails` 已由Luna私有实现、root审查集成。闭合break DAG复用既有sequence；named catch保留完整While和范围右边界return表达式；catch入口绑定不再污染同物理槽普通double类型。新CLI SHA3dfb6601，两个原件各8API/24方法structured、Jarde8及JADX2完整JDK23编译、20生成VM同原；JDK8框架55/52边界仍记录。Loop5扩展12例20VM通过；完整独立raw审查、fresh workspace、新产品自身CI与Git来源绑定待最终关闭。主规格已同步2要求/8场景，strict388通过。固定13原件仍按7接受+2待最终验收+4待基线记录，CF09/71/612保持partial。以下为历史。
+两项OpenSpec `recover-proved-loop-break-branch-bodies` / `recover-named-catch-loop-return-tails` 均8/8，由Luna私有实现、root架构审查和完整对照接受。产品412245d514896b1d0eb9a8fe24388f6a70668637、最终CLId29b6fee：闭合break DAG复用sequence/If/LoopBreak并保留ForHeader；精确named catch持有完整While和return-tail，Builder复用catch身份区分同槽普通double，无新AST/CFG或通用槽拆分。[两原件完整对照](../../changes/recover-named-catch-loop-return-tails/results/README.md)各8API/24方法structured、Jarde8及JADX2完整JDK23编译、20生成VM同原；Loop5扩展12例20VM/240CASE通过，JDK8框架55/52边界保留。Loop4来源23/23，Loop5为59/60，缺BCI103独立登记。
+
+最终fresh workspace394目标/103批/3841通过-0失败-98既有忽略、96精确门；本产品自身CI39251504476全部4jobs/52官方步骤接受，双seed各3939具名结果逐项相等，141精确门各一次通过。构建/native来源并集5306逐Git blob/bytes/mode绑定，完整raw由root及独立审计复开。原生runner既有observed_counts错配以实际Running头重建，不改原收据；非候选scan收费回归已最小修复并保留旧365@29/130@1预算门。固定13原件为9接受、4待完整基线，CF09/71/612保持partial。以下为历史。
 
 ## 2026-10-19 历史：Loop2条件重抛与异常重试交付
 
