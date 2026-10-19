@@ -1,8 +1,10 @@
-## 2026-10-19 更新：ComplexIf完整候选接受，产品广验待完成
+## 2026-10-19 更新：ComplexIf两原件交付，下一Loop2确证所有权gap
 
-[body边界片5/6](../../changes/bound-loop-header-chains-at-body-effects/results/README.md)：仅修后续AND带效果body归属，保留已有纯前缀与边/ownership/Stop证明，无新机制。冻结CLI52ff01f，Java lib521/0、公开/周边/Reader/指纹/fmt/Clippy接受。完整56命令、16目标/Point API、16全源码编译尝试；八JDK23成功、八JDK8原框架边界，16VM144观察全同原件，八错根拒绝。目标Structured8/8、map7/33→32/33，Point12/12。BCI69隐式回跳映射单列债务。392payload逐bytes/mode归档；一次fresh/本产品自身CI/Git绑定及最终主spec交付尚待，不冒称完成。
+[body边界片6/6](../../changes/bound-loop-header-chains-at-body-effects/results/README.md)，产品c8af822ef/CLI52ff01f。最小AND/body归属修复复用原Region/If/gateway/LoopBreak，无新机制。ComplexIf完整16 API/八JDK23整源对编译/16VM144观察同原，来源32/33/Point12/12；[ComplexIf2同产品](../java-syntax-2026-10-19/cf09-testbreakincomplexif2-fixed-root-v1/README.md)八API/八JDK23整类编译/16VM176观察同原，来源33/34。各八JDK8原框架边界保留，BCI69/78映射缺口单列，不称全映射。
 
-[ComplexIf原件](../java-syntax-2026-10-19/cf09-testbreakincomplexif-original-root-v1/README.md)与[同轮IR](../../changes/bound-loop-header-chains-at-body-effects/results/same-run-ir-root-v1/README.md)均精确绑定复用。[ComplexIf2原件](../java-syntax-2026-10-19/cf09-testbreakincomplexif2-original-root-v1/README.md)原件/JADX各44观察同，旧目标八fallback/map11/34；当前候选仅单API smoke Structured，完整比较准备中，不能当交付。固定13原件四项已交付、ComplexIf待广验、ComplexIf2待完整候选比较、七项待完整原件对照。CF09/71/612仍partial。finThrow5/5、nestedFin16/16、DoWhile等已交付，不重做。以下均为历史时点。
+[最终native/自身CI](../../changes/bound-loop-header-chains-at-body-effects/results/native-and-own-ci-root-v1/README.md)：一次fresh392targets/103批/3816-0-98、71精确门；CI39210601042四jobs/52独立官方ZIP步骤，双seed116门及全部3914具名结果一致，无aggregate/transport失败。5263构建/native来源逐Git/bytes/mode绑定产品，593payload逐成员复开；1requirement/4scenario主spec同步、全部385 strict通过。finThrow5/5、nestedFin16/16与旧片不重做，文档后继不冒称重跑产品CI。
+
+[Loop2原件](../java-syntax-2026-10-19/cf09-testbreakinloop2-original-root-v1/README.md)46命令接受，原件/JADX各八观察同，八目标ownership_overlap BCI0、16Jarde全编译拒绝、无JardeVM；17/17来源只是quote。164payload已逐bytes/mode归档。下一[同轮trace准备](../java-syntax-2026-10-19/cf09-testbreakinloop2-ir-probe-preparation-root-v1/README.md)只有静态root27pin审查，未编译运行，未立修复OpenSpec。固定13原件六项接受、一项真实gap、六项待baseline；[3–6静态范围](../java-syntax-2026-10-19/cf09-breakinloop3-to6-static-scope-root-v1/README.md)不计覆盖。CF09/71/612仍partial。以下均为历史。
 
 ## 2026-10-19 历史：Continue完整交付，DoWhileBreak已证真实缺口
 

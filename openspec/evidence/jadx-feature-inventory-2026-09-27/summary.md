@@ -1,6 +1,6 @@
 # JADX 测试驱动的 Java 恢复路线
 
-当前2026-10-19检查点见[控制流账本](control-flow.md)：ComplexIf body边界片5/6，Luna最小局部实现经root完整对照接受，16 API、八JDK23整类源码重编、16VM144观察全同原件；八JDK8旧框架边界保留，来源32/33的BCI69缺口单列。最终CLI52ff01f；fresh workspace/本产品自身CI/Git绑定及最终主spec交付待完成。ComplexIf2原件/JADX各44观察同，当前候选单API smoke成功但完整比较尚待。finThrow/nestedFin/旧DoWhile已交付不重做，CF09/71/612统计口径不变。
+当前2026-10-19检查点见[控制流账本](control-flow.md)：ComplexIf AND/body片6/6，产品c8af822ef，两个固定原件分别144/176观察全同原，来源32/33和33/34缺口单列。fresh392目标/3816-0-98，CI39210601042四jobs/52独立官方步骤、双seed116精确门及全部3914具名结果一致，5263来源绑定产品；主规范同步，385 strict通过。下一Loop2完整基线确证BCI0所有权重叠，trace仅准备未运行；固定13原件六项接受、一项gap、六项待baseline。finThrow/nestedFin/旧片不重做，CF09/71/612口径不变。
 
 ## 2026-10-18 CF-11 祖先 Iterator 声明清理产品验收
 
