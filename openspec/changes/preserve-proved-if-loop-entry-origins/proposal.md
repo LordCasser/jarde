@@ -6,7 +6,7 @@
 
 - 为已证明的if非空臂前导、唯一transfer-only块到紧邻嵌套循环入口的跳转，在真实已发出的if语句上保留派生物理来源。
 - Java文本、物理块owner、原始事实和既有拒绝保持不变；缺证不猜来源，真实停止继续走既有事务。
-- 冻结原始Raung class及完整三方基线，补四API完整BCI映射和边界回归；本片已通过root定向验收，完整workspace/本产品自身CI仍待收口。
+- 冻结原始Raung class及完整三方基线，补四API完整BCI映射和边界回归；本片已通过root定向及完整验收，fresh workspace与产品2684自身CI全部步骤/双seed均接受。
 
 ## Capabilities
 
