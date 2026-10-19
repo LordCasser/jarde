@@ -14,7 +14,7 @@ Java 恢复 SHALL 支持一个普通物理保护块的具名 catch 重试循环�
 
 #### Scenario: Incomplete branch ownership is refused
 - **WHEN** handler 或分支叶有未证明的外部入口、共享物理 handler、额外转移或异常边、错误保护范围、错误回跳目标或未闭合的终结
-- **THEN** 该新增恢复能力 SHALL 拒绝该候选，保留既有有界降级及所有权检查，MUST NOT 靠去重、吞掉真实块或改变 CFG 把候选发布为完整结构
+- **THEN** 该新增恢复能力 SHALL 拒绝该候选，保留既有有界降级、诊断及原始控制流来源，MUST NOT 因跳过、合并或复制未证明的执行路径或效果而发布完整结构
 
 #### Scenario: Proof work stops without publishing a partial loop
 - **WHEN** 候选证明或结构组装期间达到预算限制或取消

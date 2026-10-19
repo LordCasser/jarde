@@ -10,5 +10,5 @@
 ## 3. 完整对照与交付
 
 - [x] 3.1 用最终冻结 CLI 完成原件 default/all、debug/no-debug、JDK8/23 整类重编尝试及隔离 VM 对照，保留原 framework 边界；独立可达控制例覆盖正常、重试、重抛、retry 效果自身抛异常及条件反转，root 核验完整源码、事件顺序、异常范围、metadata/来源与真实可达边界。
-- [ ] 3.2 同一候选通过一次 fresh workspace、既有门与最终产品自身 CI，源码/构建及 Git 绑定、官方原日志/固定双 seed 结果接受；默认栈、5 GiB/target 1 GiB/每秒 guard/finally clean，失败原流保留。
-- [ ] 3.3 root 最终架构与对抗性验收后同步主规格、更新账本/handoff，提交推送并核对主线干净、target absent；只按实际证据勾选，保持 CF09 与 71 单元整体 partial。
+- [x] 3.2 同一候选通过一次 fresh workspace、既有门与最终产品自身 CI，源码/构建及 Git 绑定、官方原日志/固定双 seed 结果接受；默认栈、5 GiB/target 1 GiB/每秒 guard/finally clean，失败原流保留。
+- [x] 3.3 root 最终架构与对抗性验收后同步主规格、更新账本/handoff，提交推送并核对主线干净、target absent；只按实际证据勾选，保持 CF09 与 71 单元整体 partial。

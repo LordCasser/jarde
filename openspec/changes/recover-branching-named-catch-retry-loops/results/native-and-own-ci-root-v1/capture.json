@@ -1,0 +1,20 @@
+{
+  "status": "root_reopened_closed_native_own_ci_and_source_binding",
+  "product": "618b5e20f27f94ba28ea2f9e4310648718475f82",
+  "payload_count": 666,
+  "payload_bytes": 33082341,
+  "archive_bytes": 6621575,
+  "archive_sha256": "49702b04be8670596720b5d34edc7b22807c70d9000ed56666762d59c76853b6",
+  "source_directories": {
+    "native": "/private/tmp/jarde-loop2-retry-native-root-v1-20261019",
+    "native-independent-review": "/private/tmp/jarde-loop2-native-independent-review-luna-v1-20261019",
+    "acceptance-tools": "/private/tmp/jarde-loop2-retry-native-ci-prep-luna-v2-20261019",
+    "product-binding": "/private/tmp/jarde-loop2-retry-product-binding-root-v1-20261019",
+    "own-ci": "/private/tmp/jarde-loop2-retry-own-ci-root-v1-20261019",
+    "ci-launch": "/private/tmp/jarde-loop2-retry-own-ci-launch-root-v1-20261019",
+    "ci-independent-review": "/private/tmp/jarde-loop2-ci-independent-review-luna-v1-20261019",
+    "spec-independent-review": "/private/tmp/jarde-loop2-spec-sync-independent-review-luna-v1-20261019",
+    "closeout": "/private/tmp/jarde-loop2-retry-closeout-root-v1-20261019"
+  },
+  "scope": "captured only after native, collectors, verifiers and independent audits completed; no CLI binary or target; all payload bytes/modes/digests reopened"
+}
