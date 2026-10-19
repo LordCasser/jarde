@@ -1,0 +1,139 @@
+{
+  "accepted_source": {
+    "bytes": 563,
+    "copied_unmodified": true,
+    "path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/source/jadx/tests/integration/loops/TestDoWhileBreak.java",
+    "sha256": "7c8db1024a14626aaafdd977a722665e077f8e17f5751f2249bc7be6e9eba577"
+  },
+  "driver": {
+    "bytes": 6979,
+    "copied_unmodified": true,
+    "path": "/private/tmp/jarde-testdowhilebreak-baseline-prep-luna-v1-20261019/driver/TestDoWhileBreakDriver.java",
+    "sha256": "aef8cf0da2ccf9760e1b9a615c1075675db7f982cda260a9b49f418a97a93b14"
+  },
+  "files": [
+    {
+      "bytes": 11357,
+      "mode": 420,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/LICENSE",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "bytes": 10658,
+      "mode": 420,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/NOTICE",
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365"
+    },
+    {
+      "bytes": 563,
+      "mode": 420,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/TestDoWhileBreak.java",
+      "sha256": "7c8db1024a14626aaafdd977a722665e077f8e17f5751f2249bc7be6e9eba577"
+    },
+    {
+      "bytes": 6979,
+      "mode": 420,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/TestDoWhileBreakDriver.java",
+      "sha256": "aef8cf0da2ccf9760e1b9a615c1075675db7f982cda260a9b49f418a97a93b14"
+    },
+    {
+      "bytes": 2212,
+      "mode": 420,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug-plain.jar",
+      "sha256": "3ec67e2e0e81a227e6c3dedbba5b0fd7865b90d944d18737727cb2fe983886df"
+    },
+    {
+      "bytes": 677,
+      "mode": 420,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "sha256": "037e32820ff9cd17e4d00e9ce9d9c7d764df3d2065b07eb9d5ab0dfa809308b3"
+    },
+    {
+      "bytes": 1141,
+      "mode": 420,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class",
+      "sha256": "289db6487140b5661a19f668e33db75def93b53dbeddebe8b3d93837dee268c5"
+    },
+    {
+      "bytes": 1734,
+      "mode": 420,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug-plain.jar",
+      "sha256": "e43fcefb543b4e789b1835eac5957997fc85691db929456feeb083f97eb0bb50"
+    },
+    {
+      "bytes": 412,
+      "mode": 420,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class",
+      "sha256": "151c8d3ad5d4e36c15daa50f12e6cdb10d6a04d90bd92bc05535cca80c6e140c"
+    },
+    {
+      "bytes": 928,
+      "mode": 420,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class",
+      "sha256": "9a7392ef23cac839f38c5913a011d7b06f1fccb65339bba0520c4bc9d2b948ea"
+    }
+  ],
+  "public_tests": [
+    "p3_post_test_loop_break_prefixes::original_profiles_and_plain_jars_share_the_public_post_test_break_contract",
+    "p3_post_test_loop_break_prefixes::original_public_class_source_propagates_precancellation_without_partial_text"
+  ],
+  "reader_census": {
+    "anticipated_delta_unverified": [
+      4,
+      8,
+      0,
+      6,
+      0
+    ],
+    "anticipated_total_unverified": [
+      1334,
+      5866,
+      631,
+      4223,
+      16
+    ],
+    "current": [
+      1330,
+      5858,
+      631,
+      4217,
+      16
+    ],
+    "note": "Root independently parsed exact four classfiles and measured this physical delta; the Rust full-corpus gate is pending.",
+    "root_measured_delta": [
+      4,
+      8,
+      0,
+      6,
+      0
+    ],
+    "root_expected_total": [
+      1334,
+      5866,
+      631,
+      4223,
+      16
+    ]
+  },
+  "schema": "post-test-loop-break-public-fixture-prep-v1",
+  "status": "root_copied_exact_originals_pending_rust_and_public_acceptance",
+  "target": {
+    "fields": [],
+    "internal_name": "jadx/tests/integration/loops/TestDoWhileBreak$TestCls",
+    "major": 52,
+    "methods": [
+      {
+        "access": 1,
+        "descriptor": "()V",
+        "name": "<init>"
+      },
+      {
+        "access": 1,
+        "descriptor": "(I)I",
+        "name": "test"
+      }
+    ],
+    "physical_instruction_count": 14,
+    "test_code_length": 23
+  }
+}

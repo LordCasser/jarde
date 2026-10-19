@@ -1,4 +1,16 @@
-## 2026-10-19 当前：continue与数组减法完整交付；DoWhile出口前缀2/6
+## 2026-10-19 当前：DoWhile出口前缀5/6，完整对照已接受
+
+本节优先，下方均为历史时点。finThrow5/5、nestedFin16/16、continue6/6与数组减法4/4已交付，不重做。main上一检查点75d56f050已推送且14aux detached-clean-ancestor/target absent收据在 `/private/tmp/jarde-continue-ladder-final-clean-main-root-v1-20261019/execution.json`。当前是其后的DoWhile产品增量，最终Git以实际状态为准。
+
+`recover-proved-post-test-loop-break-prefixes` 5/6。root逐差异审Luna v2，补引用比较与保守计费后实际通过；只加独占单块出口证明，原纯goto桥、自然集合、LoopTarget、ForHeader、Builder、Region表示均不变。普通If/gateway/最终LoopBreak保留reset→break，未新增全局机制。永久unit真实两profile/owner/最终break、实图goto改指header的scope拒绝及预算取消已实际通过；变体只parser/IR级，不称JVM验证。
+
+冻结CLI `/private/tmp/jarde-post-test-break-prefix-focused-root-v1-20261019/candidate-cli`，64,285,120B/SHA8c91115a91a31b041ecaf53a2b964bb57606342d04b524035293ae0b7accd285。3282来源构建零变化；Java lib512/0、新公开2/0、旧continue2/0、gateway15/0、effectful12/0、Reader1/0、指纹5/0/1既有ignored、fmt/完整CI Clippy全部接受。完整72命令八API/16整类重编/32VM64观察全部同原件，16错根拒绝，14/14来源。原件/JADX精确复用，实际采集前置needle失败及全部草稿/overlay保留。入口 `openspec/changes/recover-proved-post-test-loop-break-prefixes/results/README.md`；307payload归档SHA3a21508d09639654e08e9f6ee97feacdb263adb115f70c5a7cf8cb8647e981d9逐bytes/mode复开。Reader实测1334class/5866Code/631handler/4223target/16jsr。
+
+下一必须完成当前产品一次fresh workspace（60精确门及九相邻回归）、本产品自身CI全部四jobs/52独立官方步骤/双seed105精确门及全部具名结果，严格绑定当前零变化build/产品Git/来源，然后主spec同步、strict、最终归档与clean-main。私有prep `/private/tmp/jarde-post-test-break-prefix-own-ci-prep-luna-v3-20261019`，旧workspace checker/binder/ZIP逐字继承，新3门只增不减；实际完整native/CI尚待。不能拿050结果关闭本片，fixture准备时点pending文案由实际root接受收据补充，不改冻结输入。
+
+固定13原件中，DoWhile现已有完整对照，但全产品广验待做；其余九项完整原件对照仍待，CF09/71/612保持partial。下一TestBreakInComplexIf仅私有源码九case数学计划 `/private/tmp/jarde-testbreakincomplexif-source-plan-luna-v1-20261019`，未编译/运行，不宣称新缺陷或机制。root独占共享写/Git/network/Cargo/JDK/CLI；Luna只共享只读/新私有tmp/Python-B；Cargo5GiB/target1GiB/defaultstack/每秒guard/finally exactclean，期间不共享写/Gitmutation/network/manualJDK或CLI，不建新worktree。当前无本地Cargo/JDK/CLI活动，target absent。
+
+## 2026-10-19 历史：continue与数组减法完整交付；DoWhile出口前缀2/6
 
 本节优先，下方均为历史。finThrow5/5、nestedFin16/16已交付，不重做。产品 `050cedbd255ffaddf9e51acf8d2ad52fe573519b` 已推main；continue片6/6、数组减法4/4。冻结CLI v4/v5逐字同64,065,312B，SHA `6c83ec82cd4c6caee86c08e7fefddc2fea675952f936c0e4aa3f295ed9be7fc6`，v5路径 `/private/tmp/jarde-continue-ladder-focused-root-v5-20261019/candidate-cli`。两片复用原局部join/LoopContinue与Array compound证明，无新Region/pass。
 

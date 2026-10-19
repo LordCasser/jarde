@@ -12608,6 +12608,61 @@
       "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/v8/OP.class"
     },
     {
+      "blake3": "9621daa80e84f5593efa125acd89b25de9ea4a3cbaa73adbbc970edf14b9a3ac",
+      "bytes": 4589,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/manifest.json"
+    },
+    {
+      "blake3": "fb6b1d1171f32787eec2b6999838747a9e80c7fa581baf0f614484c2a875eae0",
+      "bytes": 11357,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/LICENSE"
+    },
+    {
+      "blake3": "d006ec493b8b2457b733149b1779dd1db3bd8314f80e52377749304dafa869b2",
+      "bytes": 10658,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/NOTICE"
+    },
+    {
+      "blake3": "c57f1308d712c03ee9bc21547fb25e3bd9f4f06fdab1ed5c3ec2bfded350ff99",
+      "bytes": 563,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/TestDoWhileBreak.java"
+    },
+    {
+      "blake3": "04e80aca2434e9038bca3a21f28ebae83916712c324f51761afe9fe12535f53f",
+      "bytes": 6979,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/TestDoWhileBreakDriver.java"
+    },
+    {
+      "blake3": "1198b160209a791e1270a5893c11486209b1673546d105fc0544cac19f58f834",
+      "bytes": 2212,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug-plain.jar"
+    },
+    {
+      "blake3": "7921cb5070950102ac6017912816b545c4b30a58ce15945052a47d286aff2ac4",
+      "bytes": 677,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "blake3": "e4e1994e8e015dcd4cc318fcefae0ca365e9a63fff55dc40738d326208e6fb14",
+      "bytes": 1141,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class"
+    },
+    {
+      "blake3": "d0ee3a5e439442ea583ff463db3c0147d0caa3b1faea3473a175582550761baf",
+      "bytes": 1734,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug-plain.jar"
+    },
+    {
+      "blake3": "0787f9ca37f4c81defca25a52da928527bff3913433c3bdeb87e838eac751394",
+      "bytes": 412,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak$TestCls.class"
+    },
+    {
+      "blake3": "2bcecf203ce78b170fb0ac92af6b50e7d20ef3c7f199b1cec88e514d88a4d347",
+      "bytes": 928,
+      "path": "tests/fixtures/recover-proved-post-test-loop-break-prefixes/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak.class"
+    },
+    {
       "blake3": "f2e3455cef17bef322545f34438574d2154c870b5b805e696255e80fd9b630de",
       "bytes": 203,
       "path": "tests/fixtures/recover-return-through-nested-finally-cleanup/source/NestedFinally.java"
