@@ -1,0 +1,12 @@
+{
+  "status": "root_reopened_bundle_pending_product_native_and_own_ci",
+  "payload_count": 576,
+  "payload_bytes": 17646820,
+  "archive_bytes": 2720042,
+  "archive_sha256": "895e058e6e2114c21f42d7634b95c8f1eae71e21c1608f8aad5cc1e26552f89b",
+  "excluded": [
+    "/private/tmp/jarde-loop2-retry-focused-root-v1-20261019/candidate-cli",
+    "/private/tmp/jarde-loop2-retry-final-focused-root-v2-20261019/candidate-cli"
+  ],
+  "scope": "all directories were already closed before capture; no native evidence included while running"
+}

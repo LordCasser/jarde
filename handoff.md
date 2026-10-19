@@ -4,7 +4,7 @@
 
 ## 已交付与证据
 
-主线为 `main`。最近产品提交为 `c8af822ef6d929f8ad1221f58d02e27669c63fc7`，证据/文档后继为 `0a697fc3ec80d88fd0d9e8ba9b0f85492c194afc`；当前 HEAD 以 Git 为准。后续纯文档提交不代表重新运行产品测试或 CI。
+主线为 `main`。最近完整验收的产品提交为 `c8af822ef6d929f8ad1221f58d02e27669c63fc7`，证据/文档后继为 `0a697fc3ec80d88fd0d9e8ba9b0f85492c194afc`；当前 HEAD 以 Git 为准。后续纯文档提交不代表重新运行产品测试或 CI。
 
 finThrow（5/5）、nestedFin（16/16）已完成，不重做。最近完成 `bound-loop-header-chains-at-body-effects`（6/6）：AND 后续候选遇到本块效果时保留 body 边界，复用已有 Region/If/LoopBreak，未新增恢复机制。
 
@@ -22,9 +22,11 @@ finThrow（5/5）、nestedFin（16/16）已完成，不重做。最近完成 `bo
 
 [同轮 IR 实测与独立复核](openspec/changes/recover-branching-named-catch-retry-loops/results/same-run-ir-root-v1/README.md) 已完成：精确单测 1/0，两模式均无自然循环，实际首拒绝 check_20；handler 的重试分支再次进入保护区，最终 owner 为 `[0,9,17,19,0,9]`。临时源码精确恢复，target 已清理。这是根因证据，尚非修复验收。
 
-当前 OpenSpec：[recover-branching-named-catch-retry-loops](openspec/changes/recover-branching-named-catch-retry-loops/tasks.md)，1/6，strict 通过。复用现有异常 retry 证明，只增加一次 handler 条件分叉、单块 throw 叶与单块 retry 叶的闭合证明，不新增 CFG/Region/Builder 机制，不放松最终 overlap 检查。
+当前 OpenSpec：[recover-branching-named-catch-retry-loops](openspec/changes/recover-branching-named-catch-retry-loops/tasks.md)，4/6。Luna 候选经 root 收窄物理解码收费与旧单块预算后已集成；复用现有异常 retry/Frame/If/Throw/LoopContinue，不新增 CFG/Region/Builder 机制。实际四个错边邻例经双 JVM 验证和 Reader/CFG/SSA 拒绝检查，所有权门保持有效。
 
-Luna 正在私有准备实现与测试，root 尚未集成候选：`/private/tmp/jarde-loop2-retry-impl-luna-v1-20261019`、`/private/tmp/jarde-loop2-retry-tests-luna-v1-20261019`。下一步审查精确边、owner/transfer 次数及分支内 continue，再受控构建；原件 catch 不可达的部分必须用独立可达控制例补验。不得把探针 1/0 当作产品实现通过。
+最终定向验证已通过：Java lib 526、公开入口 2、Reader census 1351/5945/646/4312/16、指纹 5（1 既有忽略）、fmt/全 CI Clippy。最终 CLI `/private/tmp/jarde-loop2-retry-final-focused-root-v2-20261019/candidate-cli`（64,347,312 bytes，SHA-256 `7e321a7f4fd6a029540ab169f79572c6ad83e74119900ac6d695290c9c055318`）与先前对照 CLI 完全同字节，target absent。v1 广门的负例 helper 错接失败已保留，修的是测试接线。
+
+完整原件矩阵已采集并运行独立 reviewer：94 命令、8 API、16 Jarde 完整重编成功、32 Jarde VM/64 观察同原件；JADX 的 JDK8 框架边界保留。可达控制例原件 8 VM/40 观察、候选 32 VM/160 观察通过。独立 Luna 已复开两套原始流，无发现；root 已限域接受对照，未宣称产品验收。fresh workspace 已393 targets/103批/3823-0-98、78精确门通过并清理target，下一步最终产品自身CI；私有验收工具 `/private/tmp/jarde-loop2-retry-native-ci-prep-luna-v2-20261019` 已实际接受78 native门，123 CI门待执行。完整定向/矩阵已持久归档于当前change的results入口。本片产品提交与自身CI待后续验收绑定，不把 c8 的旧CI当成本片验收。
 
 ## 后续队列与独立债务
 

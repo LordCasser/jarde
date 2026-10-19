@@ -12335,7 +12335,7 @@ mod tests {
             // Complete ComplexIf outer/target/Point debug/no-debug add six classes,
             // fourteen Code bodies and ten targets. The compiled five-method header/body
             // control adds one class and twenty-five targets; neither adds handlers or jsr.
-            (1341, 5885, 631, 4258, 16),
+            (1351, 5945, 646, 4312, 16),
             "fixture population changed: re-measure these counts"
         );
     }
