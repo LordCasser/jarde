@@ -20,11 +20,11 @@ finThrow（5/5）、nestedFin（16/16）已完成，不重做。最近完成 `bo
 
 原件/JADX 各 8 次观察相同。原件 `funcB` 恒返回 false，因此两个输入只覆盖正常 break；catch、clear、sleep 动态不可达，不宣称这些路径已被运行验证。
 
-下一动作是运行已审过的 [同轮 IR 探针准备](openspec/evidence/java-syntax-2026-10-19/cf09-testbreakinloop2-ir-probe-preparation-root-v1/README.md)。私有候选在 `/private/tmp/jarde-testbreakinloop2-ir-probe-prep-luna-v2-20261019`，已静态复核 27 个 pin，尚未编译/运行，尚无修复 OpenSpec。
+[同轮 IR 实测与独立复核](openspec/changes/recover-branching-named-catch-retry-loops/results/same-run-ir-root-v1/README.md) 已完成：精确单测 1/0，两模式均无自然循环，实际首拒绝 check_20；handler 的重试分支再次进入保护区，最终 owner 为 `[0,9,17,19,0,9]`。临时源码精确恢复，target 已清理。这是根因证据，尚非修复验收。
 
-必须确认实际 Catches、`retry_loop_facts` 首拒绝、Frame 与最终所有权检查前的完整树，再决定最小修复。当前关于有分支 handler 回到保护区入口的解释只是静态假设。现有 `Loop.blocks()` 已区分 Endless header/body，不能靠全局去重隐藏所有权问题。
+当前 OpenSpec：[recover-branching-named-catch-retry-loops](openspec/changes/recover-branching-named-catch-retry-loops/tasks.md)，1/6，strict 通过。复用现有异常 retry 证明，只增加一次 handler 条件分叉、单块 throw 叶与单块 retry 叶的闭合证明，不新增 CFG/Region/Builder 机制，不放松最终 overlap 检查。
 
-探针使用已有 `recover-branch-throw-return-finally/tools/run_validation.py` 的裸 Cargo 精确命令；`JRE_LOOP2_IR_PROBE=1` 仅加在私有 runner 子进程环境，记录实际继承范围。执行前与 finally 复开外部 class、baseline、review、runner 和源码 pin。结束后精确恢复 `region.rs`（SHA-256 `5da4d9f40e0892ac134bb42fb1508fffad090b92338a86b9403efd47b7977510`）、移除临时模块，确认 target 不存在。异机须恢复归档并重新审查路径和 pin。
+Luna 正在私有准备实现与测试，root 尚未集成候选：`/private/tmp/jarde-loop2-retry-impl-luna-v1-20261019`、`/private/tmp/jarde-loop2-retry-tests-luna-v1-20261019`。下一步审查精确边、owner/transfer 次数及分支内 continue，再受控构建；原件 catch 不可达的部分必须用独立可达控制例补验。不得把探针 1/0 当作产品实现通过。
 
 ## 后续队列与独立债务
 

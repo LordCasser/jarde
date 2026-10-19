@@ -1,0 +1,56 @@
+[
+  {
+    "path": "launch/execution.json",
+    "bytes": 11787,
+    "sha256": "8b22b4b682ccc116ebe31c1b96b180adc9085173997841105ea79d1961372e7c",
+    "mode": 420
+  },
+  {
+    "path": "launch/run.py",
+    "bytes": 4404,
+    "sha256": "95429165b2f309cdb8be54ffa5844dc447bc47df5b93e9241b74ff81b24d5847",
+    "mode": 420
+  },
+  {
+    "path": "launch/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": 420
+  },
+  {
+    "path": "launch/stdout.raw",
+    "bytes": 138,
+    "sha256": "d44bc6062a69d5c0f360590eaee2fa2ed3afa256305acf3723c54930bab07264",
+    "mode": 420
+  },
+  {
+    "path": "run/execution.json",
+    "bytes": 1613449,
+    "sha256": "bff2ca1816771d6df01757c537d9d1b130b1a4d2920c27c4ebf4023dcd3e55b4",
+    "mode": 420
+  },
+  {
+    "path": "run/raw/1.stderr.raw",
+    "bytes": 103327,
+    "sha256": "b622118b4f4185e91ce5c3ae41069c7b1c283bef187bb1ec4b0135eb3070cc4c",
+    "mode": 420
+  },
+  {
+    "path": "run/raw/1.stdout.raw",
+    "bytes": 204,
+    "sha256": "20b03898e4224be0670c4946e7124b16683458ffab855d3b38b2c6583037ee07",
+    "mode": 420
+  },
+  {
+    "path": "run/raw/2.stderr.raw",
+    "bytes": 39,
+    "sha256": "d8b993a4f0ff22869a67681ddaf722f86fa4f7c3436e7a59cd3481b7647fe54f",
+    "mode": 420
+  },
+  {
+    "path": "run/raw/2.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": 420
+  }
+]
