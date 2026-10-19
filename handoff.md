@@ -2,17 +2,21 @@
 
 更新：2026-10-19。先拉取GitHub并核对工作区；当前事实以本页、Git和对应验收收据为准。[历史快照](docs/history/handoff-through-2026-10-19.md)仅描述过去时点。
 
-## 当前推进：剩余四固定原件
+## 当前推进：四固定原件本机验收完成，等待自身CI
 
-完整基线与真实IR已经root/独立接受，见[四原件完整三方](openspec/evidence/java-syntax-2026-10-19/cf09-last-four-original-root-v1/README.md)和[同轮真实IR](openspec/evidence/java-syntax-2026-10-19/cf09-last-four-ir-root-v1/README.md)。DoWhileBreak3现有机制通过：8API、16 Jarde整类编译、32 JardeVM加4 JADX VM/360CASE同原，test映射10/10；无check，外层JUnit文本断言未执行。原始do-while与JADX while&&拼写不同不算缺口。
+代码产品`8ea98e2e11d64f02092ac200d2b596511dcf5e40`已推main。两项OpenSpec [return leaves](openspec/changes/recover-proved-post-test-loop-return-leaves/tasks.md)与[prefixed retry](openspec/changes/recover-proved-prefixed-catch-retry-loops/tasks.md)各6/8：Luna实现、root架构审查及完整对照已完成，尚待本产品自身CI与最终文档交付。clean结论以各检查点实时收据为准，不由历史状态推断。
 
-DoWhileBreak2真实gap：8API回退、16Jarde整类编译失败，提前return17被goto-prefix检查早拒绝；应提前复用已有terminal_returns证书。BreakInLoop3虽有NYI/@Test注释，但实际JADX整编/双runtime/check成功；Jarde8API因owner11重叠回退，catch回跳递归重开Try，不能把它当普通自然loop。canonical block11有未保护lead11..17，row17..28/handler31/type32；拟复用精确named retry证书与Try lead，保留正常catch diamond到join82。
+基线和真实IR见[四原件基线](openspec/evidence/java-syntax-2026-10-19/cf09-last-four-original-root-v1/README.md)、[同轮IR](openspec/evidence/java-syntax-2026-10-19/cf09-last-four-ir-root-v1/README.md)。DoWhileBreak2复用终端return叶证书，保留StatementFree既有优先级；BreakInLoop3精确持有未保护lead/单named row/retry/normal DAG，组合现有Straight+LoopBreak，并复用Sites/SSA证明允许循环前构造保存跨try使用，初始化效果不移动。无新CFG/AST或Dex前端。
 
-两项OpenSpec [return leaves](openspec/changes/recover-proved-post-test-loop-return-leaves/tasks.md)与[prefixed retry](openspec/changes/recover-proved-prefixed-catch-retry-loops/tasks.md)的实现已由Luna完成并经root集成审查。Do2复用既有terminal_returns证明，保留StatementFree已有表头路径优先；Loop3复用named retry/closed DAG，精确拼接Straight+当前LoopBreak，并仅对Sites/SSA已证明构造表达式去除protected-arm位置限制，初始化效果不移动。两项负例和完整ownership回滚通过。
+[最终完整对照](openspec/changes/recover-proved-prefixed-catch-retry-loops/results/final-comparison-root-v1/README.md)：同一CLI下Do2十一例70命令/20VM220CASE；Loop3原件94命令/36VM含实际check，builder12135678；Do3十例94命令/36VM360CASE；独立重试控制105命令/40VM400CASE。各8API/default-all稳定，所有完整生成源码原样重编及成功产物双runtime隔离执行；框架55/52失败单列。JADX合法默认包rename问题关闭重命名后补齐对照，旧32-Jarde-VM回执不是三方完成；所有失败保留。Loop3 NYI/@Test注释与当前实际JADX成功分开，Do3无check/外层JUnit断言未运行。
 
-[定向实现及失败历史](openspec/changes/recover-proved-prefixed-catch-retry-loops/results/focused-implementation-root-v1/README.md)：Java核心552、CF12 9、Do2 public1、Loop3 public2及旧Loop4/5 public4通过；旧预算门365@29/130@1未改。最终Clippy/fmt/build通过，target已清理。fixture普查1367/5991/650/4360/16及指纹通过。最终同一CLI的Do2十一例、Loop3原件和Do3十例对照已完成，完整原始流正在归档；Loop3 writeMore来源48/49缺88，独立控制run40/41缺71，保持真实分母，单列映射债务。独立重试控制Jarde行为已通过，JADX默认包重命名导致原驱动未加载，正补齐关闭rename的完整三方；不能把32个Jarde VM算作三方完整。完整workspace和本产品自身CI尚待运行，产品与clean/远端结论等待最终收据。
+[native完整验收](openspec/changes/recover-proved-prefixed-catch-retry-loops/results/native-accepted-root-v1/README.md)：396targets/104批、3856通过0失败98既有忽略，111精确门；3954具名结果由实际Running重建。5326 native/3373 build并集5333来源逐Git blob/bytes/mode绑定，默认栈/5GiB/1GiB/每秒守卫与finally clean均接受。独立审计通过；runner旧observed_counts本轮错配93批314目标项，不消费原错误归属。
 
-Loop6原Smali/Dex已实际组装、JADX两输入均保留1break；Jarde直接输入unknown_artifact_kind，Dex-only ZIP为0class候选。此为架构外输入边界，不以等价Java补齐，不新增Dex前端，不冒称原件动态覆盖。固定13原件暂10接受、2JVM真实gap、1输入边界；CF09/71/612仍partial。
+[本产品自身CI39278336384](https://github.com/LordCasser/jarde/actions/runs/39278336384)仍待完整官方步骤与双seed Counter接受；run-level jobs接口HTTP502及个体step未完整的原流保留，不用本机结果替代或拼造API原文。代码产品检查点曾实时确认main/远端相等、clean、14aux detached-clean-ancestor及全部15checkout无target；最终文档提交后必须重验。
+
+来源债务：Loop3 writeMore48/49缺88，独立控制run40/41缺71，独立解析均goto；其余方法和Do2/Do3来源完整，不与旧Loop5缺103假定同根因。Iterator泛型字段呈现仍独立债务。[成本模型债务](openspec/evidence/java-syntax-2026-10-19/cf09-prefixed-retry-cost-model-debt-root-v1/README.md)单列重复扫描、边集物化轮询及额外visited复制，不混入本次语法实现。
+
+Loop6原始Smali/Dex均由JADX实际解码，Jarde为CLASS/ZIP输入边界：原始输入unknown_artifact_kind，Dex-only ZIP无class候选。无JVM oracle，不以Java控制替代。四固定原件的本机工作已闭合；最终13原件计数和两spec闭合等待本产品自身CI，CF09/71/612保持partial。
 
 ## 上一完整产品：Loop4/5 完整验收通过
 

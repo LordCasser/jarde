@@ -1,0 +1,11 @@
+{
+  "status": "all_members_reopened_and_matched",
+  "archive": {
+    "path": "/private/tmp/jarde-last-four-comparison-archive-root-v1-20261019/evidence.tar.gz",
+    "bytes": 7723580,
+    "sha256": "b197c34f9a4291d1af3a7288bede6a5c8d0e9f8064912ecb06cf9fed17722b7f"
+  },
+  "payload_count": 1522,
+  "payload_bytes": 72910550,
+  "excluded_count": 1
+}

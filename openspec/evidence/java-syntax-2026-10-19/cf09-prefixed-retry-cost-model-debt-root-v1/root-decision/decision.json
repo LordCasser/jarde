@@ -1,0 +1,24 @@
+{
+  "status": "accepted_with_separate_resource_model_debt",
+  "product": "8ea98e2e11d64f02092ac200d2b596511dcf5e40",
+  "source_region_sha256": "9826b181dca829d9b311500114c9d0caf0e149c5661a0b01ac2cbc94709a1ab3",
+  "finding": "新prefixed retry证明存在重复线性扫描、边物化内缺少poll以及额外visited复制；现有aggregate、helpers及trial snapshot分别预付，候选受单方法单行及精确start约束。",
+  "decision": "保留为独立AnalysisSteps成本模型/取消响应债务。当前未发现未计量级增长、owner语义漏洞、取消后发布或预算退款，不以测试通过替代该论证；不宣称逐CPU操作精确计费或常数级取消响应。",
+  "followup": [
+    "明确AnalysisSteps抽象单位，逐阶段核对预付而非混用CPU操作计数。",
+    "在边物化内轮询，避免不必要的重复全局边集与visited复制；保持旧非候选成本门。",
+    "单独OpenSpec处理并加入相应成本/取消负例，不扩大本次语法shape。"
+  ],
+  "reviews": [
+    {
+      "path": "/private/tmp/jarde-prefixed-retry-architecture-review-luna-v1-20261019/review.md",
+      "bytes": 6065,
+      "sha256": "bd92e5c3e25116b5c1c7c1e6910f2ce1e1d566a7794466f411f1b112bf3d9146"
+    },
+    {
+      "path": "/private/tmp/jarde-prefixed-retry-budget-adjudication-luna-v1-20261019/adjudication.md",
+      "bytes": 6829,
+      "sha256": "76df2e9733c73240893e0feb783e0f8c25fee08ff53c4953b4b0805e67ff0896"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "status": "all_members_reopened_and_matched",
+  "archive": {
+    "path": "/private/tmp/jarde-last-four-native-archive-root-v1-20261019/evidence.tar.gz",
+    "bytes": 5364655,
+    "sha256": "f668a2ad146bf25ed69cf341865badeb328f148c0ca0b4529d0a958a3f6a2421"
+  },
+  "payload_count": 326,
+  "payload_bytes": 53916615,
+  "excluded_count": 0
+}

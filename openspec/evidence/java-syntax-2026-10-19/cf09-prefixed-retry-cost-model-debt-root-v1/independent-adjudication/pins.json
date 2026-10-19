@@ -1,0 +1,30 @@
+{
+  "workspace": "/Users/lordcasser/workspace/projects/jarde",
+  "inputs": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 1421611,
+      "sha256": "9826b181dca829d9b311500114c9d0caf0e149c5661a0b01ac2cbc94709a1ab3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/budget.rs",
+      "bytes": 56599,
+      "sha256": "3605b5da30231613ef55f91312fbfbe2f2ecba09b0dd5cb7850e4e6b88a26687"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-prefixed-catch-retry-loops/design.md",
+      "bytes": 5825,
+      "sha256": "935f7ca874dcb1c9d96caa8070eb57aedbdd5f015991fe9ec3ee988b1024a753"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/specs/java8-recovery/spec.md",
+      "bytes": 131323,
+      "sha256": "95c1fd3669ba67ae4301d31b499e3b932b3879f1767bb914babd8aaea90568e4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-prefixed-catch-retry-loops/tasks.md",
+      "bytes": 2175,
+      "sha256": "c16e0a0ed49d3f0519cd92575f1b7c715defb32b9701c126d0272be829ff1f85"
+    }
+  ]
+}

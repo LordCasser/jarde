@@ -1,10 +1,8 @@
-## 2026-10-19 当前：最后四原件基线已接受，两项真实gap实现中
+## 2026-10-19 当前：四原件本机验收完成，自身CI待闭合
 
-[完整三方基线](../java-syntax-2026-10-19/cf09-last-four-original-root-v1/README.md)与[同轮IR](../java-syntax-2026-10-19/cf09-last-four-ir-root-v1/README.md)均root/独立接受。DoWhileBreak3现有恢复已通过8API、16 Jarde完整target编译、32 JardeVM加4 JADX VM共360CASE，来源10/10；原始do-while与JADX while&&拼写不同无须新机制。DoWhileBreak2和BreakInLoop3各8API fallback、16 Jarde整类重编失败；JADX每项两JDK23整编/四VM与原件一致。Loop3虽NYI/@Test注释，但当前实际JADX成功，不能据标签排除。
+两项OpenSpec各6/8；产品8ea98e2e11d64f02092ac200d2b596511dcf5e40已推。Luna实现、root审查及[最终四组对照](../../changes/recover-proved-prefixed-catch-retry-loops/results/final-comparison-root-v1/README.md)接受：Do2十一例20VM220CASE、Loop3原件36VM与actualcheck/builder12135678、Do3十例36VM360CASE、无文件副作用retry十例40VM400CASE。各8API，完整原样源码重编/双runtime/parentless/CodeSource与wrong-root对照，框架边界及失败历史均保留。
 
-[return leaves](../../changes/recover-proved-post-test-loop-return-leaves/tasks.md)与[prefixed retry](../../changes/recover-proved-prefixed-catch-retry-loops/tasks.md)各2/8，Luna私有并行实现，root尚未集成生产补丁。前者复用已有终端叶证明修正goto gate顺序；后者精确lead11..17/row17..28/handler31及normal catch DAG，保留exception-vs-normal与全树owner查验，无新CFG/AST。新fixture的Reader普查与指纹已通过并clean，最终新CLI/全workspace/自身CI尚待，不借用旧412 CI关闭新片。
-
-Loop6原Smali与组装Dex均被JADX成功解码，Jarde直接输入unknown_artifact_kind、Dex-only ZIP无class候选，作为当前架构外输入边界，不以JVM控制例替代。固定13原件此刻10已接受、2真实JVM gap、1输入边界；CF09/71/612保持partial。以下为历史。
+[native](../../changes/recover-proved-prefixed-catch-retry-loops/results/native-accepted-root-v1/README.md)396targets/104批、3856-0-98、111门与5333 Git/live来源绑定已独立接受；本产品CI39278336384及最终交付待完成，不借旧CI关闭。来源Loop3 48/49缺88、控制40/41缺71，均goto并单列债务；[成本模型审查](../java-syntax-2026-10-19/cf09-prefixed-retry-cost-model-debt-root-v1/README.md)另列，不扩大当前实现。Loop3 NYI与实际JADX成功分开；Loop6原Smali/Dex输入边界，不以Java替代且无VM oracle。最终固定13计数待CI；CF09/71/612保持partial。以下为历史。
 
 ## 2026-10-19 历史：Loop4/5 完整交付
 

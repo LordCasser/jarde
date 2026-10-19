@@ -1,0 +1,20 @@
+{
+  "schema": "prefixed-retry-architecture-review-v1",
+  "source_files": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "sha256": "9826b181dca829d9b311500114c9d0caf0e149c5661a0b01ac2cbc94709a1ab3",
+      "bytes": 1421611
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region/prefixed_catch_retry_tests.rs",
+      "sha256": "eff7ff289615ac448b1deef40e591d98502024f1899659cff18dffc9e493240d",
+      "bytes": 35691
+    }
+  ],
+  "review": "/private/tmp/jarde-prefixed-retry-architecture-review-luna-v1-20261019/review.md",
+  "review_sha256": "bd92e5c3e25116b5c1c7c1e6910f2ce1e1d566a7794466f411f1b112bf3d9146",
+  "toolchains_executed": false,
+  "shared_writes": false,
+  "finding": "no semantic owner/boundary defect found; residual potential AnalysisSteps/poll coverage gap around repeated scans and unpolled all_edges materialization"
+}
