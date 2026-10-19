@@ -1,0 +1,11 @@
+{
+  "status": "root_reopened_all_files_and_directory_modes",
+  "archive_sha256": "f7da343f3738eb66d2d18202c9788560b70262ff41715a2fd084ca5453e483d9",
+  "archive_bytes": 1110039,
+  "counts": {
+    "file": 206,
+    "directory": 212
+  },
+  "receipt_sha256": "d33084ce268c7d3c49a056f120619d7e1786b5f438d5bcf8b30d66911ea2c0ec",
+  "scope": "Accepted original baseline gap; no product fix yet. Original/JADX execution, every Jarde compile refusal and static prep mistakes preserved."
+}

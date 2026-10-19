@@ -1,0 +1,12 @@
+{
+  "status": "root_accepted_persistent_archive_reopened_byte_for_byte",
+  "archive": {
+    "bytes": 6717912,
+    "sha256": "1b69842821ac1f006bb746ea80d64e74e0369f33a626719978c981bcbad8522e"
+  },
+  "regular_payloads": 524,
+  "inventory_sha256": "046f4b429973d8683d61c9b6d47f80bc2859183e89599971f45fc822bc7702a5",
+  "member_bytes_modes_and_original_sources_rechecked": true,
+  "product": "cc1bf5fa37ef51c4d11a78ea1e9dfcabfe169d2c",
+  "ci_run": "39186343472"
+}

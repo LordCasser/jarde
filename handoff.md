@@ -1,3 +1,15 @@
+## 2026-10-19 当前：CF09 布尔局部已完整交付，continue ladder 2/6
+
+本节优先，下方均为历史检查点。finThrow5/5、nestedFin16/16已交付，不重做。产品 `cc1bf5fa37ef51c4d11a78ea1e9dfcabfe169d2c` 已推 main；`recover-proved-literal-boolean-locals` 完整对照8API/16整类重编/32VM/192观察全同原件。fresh native389targets/102批/3798-0-98、53精确门与九周边回归；自身CI39186343472四jobs/52独立官方ZIP步骤、双seed各3798-0-98/98精确门及3896全部具名结果一致。5216构建/native源码并集绑定产品。最终CLI SHA9ea9177b8992c8444c9f9af0158ca7bc99b3e7dfee4696b342aea7da2e295167，路径仍为 `/private/tmp/jarde-literal-boolean-focused-root-v4-20261019/candidate-cli`。
+
+完整证据见 `openspec/changes/recover-proved-literal-boolean-locals/results/README.md`。最终native/CI归档524 regular payload+inventory，SHA1b69842821ac1f006bb746ea80d64e74e0369f33a626719978c981bcbad8522e，root逐bytes/mode复开。main spec新增1requirement/4scenario已同步；后续文档commit不冒称重跑产品CI。reader当前1326class/5850Code/631handler/4203target/16jsr；原测试映射41/42只缺44，另列不虚称全覆盖。
+
+下一固定原件 `TestContinueInLoop`：完整46命令基线已root接受，原件/JADX各32观察；Jarde八API均目标mixed/explanation_only，16整类编译明确拒绝，无候选VM运行。原件只有ctor/test两方法与f:I，完整源码未裁剪。持久入口 `openspec/evidence/java-syntax-2026-10-19/cf09-testcontinueinloop-original-root-v1/README.md`，206 regular+212dirs，SHAf7da343f3738eb66d2d18202c9788560b70262ff41715a2fd084ca5453e483d9。八有限case专门区分continue跳过后续break、只执行一次update、数组与f副作用、null异常及f溢出。
+
+`recover-proved-loop-continue-ladder-joins` 2/6：同轮真实IR/实际ForHeader/内部首gap探针已运行1/0且精确恢复源码，持久结果SHAcd7f04d0af145c270f85b9a3fa3fd3c2262fb43aa5f42f7493aa7397cb1f1d26。实际ForHeader已成立，首内部碰撞42、对外8 ArmsDoNotMeet；正常臂应在42汇合，直接continue走50并跳过42，现有局部bridge42→50优先级应保留。不能以canonical成员顺序当BCI前向顺序。Luna `nl_baseline_audit` 正在私有实现最小Region局部证书；root未集成/编译。公开测试v1被root拒绝错误crate层级/body.find/移动后借用，v2 `/private/tmp/jarde-continue-ladder-public-tests-luna-v2-20261019` 仅静态修正，控制仍source-only未编译/分类。完整对照准备 `/private/tmp/jarde-testcontinueinloop-final-candidate-prep-luna-v1-20261019` 待最终CLI和root审核执行，不冒称256观察已运行。
+
+CF09及71单元/612文件仍部分覆盖。root独占共享写/Git/network/Cargo/JDK/CLI；Luna只私有tmp/只读，Python-B。Cargo5GiB/target1GiB/defaultstack/每秒guard/finally exactclean，期间禁止共享写/Gitmutation/network/manualJDK或CLI。不建新worktree。当前target absent；最终Git/14aux状态核外置clean-main收据。
+
 ## 2026-10-19 当前：CF09 布尔局部恢复5/6，完整对照已接受
 
 本节优先，下方历史不重做。finThrow5/5、nestedFin16/16已交付；继续按固定JADX用例推进。当前主线产品待提交；`recover-proved-literal-boolean-locals` 5/6，root已审Luna v2并集成，只有声明规划的literal-only窄准入与精确append(Z)消费；旧seeded/concat gate不变，没有全局solver/CFG/Region机制。完整物理访问闭合与同owner一层实际读Phi是新分支证明边界。

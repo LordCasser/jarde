@@ -1,0 +1,3790 @@
+{
+  "accepted_markers": {
+    "binding": {
+      "bindings": [
+        {
+          "artifact_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/execution.json",
+          "bytes": 3619610,
+          "field": "native.sha256",
+          "mode": 420,
+          "sha256": "11f6f7c2fc2701e3beecc9172a7821d1f3c9d842eaf9a12f605f6acc5a5e383a"
+        },
+        {
+          "artifact_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/review.json",
+          "bytes": 858613,
+          "field": "acceptance.sha256",
+          "mode": 420,
+          "sha256": "af59c92d8753e453e54f528f308857a4c02eca7ce20e2e32bf3f11d8bcc6bbb6"
+        }
+      ],
+      "path": "/private/tmp/jarde-literal-boolean-product-binding-root-v1-20261019/review.json",
+      "role": "product_binding",
+      "sha256": "8152bb244cbd2ae031843cd9b5bcb66dab3372a7e53664ecc06098944015c991",
+      "status": "accepted_single_native_and_build_bound_to_product"
+    },
+    "named": {
+      "bindings": [
+        {
+          "artifact_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/review.json",
+          "bytes": 457800,
+          "field": "accepted_ci_review_sha256",
+          "mode": 420,
+          "sha256": "d419bfce45cc15ce71592c16093c0c26534f181405fa529a702fa00ef676e4ee"
+        }
+      ],
+      "path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/named-review.json",
+      "role": "named_outcomes",
+      "sha256": "349c5b10ed2d7ef463b1dcd5db5b0d0700672c65ac74e7531492e5a7e596d219",
+      "status": "root_accepted_all_named_outcomes_equal_across_both_fixed_seeds"
+    },
+    "native": {
+      "bindings": [
+        {
+          "artifact_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/execution.json",
+          "bytes": 3619610,
+          "field": "native_receipt.sha256",
+          "mode": 420,
+          "sha256": "11f6f7c2fc2701e3beecc9172a7821d1f3c9d842eaf9a12f605f6acc5a5e383a"
+        }
+      ],
+      "path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/review.json",
+      "role": "native",
+      "sha256": "af59c92d8753e453e54f528f308857a4c02eca7ce20e2e32bf3f11d8bcc6bbb6",
+      "status": "passed"
+    },
+    "own-ci": {
+      "bindings": [
+        {
+          "artifact_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/collection.json",
+          "bytes": 101861,
+          "field": "collection_sha256",
+          "mode": 420,
+          "sha256": "c142cff8e0d92149b317e61ccde3b74a4eca667ef37f429ca1f1b12453b46583"
+        },
+        {
+          "artifact_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/review.json",
+          "bytes": 457800,
+          "field": "review_sha256",
+          "mode": 420,
+          "sha256": "d419bfce45cc15ce71592c16093c0c26534f181405fa529a702fa00ef676e4ee"
+        }
+      ],
+      "path": "/private/tmp/jarde-literal-boolean-final-acceptance-root-v1-20261019/ci-role-review.json",
+      "role": "own_ci",
+      "sha256": "3913634efdd473c946dd5fddec3d9fcf15cc00b4f45400d77716b327a46c8728",
+      "status": "root_accepted_current_product_own_ci"
+    },
+    "root": {
+      "bindings": [
+        {
+          "artifact_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/review.json",
+          "bytes": 457800,
+          "field": "pins.ci_review",
+          "mode": 420,
+          "sha256": "d419bfce45cc15ce71592c16093c0c26534f181405fa529a702fa00ef676e4ee"
+        },
+        {
+          "artifact_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/execution.json",
+          "bytes": 3619610,
+          "field": "pins.native_receipt",
+          "mode": 420,
+          "sha256": "11f6f7c2fc2701e3beecc9172a7821d1f3c9d842eaf9a12f605f6acc5a5e383a"
+        }
+      ],
+      "path": "/private/tmp/jarde-literal-boolean-final-acceptance-root-v1-20261019/root-review.json",
+      "role": "root",
+      "sha256": "be216aadd2d4e5c882f5e3c3635e5e83e18655a0c1c504d95e203e6275128874",
+      "status": "root_accepted_literal_boolean_native_and_current_product_own_ci"
+    }
+  },
+  "members": [
+    {
+      "archive_path": "archive-preparation/README.md",
+      "bytes": 3262,
+      "mode": 420,
+      "sha256": "387b2f730bffef394654b0af2a319e75bb27970f8b27e7cc5160486979dda6e5",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v2-20261019/README.md"
+    },
+    {
+      "archive_path": "archive-preparation/accepted-inputs.json",
+      "bytes": 8299,
+      "mode": 420,
+      "sha256": "f7655868b2d4712ce175388094a3c9e804566b1ea964e86ebee18a14d5518b47",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-own-ci-accepted-inputs-root-v1-20261019.json"
+    },
+    {
+      "archive_path": "archive-preparation/adaptation.md",
+      "bytes": 1330,
+      "mode": 420,
+      "sha256": "19ed1b0afa1e78983eef7d24289345312e145fc30bf0749b0d0caa3c22dc31a7",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v2-20261019/adaptation.md"
+    },
+    {
+      "archive_path": "archive-preparation/manifest.template.json",
+      "bytes": 4385,
+      "mode": 420,
+      "sha256": "1092009b957c1abaeca1e3651907ccf50dea053a47fe6d7a9196279e98e3b8f3",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v2-20261019/manifest.template.json"
+    },
+    {
+      "archive_path": "archive-preparation/pack.py",
+      "bytes": 19181,
+      "mode": 420,
+      "sha256": "97a031603f9aeb213a3331861bdedf8776cf829bb86502fa72637211a44dab1b",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v2-20261019/pack.py"
+    },
+    {
+      "archive_path": "archive-preparation/pins.json",
+      "bytes": 2568,
+      "mode": 420,
+      "sha256": "350b43a6441a1542ed3e4b481cab044ab13d6f3cb246fec15693b39b3bb3f2fe",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v2-20261019/pins.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v1-20261019/execution.json",
+      "bytes": 207,
+      "mode": 420,
+      "sha256": "f171ea9b7c82129446442006b5f699d8f87d5d341750a8af3fd9f9e72c5560fc",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v1-20261019/stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v1-20261019/stderr.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v1-20261019/stdout.raw",
+      "bytes": 9838,
+      "mode": 420,
+      "sha256": "32b13badf91c5bc8e2bdd86e4c3aa82b6631052d60903b7b445c95934202cf75",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v1-20261019/stdout.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v2-20261019/execution.json",
+      "bytes": 207,
+      "mode": 420,
+      "sha256": "f171ea9b7c82129446442006b5f699d8f87d5d341750a8af3fd9f9e72c5560fc",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v2-20261019/execution.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v2-20261019/stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v2-20261019/stderr.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v2-20261019/stdout.raw",
+      "bytes": 9838,
+      "mode": 420,
+      "sha256": "32b13badf91c5bc8e2bdd86e4c3aa82b6631052d60903b7b445c95934202cf75",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v2-20261019/stdout.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v3-20261019/execution.json",
+      "bytes": 207,
+      "mode": 420,
+      "sha256": "f171ea9b7c82129446442006b5f699d8f87d5d341750a8af3fd9f9e72c5560fc",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v3-20261019/execution.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v3-20261019/stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v3-20261019/stderr.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v3-20261019/stdout.raw",
+      "bytes": 9838,
+      "mode": 420,
+      "sha256": "32b13badf91c5bc8e2bdd86e4c3aa82b6631052d60903b7b445c95934202cf75",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v3-20261019/stdout.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v4-20261019/execution.json",
+      "bytes": 207,
+      "mode": 420,
+      "sha256": "f171ea9b7c82129446442006b5f699d8f87d5d341750a8af3fd9f9e72c5560fc",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v4-20261019/execution.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v4-20261019/stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v4-20261019/stderr.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v4-20261019/stdout.raw",
+      "bytes": 9838,
+      "mode": 420,
+      "sha256": "32b13badf91c5bc8e2bdd86e4c3aa82b6631052d60903b7b445c95934202cf75",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v4-20261019/stdout.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v5-20261019/execution.json",
+      "bytes": 207,
+      "mode": 420,
+      "sha256": "f171ea9b7c82129446442006b5f699d8f87d5d341750a8af3fd9f9e72c5560fc",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v5-20261019/execution.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v5-20261019/stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v5-20261019/stderr.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v5-20261019/stdout.raw",
+      "bytes": 9847,
+      "mode": 420,
+      "sha256": "44c494683bbb58c7373c22211632fa7cedaf623879136cf61c04d4694593a5cc",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v5-20261019/stdout.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v6-20261019/execution.json",
+      "bytes": 207,
+      "mode": 420,
+      "sha256": "f171ea9b7c82129446442006b5f699d8f87d5d341750a8af3fd9f9e72c5560fc",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v6-20261019/execution.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v6-20261019/stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v6-20261019/stderr.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-status-root-v6-20261019/stdout.raw",
+      "bytes": 9847,
+      "mode": 420,
+      "sha256": "44c494683bbb58c7373c22211632fa7cedaf623879136cf61c04d4694593a5cc",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-status-root-v6-20261019/stdout.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/README.md",
+      "bytes": 1429,
+      "mode": 420,
+      "sha256": "639291921fe49822be4d170b3e18f0454ea923022eb55fbab09dbf5014362f3d",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/collect-official-logs.py",
+      "bytes": 3911,
+      "mode": 420,
+      "sha256": "99e6fc29ad9b00ed348631aa49b880651a42edcba890195b5b1a33d4f9ae60ef",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/collect-official-logs.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/collect-own-ci.py",
+      "bytes": 16861,
+      "mode": 420,
+      "sha256": "27f91bb170668764bc02de8d433ffce30032ef3fe72895b86b15180e5039e949",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/collect-own-ci.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/own-ci-transport.diff",
+      "bytes": 2587,
+      "mode": 420,
+      "sha256": "0097dc80023baf2df92f64be1fb4bc603e1be61dd7517d882efd595e15fb7fc0",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/own-ci-transport.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/pins.json",
+      "bytes": 2415,
+      "mode": 420,
+      "sha256": "35fcee317c914ccda74d83de8c7dddd9712db542b9505dc30290981544233378",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/pins.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/root-review.json",
+      "bytes": 574,
+      "mode": 420,
+      "sha256": "f810bb71827a8698cb8782c44dcfa66a482d2e98fa2e2b2a63f1172b0c74cd60",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/root-review.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/zip-transport.diff",
+      "bytes": 2131,
+      "mode": 420,
+      "sha256": "788fdc0ea7b19bf080741035edc930adb5d620287f38a098820a4cd5a6b80a1a",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-transport-prep-luna-v1-20261019/zip-transport.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-wait-root-v1-20261019/execution.json",
+      "bytes": 268,
+      "mode": 420,
+      "sha256": "e62f22551c98cd5854e19a20fc5aedfce6b283b0da6492d5c5b8a2b527e4b543",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-wait-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-wait-root-v1-20261019/stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-wait-root-v1-20261019/stderr.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-ci-wait-root-v1-20261019/stdout.raw",
+      "bytes": 15755,
+      "mode": 420,
+      "sha256": "8fbba35e457abd544445c301db90f13b7b9e4f86e237d84b24eced70e8f24073",
+      "source_path": "/private/tmp/jarde-literal-boolean-ci-wait-root-v1-20261019/stdout.raw"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-final-named-observer-root-v1-20261019/verify.py",
+      "bytes": 2020,
+      "mode": 420,
+      "sha256": "96a87446a8c4823c94ba078dea6741b4f5755cdd39f84f616efbaef1abb84921",
+      "source_path": "/private/tmp/jarde-literal-boolean-final-named-observer-root-v1-20261019/verify.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/README.md",
+      "bytes": 5850,
+      "mode": 420,
+      "sha256": "0993966276b44a68a45db99043c6d9ba904aceb6fcbdc079a5d53614ec26eb22",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/README.md.diff",
+      "bytes": 1393,
+      "mode": 420,
+      "sha256": "5da29e800522feef0c22393a8aa099fb0b19f6f9b46334089f8043bfc3aab61a",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/README.md.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/acceptance-argv.json",
+      "bytes": 4424,
+      "mode": 420,
+      "sha256": "a4f4075185953095470db0489103526df962963825e0eb5ad9b7b9d0b5df54e9",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/acceptance-argv.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/acceptance-argv.json.diff",
+      "bytes": 2147,
+      "mode": 420,
+      "sha256": "4232ad430942ed23b21c1a94f6389f5195b3175ecdb756ec737aba059c7e483c",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/acceptance-argv.json.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/bind_product_one.py",
+      "bytes": 4105,
+      "mode": 420,
+      "sha256": "59ef3f1b42e713ca334e8ae9dc1e87ccdf4aef829e3a2c0a041d722463bbdcc0",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/bind_product_one.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/collect-official-logs.py",
+      "bytes": 2919,
+      "mode": 420,
+      "sha256": "bac090012d44c220d24cef2aa350aed966deeb532d0b8e3ab167b32704347142",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/collect-official-logs.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/collect-own-ci.py",
+      "bytes": 15731,
+      "mode": 420,
+      "sha256": "6b34aff368e8ff696e2a76aa634a559305160dda9e5ea120868fe51bf87445f3",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/collect-own-ci.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/collect-own-ci.py.diff",
+      "bytes": 11037,
+      "mode": 420,
+      "sha256": "2ce8c547ad5d6761e7ef77132160f2ac94aadef1348d77d93ef1f72b9eb3808d",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/collect-own-ci.py.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/inheritance-comparison.json",
+      "bytes": 2967,
+      "mode": 420,
+      "sha256": "38db686f19490b68ef171adb1b3b3e6660446f9c8ae320a9e344d830465921f7",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/inheritance-comparison.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/inheritance.diff",
+      "bytes": 25319,
+      "mode": 420,
+      "sha256": "bd82034a534cde8136bea1c6ca3d512335760af66a54af3d7ee5533ec1690ba6",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/inheritance.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/inherited/ancestor-iterator-verify-native.py",
+      "bytes": 6274,
+      "mode": 420,
+      "sha256": "6ed9fda0ab467c191747365bbe4cea6e084e1053be9bc2eddc28ab3c4fc231c9",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/inherited/ancestor-iterator-verify-native.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/parent-v3-pins.json",
+      "bytes": 7112,
+      "mode": 420,
+      "sha256": "1d1689a5be4e45310e282218d4ef5901c8762f809e8a5e1cc667b061a6290455",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/parent-v3-pins.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/pins.json",
+      "bytes": 10979,
+      "mode": 420,
+      "sha256": "07131f4a0355a6c3cddc7e577efab583a1f598a003657cb1b4d11484c1e241ab",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/pins.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/regression-coverage-map.md",
+      "bytes": 2925,
+      "mode": 420,
+      "sha256": "bee52d60cd0e7897cd5d852387d674d36f74941f9383e489fe2d45326be7aede",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/regression-coverage-map.md"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/v1-v2.diff",
+      "bytes": 7218,
+      "mode": 420,
+      "sha256": "b38672af5769f8a8c1f8ceff333cc86a88e4be4ec8833a9c08a62ffe4bf0d8b4",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/v1-v2.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/v1.diff",
+      "bytes": 34869,
+      "mode": 420,
+      "sha256": "08d27f711c457c8192bc331395d37a907cf0a2e368990d33774857e6f6240d89",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/v1.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/v2-v3.diff",
+      "bytes": 5463,
+      "mode": 420,
+      "sha256": "3990f49de97c6b7af3a2ebcc820a29e97eccf33eae36a69c76853d7233e2c2b8",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/v2-v3.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/v3-v1.diff",
+      "bytes": 37885,
+      "mode": 420,
+      "sha256": "1d5c81c5c4486cf226256c1617f7d29339d2bca9af7d7d3f07b93c6e0436c229",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/v3-v1.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/verify-native.py",
+      "bytes": 7721,
+      "mode": 420,
+      "sha256": "11e011779f10a5bd433b7dd24053aa658e94a7a2c22f8cab3b0893b58bf93bb9",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/verify-native.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/verify-native.py.diff",
+      "bytes": 3133,
+      "mode": 420,
+      "sha256": "445e1533779092f05ae68ff91f8883bf4a8f8caff425a50e78e81ecc804d4b96",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/verify-native.py.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/verify-own-ci.py",
+      "bytes": 53761,
+      "mode": 420,
+      "sha256": "90adf23ad7fcaa2077859670db7b14ea9ef32c9aba73d2f2068d410be4a34267",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/verify-own-ci.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/verify-own-ci.py.diff",
+      "bytes": 17159,
+      "mode": 420,
+      "sha256": "974a3e59a8e6513e5f76f16080e1eac4bcafdfa22614d9e83386db1d104ac199",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/verify-own-ci.py.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/verify_workspace.py",
+      "bytes": 30181,
+      "mode": 420,
+      "sha256": "8321198c09133aad60d8591b1d3e8f4c849420c4b3a37c1bc4c4aa12129d9830",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v1-20261019/verify_workspace.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/README.md",
+      "bytes": 6416,
+      "mode": 420,
+      "sha256": "178575133027d7f11542cb1e10a10b54edcf92195c8aecf291642b11b4310096",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/README.md"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/README.md.diff",
+      "bytes": 1393,
+      "mode": 420,
+      "sha256": "5da29e800522feef0c22393a8aa099fb0b19f6f9b46334089f8043bfc3aab61a",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/README.md.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/acceptance-argv.json",
+      "bytes": 4509,
+      "mode": 420,
+      "sha256": "9957c99c33b377c17eed505935eb1b841a6bf5cb86ccc0e6146c4a5d78aaa126",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/acceptance-argv.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/acceptance-argv.json.diff",
+      "bytes": 2147,
+      "mode": 420,
+      "sha256": "4232ad430942ed23b21c1a94f6389f5195b3175ecdb756ec737aba059c7e483c",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/acceptance-argv.json.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/bind_product_one.py",
+      "bytes": 4105,
+      "mode": 420,
+      "sha256": "59ef3f1b42e713ca334e8ae9dc1e87ccdf4aef829e3a2c0a041d722463bbdcc0",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/bind_product_one.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/collect-official-logs.py",
+      "bytes": 2919,
+      "mode": 420,
+      "sha256": "bac090012d44c220d24cef2aa350aed966deeb532d0b8e3ab167b32704347142",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/collect-official-logs.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/collect-own-ci.py",
+      "bytes": 15762,
+      "mode": 420,
+      "sha256": "116c5dc2f127455434ea5221af7e5d200e65fd00201f9442cd072fa8c434fe88",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/collect-own-ci.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/collect-own-ci.py.diff",
+      "bytes": 11037,
+      "mode": 420,
+      "sha256": "2ce8c547ad5d6761e7ef77132160f2ac94aadef1348d77d93ef1f72b9eb3808d",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/collect-own-ci.py.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/inheritance-comparison.json",
+      "bytes": 2967,
+      "mode": 420,
+      "sha256": "38db686f19490b68ef171adb1b3b3e6660446f9c8ae320a9e344d830465921f7",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/inheritance-comparison.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/inheritance.diff",
+      "bytes": 25319,
+      "mode": 420,
+      "sha256": "bd82034a534cde8136bea1c6ca3d512335760af66a54af3d7ee5533ec1690ba6",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/inheritance.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/inherited/ancestor-iterator-verify-native.py",
+      "bytes": 6274,
+      "mode": 420,
+      "sha256": "6ed9fda0ab467c191747365bbe4cea6e084e1053be9bc2eddc28ab3c4fc231c9",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/inherited/ancestor-iterator-verify-native.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/parent-v3-pins.json",
+      "bytes": 7112,
+      "mode": 420,
+      "sha256": "1d1689a5be4e45310e282218d4ef5901c8762f809e8a5e1cc667b061a6290455",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/parent-v3-pins.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/pins.json",
+      "bytes": 11137,
+      "mode": 420,
+      "sha256": "f119897eb9b1c1ee2c67ef07b9a25418ff925715ac65428deb506af746bbd5b4",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/pins.json"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/regression-coverage-map.md",
+      "bytes": 2925,
+      "mode": 420,
+      "sha256": "bee52d60cd0e7897cd5d852387d674d36f74941f9383e489fe2d45326be7aede",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/regression-coverage-map.md"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/v1-v2.diff",
+      "bytes": 7218,
+      "mode": 420,
+      "sha256": "b38672af5769f8a8c1f8ceff333cc86a88e4be4ec8833a9c08a62ffe4bf0d8b4",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/v1-v2.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/v1.diff",
+      "bytes": 34869,
+      "mode": 420,
+      "sha256": "08d27f711c457c8192bc331395d37a907cf0a2e368990d33774857e6f6240d89",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/v1.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/v2-v3.diff",
+      "bytes": 5463,
+      "mode": 420,
+      "sha256": "3990f49de97c6b7af3a2ebcc820a29e97eccf33eae36a69c76853d7233e2c2b8",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/v2-v3.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/v2.diff",
+      "bytes": 22364,
+      "mode": 420,
+      "sha256": "681544e398aa314cbd401c387f23703161b194d7f568923ef83397abd77fa246",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/v2.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/v3-v1.diff",
+      "bytes": 37885,
+      "mode": 420,
+      "sha256": "1d5c81c5c4486cf226256c1617f7d29339d2bca9af7d7d3f07b93c6e0436c229",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/v3-v1.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/verify-native.py",
+      "bytes": 7814,
+      "mode": 420,
+      "sha256": "fd42b2a132642c45c807ea5dfad694d290becfe3cc053873b00be6f1028b18a6",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/verify-native.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/verify-native.py.diff",
+      "bytes": 3133,
+      "mode": 420,
+      "sha256": "445e1533779092f05ae68ff91f8883bf4a8f8caff425a50e78e81ecc804d4b96",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/verify-native.py.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/verify-own-ci.py",
+      "bytes": 53944,
+      "mode": 420,
+      "sha256": "c18cc9a0b08611153aba276e964f5a0dedaf4230a831dd20886a680e4403f3bd",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/verify-own-ci.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/verify-own-ci.py.diff",
+      "bytes": 17159,
+      "mode": 420,
+      "sha256": "974a3e59a8e6513e5f76f16080e1eac4bcafdfa22614d9e83386db1d104ac199",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/verify-own-ci.py.diff"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/verify_workspace.py",
+      "bytes": 30181,
+      "mode": 420,
+      "sha256": "8321198c09133aad60d8591b1d3e8f4c849420c4b3a37c1bc4c4aa12129d9830",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-luna-v2-20261019/verify_workspace.py"
+    },
+    {
+      "archive_path": "evidence/jarde-literal-boolean-own-ci-prep-review-root-v1-20261019/review.json",
+      "bytes": 537,
+      "mode": 420,
+      "sha256": "d2cd18081d72edbe2f2db7b8417d9d683e60faad8c0d1feae566631051441013",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-prep-review-root-v1-20261019/review.json"
+    },
+    {
+      "archive_path": "evidence/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v1-20261019/README.md",
+      "bytes": 3154,
+      "mode": 420,
+      "sha256": "792beb8557d9e244f5b3a81edff4c95aa13964114b34d3eaafb39ab090044bdd",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v1-20261019/README.md"
+    },
+    {
+      "archive_path": "evidence/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v1-20261019/adaptation.md",
+      "bytes": 1330,
+      "mode": 420,
+      "sha256": "19ed1b0afa1e78983eef7d24289345312e145fc30bf0749b0d0caa3c22dc31a7",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v1-20261019/adaptation.md"
+    },
+    {
+      "archive_path": "evidence/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v1-20261019/manifest.template.json",
+      "bytes": 4385,
+      "mode": 420,
+      "sha256": "1092009b957c1abaeca1e3651907ccf50dea053a47fe6d7a9196279e98e3b8f3",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v1-20261019/manifest.template.json"
+    },
+    {
+      "archive_path": "evidence/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v1-20261019/pack.py",
+      "bytes": 18351,
+      "mode": 420,
+      "sha256": "e03297c929a16c0e38639b19751dd3883d989dd23e261c9af1ececaf5218a05f",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v1-20261019/pack.py"
+    },
+    {
+      "archive_path": "evidence/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v1-20261019/pins.json",
+      "bytes": 2131,
+      "mode": 420,
+      "sha256": "fa55cea72b5f847644b25d911cd4accaac21930ff8691db893956c4970f1a7eb",
+      "source_path": "/private/tmp/jarde-testbreakwithlabel-native-own-ci-archive-prep-luna-v1-20261019/pins.json"
+    },
+    {
+      "archive_path": "evidence/named/0.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/0.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/named/0.stdout.raw",
+      "bytes": 147,
+      "mode": 420,
+      "sha256": "323a07de4043f66727ba2331a9169f5f68db8cc9bf135a4f19da6addfd11eb96",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/0.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/named/1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/1.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/named/1.stdout.raw",
+      "bytes": 229,
+      "mode": 420,
+      "sha256": "c77565bb09984b661f7de6bc331dd33d292c9bea5c83cbe320e3bcbd2faac27d",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/1.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/named/2.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/2.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/named/2.stdout.raw",
+      "bytes": 457800,
+      "mode": 420,
+      "sha256": "d419bfce45cc15ce71592c16093c0c26534f181405fa529a702fa00ef676e4ee",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/2.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/named/3.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/3.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/named/3.stdout.raw",
+      "bytes": 111,
+      "mode": 420,
+      "sha256": "b20140a69308714ccd5c143c054db03aaee2f8c74353752eb269afcd87024847",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/3.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/named/execution.json",
+      "bytes": 4927,
+      "mode": 420,
+      "sha256": "b89dbef524017fd669c0735468affa74afaaddfe5a24592dd94952828a8a419b",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "evidence/named/named-review.json",
+      "bytes": 1598120,
+      "mode": 420,
+      "sha256": "349c5b10ed2d7ef463b1dcd5db5b0d0700672c65ac74e7531492e5a7e596d219",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-accept-root-v1-20261019/named-review.json"
+    },
+    {
+      "archive_path": "evidence/native/0.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/0.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/0.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/0.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/1.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/1.stdout.raw",
+      "bytes": 100356,
+      "mode": 420,
+      "sha256": "63d789d0a4217c77b66661020fe4d070b92b7eb16495aab72e29d40515b2c418",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/1.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/10.stderr.raw",
+      "bytes": 604,
+      "mode": 420,
+      "sha256": "34875366bb6eab0022af090c8afbfe6faf21b005deb9a7b2dbbc59048766dbc4",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/10.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/10.stdout.raw",
+      "bytes": 76956,
+      "mode": 420,
+      "sha256": "0a1776d68324ad03a43e28b6fcc602ee06047a3fe4baa8495df22e0de07c9046",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/10.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/100.stderr.raw",
+      "bytes": 657,
+      "mode": 420,
+      "sha256": "3ee6c3eb3fd09569c63ffdee24bdb026e7b8e04b6f023a1aadb690d99bd67573",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/100.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/100.stdout.raw",
+      "bytes": 69269,
+      "mode": 420,
+      "sha256": "3c6d09c8c55f5fc5c563f9b1936ecf3580eedbd1ea1caa110a15016185c2b280",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/100.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/101.stderr.raw",
+      "bytes": 1581,
+      "mode": 420,
+      "sha256": "d11140fe183dace02c98b74d952d7f29920e1992b5ee8af787f27b0fdb12ebc6",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/101.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/101.stdout.raw",
+      "bytes": 55082,
+      "mode": 420,
+      "sha256": "9eb07e58d493913861952aec7ab87247eac2894cd95aaff26be7ca512b6a23c0",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/101.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/102.stderr.raw",
+      "bytes": 577,
+      "mode": 420,
+      "sha256": "28c6aee3743368935ba7d95c94af67fc3e46430dabf49363f4f0f8fee2456dad",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/102.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/102.stdout.raw",
+      "bytes": 62602,
+      "mode": 420,
+      "sha256": "74476669e96f2b79eb8520a22f186e487f50453b7a6df507bdb136b51543f725",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/102.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/103.stderr.raw",
+      "bytes": 361,
+      "mode": 420,
+      "sha256": "8ac959772b162fe59f3e4edf7ec8b733ec50b83b855cbf062a1f98f99dcb1677",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/103.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/103.stdout.raw",
+      "bytes": 58311,
+      "mode": 420,
+      "sha256": "09df4a81d50e3ce03d04bb4041cc9a8fedc4967457102dbc20703dc603d1b099",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/103.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/104.stderr.raw",
+      "bytes": 53,
+      "mode": 420,
+      "sha256": "ec4e0efc0bd1bdb302095cb41f88afdf986b3683e988961b2aac4154cd4d1e89",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/104.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/104.stdout.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/104.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/11.stderr.raw",
+      "bytes": 666,
+      "mode": 420,
+      "sha256": "dcb7a0a8c78f247f6b4f571f34e2dcb3ee36aa1e0a13b29fbebcda3dc3b03372",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/11.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/11.stdout.raw",
+      "bytes": 76618,
+      "mode": 420,
+      "sha256": "70c3e1b2b4f356dd7b4cb049a08e33ee57818d910b3118dd94aa462356c83e73",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/11.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/12.stderr.raw",
+      "bytes": 668,
+      "mode": 420,
+      "sha256": "6ed5525d7d314c319570bb05cc153adf76538be0a4bed9b69a1f1ab5e601333b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/12.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/12.stdout.raw",
+      "bytes": 75544,
+      "mode": 420,
+      "sha256": "4a3675cfcca6712f286ce4e0f5e6d533d95002260214326e5b5fd5fe8ba988cd",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/12.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/13.stderr.raw",
+      "bytes": 678,
+      "mode": 420,
+      "sha256": "54fed0d25db15997082259ec96ee880776bf07bc7d4b6779e2f3f6fb149e8be9",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/13.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/13.stdout.raw",
+      "bytes": 75530,
+      "mode": 420,
+      "sha256": "2dfac02fddcfd22e72929fcfc41255ecc3bfde2aa81c50bc403e5b4eb218692e",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/13.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/14.stderr.raw",
+      "bytes": 644,
+      "mode": 420,
+      "sha256": "408af6cae53cfd29560847affc500ca7b9202c5308771153bb42a45747829bc8",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/14.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/14.stdout.raw",
+      "bytes": 75377,
+      "mode": 420,
+      "sha256": "98d75aceeab12fefc9dac313fa46f4765f025909d75ef03b62f8f1ca3c198dd9",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/14.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/15.stderr.raw",
+      "bytes": 630,
+      "mode": 420,
+      "sha256": "1727c84f586c030c702d1b44d0884f4c68bbb59907dad25fde185a9e0b053987",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/15.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/15.stdout.raw",
+      "bytes": 77331,
+      "mode": 420,
+      "sha256": "fc927a0503963962eddc27ad99cffaa9f75f816ab33421e4b6b52b239add7420",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/15.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/16.stderr.raw",
+      "bytes": 680,
+      "mode": 420,
+      "sha256": "71dc9310795a97106c4ca7b6d6b9576f611e50cb4f04b617d45d21c06bdfda6b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/16.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/16.stdout.raw",
+      "bytes": 76698,
+      "mode": 420,
+      "sha256": "b890a0d7b15b595a60f83569266ce9f0faba59bdbde149e3768a4b1b41b25ec3",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/16.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/17.stderr.raw",
+      "bytes": 580,
+      "mode": 420,
+      "sha256": "f75f079d70af2e4b2e68d51c43f97b7aad2530fed2affdfb3370bb447d547cc1",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/17.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/17.stdout.raw",
+      "bytes": 78889,
+      "mode": 420,
+      "sha256": "b35a9618529045150ff59006e775b7d2d8bbeb67d5585143dbf17c0e27460eec",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/17.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/18.stderr.raw",
+      "bytes": 572,
+      "mode": 420,
+      "sha256": "de6a3baa3da3b6416e215ceaa33b6d43fe2d63d72a884b45984c110b697a0715",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/18.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/18.stdout.raw",
+      "bytes": 76950,
+      "mode": 420,
+      "sha256": "f4633fb7c655b92462da45cdca0a44bb90ae37ee1121a4d566a6f7d0c4818033",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/18.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/19.stderr.raw",
+      "bytes": 578,
+      "mode": 420,
+      "sha256": "840473ef8cdb4bf5f111a20b7b3e956c70b2c3900c60112899f170b71f8f34ff",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/19.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/19.stdout.raw",
+      "bytes": 75242,
+      "mode": 420,
+      "sha256": "476343d7ef38312400f65cb5636f63b8302a27f931857bace83c25068b6f340b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/19.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/2.stderr.raw",
+      "bytes": 4127,
+      "mode": 420,
+      "sha256": "0a4c92cad76d657cefbe874a5f5ce1851214f500658d91f78f9bb611114be8fd",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/2.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/2.stdout.raw",
+      "bytes": 104891,
+      "mode": 420,
+      "sha256": "5ddf125a7131ea632302b3eb80379384ab951383230044b8b7559660e9a4687b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/2.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/20.stderr.raw",
+      "bytes": 570,
+      "mode": 420,
+      "sha256": "64df7dbc971883b82b6070772f463dc8a53524f1cf579a512c71515d73e086d4",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/20.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/20.stdout.raw",
+      "bytes": 78994,
+      "mode": 420,
+      "sha256": "76cd05f74bbd7bdf4e354f7beb23ca1f56b659a8a7e2bc364eb442e25d7ea60c",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/20.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/21.stderr.raw",
+      "bytes": 558,
+      "mode": 420,
+      "sha256": "b2b9744f1f9ec1626ed768ea154bbbf22b430bf35c4727bac2b4b8f7b928af88",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/21.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/21.stdout.raw",
+      "bytes": 77735,
+      "mode": 420,
+      "sha256": "396b7d93e6290fd7fb1a049c7b543d1cee74a675d02d09ed57c769eb146373c6",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/21.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/22.stderr.raw",
+      "bytes": 558,
+      "mode": 420,
+      "sha256": "8426667da6b9d95bb3e3f43e546330e5dd1679998d2a861224256fdd5a637e43",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/22.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/22.stdout.raw",
+      "bytes": 81157,
+      "mode": 420,
+      "sha256": "7c59bb92ad830127bb2da98ab9c38a8f89e69d429ea2b2a87d49e48256d36797",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/22.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/23.stderr.raw",
+      "bytes": 538,
+      "mode": 420,
+      "sha256": "1566ca890859cfe93199da44c50970d5b4b0f5ecd455690653de317444c7b79d",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/23.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/23.stdout.raw",
+      "bytes": 79417,
+      "mode": 420,
+      "sha256": "ce07fcd52dcc76e035b36beb232a17def57a9fc570e0e3c032bf358f27f7dbcc",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/23.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/24.stderr.raw",
+      "bytes": 558,
+      "mode": 420,
+      "sha256": "cb3d0e932c75d6619bb178ab26a58138dc8d90fad70c3c3be1f12f5298fecc72",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/24.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/24.stdout.raw",
+      "bytes": 76582,
+      "mode": 420,
+      "sha256": "075e4bb75bd7429d89897914736ebf2ab5df7640d02a2ba12ed3abc88f6556be",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/24.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/25.stderr.raw",
+      "bytes": 562,
+      "mode": 420,
+      "sha256": "e4f90c66c95333f5b3c39a03d9236db8cdb3f767cd9108164e3bd2f86b89b023",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/25.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/25.stdout.raw",
+      "bytes": 75509,
+      "mode": 420,
+      "sha256": "14cd74dda4eb102e8714dc57bcab33f69603f3cd85e121af440240658f3c51f8",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/25.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/26.stderr.raw",
+      "bytes": 606,
+      "mode": 420,
+      "sha256": "d1c2eada4d50a99e9aaf7dc82a8a7bec733b377afe1acee27a1aead2543f0866",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/26.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/26.stdout.raw",
+      "bytes": 75820,
+      "mode": 420,
+      "sha256": "d66e6bf67539529bd176a5e7e61c6d0189b4d521b05479a14a087b25ce125b06",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/26.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/27.stderr.raw",
+      "bytes": 636,
+      "mode": 420,
+      "sha256": "e5be8115a9680f6074f9726ceccd576ea1bac451da11a0772c504840dcebf467",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/27.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/27.stdout.raw",
+      "bytes": 75489,
+      "mode": 420,
+      "sha256": "72515cc061e9d2bdeed02b720da930c5825fbdab85f4b9d5b48b99677cbcfdac",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/27.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/28.stderr.raw",
+      "bytes": 654,
+      "mode": 420,
+      "sha256": "76d66dea2383f9228c834266f7b65ff24c9c595b201ce0afd5cb190250b354d9",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/28.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/28.stdout.raw",
+      "bytes": 75466,
+      "mode": 420,
+      "sha256": "aed4c53a45b255c9caa83b42cb7f31e891de4c65e5539d3fcdff1291ba0c3b4b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/28.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/29.stderr.raw",
+      "bytes": 646,
+      "mode": 420,
+      "sha256": "84da4fbb36f6a7dd66541249a95287c9ad909b42a253684ad2555380cd79d467",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/29.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/29.stdout.raw",
+      "bytes": 75730,
+      "mode": 420,
+      "sha256": "07e106e515592cf393a63af8fee3c503d6ef17e42c7bd952794b2cada241234c",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/29.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/3.stderr.raw",
+      "bytes": 658,
+      "mode": 420,
+      "sha256": "2f6752e2104cad7f07f04f6acae4d5edd4123b76f9e80a3755bf68d4d2527e7d",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/3.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/3.stdout.raw",
+      "bytes": 75709,
+      "mode": 420,
+      "sha256": "a5af1abea7714c4cb3e345a35be423f28a0c519432a9446b3008b190fb9f3326",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/3.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/30.stderr.raw",
+      "bytes": 672,
+      "mode": 420,
+      "sha256": "d0aea434fedfa31ef5335a8e41d9175d6935bb0fabe279d88addae6690f5d4c0",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/30.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/30.stdout.raw",
+      "bytes": 74556,
+      "mode": 420,
+      "sha256": "6eb9adf609d487dffbcd267fad9c71a4254c75f5462fef86e2c8f98b20746307",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/30.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/31.stderr.raw",
+      "bytes": 596,
+      "mode": 420,
+      "sha256": "17b6e9293a931215c71a577fecda19e5a46a5f4ded59cb25c4cb59fd4e6af6ff",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/31.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/31.stdout.raw",
+      "bytes": 75056,
+      "mode": 420,
+      "sha256": "816bc72b147a82a9729b635f2ffe30b74378d5d4497b24b78bb14fe2d7f95c38",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/31.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/32.stderr.raw",
+      "bytes": 682,
+      "mode": 420,
+      "sha256": "b6adb31bca9cfb93606b20ec7984d68357c2cc454c5fbad3dea9c882cfa94ad5",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/32.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/32.stdout.raw",
+      "bytes": 75397,
+      "mode": 420,
+      "sha256": "1520704c6206fe490eeb308b232535003aeaf69d72c2b870bd787cef53bb28d1",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/32.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/33.stderr.raw",
+      "bytes": 632,
+      "mode": 420,
+      "sha256": "690616d3ded13677c111627655bacaab89280058ba673dd1ba462a59bbb28c31",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/33.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/33.stdout.raw",
+      "bytes": 75731,
+      "mode": 420,
+      "sha256": "9b9ae6c79740fc2cab2c8923b94f1fe3dec5eabe82f814251b721e01841c1601",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/33.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/34.stderr.raw",
+      "bytes": 604,
+      "mode": 420,
+      "sha256": "a0c17626ead2b949e6051b1a875fd0e8b113241743d2bbfc4838e9f927aa44f7",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/34.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/34.stdout.raw",
+      "bytes": 75702,
+      "mode": 420,
+      "sha256": "217e034190331fd79cc020970de7640c92ffd3adc0879396238559045605c081",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/34.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/35.stderr.raw",
+      "bytes": 610,
+      "mode": 420,
+      "sha256": "4ab1a9f6313330c5e6ee9855e408f9ac57e3aaa0acfa744bd9a46955f617fcc3",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/35.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/35.stdout.raw",
+      "bytes": 75411,
+      "mode": 420,
+      "sha256": "627d95941a0bbf84651784a8eec436c4b416f0d5093236d89bff8f956f808f11",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/35.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/36.stderr.raw",
+      "bytes": 590,
+      "mode": 420,
+      "sha256": "7e207117f12d50fd77114884d402a646233bc2f8ffe4514f286ff9af70edcd7d",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/36.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/36.stdout.raw",
+      "bytes": 75682,
+      "mode": 420,
+      "sha256": "650fd806a18974fb0670c4ab0d2280d453d2b528ec32c9075a1ff9b9c40a84d2",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/36.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/37.stderr.raw",
+      "bytes": 602,
+      "mode": 420,
+      "sha256": "0bca1818191ffffce3665a71e84b17096abea7b6ad54edc3790b763980c78812",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/37.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/37.stdout.raw",
+      "bytes": 75505,
+      "mode": 420,
+      "sha256": "5eeb6e65b4db7d6dee7a6ec2683f8d20ae32f63c1dcb72701dc8d72709b13aa4",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/37.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/38.stderr.raw",
+      "bytes": 658,
+      "mode": 420,
+      "sha256": "5208a476d1c64fb1e3af367755aaa7afb59c8621470d2510e5da17c9b5785951",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/38.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/38.stdout.raw",
+      "bytes": 76325,
+      "mode": 420,
+      "sha256": "d2c1a0188f9f28db1bb59f307cf1a426ddd5c4c340757b82b8bab656f08cf173",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/38.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/39.stderr.raw",
+      "bytes": 660,
+      "mode": 420,
+      "sha256": "808fb32726f325ab4ecfdd149c5e6f408cfa8cfdf8cc095463dc5f6a57a48dbd",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/39.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/39.stdout.raw",
+      "bytes": 75337,
+      "mode": 420,
+      "sha256": "ca7e20ac79035ce907c5bd43c42ffbe7804dd527102c4929732aecfde06b33f6",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/39.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/4.stderr.raw",
+      "bytes": 628,
+      "mode": 420,
+      "sha256": "759bb9e780f9bcd00895a34baaba3efcebfbb414a0b9af119c75ac89d269c5a8",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/4.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/4.stdout.raw",
+      "bytes": 75103,
+      "mode": 420,
+      "sha256": "6fada50231db7b2f3d3ef0da697cf4804cef2b9df46205218ad5b086ecff6c7c",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/4.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/40.stderr.raw",
+      "bytes": 614,
+      "mode": 420,
+      "sha256": "095f8aef6273ddb63d560f402add544737932bf2c310617934bc4c2e5d04abea",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/40.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/40.stdout.raw",
+      "bytes": 74896,
+      "mode": 420,
+      "sha256": "56de29fe60eaa98ceff8be6eb566fa5f5c3c5c109b5c0b2551c50f4942dfe9ac",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/40.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/41.stderr.raw",
+      "bytes": 672,
+      "mode": 420,
+      "sha256": "a63bc1ad5e2cf2ef193d3ade23a59ed86e44290882b1390e1fefd1bb48a99759",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/41.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/41.stdout.raw",
+      "bytes": 76229,
+      "mode": 420,
+      "sha256": "5868c5ce8d8ef0cb340edaefc2e4a3bc851042f63475564646c7c1816abe974a",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/41.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/42.stderr.raw",
+      "bytes": 616,
+      "mode": 420,
+      "sha256": "5e6c49c74cf2510bc7a5bb26c897b875a50c74a597e345a98085f9a4d9c3a12a",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/42.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/42.stdout.raw",
+      "bytes": 75569,
+      "mode": 420,
+      "sha256": "3832199780a6fbcb49e9fd3ea72ee57e0d6c4f08aa5f61ac0e817f8ce8acd0ad",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/42.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/43.stderr.raw",
+      "bytes": 616,
+      "mode": 420,
+      "sha256": "8cfef8c768e46ce46c6bc634ad4c22ce9588b07b9d7a2d71de35efa472164870",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/43.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/43.stdout.raw",
+      "bytes": 75198,
+      "mode": 420,
+      "sha256": "b2fa7c784d7219055744303a5c43725d844d06161803d91c4cc0535039cf7c6a",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/43.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/44.stderr.raw",
+      "bytes": 616,
+      "mode": 420,
+      "sha256": "fa466e56f6cb8447a645f9456854f083410fa91833c80a5f4b1bacf82bd97650",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/44.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/44.stdout.raw",
+      "bytes": 75127,
+      "mode": 420,
+      "sha256": "63f31659769149bd0886ac8d95844dd7844bfccaa048c98db3017b28f1680c9b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/44.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/45.stderr.raw",
+      "bytes": 698,
+      "mode": 420,
+      "sha256": "af7abbf916bf8116bf8438a8bb4662ef2ec146794669623ce9ba40ba6f2aa105",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/45.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/45.stdout.raw",
+      "bytes": 75123,
+      "mode": 420,
+      "sha256": "05c984409549d15c78b243b7e0044777268a8f1814b43e64cc935ae34ace7833",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/45.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/46.stderr.raw",
+      "bytes": 628,
+      "mode": 420,
+      "sha256": "3261261208a9bf2e36d266cd9606ceb09283743a40075553d833c416b3dca508",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/46.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/46.stdout.raw",
+      "bytes": 75156,
+      "mode": 420,
+      "sha256": "0101f068751015851503c6e3709de7f12c192c720e1506502a0eb955e44eb724",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/46.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/47.stderr.raw",
+      "bytes": 668,
+      "mode": 420,
+      "sha256": "184eb10057d0d699fd1967786f586c6be2a7ebf050b9457da019e06e6636a154",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/47.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/47.stdout.raw",
+      "bytes": 75037,
+      "mode": 420,
+      "sha256": "e7ae11120d199acf804ad471d41292618120c92baf8f25c6efef459c20d09065",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/47.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/48.stderr.raw",
+      "bytes": 686,
+      "mode": 420,
+      "sha256": "f195d198fac83e2aabe92c488650c3f395dcf189511c0003cfa9c391555f1f7f",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/48.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/48.stdout.raw",
+      "bytes": 76477,
+      "mode": 420,
+      "sha256": "c7795f9d5ab336586f36c65be7a0ab7c13f083b6d888477e27cbea3319306d09",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/48.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/49.stderr.raw",
+      "bytes": 578,
+      "mode": 420,
+      "sha256": "e37f5f1e1f6966724d4cfeb037e2f48f23710444c99d6b0115a7c296e7efec68",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/49.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/49.stdout.raw",
+      "bytes": 75206,
+      "mode": 420,
+      "sha256": "00444f355023d36bf5acbac2448aeb89328f1d99dad2f4e650b0f42aeea3562c",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/49.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/5.stderr.raw",
+      "bytes": 606,
+      "mode": 420,
+      "sha256": "a2a6815bfa2f028e4ca1f29c69ae3f18278d6f381281a6736100ea05f22062cf",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/5.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/5.stdout.raw",
+      "bytes": 75016,
+      "mode": 420,
+      "sha256": "3504c78900069cf40814ab6ddad315d9075e2e6d46c5424a6aabfd74f003072d",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/5.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/50.stderr.raw",
+      "bytes": 620,
+      "mode": 420,
+      "sha256": "f012be79e07fc54088eb34d302a67eabfa6074ed3ca76d5fdd22d6366bffb4a0",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/50.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/50.stdout.raw",
+      "bytes": 74934,
+      "mode": 420,
+      "sha256": "d0c1f9b714dc96381942e01fc78fed761a6dc0bb4ddb6eb1d4ea183824223bbb",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/50.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/51.stderr.raw",
+      "bytes": 670,
+      "mode": 420,
+      "sha256": "30a8198b122ee45a1a3f380f7576a1b62e47712c1448664a032122f0057caf48",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/51.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/51.stdout.raw",
+      "bytes": 75373,
+      "mode": 420,
+      "sha256": "5c0abde99c7953db054f5e22744a794c7ea9779438f58cb9774c48a983a455df",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/51.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/52.stderr.raw",
+      "bytes": 608,
+      "mode": 420,
+      "sha256": "8bb31d0f2d659f71428d002fe3a5bbf3298ab7edf23639763dfc2cd3236c3340",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/52.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/52.stdout.raw",
+      "bytes": 75486,
+      "mode": 420,
+      "sha256": "6dd9cac002a713d7181da87c013a2fbc60a3a81f5d2888775149adc9ff7e04c5",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/52.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/53.stderr.raw",
+      "bytes": 640,
+      "mode": 420,
+      "sha256": "cbe8f6b968e0830050732e8c9b4ce31b593b561bbacbb08d21886b756dd3234a",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/53.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/53.stdout.raw",
+      "bytes": 74744,
+      "mode": 420,
+      "sha256": "81cd96c28f4e55622a472764b1403caf47fdf6b34c18b7a87f2c42e3e4106261",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/53.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/54.stderr.raw",
+      "bytes": 640,
+      "mode": 420,
+      "sha256": "a3899b3ffc66a78c2d8ee53b57e258c59d863b15b6d75690806ecb8732933996",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/54.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/54.stdout.raw",
+      "bytes": 75270,
+      "mode": 420,
+      "sha256": "cff57e71d0ade9a6bb702e07788774ea4311399220188683e96472c5d6a2630f",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/54.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/55.stderr.raw",
+      "bytes": 614,
+      "mode": 420,
+      "sha256": "83bfa08b4c553c910240426c302a2fc4249e9a45190eb79a098f579f592e270e",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/55.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/55.stdout.raw",
+      "bytes": 75926,
+      "mode": 420,
+      "sha256": "abd01ac1691a8f21315bc486edfc334038e7dcccc50be5f07d7cecd06aa7fdb9",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/55.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/56.stderr.raw",
+      "bytes": 670,
+      "mode": 420,
+      "sha256": "7def4f6d9e41de647550605e7be9e21f0d4495e76bf2b8de8b962b9197d1fb67",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/56.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/56.stdout.raw",
+      "bytes": 75073,
+      "mode": 420,
+      "sha256": "f06e849e9af8e32749436d40a52c6a90792608633e4ed24f8974013edbc34a3b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/56.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/57.stderr.raw",
+      "bytes": 680,
+      "mode": 420,
+      "sha256": "a372b854ae5d5a83f012bbc0f9d28846c5de55a22edc78068c3d76672a176c7f",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/57.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/57.stdout.raw",
+      "bytes": 75428,
+      "mode": 420,
+      "sha256": "c253241754fccc5052e07d3124b1444e17f134906bbf5eef8848ae86d222b3e1",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/57.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/58.stderr.raw",
+      "bytes": 600,
+      "mode": 420,
+      "sha256": "654106b928c06eaea15dc6c09ceec2b8c37596ae76330ff02edd0ad0e2f61d00",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/58.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/58.stdout.raw",
+      "bytes": 74832,
+      "mode": 420,
+      "sha256": "9e96f79bab1549c02e9b6699ffab4ae29b64d54a4649bf8d2311f73569936748",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/58.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/59.stderr.raw",
+      "bytes": 628,
+      "mode": 420,
+      "sha256": "0685bc248db259d334e49132453f3e9e369513878eacefaa921f2210c525071a",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/59.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/59.stdout.raw",
+      "bytes": 74992,
+      "mode": 420,
+      "sha256": "4636ce1d86d5b94926d643458c8f9de0f426a21baae0b57797375b0eccac81ab",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/59.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/6.stderr.raw",
+      "bytes": 674,
+      "mode": 420,
+      "sha256": "2e67e703f6a72eeccce2173e000616f2d49e33290599adf17849903fa86a2504",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/6.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/6.stdout.raw",
+      "bytes": 83658,
+      "mode": 420,
+      "sha256": "b88f04de78710a672bf7865d9a6b9c04aedb0b5279f690bea4f0bac77f451e0c",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/6.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/60.stderr.raw",
+      "bytes": 584,
+      "mode": 420,
+      "sha256": "bcbbb74b939d797e04ab65f967831d15293f5e4ed01471f6f7f3288b51eaffe7",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/60.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/60.stdout.raw",
+      "bytes": 74881,
+      "mode": 420,
+      "sha256": "89e360337b51e3510442ee93534ce16bb7fd927d98692b3dc97272170f6cd694",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/60.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/61.stderr.raw",
+      "bytes": 592,
+      "mode": 420,
+      "sha256": "edb1ddfd0dbb5e7d9b550ab933c7760cf8f7c0cd3754f58a5333bf254b6f42d6",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/61.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/61.stdout.raw",
+      "bytes": 75082,
+      "mode": 420,
+      "sha256": "495a9af885e0b1526800b612bce5260f227c9ed3adb345b274315329fda3a830",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/61.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/62.stderr.raw",
+      "bytes": 634,
+      "mode": 420,
+      "sha256": "b18ea96fda45a8d32b888dd2fcbe31efdf3d15e820c10e5dcd18e85f9257255c",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/62.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/62.stdout.raw",
+      "bytes": 75603,
+      "mode": 420,
+      "sha256": "277301ec28c16db6ff33c977ed44b2de5f95b931eb3c4270014aecbb80411c7e",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/62.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/63.stderr.raw",
+      "bytes": 604,
+      "mode": 420,
+      "sha256": "c781043b6377e7b52d1b24dc4b9334652a5430aaee76be630302c1819d156eb9",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/63.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/63.stdout.raw",
+      "bytes": 75357,
+      "mode": 420,
+      "sha256": "e00eecf6936429bf33560dcd2640023f3e6ea6c709511fa0486187b6b53b477e",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/63.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/64.stderr.raw",
+      "bytes": 616,
+      "mode": 420,
+      "sha256": "be1602aff68524ac210cf8e2c032a99aa20f71eecb32741d17d6f18200bf6a4f",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/64.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/64.stdout.raw",
+      "bytes": 75232,
+      "mode": 420,
+      "sha256": "cacc029cde35fccaeb3899c5d7a6b3f821941fcbcd3e5e783f0c6e836fcc2c86",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/64.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/65.stderr.raw",
+      "bytes": 560,
+      "mode": 420,
+      "sha256": "ceeed95b4ed8c778b0e66140263062bdadb6bfbff645058daf7c6028ba1ca3be",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/65.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/65.stdout.raw",
+      "bytes": 76228,
+      "mode": 420,
+      "sha256": "7319ce0ecef42d2d45b6b7bdf9bae258098887bf9a76b86ad145c244f36a192c",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/65.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/66.stderr.raw",
+      "bytes": 564,
+      "mode": 420,
+      "sha256": "70c1415261cb210ca7402b6ee4076c4b9bfef6dcaeaebb3b253771b295ed4e54",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/66.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/66.stdout.raw",
+      "bytes": 77509,
+      "mode": 420,
+      "sha256": "48254349217a56c810ba7bca37e02653b91477b49357c3180650e52c294a1dd7",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/66.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/67.stderr.raw",
+      "bytes": 610,
+      "mode": 420,
+      "sha256": "652d82d7c4f3c03142f84b85cf0a2ca10e11cbb971d9f5efe4dfc437fd236c78",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/67.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/67.stdout.raw",
+      "bytes": 77419,
+      "mode": 420,
+      "sha256": "2fbe8bfea3a6ee0bd804f7e37ae8d950ef94f5e217bb6262290d3444e331b749",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/67.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/68.stderr.raw",
+      "bytes": 620,
+      "mode": 420,
+      "sha256": "c53dc1033274cbbf0585c8ea90dc57fe53bd66b4c8c793e7027cdee02acfa02e",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/68.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/68.stdout.raw",
+      "bytes": 77011,
+      "mode": 420,
+      "sha256": "3c3ae3f792d8f9c4354050e74f6ba696aa47a7737dd417f86960f7178d3aca7b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/68.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/69.stderr.raw",
+      "bytes": 684,
+      "mode": 420,
+      "sha256": "061729bb6e2d922c3dfaf62f3a5a5cc73a47de2a82d314adf68fa22e02523b72",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/69.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/69.stdout.raw",
+      "bytes": 75762,
+      "mode": 420,
+      "sha256": "7709d6e766aadfd6781ccae89e64866b4b9a3144ec13139a071cf0597a44b0e1",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/69.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/7.stderr.raw",
+      "bytes": 620,
+      "mode": 420,
+      "sha256": "e424e9137baa4f983c9aa5cda7ee860570f0c1a6c64e38e9fa8bb93037aa3098",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/7.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/7.stdout.raw",
+      "bytes": 75633,
+      "mode": 420,
+      "sha256": "e3302c93bb8cda49dd124df366fad434a1e0c860289fd2c5902a7ac2da51519a",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/7.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/70.stderr.raw",
+      "bytes": 736,
+      "mode": 420,
+      "sha256": "e4a5716befad3428f321a29baeacc1e6a1fe3005adfe4b44b71e4b83cb635380",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/70.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/70.stdout.raw",
+      "bytes": 76868,
+      "mode": 420,
+      "sha256": "c6b9c583f65be7a4f9f00b0289b6f2f9532e66a3848cf7327cff2a33de69f942",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/70.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/71.stderr.raw",
+      "bytes": 696,
+      "mode": 420,
+      "sha256": "fe3f6e0f627b647a23ea272408cd8b7236c8671e604810e72d993e961275565e",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/71.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/71.stdout.raw",
+      "bytes": 75560,
+      "mode": 420,
+      "sha256": "055eb0bde95f68cc6649c6a6bf4b342172a7fdd23154b97edb2d771a1fde2a8e",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/71.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/72.stderr.raw",
+      "bytes": 772,
+      "mode": 420,
+      "sha256": "df7ddf41bb57072eaa27aaef9cfa9dad3e893cefe0ef5bbe666bb3f395fd258c",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/72.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/72.stdout.raw",
+      "bytes": 76021,
+      "mode": 420,
+      "sha256": "7daddd56f82bdbca5650bb35ac252d36931a4d4ef45314e3af5b2f568fd5ff19",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/72.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/73.stderr.raw",
+      "bytes": 742,
+      "mode": 420,
+      "sha256": "21fee06ff7c0d4b1c43d38f33f15b68e0c351f1655405cc4fb1a73d89773948c",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/73.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/73.stdout.raw",
+      "bytes": 75161,
+      "mode": 420,
+      "sha256": "1f7afaa6821468a5097777c31c1a4b29ca05425323113be6a2d159ca7fd12ddc",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/73.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/74.stderr.raw",
+      "bytes": 744,
+      "mode": 420,
+      "sha256": "a1bdf84b9e181433332963516c01dee3d144780924eafc924c77c00c8599885f",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/74.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/74.stdout.raw",
+      "bytes": 75911,
+      "mode": 420,
+      "sha256": "222526dea24c943de8ffd14fcb5785632f656aa1a9f09430198c67fab19ed794",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/74.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/75.stderr.raw",
+      "bytes": 774,
+      "mode": 420,
+      "sha256": "b20cb98a7ca2a9413ffd46e0d0e3ecd7c59f586d16f37d43557c1fa90aa42946",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/75.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/75.stdout.raw",
+      "bytes": 75401,
+      "mode": 420,
+      "sha256": "55fbd12a123fe901b277bc20935b04704d0682362aea311f94d8df5117e60e9b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/75.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/76.stderr.raw",
+      "bytes": 714,
+      "mode": 420,
+      "sha256": "37296369ed7d7163cfae2b8cd457b3c9bb64a6343e8e46848a96ba7e2a4e7e2f",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/76.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/76.stdout.raw",
+      "bytes": 75677,
+      "mode": 420,
+      "sha256": "f0cbfdf2686f66d80ed519b698558c0ac7f3d67ded1f9a42b099de4a3b4e46b0",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/76.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/77.stderr.raw",
+      "bytes": 762,
+      "mode": 420,
+      "sha256": "080ab1ad3032a71761b1d6cc33f7aaabd1b2bae0b139a699f3b38039e2f70c15",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/77.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/77.stdout.raw",
+      "bytes": 76392,
+      "mode": 420,
+      "sha256": "50d27b5506e863b5bcaf863f150eba818b1573a05c9eeb0ab535554197772f78",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/77.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/78.stderr.raw",
+      "bytes": 758,
+      "mode": 420,
+      "sha256": "f37e8fdda5a6035b58e27e31608be176e1d60ff84eeff8ce2e7354e06dfaf452",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/78.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/78.stdout.raw",
+      "bytes": 75888,
+      "mode": 420,
+      "sha256": "72b7d99c020ad1c967ef8df7feed1043c6e8bd863827d19c4165a9a45696204a",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/78.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/79.stderr.raw",
+      "bytes": 740,
+      "mode": 420,
+      "sha256": "6d34b193afd71ee33fc7d810c5c8118732d0fa316a12914b016a22ccada77c03",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/79.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/79.stdout.raw",
+      "bytes": 76290,
+      "mode": 420,
+      "sha256": "8dd676129801681cabc3c15caea0eee5fc4b0cf59820a6f795ae02adce63d56b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/79.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/8.stderr.raw",
+      "bytes": 612,
+      "mode": 420,
+      "sha256": "16b08d6fa3e3e29022b8254a5ffcb65d553c94ea534ba44baec27250e4c8f86a",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/8.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/8.stdout.raw",
+      "bytes": 76021,
+      "mode": 420,
+      "sha256": "9563dc6cef199b501e037b0e6de8d9aff7fed8aab36fb654eb2122ddc97e8957",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/8.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/80.stderr.raw",
+      "bytes": 712,
+      "mode": 420,
+      "sha256": "298d8a76fa43771fb5bcadb326417ad4c5be7f2d7849088f265796a758a162a5",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/80.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/80.stdout.raw",
+      "bytes": 75584,
+      "mode": 420,
+      "sha256": "d2e5b0f0ffe0d872b652b97e10a1663ffa3a0fa227b382cca250164eaa7554f3",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/80.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/81.stderr.raw",
+      "bytes": 722,
+      "mode": 420,
+      "sha256": "d683a3a2506a7acd635d0b861303815b566ad340c6b49b576edd7d4684555629",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/81.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/81.stdout.raw",
+      "bytes": 76748,
+      "mode": 420,
+      "sha256": "43c9560b96efbba410484ce79762c393ea9abd816c74304257d5157647ed29de",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/81.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/82.stderr.raw",
+      "bytes": 396,
+      "mode": 420,
+      "sha256": "fb2077a63effe625091675935769305801dc00e86dec3d0965d09bf1463c66d8",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/82.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/82.stdout.raw",
+      "bytes": 76272,
+      "mode": 420,
+      "sha256": "b78d5464b0a6046de3e7b4d8b28fc562d8f49e8deb3fb650768dbc14cca30608",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/82.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/83.stderr.raw",
+      "bytes": 683,
+      "mode": 420,
+      "sha256": "c38257439c99e8534f640330f21275f06449384e0a8804311f5ffb77818c32f2",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/83.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/83.stdout.raw",
+      "bytes": 86440,
+      "mode": 420,
+      "sha256": "a1f4afe5a9d1e1280b92fb879ce1fe97bc6a907d6033083bf1966d36120b1d01",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/83.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/84.stderr.raw",
+      "bytes": 706,
+      "mode": 420,
+      "sha256": "067837ffc661a2582c115e6f3be7270b89b402f45dd131fa0652323ee2686092",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/84.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/84.stdout.raw",
+      "bytes": 43013,
+      "mode": 420,
+      "sha256": "6b5c2abc429e0a53e19737eb415e5d2c0268320d1ceb24f97e2046c6f2e79569",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/84.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/85.stderr.raw",
+      "bytes": 667,
+      "mode": 420,
+      "sha256": "2792ca91b56823826152d6fcf392506ae72f9f708ef430b2ba888247392c2c8b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/85.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/85.stdout.raw",
+      "bytes": 41429,
+      "mode": 420,
+      "sha256": "8d14ecd6dc9d14510848fd0629093683f324daf8882aca7dd868df644acceaa8",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/85.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/86.stderr.raw",
+      "bytes": 723,
+      "mode": 420,
+      "sha256": "4952abd254b68d7e5dbd3ac71596e2c0b07e84d0393e65876e75d0b15c4dc233",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/86.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/86.stdout.raw",
+      "bytes": 41595,
+      "mode": 420,
+      "sha256": "bf7d18f2522e5c9b01603528355c1f806697ad7e8ac824ac47e1f78e068d08c3",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/86.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/87.stderr.raw",
+      "bytes": 753,
+      "mode": 420,
+      "sha256": "3691864b6476e3a36121ef6ae254352b1ef69e4acf52e8e30ee0f472ee39eaf5",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/87.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/87.stdout.raw",
+      "bytes": 41620,
+      "mode": 420,
+      "sha256": "3892eee98ae283e0091ae5f06be00dd9cf4b0544a20e9db2b1f66d2dec79ae57",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/87.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/88.stderr.raw",
+      "bytes": 643,
+      "mode": 420,
+      "sha256": "185fa2ff57026dec4a38d5d0157000a5828f119ad1b848db7ca8d32a4e9da6ad",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/88.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/88.stdout.raw",
+      "bytes": 41968,
+      "mode": 420,
+      "sha256": "29d382e41ab229b9bb07ad4b55b5f590bc41f31db50756a4d48f5719a0f1ec49",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/88.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/89.stderr.raw",
+      "bytes": 641,
+      "mode": 420,
+      "sha256": "c9bb3eeb50935591ccacc467f18f4061a19f60bd44a01ed77fb63469a3ca1749",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/89.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/89.stdout.raw",
+      "bytes": 45957,
+      "mode": 420,
+      "sha256": "54b8814e83b7edf998272ab45a09b15198127e2de9cda1b6d3a1293fc2860f8a",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/89.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/9.stderr.raw",
+      "bytes": 644,
+      "mode": 420,
+      "sha256": "121897a541acde5712a028fa983a271f39ef097c90d0c09effad2aacfaa6ce5c",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/9.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/9.stdout.raw",
+      "bytes": 75261,
+      "mode": 420,
+      "sha256": "f1e5e823ef00119bdae209d563b49b21cd1fcbe29cebd55f82e2760a4eb6a94d",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/9.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/90.stderr.raw",
+      "bytes": 691,
+      "mode": 420,
+      "sha256": "1473210e3f327e5121501668977626746e05a3df0a6be8e25a53ae0db963f898",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/90.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/90.stdout.raw",
+      "bytes": 42622,
+      "mode": 420,
+      "sha256": "f1de86cab8fa1cd888ea0b8107a861dc312af05aa19fe76d42dfdf8d88a52b6b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/90.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/91.stderr.raw",
+      "bytes": 653,
+      "mode": 420,
+      "sha256": "8b73638fb7d4b61391e4483322fefe1c49ac6054db02d4f7e255fe91c21b75d6",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/91.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/91.stdout.raw",
+      "bytes": 48868,
+      "mode": 420,
+      "sha256": "1c4ce81516373736917468e70141e14de7a20663bc9a7a4438c06f2f33244ee3",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/91.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/92.stderr.raw",
+      "bytes": 711,
+      "mode": 420,
+      "sha256": "a3e83a7f233e12857c0417b02a7d69601f74284d3ee7979232cb7e79f5d0f39e",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/92.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/92.stdout.raw",
+      "bytes": 42190,
+      "mode": 420,
+      "sha256": "ce58b42a7385d01275ac976ace05c44cdf2a3e705d39b32dbe369c0d074aacc4",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/92.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/93.stderr.raw",
+      "bytes": 671,
+      "mode": 420,
+      "sha256": "840ad413452230550a4fad30e5a8c7ab7efac070e1184c6cb2ed3a9161576c59",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/93.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/93.stdout.raw",
+      "bytes": 43338,
+      "mode": 420,
+      "sha256": "9e3cc0ab3054ba4f76d6818cb464914d92098a1d0698f25cdd8eda7514d9a045",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/93.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/94.stderr.raw",
+      "bytes": 687,
+      "mode": 420,
+      "sha256": "1a344fd43a50d44a962d9c67291b33bc2995d50cd87ba56122c522a8a7004fef",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/94.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/94.stdout.raw",
+      "bytes": 41694,
+      "mode": 420,
+      "sha256": "bd5f131b5d577cc337019411066f0feefb6cb18e5119667f84f08bdd2183a7df",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/94.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/95.stderr.raw",
+      "bytes": 527,
+      "mode": 420,
+      "sha256": "59d43dd049184067813e22fe046d114eed7a36175cb4feade05fe524532cae04",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/95.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/95.stdout.raw",
+      "bytes": 40258,
+      "mode": 420,
+      "sha256": "e4f745009af1bd7a47b008413b231f76dea2671fd602629bd2070e555a5e6f4e",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/95.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/96.stderr.raw",
+      "bytes": 273,
+      "mode": 420,
+      "sha256": "4ba7b0942e5d41e9a7c591d9cd2b666089368380aa59e5e8d33b0c8fe70feba8",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/96.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/96.stdout.raw",
+      "bytes": 62871,
+      "mode": 420,
+      "sha256": "49e89ab2eac44898da3e91ade68531a4a847ad865f726054757d88f4d4f45541",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/96.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/97.stderr.raw",
+      "bytes": 390,
+      "mode": 420,
+      "sha256": "484fa6ea7bc8cf44965c0c57af1c65d93cfbc0982bd525173507e11dee064c41",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/97.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/97.stdout.raw",
+      "bytes": 37817,
+      "mode": 420,
+      "sha256": "6db94c90cca50553f57de9ae77d56ad3a51a9513d8d0a65457f4f395528962d0",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/97.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/98.stderr.raw",
+      "bytes": 289,
+      "mode": 420,
+      "sha256": "0bd734f8e86faf99b625b38a385e967d04368bc7ed648eac93726c5e3abeb040",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/98.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/98.stdout.raw",
+      "bytes": 38198,
+      "mode": 420,
+      "sha256": "719f031a6798b946c5dc3252d7f87bcbabb15e2b7aa3a556167cde749002549b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/98.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/99.stderr.raw",
+      "bytes": 282,
+      "mode": 420,
+      "sha256": "4396a604ee14180470c51a83fa3a7d1e236247547f878f0e5d64dda5396ff928",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/99.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/native/99.stdout.raw",
+      "bytes": 79913,
+      "mode": 420,
+      "sha256": "809e9a7ecc2a7e52b8f2c40a5f66a8bae2aa5b9a521dde8591d1c2175e7a7f17",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/99.stdout.raw"
+    },
+    {
+      "archive_path": "evidence/native/execution.json",
+      "bytes": 3619610,
+      "mode": 420,
+      "sha256": "11f6f7c2fc2701e3beecc9172a7821d1f3c9d842eaf9a12f605f6acc5a5e383a",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/execution.json"
+    },
+    {
+      "archive_path": "evidence/native/metadata.json",
+      "bytes": 100356,
+      "mode": 420,
+      "sha256": "63d789d0a4217c77b66661020fe4d070b92b7eb16495aab72e29d40515b2c418",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/metadata.json"
+    },
+    {
+      "archive_path": "evidence/native/regression-review.json",
+      "bytes": 3452,
+      "mode": 420,
+      "sha256": "6df6261b4f0ef12ef2297e7e8ff3a28483fb7b70ae162aaf83bdd9437675c82b",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/regression-review.json"
+    },
+    {
+      "archive_path": "evidence/native/report.json",
+      "bytes": 257,
+      "mode": 420,
+      "sha256": "e113133cfe844b948ae0a8bbe4f4fb0ed473ff1729ab733176c21f03617c0efb",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/report.json"
+    },
+    {
+      "archive_path": "evidence/native/review.json",
+      "bytes": 858613,
+      "mode": 420,
+      "sha256": "af59c92d8753e453e54f528f308857a4c02eca7ce20e2e32bf3f11d8bcc6bbb6",
+      "source_path": "/private/tmp/jarde-literal-boolean-native-root-v1-20261019/review.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/collection.json",
+      "bytes": 101861,
+      "mode": 420,
+      "sha256": "c142cff8e0d92149b317e61ccde3b74a4eca667ef37f429ca1f1b12453b46583",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/collection.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/fuzz-smoke.log",
+      "bytes": 816360,
+      "mode": 420,
+      "sha256": "d574f63722582602f987d8c36c3f9b722916c91866c3dd32f76c446e8ae0d62b",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/fuzz-smoke.log"
+    },
+    {
+      "archive_path": "evidence/own-ci/fuzz-smoke.log.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/fuzz-smoke.log.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/fuzz-smoke.log.transport-attempt-1",
+      "bytes": 816360,
+      "mode": 420,
+      "sha256": "d574f63722582602f987d8c36c3f9b722916c91866c3dd32f76c446e8ae0d62b",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/fuzz-smoke.log.transport-attempt-1"
+    },
+    {
+      "archive_path": "evidence/own-ci/fuzz-smoke.log.transport-attempt-1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/fuzz-smoke.log.transport-attempt-1.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/jobs-api.json",
+      "bytes": 12486,
+      "mode": 420,
+      "sha256": "4ec9d8260331c2d491edf515575ff6a2ea61ad77a1af2242effb45d0d45464ef",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/jobs-api.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/jobs-api.json.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/jobs-api.json.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/jobs-api.json.transport-attempt-1",
+      "bytes": 12486,
+      "mode": 420,
+      "sha256": "4ec9d8260331c2d491edf515575ff6a2ea61ad77a1af2242effb45d0d45464ef",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/jobs-api.json.transport-attempt-1"
+    },
+    {
+      "archive_path": "evidence/own-ci/jobs-api.json.transport-attempt-1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/jobs-api.json.transport-attempt-1.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/msrv.log",
+      "bytes": 74900,
+      "mode": 420,
+      "sha256": "d0101b60db0e2e846b3028eb7e1f1135bbc563d03d1cf27f7d435b0aa80f142a",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/msrv.log"
+    },
+    {
+      "archive_path": "evidence/own-ci/msrv.log.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/msrv.log.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/msrv.log.transport-attempt-1",
+      "bytes": 74900,
+      "mode": 420,
+      "sha256": "d0101b60db0e2e846b3028eb7e1f1135bbc563d03d1cf27f7d435b0aa80f142a",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/msrv.log.transport-attempt-1"
+    },
+    {
+      "archive_path": "evidence/own-ci/msrv.log.transport-attempt-1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/msrv.log.transport-attempt-1.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/official-zip-attempt-1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/official-zip-attempt-1.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/official-zip-attempt-1.zip",
+      "bytes": 881530,
+      "mode": 420,
+      "sha256": "53596396d9aa7e56cc43691ddbb9ec7d9353633559fb0b6fcb5a4acfdce7375d",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/official-zip-attempt-1.zip"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitFixtureWriter.java",
+      "bytes": 11951,
+      "mode": 420,
+      "sha256": "51ac8ce7f3ad8d76bdc0fe5b86ff3bd95c80d2b186fe8d69f335de9e633bfa06",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitFixtureWriter.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitFixtureWriter.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitFixtureWriter.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitOracleDriver.java",
+      "bytes": 7243,
+      "mode": 420,
+      "sha256": "ca5da31f84a8a6f16cd85bb4e903438af6b5e4968bf1e65ebb8198511e82f4dc",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitOracleDriver.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitOracleDriver.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitOracleDriver.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitSlotCounterCasesDriver.java",
+      "bytes": 5282,
+      "mode": 420,
+      "sha256": "38073411b841ccfdd6e6cd6c92bbc863ad87c59e822aaec09b63e568a7c3fa51",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitSlotCounterCasesDriver.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitSlotCounterCasesDriver.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitSlotCounterCasesDriver.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitSlotCounterCasesWriter.java",
+      "bytes": 5237,
+      "mode": 420,
+      "sha256": "6921087439e2f2905f5b3621dcaaeded5e5b26c7230f16df9c6a809add593137",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitSlotCounterCasesWriter.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitSlotCounterCasesWriter.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/EntrySplitSlotCounterCasesWriter.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/README.md",
+      "bytes": 2474,
+      "mode": 420,
+      "sha256": "c6563bd8ab2c0c9a34cbe16119c912dfd688ac9c44fa7ebc07804565e1fb6106",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/README.md"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/README.md.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/README.md.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitCases.class",
+      "bytes": 577,
+      "mode": 420,
+      "sha256": "d557c48e39bca63d43d7355da47e342d7ff0955aa90597cc18f674b5f946c18b",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitCases.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitCases.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitCases.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitExceptionRefusal.class",
+      "bytes": 414,
+      "mode": 420,
+      "sha256": "1380ddbb5e7a10c9b6a3090e12a31789dc889f41a8ac6bd2fe37901f819c60fe",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitExceptionRefusal.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitExceptionRefusal.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitExceptionRefusal.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitLegacyCases.class",
+      "bytes": 373,
+      "mode": 420,
+      "sha256": "0c42cb9bfe9373ee9145a9333dc50f2f2c2faeee17a35d0bd0de3146d9e3e9a8",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitLegacyCases.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitLegacyCases.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitLegacyCases.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitRefusals.class",
+      "bytes": 606,
+      "mode": 420,
+      "sha256": "b46d28b31ec78121d6da2b6e2ed253a83086d6695fae59a37b50920e22b178a9",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitRefusals.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitRefusals.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitRefusals.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitSlotCounterCases.class",
+      "bytes": 374,
+      "mode": 420,
+      "sha256": "4d3fc911c9a74a76a21f1f6306ce5909225b3797956ddc3f6c4b3e2d12f2fc4d",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitSlotCounterCases.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitSlotCounterCases.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitSlotCounterCases.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitTopologyRefusals.class",
+      "bytes": 625,
+      "mode": 420,
+      "sha256": "d2e1ae9e3a67c85bcd4f4371dd58318a83e0e4c12945f2ab0bd5ff94496520e1",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitTopologyRefusals.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitTopologyRefusals.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/cf08/EntrySplitTopologyRefusals.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/generalized-manifest.json",
+      "bytes": 3065,
+      "mode": 420,
+      "sha256": "ff37b737e58ae413382d2dc1e88b3bcb2147390906621d7e058e021549addbf4",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/generalized-manifest.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/generalized-manifest.json.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/generalized-manifest.json.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/manifest.json",
+      "bytes": 15843,
+      "mode": 420,
+      "sha256": "b9bc86e90132c50c306bb88136e4201b193e7b8f04e0b06e264b7110c52854a7",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/manifest.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-entry-split/manifest.json.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-entry-split/manifest.json.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/README.md",
+      "bytes": 1154,
+      "mode": 420,
+      "sha256": "6c0f6eaab41c820b4800526171c1b471f77835270369364557de5ac4e4446cea",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/README.md"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/README.md.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/README.md.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/TestLoopRestore2.raung",
+      "bytes": 285,
+      "mode": 420,
+      "sha256": "21857f4a38efbf49a01bb2b7c4738598f83f928e0020b8e4bcb2942dc19fd70f",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/TestLoopRestore2.raung"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/TestLoopRestore2.raung.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/TestLoopRestore2.raung.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/baseline/TestLoopRestore2.java",
+      "bytes": 846,
+      "mode": 420,
+      "sha256": "c7a27b716668454ff0ae9bc728072c1484079d17cd912e05a6fcacc11ca7ff8a",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/baseline/TestLoopRestore2.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/baseline/TestLoopRestore2.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/baseline/TestLoopRestore2.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreEffectPrefix.class",
+      "bytes": 151,
+      "mode": 420,
+      "sha256": "82620d5b5832c76f68bf71eb2a3b8e3cfe0ae54d7b9d8cead09ffa72bcd6aa4a",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreEffectPrefix.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreEffectPrefix.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreEffectPrefix.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreGotoW.class",
+      "bytes": 150,
+      "mode": 420,
+      "sha256": "7f17f096d11066e27856c19fdb25fe8aecdc6354f82b45d19fdca4ddce72348c",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreGotoW.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreGotoW.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/controls/LoopRestoreGotoW.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/JADX-LICENSE",
+      "bytes": 11357,
+      "mode": 420,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/JADX-LICENSE"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/JADX-LICENSE.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/JADX-LICENSE.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/JADX-NOTICE",
+      "bytes": 10658,
+      "mode": 420,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/JADX-NOTICE"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/JADX-NOTICE.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/JADX-NOTICE.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/RAUNG-MIT-LICENSE",
+      "bytes": 1094,
+      "mode": 420,
+      "sha256": "3f4ce5092a550dde8fa65e97a476629664d0bc4b02106b3ef5fb716341648cb7",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/RAUNG-MIT-LICENSE"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/RAUNG-MIT-LICENSE.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/licenses/RAUNG-MIT-LICENSE.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/make_controls.py",
+      "bytes": 3882,
+      "mode": 420,
+      "sha256": "1cbeb41fa57625a2a0ad0357e42f94a41f8872883a8bc28c136f2eb8627ffb79",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/make_controls.py"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/make_controls.py.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/make_controls.py.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/manifest.json",
+      "bytes": 5722,
+      "mode": 420,
+      "sha256": "178016bb587019e6053f4f118b23a6323a48f1d31921bf9722ba0ac049f520a0",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/manifest.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/manifest.json.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/manifest.json.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/original.jar",
+      "bytes": 310,
+      "mode": 420,
+      "sha256": "89d1f82e7a1c46db40ddf1631c750817c0e1f920a06794dd0b4f2a7d64a9ac48",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/original.jar"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/original.jar.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/original.jar.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/original/loops/TestLoopRestore2.class",
+      "bytes": 148,
+      "mode": 420,
+      "sha256": "4fd1503499a049efa8e736a98de4339b6504973f80208987ed0774073df9c447",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/original/loops/TestLoopRestore2.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf08-if-loop-entry/original/loops/TestLoopRestore2.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf08-if-loop-entry/original/loops/TestLoopRestore2.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/README.md",
+      "bytes": 1572,
+      "mode": 420,
+      "sha256": "24bace4ffc14821686bb45c828af6508737b7383eb94f6052d5c51b4d220782d",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/README.md"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/README.md.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/README.md.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls-src/BooleanLocalRefusals.java",
+      "bytes": 853,
+      "mode": 420,
+      "sha256": "610f1eaff2db3b8c9e2e64427e87a04898e759f90e9a97ae3a96bb47a533fc08",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls-src/BooleanLocalRefusals.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls-src/BooleanLocalRefusals.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls-src/BooleanLocalRefusals.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls/jdk23/BooleanLocalRefusals.class",
+      "bytes": 1329,
+      "mode": 420,
+      "sha256": "2e0b922a9abcf735bad7a866b32eeafe8cd0963127006c6f44c3c95b9fb110bc",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls/jdk23/BooleanLocalRefusals.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls/jdk23/BooleanLocalRefusals.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls/jdk23/BooleanLocalRefusals.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls/jdk8/BooleanLocalRefusals.class",
+      "bytes": 1329,
+      "mode": 420,
+      "sha256": "2be0629a6a9003e1ed0e42bb86a077a0bc693daa73927606ad1a1450b3afaedf",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls/jdk8/BooleanLocalRefusals.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls/jdk8/BooleanLocalRefusals.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/controls/jdk8/BooleanLocalRefusals.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/manifest.json",
+      "bytes": 25264,
+      "mode": 420,
+      "sha256": "59b27f2c2b0fa8a44d09cc50b737728f3f79605205eee20d2e030e038c58a353",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/manifest.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/manifest.json.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/manifest.json.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug-full-classes.jar",
+      "bytes": 3095,
+      "mode": 420,
+      "sha256": "3d03fb1d3fba368430bc3c539a6ce3298bb9a2ca0aefc06be10738d9a6a1b08e",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug-full-classes.jar"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug-full-classes.jar.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug-full-classes.jar.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class",
+      "bytes": 1518,
+      "mode": 420,
+      "sha256": "de061b8676da2c2c840335a526bc959b7f63f35e772af94f6d4cea3d6e794a74",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class",
+      "bytes": 1175,
+      "mode": 420,
+      "sha256": "63fbbbb93b2c0194d620a5bd2e6dd61791c753e87ee295d64a2e05422492e10b",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug-full-classes.jar",
+      "bytes": 2471,
+      "mode": 420,
+      "sha256": "8d90924ff4e91e15b7aab65d6e185926b08bf897a9fb5e8be72c08a43ef975ba",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug-full-classes.jar"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug-full-classes.jar.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug-full-classes.jar.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class",
+      "bytes": 1115,
+      "mode": 420,
+      "sha256": "51a3e2e582eebbfb25689ee4d14c7171916f39dd669dbf46a43977802afad194",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel$TestCls.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class",
+      "bytes": 954,
+      "mode": 420,
+      "sha256": "35ca5d663a5d22954350e14806c8759e238c1078326fec599181527aed5b45d3",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/original/no-debug/classes/jadx/tests/integration/loops/TestBreakWithLabel.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/prepare_controls.py",
+      "bytes": 8945,
+      "mode": 420,
+      "sha256": "e8828422c9e390d2db6da3ffdbf15a0fcfe10b19d904791f8ed8cf436e93df6b",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/prepare_controls.py"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/prepare_controls.py.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/prepare_controls.py.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/LICENSE",
+      "bytes": 11357,
+      "mode": 420,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/LICENSE"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/LICENSE.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/LICENSE.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/NOTICE",
+      "bytes": 10658,
+      "mode": 420,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/NOTICE"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/NOTICE.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/NOTICE.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/TestBreakWithLabel.java",
+      "bytes": 962,
+      "mode": 420,
+      "sha256": "fa38d5b302c0bec8a8424312304b260cfb036e0144f147fad1666aaa358b3a69",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/TestBreakWithLabel.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/TestBreakWithLabel.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/cf09-literal-boolean-locals/upstream/TestBreakWithLabel.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/foreach-local-bindings/debug/TestNestedLoops$TestCls.class",
+      "bytes": 1356,
+      "mode": 420,
+      "sha256": "4741538cc0ef1ba378cca4fccc8505007956a6b14520a1808c3874d7ea167e2c",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/foreach-local-bindings/debug/TestNestedLoops$TestCls.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/foreach-local-bindings/debug/TestNestedLoops$TestCls.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/foreach-local-bindings/debug/TestNestedLoops$TestCls.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/foreach-local-bindings/none/TestNestedLoops$TestCls.class",
+      "bytes": 917,
+      "mode": 420,
+      "sha256": "f557e2072c25b68dc89199ae3a75e045f6ebdf3e80d022f851fc0094b21d5807",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/foreach-local-bindings/none/TestNestedLoops$TestCls.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/foreach-local-bindings/none/TestNestedLoops$TestCls.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/foreach-local-bindings/none/TestNestedLoops$TestCls.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/JADX-LICENSE",
+      "bytes": 11357,
+      "mode": 420,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/JADX-LICENSE"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/JADX-LICENSE.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/JADX-LICENSE.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/JADX-NOTICE",
+      "bytes": 10658,
+      "mode": 420,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/JADX-NOTICE"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/JADX-NOTICE.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/JADX-NOTICE.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/README.md",
+      "bytes": 1547,
+      "mode": 420,
+      "sha256": "6279235124bc224647e77a99193e1c5b0943b7f82bbd414f2ab6546142ca7d99",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/README.md"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/README.md.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/README.md.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/driver/LoopConditionInvokeControlDriver.java",
+      "bytes": 4381,
+      "mode": 420,
+      "sha256": "a92a766e4189d22b0d68b9210477cdb503bcf59cd45860b5f46fb7ef3c823cd6",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/driver/LoopConditionInvokeControlDriver.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/driver/LoopConditionInvokeControlDriver.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/driver/LoopConditionInvokeControlDriver.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/driver/TestLoopConditionInvokeDriver.java",
+      "bytes": 3821,
+      "mode": 420,
+      "sha256": "3e75df6a662f0b04ff6a8c55a40491c72f4bba3013b85ca6b7c268a00b82722f",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/driver/TestLoopConditionInvokeDriver.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/driver/TestLoopConditionInvokeDriver.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/driver/TestLoopConditionInvokeDriver.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/freeze-and-census.json",
+      "bytes": 9584,
+      "mode": 420,
+      "sha256": "4b9b3204eb7b820a6f8707507e92939971d512fe24490c15770da38d7ebbb254",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/freeze-and-census.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/freeze-and-census.json.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/freeze-and-census.json.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac23-debug/LoopConditionInvokeControl.class",
+      "bytes": 1132,
+      "mode": 420,
+      "sha256": "a2c37132b527b9d10c5f0f9817eb8bb954fc98e157444627beb7f5fcf8114ac6",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac23-debug/LoopConditionInvokeControl.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac23-debug/LoopConditionInvokeControl.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac23-debug/LoopConditionInvokeControl.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac23-no-debug/LoopConditionInvokeControl.class",
+      "bytes": 658,
+      "mode": 420,
+      "sha256": "f5e135df7c8413b120b6e6e1beae7bdd13a547d6d5a5a5f79339437248c282f1",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac23-no-debug/LoopConditionInvokeControl.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac23-no-debug/LoopConditionInvokeControl.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac23-no-debug/LoopConditionInvokeControl.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac8-debug/LoopConditionInvokeControl.class",
+      "bytes": 1132,
+      "mode": 420,
+      "sha256": "99ed3bc44d585f744e38f331605c7f789da01d017803d843820b0901cbeaf93f",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac8-debug/LoopConditionInvokeControl.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac8-debug/LoopConditionInvokeControl.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac8-debug/LoopConditionInvokeControl.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac8-no-debug/LoopConditionInvokeControl.class",
+      "bytes": 658,
+      "mode": 420,
+      "sha256": "28d04e2d4bf58faaf4d45f58b0939e7d32603e0ecdd889dfd9d0ce455c41971f",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac8-no-debug/LoopConditionInvokeControl.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac8-no-debug/LoopConditionInvokeControl.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/javac8-no-debug/LoopConditionInvokeControl.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/source/LoopConditionInvokeControl.java",
+      "bytes": 1026,
+      "mode": 420,
+      "sha256": "9bb63f647c8a5bd519a8b9f99bb75db42a62637012034e055446faa6be6d362e",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/source/LoopConditionInvokeControl.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/source/LoopConditionInvokeControl.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/source/LoopConditionInvokeControl.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/source/TestLoopConditionInvoke.java",
+      "bytes": 898,
+      "mode": 420,
+      "sha256": "b21edd0b3316fbaeb89b6e19026e9b6721fe2decbc8e30059c8b6ed21eea4756",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/source/TestLoopConditionInvoke.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/source/TestLoopConditionInvoke.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/source/TestLoopConditionInvoke.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/upstream-debug/TestLoopConditionInvoke$TestCls.class",
+      "bytes": 836,
+      "mode": 420,
+      "sha256": "8c754864e90ec03497f6f269bcf7c8887296eb3a8f332e2949bcc910770b05c7",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/upstream-debug/TestLoopConditionInvoke$TestCls.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/upstream-debug/TestLoopConditionInvoke$TestCls.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/upstream-debug/TestLoopConditionInvoke$TestCls.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/upstream-no-debug/TestLoopConditionInvoke$TestCls.class",
+      "bytes": 506,
+      "mode": 420,
+      "sha256": "2e450dce9240fdfaad0ba0cc9edce0e575c7d42cdbc8d8c8b6e8e1aa5ba3353a",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/upstream-no-debug/TestLoopConditionInvoke$TestCls.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/assignment-condition-widening/upstream-no-debug/TestLoopConditionInvoke$TestCls.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/assignment-condition-widening/upstream-no-debug/TestLoopConditionInvoke$TestCls.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/indexed-list-parameters/NestedLoops2GenericControls.java",
+      "bytes": 2275,
+      "mode": 420,
+      "sha256": "d27ec67a11e408edb4d1a19b7a9b9bc2f72bdb6528798425a107afd73d3f048c",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/indexed-list-parameters/NestedLoops2GenericControls.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/indexed-list-parameters/NestedLoops2GenericControls.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/indexed-list-parameters/NestedLoops2GenericControls.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/indexed-list-parameters/README.md",
+      "bytes": 4629,
+      "mode": 420,
+      "sha256": "c1f43fbe8bde67f200a39eff2758d12e57c7e3aa5c3784bb7f207053d90915fb",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/indexed-list-parameters/README.md"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/indexed-list-parameters/README.md.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/indexed-list-parameters/README.md.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/indexed-list-parameters/debug/NestedLoops2GenericControls.class",
+      "bytes": 2970,
+      "mode": 420,
+      "sha256": "d71671a2f7f73edf3aada8420c3bdda73e638d3f92b7c6489f0d2da25dfdb2cb",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/indexed-list-parameters/debug/NestedLoops2GenericControls.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/indexed-list-parameters/debug/NestedLoops2GenericControls.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/indexed-list-parameters/debug/NestedLoops2GenericControls.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/indexed-list-parameters/no-debug/NestedLoops2GenericControls.class",
+      "bytes": 1891,
+      "mode": 420,
+      "sha256": "860d037a221b4444d8024d46475b4f7ec3c77d941800998b15fa58b96385c09a",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/indexed-list-parameters/no-debug/NestedLoops2GenericControls.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/java8/indexed-list-parameters/no-debug/NestedLoops2GenericControls.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/java8/indexed-list-parameters/no-debug/NestedLoops2GenericControls.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/typed-list-foreach/README.md",
+      "bytes": 289,
+      "mode": 420,
+      "sha256": "00baf4c11d66a45e7da0ee20f92822ac6822b7708215817673f73639e44910a7",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/typed-list-foreach/README.md"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/typed-list-foreach/README.md.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/typed-list-foreach/README.md.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/typed-list-foreach/TypedListForEachCases.class",
+      "bytes": 1907,
+      "mode": 420,
+      "sha256": "eb5e8bbb7a2d9912cad67447efa5f24473264e26a4a660e747d6460f9858d73a",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/typed-list-foreach/TypedListForEachCases.class"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/typed-list-foreach/TypedListForEachCases.class.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/typed-list-foreach/TypedListForEachCases.class.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/typed-list-foreach/TypedListForEachCases.java",
+      "bytes": 1533,
+      "mode": 420,
+      "sha256": "e38e258bc8cb57b1bf1cedbe2100a72a5ece84fc37d4bcf37d1297b25392eaf7",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/typed-list-foreach/TypedListForEachCases.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-fixtures/tests/fixtures/typed-list-foreach/TypedListForEachCases.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-fixtures/tests/fixtures/typed-list-foreach/TypedListForEachCases.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/.github/workflows/ci.yml",
+      "bytes": 17361,
+      "mode": 420,
+      "sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/.github/workflows/ci.yml"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/.github/workflows/ci.yml.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/.github/workflows/ci.yml.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/Cargo.lock",
+      "bytes": 19977,
+      "mode": 420,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/Cargo.lock"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/Cargo.lock.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/Cargo.lock.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/Cargo.toml",
+      "bytes": 2855,
+      "mode": 420,
+      "sha256": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/Cargo.toml"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/Cargo.toml.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/Cargo.toml.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/crates/jarde-java/src/build.rs",
+      "bytes": 2079066,
+      "mode": 420,
+      "sha256": "3c78aab0ef0ed0f65bc05b6eb36ff4640331033651e44d1bf74130168965fc75",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/crates/jarde-java/src/build.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/crates/jarde-java/src/build.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/crates/jarde-java/src/build.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/crates/jarde-java/src/region.rs",
+      "bytes": 1208349,
+      "mode": 420,
+      "sha256": "209de1ed354203b9f2289f19d74d7a5a453afd5a785a8abe12852a6e8983a242",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/crates/jarde-java/src/region.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/crates/jarde-java/src/region.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/crates/jarde-java/src/region.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/crates/jarde-java/src/region/loop_arm_return_tests.rs",
+      "bytes": 53834,
+      "mode": 420,
+      "sha256": "7d7df79ac14c1eb16127cb8ac3ed25b20ae3265f11159798073e681c2e702b72",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/crates/jarde-java/src/region/loop_arm_return_tests.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/crates/jarde-java/src/region/loop_arm_return_tests.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/crates/jarde-java/src/region/loop_arm_return_tests.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/crates/jarde-java/src/report.rs",
+      "bytes": 862118,
+      "mode": 420,
+      "sha256": "fd1efe686490976a6abc4d0527bd4523471f857fbf2f12b24364f095a028f949",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/crates/jarde-java/src/report.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/crates/jarde-java/src/report.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/crates/jarde-java/src/report.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/crates/jarde-reader/src/classfile.rs",
+      "bytes": 538964,
+      "mode": 420,
+      "sha256": "cb33e7f738e05577b830161ff540e912d2daff66d6b315ed8b7e7edb63cf69e0",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/crates/jarde-reader/src/classfile.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/crates/jarde-reader/src/classfile.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/crates/jarde-reader/src/classfile.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/src/bulk.rs",
+      "bytes": 167975,
+      "mode": 420,
+      "sha256": "f512998a8fd28052d9c2a23c9b04e6498246404ab389342f148a9e7893151e4b",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/src/bulk.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/src/bulk.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/src/bulk.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/src/class_source.rs",
+      "bytes": 739735,
+      "mode": 420,
+      "sha256": "c799b95fab3f0864198edbfd0fad5120c362f3f668eabd5871e3f442dfea49f7",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/src/class_source.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/src/class_source.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/src/class_source.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/src/facade.rs",
+      "bytes": 2157477,
+      "mode": 420,
+      "sha256": "fe071c89c1c5035ce07927fad53744f683a8bf5d7a80b87b384ce4ec64701603",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/src/facade.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/src/facade.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/src/facade.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/fixtures/corpus-fingerprint.json",
+      "bytes": 546758,
+      "mode": 420,
+      "sha256": "61ed5f3cc653f8f14112ed87f49caeb68025c1aae13056a07444756290e47aed",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/fixtures/corpus-fingerprint.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/fixtures/corpus-fingerprint.json.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/fixtures/corpus-fingerprint.json.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/fixtures/foreach-local-bindings/source/TestNestedLoops.java",
+      "bytes": 876,
+      "mode": 420,
+      "sha256": "4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/fixtures/foreach-local-bindings/source/TestNestedLoops.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/fixtures/foreach-local-bindings/source/TestNestedLoops.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/fixtures/foreach-local-bindings/source/TestNestedLoops.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/fixtures/p3-iterable-foreach/IterableBoundaryRunner.java",
+      "bytes": 2542,
+      "mode": 420,
+      "sha256": "0402ae6c2c4185933cbd3290645ddd5d02ef6896a77e81caa153892ed586a739",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/fixtures/p3-iterable-foreach/IterableBoundaryRunner.java"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/fixtures/p3-iterable-foreach/IterableBoundaryRunner.java.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/fixtures/p3-iterable-foreach/IterableBoundaryRunner.java.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_assignment_condition_widening.rs",
+      "bytes": 14166,
+      "mode": 420,
+      "sha256": "73d3166c5f836e23837a1567d52928fe68d30268d41c7f98b4be227f07296f46",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_assignment_condition_widening.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_assignment_condition_widening.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_assignment_condition_widening.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_entry_split_int_loops.rs",
+      "bytes": 35050,
+      "mode": 420,
+      "sha256": "123ccaa5cc2de43ffc8bc71f23e2da7802f12e05ab8128170be7169efa731cea",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_entry_split_int_loops.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_entry_split_int_loops.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_entry_split_int_loops.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_hoisted_boolean.rs",
+      "bytes": 27575,
+      "mode": 420,
+      "sha256": "bf424fcb6e493e34511a5be51e39d57c189b5921612e92ef694350c18a990389",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_hoisted_boolean.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_hoisted_boolean.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_hoisted_boolean.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_hoisted_iterator_foreach.rs",
+      "bytes": 22448,
+      "mode": 420,
+      "sha256": "8a86063889dbff8a1b486e528bd6bde966bdcd37e935ed76dc6dcb092ae118c8",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_hoisted_iterator_foreach.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_hoisted_iterator_foreach.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_hoisted_iterator_foreach.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_if_loop_entry_origins.rs",
+      "bytes": 14034,
+      "mode": 420,
+      "sha256": "31c52bbf222dff698a308207e9c88130b8a4613f4afe52ae6a419228881aa385",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_if_loop_entry_origins.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_if_loop_entry_origins.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_if_loop_entry_origins.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_iterable_foreach.rs",
+      "bytes": 21917,
+      "mode": 420,
+      "sha256": "0eebb5ea210dd581cd3ddf6adce36cb1e78def2fbeb19074206985dec4aecb17",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_iterable_foreach.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_iterable_foreach.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_iterable_foreach.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_nested_loop_side_exits.rs",
+      "bytes": 27656,
+      "mode": 420,
+      "sha256": "4cfa3be4f07d69cc205acd1bf82430a84a1dceb7da71e63045798b79f16b1984",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_nested_loop_side_exits.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_nested_loop_side_exits.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_nested_loop_side_exits.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_proved_literal_boolean_locals.rs",
+      "bytes": 11418,
+      "mode": 420,
+      "sha256": "11cc9979ddb88c39d65a78ffe99b558c62998bfa543a7665ecf3a2636d1fe48b",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_proved_literal_boolean_locals.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/p3_proved_literal_boolean_locals.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/p3_proved_literal_boolean_locals.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/recover_lambda_primitive_array_capture.rs",
+      "bytes": 23368,
+      "mode": 420,
+      "sha256": "bc1d8bb91072f620513350311016f299f8ab3072383301e6e0768875d3e339a3",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/recover_lambda_primitive_array_capture.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/recover_lambda_primitive_array_capture.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/recover_lambda_primitive_array_capture.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/structured_list_generic_bodies.rs",
+      "bytes": 91968,
+      "mode": 420,
+      "sha256": "8ffd38e005d52efc5ea864bab92b27acd840780b722a1cb49d5c2ddc0fea5ca1",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/structured_list_generic_bodies.rs"
+    },
+    {
+      "archive_path": "evidence/own-ci/product-source/tests/structured_list_generic_bodies.rs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/product-source/tests/structured_list_generic_bodies.rs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/review.json",
+      "bytes": 457800,
+      "mode": 420,
+      "sha256": "d419bfce45cc15ce71592c16093c0c26534f181405fa529a702fa00ef676e4ee",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/review.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/run-logs.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/run-logs.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/run-logs.zip",
+      "bytes": 881530,
+      "mode": 420,
+      "sha256": "53596396d9aa7e56cc43691ddbb9ec7d9353633559fb0b6fcb5a4acfdce7375d",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/run-logs.zip"
+    },
+    {
+      "archive_path": "evidence/own-ci/run.json",
+      "bytes": 10158,
+      "mode": 420,
+      "sha256": "573ff046b75cf61baa3897944472d465728b2d1ade5f4c1b0d0af44a2abde544",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/run.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/run.json.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/run.json.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/run.json.transport-attempt-1",
+      "bytes": 10158,
+      "mode": 420,
+      "sha256": "573ff046b75cf61baa3897944472d465728b2d1ade5f4c1b0d0af44a2abde544",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/run.json.transport-attempt-1"
+    },
+    {
+      "archive_path": "evidence/own-ci/run.json.transport-attempt-1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/run.json.transport-attempt-1.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/source-pins.json",
+      "bytes": 28189,
+      "mode": 420,
+      "sha256": "b452c9820c54d7c1d99aa931ff9acda5695a15eb0c05272b4a543217ab2e80c4",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/source-pins.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/stable.log",
+      "bytes": 1959086,
+      "mode": 420,
+      "sha256": "2ccc6455fc51a08fda68a8e7a1f491904c3ecc4d05b8d42741686666ed2ba8e7",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/stable.log"
+    },
+    {
+      "archive_path": "evidence/own-ci/stable.log.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/stable.log.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/stable.log.transport-attempt-1",
+      "bytes": 1959086,
+      "mode": 420,
+      "sha256": "2ccc6455fc51a08fda68a8e7a1f491904c3ecc4d05b8d42741686666ed2ba8e7",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/stable.log.transport-attempt-1"
+    },
+    {
+      "archive_path": "evidence/own-ci/stable.log.transport-attempt-1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/stable.log.transport-attempt-1.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/step-log-supplement.json",
+      "bytes": 1620,
+      "mode": 420,
+      "sha256": "e41b5e325fad4ebc0a059f0da6424cc884a9d85bdc2a480dcd0001b25d6bb20b",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/step-log-supplement.json"
+    },
+    {
+      "archive_path": "evidence/own-ci/supply-chain.log",
+      "bytes": 139763,
+      "mode": 420,
+      "sha256": "846439854fac5595f1f9236a3028db3c971b95fb1620a2969eb4d6f27fc99969",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/supply-chain.log"
+    },
+    {
+      "archive_path": "evidence/own-ci/supply-chain.log.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/supply-chain.log.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/supply-chain.log.transport-attempt-1",
+      "bytes": 139763,
+      "mode": 420,
+      "sha256": "846439854fac5595f1f9236a3028db3c971b95fb1620a2969eb4d6f27fc99969",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/supply-chain.log.transport-attempt-1"
+    },
+    {
+      "archive_path": "evidence/own-ci/supply-chain.log.transport-attempt-1.stderr.raw",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/supply-chain.log.transport-attempt-1.stderr.raw"
+    },
+    {
+      "archive_path": "evidence/own-ci/workflow.sha256",
+      "bytes": 65,
+      "mode": 420,
+      "sha256": "fe335884628ab091f2ac56f801b3f1995c3728d2c51fe86c331d2dbf5741d943",
+      "source_path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/workflow.sha256"
+    },
+    {
+      "archive_path": "evidence/product-binding/review.json",
+      "bytes": 1589125,
+      "mode": 420,
+      "sha256": "8152bb244cbd2ae031843cd9b5bcb66dab3372a7e53664ecc06098944015c991",
+      "source_path": "/private/tmp/jarde-literal-boolean-product-binding-root-v1-20261019/review.json"
+    },
+    {
+      "archive_path": "evidence/root-review/ci-role-review.json",
+      "bytes": 326,
+      "mode": 420,
+      "sha256": "3913634efdd473c946dd5fddec3d9fcf15cc00b4f45400d77716b327a46c8728",
+      "source_path": "/private/tmp/jarde-literal-boolean-final-acceptance-root-v1-20261019/ci-role-review.json"
+    },
+    {
+      "archive_path": "evidence/root-review/root-aggregation-v1-failure.txt",
+      "bytes": 352,
+      "mode": 420,
+      "sha256": "35264bdd0c2862c8b2bdd4e3ace0eb20b8e4e9f0da2c9b836f986f35d6ab9278",
+      "source_path": "/private/tmp/jarde-literal-boolean-final-acceptance-root-v1-20261019/root-aggregation-v1-failure.txt"
+    },
+    {
+      "archive_path": "evidence/root-review/root-review.json",
+      "bytes": 1723,
+      "mode": 420,
+      "sha256": "be216aadd2d4e5c882f5e3c3635e5e83e18655a0c1c504d95e203e6275128874",
+      "source_path": "/private/tmp/jarde-literal-boolean-final-acceptance-root-v1-20261019/root-review.json"
+    }
+  ],
+  "notes": [
+    "All supplied failure receipts, raw streams, independent official ZIPs, and named-outcome files are preserved as payload.",
+    "No CLI executable, Cargo target/cache, or Rust build artifact is allowed in the payload."
+  ],
+  "official_zip_files": [
+    {
+      "path": "/private/tmp/jarde-literal-boolean-own-ci-root-v1-20261019/run-logs.zip",
+      "sha256": "53596396d9aa7e56cc43691ddbb9ec7d9353633559fb0b6fcb5a4acfdce7375d"
+    }
+  ],
+  "payload_member_count": 524,
+  "roles_present": [
+    "history",
+    "named_outcomes",
+    "native",
+    "own_ci",
+    "product_binding",
+    "tooling"
+  ],
+  "schema": "jarde-native-own-ci-evidence-inventory-v1"
+}

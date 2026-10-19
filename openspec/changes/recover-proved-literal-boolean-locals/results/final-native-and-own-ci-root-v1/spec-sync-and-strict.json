@@ -1,0 +1,8 @@
+{
+  "main_spec_requirements_added": 1,
+  "main_spec_scenarios_added": 4,
+  "main_specs_strict_passed": 18,
+  "all_specs_and_changes_strict_passed": 382,
+  "all_strict_stdout_sha256": "9a02a8e679d2f1887d3eaa58002accf40fb6de064febed1f65cd92787bf3e9e9",
+  "scope": "Actual CLI verification before task3.2 checkbox closure; no product source change."
+}

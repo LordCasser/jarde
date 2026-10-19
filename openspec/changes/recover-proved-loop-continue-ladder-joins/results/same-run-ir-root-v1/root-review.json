@@ -1,0 +1,12 @@
+{
+  "status": "root_reopened_all_payload_bytes_and_directory_modes",
+  "archive_sha256": "cd7f04d0af145c270f85b9a3fa3fd3c2262fb43aa5f42f7493aa7397cb1f1d26",
+  "archive_bytes": 792162,
+  "counts": {
+    "directory": 10,
+    "file": 31
+  },
+  "receipt_sha256": "8e4f750d07a9823ab4fe525e80a5802f264ee088f7469ce9dd29792b6d348c4d",
+  "source_restored_exact": true,
+  "target_absent": true
+}
