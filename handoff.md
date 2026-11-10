@@ -1,3 +1,15 @@
+# 2026-11-10 证据清理、历史重写与仓库收敛
+
+本轮按用户要求清理不适合进入 GitHub 的运行证据，并把本地与远端收敛到同一主线。清理完成时的 main 为 `9573be9e`；本提交只追加交接记录。
+
+**证据清理**：删除未跟踪的 `openspec/changes/restructure-demand-driven-recovery/results`（约 23 GB）；从当前树和全部历史移除 `openspec/**/results/**`、`openspec/**/evidence/**` 下的非 Markdown 产物（约 18.6 万个文件）；保留 2,300 个 Markdown 结论摘要。`.gitignore` 继续忽略这些目录的运行产物，但允许 `.md`。`openspec/` 从 3.4 GB 降到 30 MB，`.git` 从 8.2 GB 降到 70 MB。历史已由 `git filter-repo` 重写，旧 SHA 全部失效；远端 `main` 已强制同步。
+
+**分支与引用**：分析并删除 16 个 `codex/*` 分支（15 个已完全并入 main；1 个 `branch-throw-finally-entry` 是 10-17 的过时探针，未进入主线，且依赖已清理的 `EX.class`）。补丁暂存 `/tmp/jarde-codex-branch-throw-finally-entry.patch`；另删除 6 个 `refs/codex/snapshots/*` 与旧 `refs/stash`，补丁分别在 `/tmp/jarde-codex-snapshot-75969137.patch`、`/tmp/jarde-stash-ordinary-try-draft.patch`。当前本地与远端都只有 `main`。
+
+**已知影响（未修复）**：清理后 `cargo check --workspace --all-targets --all-features` 失败（exit 101），多个测试仍用 `include_bytes!`/`include_str!` 引用已删除的 `openspec/evidence/...` 输入；当前主线 `p3_branch_throw_return_finally.rs` 也引用已删除的 `EX.class`。按用户要求未修复，后续需把这些输入迁入 `tests/fixtures` 或恢复对应文件。
+
+**本地临时文件**：`docs/tmp-architecture-adversarial-audit-2026-10-20.md` 与 `docs/tmp-linus-lens-project-review-2026-10-28.md` 保留在本地，已加入 `.git/info/exclude`，不进入仓库。`/tmp` 下保留重写前 bundle 与上述补丁作为回退材料。
+
 # 2026-11-07（续）机制修复链闭环：13 项交付全部 review，机制类红灯清零，剩维护批+两项新显形诊断
 
 本日续前条。自前条更新后完成的派发与 review（全部 resume 原 coder，逐项独立验收）：
