@@ -2,6 +2,56 @@
 
 本页保留阶段设计与当时的完成判定；正文日期和任务数不代表当前主线。当前进度见 [handoff](../handoff.md)，Java 特性执行范围见 [71 单元账本](evidence/jadx-feature-inventory-2026-09-27/summary.md)。
 
+## JavaJive 借鉴增量（2026-11-10，规划，未实施）
+
+核对基线：[jarde `30464b0`](https://github.com/LordCasser/jarde/tree/30464b0838aa9da4746aad3b1753501231e9ace0) 与 [JavaJive `18a7a4b`](https://github.com/yaklang/javajive/tree/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb)。以下是源码、测试与现有规划的增量筛选，不是新一轮性能或正确性实测，也不改变历史阶段、已有 change 的勾选或完成状态。先按 [handoff](../handoff.md) 收口两项已有实现的 3.4 文档/归档与最终交付检查，不重做已验收实现；再按下列优先级拆最小 OpenSpec change。
+
+### 已有基础与去重
+
+- **不重建 CFG/SSA、按需查询或恢复流水线。** P2、D1–D5 的结果选择/事实交接和 bulk 均已有实现与测试；本页旧日期的“0/32、未开始”是历史记录。参考当前 [`src/lib.rs`](../src/lib.rs)、[按需读取回归](../tests/p1_query_demand.rs)、[证据选择对照](../tests/d5_semantic_comparison.rs) 和 [bulk 任务](changes/add-parallel-bulk-recovery/tasks.md)。
+- **不重建类装配、成员账本或正确性状态。** [`ClassSourceReport`](../src/class_source.rs) 已保留物理 fields/methods、逐成员 outcome、隐藏/省略关系、同次投影输入和原始映射；[恢复验收规格](specs/recovery-validation/spec.md) 已区分编译、验证、语义、覆盖与执行，三方完整类对照也已存在。新增工作只补交付层和可观测性缺口。
+- **现代元数据不是现代源码。** [P4 规格](specs/modern-classfile-semantics/spec.md) 与 [真实 fixture 测试](../tests/p4_modern_facts.rs) 已覆盖 record/sealed/concat 等结构事实及 Java 8 输出冲突；下述现代源码项是细化本页已有后续方向，不重新立项 P4 reader，也不宣称当前可完整恢复现代 Java。
+
+### 第一阶段：扩展现有验收与交付（高优先级）
+
+**JV-A：把 compiler profile 和源码角色加入现有语义回归。** 借鉴 JavaJive 的 [语义审计](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/docs/decompiler-semantic-audit.md) 及 [`SourceCompilerProfile`](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/classparser/decompile_options.go)，扩展既有 oracle/CI，不再新造“语义测试框架”。
+
+- 固定输入哈希、JDK/compiler 版本、`--release`、目标运行时、依赖与配置；把 native javac8 和现代 javac `--release 8` 分开，因为合成成员、访问桥、lambda/匿名类元数据再生不一定相同。沿用隔离 classpath，完整生成类原样重编，禁止原输入类暗中补齐缺失产物。
+- 优先补真实 compiler 差异与同 helper 多使用点回归：捕获参数数量/顺序、每次词法 factory 上下文、调用身份、构造/类初始化顺序、反射签名。复用 same-run 投影和 source-map 身份；先证实可复现缺口，再新增修复，不把已有 lambda 绑定重新实现一遍。
+- **验收：** 每个纳入用例分别记录生成、整类编译、`-Xverify:all`、运行值/异常/副作用、元数据与占位/未恢复成员；所有宣称已支持的配置逐项匹配原 class。缺工具、超时、未运行、拒绝、不可比各自计数，不能并入通过；编译成功和对照反编译器输出均不是语义真值。保留已知反例与原有预算/取消/证据选择门禁。
+
+**JV-B：交付 artifact 级源码树与 manifest。** 当前 [`bulk`](../src/bulk.rs) 和 CLI export 已提供方法 JSONL，`class_source` 已有整类文本；本次核对未见独立源码树交付计划。借鉴 JavaJive 的 [结构化 archive 导出与逐 entry/archive 报告](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/classparser/jarwar/exports.go)，在现有库能力外增加薄交付适配，不另建调度器或恢复器。
+
+- 首片交付用于浏览/审计的 `.java` 文件树与机器可读 manifest，记录输入/配置、物理定义到 source unit 的映射、折叠/省略成员、诊断、未恢复项、资源是否保留及每个文件的交付结果。资源复制是显式选项且按预算计费，不默认执行资源或生成可运行构建脚本。
+- 明确重复类、同名路径、嵌套容器、MR-JAR 各版本与已证明嵌套类折叠的路径/冲突策略；物理视图保留不同来源，运行视图只消费调用方显式选择，不能按最后写入覆盖或猜 classpath。非法路径与目录穿越拒绝。
+- **验收：** 对 CLASS/JAR/WAR、嵌套/MR 与重复定义 fixture 核对 manifest 无静默丢失；同输入/配置输出确定。取消、预算不足、半写/flush/关闭失败保留诚实的部分交付状态，不能发布成功终态；复用 bulk 总账与停止传播。源码树可交付、可编译、元数据保真、运行等价仍是不同承诺，不把首片称为完整可重建工程。
+
+### 第二阶段：现代 Java 源码恢复（按特性验收）
+
+**JV-C：把现代语法后续项拆为可证子集。** 借鉴 JavaJive 的 [record 恢复](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/classparser/t20_record.go) 与 [pattern 恢复](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/classparser/t21_pattern.go)，复用现有 P4 事实、Region/SSA、类装配与来源契约。先按每片目标 release 补齐严格字节码/属性校验与 IR 准入，不能靠 Forensic 解析成功、改 major 或直接放宽版本门绕过。相关 Java 8 结构/类型前置未闭合时先保守拒绝；不等待无关语法全部完成，也不绕过依赖门槛。
+
+1. **先做 record / sealed 源级声明。** record 须核对组件顺序、构造/访问器与 `ObjectMethods` bootstrap 等真实身份，只隐藏已证明等价的编译器成员；自定义构造、覆写方法、注解/泛型及错误元数据分别准入或拒绝。sealed 须证明 permitted subclasses 与选定定义关系，不能仅凭类名生成 `permits`。
+2. **现代 concat 继续既有任务，switch expression 另案。** `StringConcatFactory` → 既有 `+` 由 [present-proved-java-structure 的 2c.22](changes/present-proved-java-structure/tasks.md) 继续拥有，不等待 record/sealed；本节只补真实版本与 recipe/常量、类型转换、求值/异常顺序验收。switch expression 在自身 Region/值汇合前置成立后逐臂证明 `yield`、异常完成与控制流归属。不能把普通 switch 重排或可编译降级当作原语义已证。
+3. **最后做 Java 21 pattern 子集。** 分开验证 `instanceof` 模式、type/record pattern switch 的 null、guard、绑定范围、求值次数、失败路径及 exhaustiveness；不将普通 switch 或 record 声明支持推导为 pattern 全覆盖。
+
+**验收：** 使用未改 major/minor 的真实 Java 17/21 产物、对应源码输出级别和明确编译/运行矩阵，按 JV-A 对完整类/相关类族执行对照；每片含正例、合法近例、缺依赖/错误元数据、预算与取消。支持矩阵分别列解析、版本校验、输出形态、编译和行为证据。JavaJive 当前 [源码入口拒绝 major > 65](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/classparser/classfile_version.go)，pattern 亦有受限形状；这些是其边界，不能写成 jarde 应模仿的能力或“完整 Java 21+”承诺。
+
+### 第三阶段：解释恢复决策（中优先级，可独立推进）
+
+**JV-D：在现有可选证据上补充 proof-obligation 观察。** 借鉴 JavaJive 的 [恢复观察](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/classparser/recovery_observation.go) 与 [选项契约](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/classparser/decompile_options.go)，解释规则为何准入、拒绝或尚未证明；其当前 observer 仅覆盖普通构造器 capture-motion 候选，不是通用证明系统。jarde 复用 RuleDetails、物理身份、BCI 和 same-run 回执，不新建 shadow SSA 或第二套成员账本。
+
+- 只记录实际发生的证明观察、理由、相关位置和截断状态；`UNPROVED` 不等于 Java 不可表达，未观测/缺记录不等于通过。观察开关不重跑证明、不授予新改写权限、不改变核心分析计费或正文；记录自身仍遵守已有可选证据预算与交付停止合同。
+- 如后续需要字节码核对、框架文本分析、审查阅读等视图，先定义各自消费的现有平面及限制，再做薄适配。JavaJive 实际恢复模式是 `Precision` / `Compatibility`；它的 `RetainUnprovedSource` 不承诺可重编译，`Precision` 也不证明任意 JVM 等价，不能把三个消费场景误写成它已实现的三个模式。
+- **验收：** 足额预算下对照默认/局部/All 与观察开关，正文、恢复 outcome、核心诊断与已有证据逐项一致；紧预算/取消下观察记录按 D3 合同有界截断或停止，保留已提交正文，附加观察的 usage、诊断和顶层 execution 如实反映停止，不要求与关闭观察时相同。测试未观测、拒绝、截断、停止和同 BCI 不同方法身份。保留逐规则来源与实际配置，不让“更好读”的视图隐藏未恢复成员或掩盖执行状态。
+
+### 暂不纳入近期实现
+
+- **后编译重建单独提案。** JavaJive 明确区分 [源码及有限 metadata restoration](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/classparser/jar_source_artifact.go) 与 [需要 `FinishClass` 的 executable lowering](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/classparser/jar_reconstruction_artifact.go)。值得借鉴的是产物义务分层；jarde 的 JV-B 首片不修改重编字节码。以后若有明确往返重建需求，须另证 compiler/profile、物理输入/源码回执绑定、原子失败及最终验证，未完成 lowering 的中间 class 不能交付为等价产物。
+- **DEX/APK 只保留条件式调研。** JavaJive 的 [DEX 转换](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/dex2jar/dex2jar.go) 和 [独立 inspect](https://github.com/yaklang/javajive/blob/18a7a4b1a2ec765c975c58627a90456b4f4c8bcb/inspect/analyze.go) 可供借鉴失败隔离、来源与事务交付；它仍是受限子集。jarde 当前 Loop6 是 Smali/DEX 输入边界，不是 JVM 恢复回归。仅在有明确 Android 需求时评估独立输入适配、指令/异常/验证语义与 DEX→JVM 来源损失；不把转换后可编译当原 DEX 等价，也不把资源解码、native 库或序列化协议扩进本路线。
+- **不采用默认 compatibility 文本修补、全程序预索引或新生产 JVM 依赖。** 保持 Rust library-first、显式 resolver/预算与保守输出；跨项目算法和测试只作证据来源，移植代码/语料前另核维护成本、许可证与归属。性能与 CI 分片优化延续现有实测专项，不能用覆盖率、文件数或不同交付物的耗时替代正确性验收。
+
+## 历史阶段记录
+
 P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12、P4 10/10、P5 10/10；主规格现为 **18 份**。2026-09-20 对 `cd6f2f0` 的独立复核确认的两条 P1——嵌套表达式旧值重算（P3-R8）与字段生产者在 fallback 中丢失（P3-R9）——已由 `close-recovery-correctness-gaps`（4/4，`fd0aae8`）关闭，两条反例与正向对照进入永久语料；历史归档记录保留。见 [收尾验证](changes/archive/2026-09-20-close-recovery-correctness-gaps/verification.md)。
 
 相关入口：[OpenSpec 规划入口](README.md)、[技术栈与依赖选型](dependencies.md)、[架构验收与阶段映射](acceptance.md)。
