@@ -173,6 +173,7 @@ const POOL_PLACEMENT_UNIT: u64 = 1;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct BulkRecoveryRequest {
+    pub source_target: crate::SourceTarget,
     /// The one snapshot this operation reads.
     pub snapshot: SnapshotId,
     /// The physical scope discovery walks, in the reader's own order.
@@ -225,6 +226,7 @@ impl BulkRecoveryRequest {
         method_limits: Limits,
     ) -> Self {
         Self {
+            source_target: crate::SourceTarget::JAVA_8,
             snapshot: environment.snapshot.clone(),
             scope: environment.scope.clone(),
             environment,
@@ -239,6 +241,12 @@ impl BulkRecoveryRequest {
             #[cfg(feature = "test-support")]
             probe: None,
         }
+    }
+
+    /// Choose output syntax without changing the runtime environment.
+    pub fn with_source_target(mut self, source_target: crate::SourceTarget) -> Self {
+        self.source_target = source_target;
+        self
     }
 
     /// The same request, observed by `probe`.
@@ -550,6 +558,8 @@ pub trait RecoverySink {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct BulkHeaderEvent {
+    pub source_target: crate::SourceTarget,
+    pub runtime_profile: crate::RuntimeProfile,
     pub view: PhysicalView,
     /// The effective configuration, both worker values included, so a caller reads what the
     /// operation really used rather than what it asked for.
@@ -591,9 +601,9 @@ pub enum ClassCompletion {
         /// How many method records this class published.
         methods: u64,
     },
-    /// The class was **not** prepared: its declaration did not decode, or its bytes exceeded the
-    /// preparation ceiling. The number of methods it declares is unknown, and this record states
-    /// that rather than a number.
+    /// No Prepared handoff was available to the stream. The reason may be a declaration/read
+    /// failure or a worker failure before it installed the handoff; this does not claim that no
+    /// local preparation work ever occurred. The declared method count is unknown to the stream.
     Refused {
         /// The error code that refused it.
         code: String,
@@ -822,8 +832,8 @@ pub struct BulkSummary {
     /// count to [`BulkSummary::methods_declared`], whether or not its `ClassPrepared` record reached
     /// the sink.
     pub classes_prepared: u64,
-    /// Classes that were **not** prepared: an undecodable declaration, or bytes over the
-    /// preparation ceiling. Their method counts are unknown.
+    /// Classes for which no Prepared handoff was available to the stream. Their method counts are
+    /// unknown, whether reading/preparation failed or a worker stopped before installing the handoff.
     pub classes_refused: u64,
     /// Method records declared by the prepared classes. Refused classes are outside this
     /// denominator.
@@ -940,6 +950,8 @@ pub struct BulkFaults {
     pub fail_worker_at: Option<usize>,
     /// Panic inside the class task with this delivery ordinal, before it prepares anything.
     pub panic_at_class_ordinal: Option<u64>,
+    /// Panic after the class task has produced this `(class ordinal, member ordinal)` result.
+    pub panic_after_method: Option<(u64, u64)>,
     /// Hold every class task for this long before it reads its class.
     ///
     /// The hold sits inside the task, on the worker that runs it, so the traversal keeps going while
@@ -1167,6 +1179,73 @@ struct PendingMethod {
     pool_charge: u64,
 }
 
+/// The one class-level preparation fact, moving from worker ownership to sink delivery.
+///
+/// `Unprepared` means no prepared handoff has been installed in the slot. A worker may have a
+/// successful local preparation result in the brief interval before `place_control`; that result
+/// is not yet available to the coordinator. `Pending` owns the actual event built from an installed
+/// result, and tracks method records the worker has produced while it waits for handoff. `HandedOff`
+/// means the coordinator took that event and is responsible for delivering it before any later
+/// class record; it continues to own the produced-method count used if the worker unwinds.
+enum PreparationState {
+    Unprepared,
+    Pending {
+        event: ClassPreparedEvent,
+        methods_produced: u64,
+    },
+    HandedOff {
+        methods_produced: u64,
+    },
+}
+
+impl PreparationState {
+    /// Takes a pending event and records that ownership moved to the coordinator.
+    fn hand_off(&mut self) -> Option<ClassPreparedEvent> {
+        match std::mem::replace(
+            self,
+            Self::HandedOff {
+                methods_produced: 0,
+            },
+        ) {
+            Self::Pending {
+                event,
+                methods_produced,
+            } => {
+                *self = Self::HandedOff { methods_produced };
+                Some(event)
+            }
+            other => {
+                *self = other;
+                None
+            }
+        }
+    }
+
+    /// Records a worker-produced method in the same slot state as its prepared handoff.
+    fn note_method_produced(&mut self) {
+        match self {
+            Self::Pending {
+                methods_produced, ..
+            }
+            | Self::HandedOff { methods_produced } => {
+                *methods_produced = methods_produced.saturating_add(1);
+            }
+            Self::Unprepared => {}
+        }
+    }
+
+    /// Returns the count established by an installed Prepared handoff, if any.
+    fn methods_produced(&self) -> Option<u64> {
+        match self {
+            Self::Unprepared => None,
+            Self::Pending {
+                methods_produced, ..
+            }
+            | Self::HandedOff { methods_produced } => Some(*methods_produced),
+        }
+    }
+}
+
 /// What one class's slot holds for the coordinator.
 struct Slot {
     /// The class candidate this task is about, so the worker that takes it reads what the traversal
@@ -1183,8 +1262,8 @@ struct Slot {
     /// containers the scope holds. `None` is the one case that has no container to hand over: a
     /// standalone `CLASS` snapshot's root candidate.
     container: Option<ContainerFactsHandle>,
-    /// The control record waiting for the coordinator, at most one (`ClassPrepared`).
-    control: Option<ClassPreparedEvent>,
+    /// Whether a Prepared handoff is absent, pending delivery, or owned by the coordinator.
+    preparation: PreparationState,
     /// The method records waiting for the coordinator, in production order. The coordinator takes
     /// them from the front, so a class's results are delivered in its declaration order; the first
     /// one present is the class's own reserved seat and the rest were seated by the shared pool.
@@ -1198,7 +1277,7 @@ impl Slot {
         Self {
             class,
             container,
-            control: None,
+            preparation: PreparationState::Unprepared,
             methods: VecDeque::new(),
             ending: None,
         }
@@ -1355,7 +1434,7 @@ impl Registry {
         self.observation.class_declared(declared);
     }
 
-    /// Records one class that was not prepared: its method count stays unknown.
+    /// Records one class with no Prepared handoff: its declared method count stays unknown.
     fn note_refused(&self) {
         let mut state = self.lock();
         state.counts.classes_refused = state.counts.classes_refused.saturating_add(1);
@@ -1364,6 +1443,11 @@ impl Registry {
     /// Records one method record the task produced, wherever it is delivered afterwards.
     fn note_method(&self, event: &MethodResultEvent) {
         let mut state = self.lock();
+        if let Some(position) = slot_of(&state, event.class_ordinal)
+            && let Some(slot) = state.slots.get_mut(position)
+        {
+            slot.preparation.note_method_produced();
+        }
         state.counts.methods_executed = state.counts.methods_executed.saturating_add(1);
         if event.delivery.execution_incomplete() {
             state.counts.incomplete_methods = state.counts.incomplete_methods.saturating_add(1);
@@ -1479,8 +1563,8 @@ impl Registry {
     /// Hands one prepared-class control record to the class's slot, waiting — bounded — for the
     /// coordinator to take the record before it.
     ///
-    /// The wait observes the operation's close signal every slice, so a consumer that stopped or a
-    /// cancellation that recorded a stop releases a worker that is waiting here.
+    /// A completed preparation is retained even if the operation closed while the worker was
+    /// producing it. The returned boolean says whether the worker may continue producing methods.
     fn place_control(
         &self,
         index: u64,
@@ -1488,23 +1572,25 @@ impl Registry {
     ) -> std::result::Result<bool, Closing> {
         self.observation.window_call(WindowSite::PlaceControl);
         let mut state = self.lock();
-        loop {
-            let Some(position) = position_of(&state, index) else {
-                return Ok(false);
-            };
-            let free = state
-                .slots
-                .get(position)
-                .is_some_and(|slot| slot.control.is_none());
-            if free {
-                if let Some(slot) = state.slots.get_mut(position) {
-                    slot.control = Some(event);
-                }
-                self.changed.notify_all();
-                return Ok(true);
-            }
-            state = self.wait_signal(state, WindowSite::PlaceControl, WAIT_SLICE);
+        // A global close stops further work, but a class that has already prepared still owes the
+        // one real event built from that preparation. Keep it in its slot; the coordinator will
+        // deliver it if the sink remains open, then state the class ending.
+        let Some(position) = slot_of(&state, index) else {
+            return Ok(false);
+        };
+        let Some(slot) = state.slots.get_mut(position) else {
+            return Ok(false);
+        };
+        if !matches!(&slot.preparation, PreparationState::Unprepared) {
+            return Ok(false);
         }
+        slot.preparation = PreparationState::Pending {
+            event,
+            methods_produced: 0,
+        };
+        let may_continue = state.ending.is_none();
+        self.changed.notify_all();
+        Ok(may_continue)
     }
 
     /// Hands one method record to the class's slot, waiting — bounded — for room in the window.
@@ -1582,6 +1668,39 @@ impl Registry {
         }
         self.changed.notify_all();
     }
+
+    /// Records a worker panic without claiming a Prepared handoff that was never installed.
+    fn finish_panicked_task(&self, index: u64, refusal: ClassRefusal) {
+        let mut state = self.lock();
+        if let Some(position) = slot_of(&state, index)
+            && let Some(slot) = state.slots.get_mut(position)
+            && slot.ending.is_none()
+        {
+            let methods_produced = slot.preparation.methods_produced();
+            let execution = refusal.execution.clone();
+            slot.ending = Some(match methods_produced {
+                None => ClassEnding::Refused(refusal),
+                Some(methods) => ClassEnding::Closed {
+                    methods,
+                    closing: Some(Closing::Stopped(Error::invalid_input(
+                        "bulk_worker_panicked",
+                        format!("the class task of class ordinal {index} did not return"),
+                    ))),
+                    execution: Some(execution),
+                },
+            });
+        }
+        if state.ending.is_none() {
+            state.ending = Some(Ending::Infrastructure {
+                code: "bulk_worker_panicked".to_owned(),
+                message: format!(
+                    "the class task of class ordinal {index} did not return: the operation ends rather than \
+                     retrying the class or silently running it on this thread"
+                ),
+            });
+        }
+        self.changed.notify_all();
+    }
 }
 
 /// One class task's presence in the operation, as the overlap metric counts it.
@@ -1649,6 +1768,7 @@ trait ResultConsumer {
 /// The operation-wide facts one class task runs with: what it reads, under which environment, to
 /// which account.
 struct Operation<'a> {
+    source_target: crate::SourceTarget,
     content: &'a [ArtifactSnapshot],
     snapshot: &'a ArtifactSnapshot,
     environment: &'a ResolutionEnvironment,
@@ -1708,6 +1828,8 @@ struct Faults {
     #[cfg(feature = "test-support")]
     panic_at_class_ordinal: Option<u64>,
     #[cfg(feature = "test-support")]
+    panic_after_method: Option<(u64, u64)>,
+    #[cfg(feature = "test-support")]
     class_delay: Option<Duration>,
     #[cfg(feature = "test-support")]
     class_gate: Option<std::sync::Arc<ClassGate>>,
@@ -1722,6 +1844,7 @@ impl Faults {
         Self {
             fail_worker_at: request.faults.fail_worker_at,
             panic_at_class_ordinal: request.faults.panic_at_class_ordinal,
+            panic_after_method: request.faults.panic_after_method,
             class_delay: request.faults.class_delay,
             class_gate: request.faults.class_gate.clone(),
             worker_watch: request.faults.worker_watch.clone(),
@@ -1752,6 +1875,18 @@ impl Faults {
         #[cfg(feature = "test-support")]
         {
             self.panic_at_class_ordinal == Some(_class_ordinal)
+        }
+        #[cfg(not(feature = "test-support"))]
+        {
+            false
+        }
+    }
+
+    /// Whether a test asked the class task to panic after producing one method result.
+    fn panics_after_method(&self, _class_ordinal: u64, _member_ordinal: u64) -> bool {
+        #[cfg(feature = "test-support")]
+        {
+            self.panic_after_method == Some((_class_ordinal, _member_ordinal))
         }
         #[cfg(not(feature = "test-support"))]
         {
@@ -1845,11 +1980,11 @@ fn run_class_task(
     let mut class_execution: Option<ExecutionReport> = None;
     let read = match read_class(operation, class, budget) {
         Ok(read) => read,
-        Err(error) => return class_failure(operation, error, budget, methods, class_execution),
+        Err(error) => return class_failure(error, budget),
     };
     let prepared = match PreparedClass::prepare(&read, budget) {
         Ok(prepared) => prepared,
-        Err(error) => return class_failure(operation, error, budget, methods, class_execution),
+        Err(error) => return class_failure(error, budget),
     };
     let declared = prepared.method_count();
     let definition = definition_of(&read);
@@ -1895,7 +2030,17 @@ fn run_class_task(
         operation.registry.note_method(&event);
         methods = methods.saturating_add(1);
         match out.method(event) {
-            Ok(true) => {}
+            Ok(true) => {
+                if operation
+                    .faults
+                    .panics_after_method(class_ordinal, u64::from(ordinal.0))
+                {
+                    panic!(
+                        "bulk test fault: class ordinal {class_ordinal} panics after producing member ordinal {}",
+                        ordinal.0
+                    );
+                }
+            }
             Ok(false) => return stopped_class(methods, None, class_execution),
             Err(closing) => return stopped_class(methods, Some(closing), class_execution),
         }
@@ -1920,18 +2065,10 @@ fn stopped_class(
     }
 }
 
-/// One class-level failure: that class's refusal when the operation itself is fine, and the
-/// operation's own end when it is not.
-fn class_failure(
-    operation: &Operation<'_>,
-    error: Error,
-    budget: &Budget,
-    methods: u64,
-    execution: Option<ExecutionReport>,
-) -> ClassEnding {
-    if operation.stopped() {
-        return stopped_class(methods, Some(Closing::Stopped(error)), execution);
-    }
+/// A failure before a prepared handoff is installed: the class is Refused because there is no
+/// Prepared event the stream can deliver. Its execution report retains any operation stop that
+/// caused the read or preparation to fail; Refused does not reclassify that stop as input damage.
+fn class_failure(error: Error, budget: &Budget) -> ClassEnding {
     ClassEnding::Refused(ClassRefusal {
         code: crate::facade::error_code(&error),
         message: error.to_string(),
@@ -2089,6 +2226,7 @@ fn execute_method(
     }
     match crate::facade::recovery_presented(
         operation.content,
+        operation.source_target,
         &request,
         analyzed,
         Some(prepared),
@@ -2171,7 +2309,7 @@ fn local_or_closing(
 ///   + text.capacity()                                          the artifact's text buffer
 ///   + source_map.segments().len() * size_of::<Segment>()        the segment table
 ///   + the recovery report:
-///       method.capacity() + Σ aliased_names[i].capacity()       the strings it owns
+///       method.capacity() + Σ aliased_names[i].allocation_capacity()       the strings it owns
 ///     + Σ diagnostics[i].{code,message}.capacity()              the diagnostics it owns
 ///     + capacities of rules/regions/lambdas/concats/accessors/bridges/news/fields/enum_switches/
 ///       fallbacks, each * size_of::<Element>()                  one allocation per table
@@ -2227,7 +2365,10 @@ fn result_weight(recovered: &RecoveredMethod) -> u64 {
 
     // The recovery report's own strings and tables.
     weight.text(&recovery.method);
-    weight.strings(&recovery.aliased_names);
+    weight.buffer(&recovery.aliased_names);
+    for name in &recovery.aliased_names {
+        weight.value(u64::try_from(name.allocation_capacity()).unwrap_or(u64::MAX));
+    }
     weight.diagnostics(&recovery.diagnostics);
     weight.buffer(&recovery.rules);
     weight.buffer(&recovery.regions);
@@ -2352,14 +2493,6 @@ impl Weight {
         self.value(u64::try_from(value.len()).unwrap_or(u64::MAX));
     }
 
-    /// One owned list of strings: its own allocation, and the allocation of every string in it.
-    fn strings(&mut self, values: &Vec<String>) {
-        self.buffer(values);
-        for value in values {
-            self.text(value);
-        }
-    }
-
     /// One owned list of diagnostics: its own allocation, and the two strings each one owns.
     fn diagnostics(&mut self, values: &Vec<Diagnostic>) {
         self.buffer(values);
@@ -2468,6 +2601,9 @@ fn publish(
     record: Record<'_>,
     delivered_method: Option<&MethodResultEvent>,
 ) -> bool {
+    if delivery.closed {
+        return false;
+    }
     match delivery.deliver(record) {
         Ok(SinkControl::Continue) => {
             if delivered_method.is_some() {
@@ -2605,7 +2741,7 @@ fn take_front(registry: &Registry, budget: &Budget) -> Front {
         let mut taken: Option<Front> = None;
         let mut leaving: Option<PendingMethod> = None;
         if let Some(slot) = state.slots.front_mut() {
-            match slot.control.take() {
+            match slot.preparation.hand_off() {
                 Some(control) => taken = Some(Front::Control(Box::new(control))),
                 None => leaving = slot.methods.pop_front(),
             }
@@ -2703,6 +2839,9 @@ fn publish_class_end(
     class: &ScopeClass,
     ending: ClassEnding,
 ) -> bool {
+    if delivery.closed {
+        return false;
+    }
     let location = class.location.clone();
     let mut executions: Vec<ExecutionReport> = Vec::new();
     let completion = match ending {
@@ -2921,7 +3060,7 @@ fn coordinate(
     // A class whose task already ended states where it stopped, even though the stream is closing:
     // that record is what makes "this class did not finish" readable rather than silent. A consumer
     // that stopped or failed is not asked again.
-    let _ = drain_ended_classes(operation, delivery);
+    let _ = drain_ended_classes(operation, delivery, true);
     // The traversal's own diagnostics are published as long as the consumer still takes records:
     // they are what makes a short denominator readable. A consumer that refused is not asked again.
     if !delivery.closed {
@@ -2943,37 +3082,51 @@ fn coordinate(
 /// The wait for a class that is still winding down is bounded per class: a task whose next checkpoint
 /// is one slot check returns at once, and one that is in the middle of a method states nothing here
 /// rather than holding the call open.
-fn drain_ended_classes(operation: &Operation<'_>, delivery: &mut Delivery<'_>) -> bool {
+fn drain_ended_classes(
+    operation: &Operation<'_>,
+    delivery: &mut Delivery<'_>,
+    wait_for_task: bool,
+) -> bool {
     loop {
         if delivery.closed {
             return false;
         }
         let deadline = std::time::Instant::now() + DRAIN_PER_CLASS;
-        let taken = loop {
+        let taken: Option<
+            std::result::Result<(u64, ClassPreparedEvent), (u64, ScopeClass, ClassEnding)>,
+        > = loop {
             let mut state = operation.registry.lock();
+            let ordinal = state.front;
             match state.slots.front_mut() {
                 None => break None,
                 Some(slot) => {
-                    if let Some(ending) = slot.ending.take() {
-                        let ending = match ending {
-                            ClassEnding::Prepared { methods, execution }
-                                if slot.control.is_some() || !slot.methods.is_empty() =>
-                            {
-                                ClassEnding::Closed {
-                                    methods,
-                                    closing: None,
-                                    execution,
+                    if slot.ending.is_some() {
+                        if let Some(control) = slot.preparation.hand_off() {
+                            break Some(Ok((ordinal, control)));
+                        }
+                        if let Some(ending) = slot.ending.take() {
+                            let ending = match ending {
+                                ClassEnding::Prepared { methods, execution }
+                                    if !slot.methods.is_empty() =>
+                                {
+                                    ClassEnding::Closed {
+                                        methods,
+                                        closing: None,
+                                        execution,
+                                    }
                                 }
-                            }
-                            ending => ending,
-                        };
-                        let class = slot.class.clone();
-                        let ordinal = state.front;
-                        retire_front(&mut state);
-                        operation.registry.changed.notify_all();
-                        break Some((ordinal, class, ending));
+                                ending => ending,
+                            };
+                            let class = slot.class.clone();
+                            retire_front(&mut state);
+                            operation.registry.changed.notify_all();
+                            break Some(Err((ordinal, class, ending)));
+                        }
                     }
                 }
+            }
+            if !wait_for_task {
+                break None;
             }
             let Some(remaining) = deadline.checked_duration_since(std::time::Instant::now()) else {
                 break None;
@@ -2985,11 +3138,20 @@ fn drain_ended_classes(operation: &Operation<'_>, delivery: &mut Delivery<'_>) -
             );
             drop(guard);
         };
-        let Some((ordinal, class, ending)) = taken else {
+        let Some(taken) = taken else {
             return true;
         };
-        if !publish_class_end(operation, delivery, ordinal, &class, ending) {
-            return false;
+        match taken {
+            Ok((_ordinal, control)) => {
+                if !publish(operation, delivery, Record::Prepared(&control), None) {
+                    return false;
+                }
+            }
+            Err((ordinal, class, ending)) => {
+                if !publish_class_end(operation, delivery, ordinal, &class, ending) {
+                    return false;
+                }
+            }
         }
     }
 }
@@ -3136,9 +3298,9 @@ fn worker_loop(operation: &Operation<'_>) {
 /// A class task's presence in the window while it runs, as the panic path needs it.
 ///
 /// A worker that panics never reaches its own `finish_task`, and a coordinator waiting for that
-/// class's slot would wait forever. The guard is what makes an observed panic a *bounded* failure: it
-/// publishes the class as closed and closes the operation with an infrastructure ending, so the
-/// coordinator wakes, stops dispatching and every worker returns.
+/// class's slot would wait forever. The guard records Refused if no prepared handoff was installed,
+/// or Stopped with the method-production count owned by that handoff, then closes the operation with
+/// the original infrastructure cause.
 struct TaskGuard<'a, 'o> {
     operation: &'a Operation<'o>,
     index: u64,
@@ -3149,28 +3311,23 @@ impl Drop for TaskGuard<'_, '_> {
         if !std::thread::panicking() {
             return;
         }
-        self.operation.registry.finish_task(
-            self.index,
-            ClassEnding::Closed {
-                methods: 0,
-                closing: Some(Closing::Stopped(Error::invalid_input(
-                    "bulk_worker_panicked",
-                    format!(
-                        "the class task of class ordinal {} did not return",
-                        self.index
-                    ),
-                ))),
-                execution: None,
-            },
+        let message = format!(
+            "the class task of class ordinal {} did not return",
+            self.index
         );
-        self.operation.registry.close(Ending::Infrastructure {
-            code: "bulk_worker_panicked".to_owned(),
-            message: format!(
-                "the class task of class ordinal {} did not return: the operation ends rather than \
-                 retrying the class or silently running it on this thread",
-                self.index
-            ),
-        });
+        let error = Error::invalid_input("bulk_worker_panicked", message.clone());
+        let code = crate::facade::error_code(&error);
+        let refusal = ClassRefusal {
+            code: code.clone(),
+            message,
+            execution: ExecutionReport::Failed {
+                reason: TerminationReason::Error { code },
+                usage: self.operation.ledger.usage(),
+            },
+        };
+        self.operation
+            .registry
+            .finish_panicked_task(self.index, refusal);
     }
 }
 
@@ -3249,6 +3406,12 @@ fn run_workers(
                     .to_owned(),
             });
             failure = Some("bulk_worker_panicked".to_owned());
+        }
+        // The coordinator's bounded drain may have stopped waiting for a class that was still in a
+        // method when the operation closed. All workers are joined now, so publish any class endings
+        // already available without adding another per-class wait.
+        if !delivery.closed {
+            let _ = drain_ended_classes(operation, delivery, false);
         }
         WorkerOutcome { stream, failure }
     })
@@ -3486,6 +3649,7 @@ pub fn recover_all(
     let observation = Observation::of();
     let registry = Registry::new(observation.clone(), limits.shared_result_pool_weight);
     let operation = Operation {
+        source_target: request.source_target,
         content,
         snapshot,
         environment: &environment,
@@ -3508,6 +3672,8 @@ pub fn recover_all(
         observation: observation.clone(),
     };
     let header = BulkHeaderEvent {
+        source_target: request.source_target,
+        runtime_profile: environment.runtime.profile.clone(),
         view: PhysicalView {
             snapshot: request.snapshot.clone(),
             scope: request.scope.clone(),

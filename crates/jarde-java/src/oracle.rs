@@ -1688,8 +1688,17 @@ fn recovery_of_class(class: &[u8]) -> RecoveryReport {
     let facts = RecoveryFacts::new(MethodFacts::new("method", "()V", 0));
     let mut budget = Budget::new(limits());
     recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-            .with_evidence(crate::RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            crate::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(crate::RecoveryEvidenceRequest::all()),
         &mut budget,
     )
 }
@@ -1899,8 +1908,17 @@ mod tests {
         let facts = RecoveryFacts::new(MethodFacts::new("method", "()V", 0));
         let mut budget = Budget::new(limits());
         let report = recover(
-            &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                .with_evidence(crate::RecoveryEvidenceRequest::all()),
+            &RecoveryRequest::new(
+                analysis.ir(),
+                &facts,
+                crate::pass::JAVA_8,
+                jarde_reader::view::RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: jarde_reader::view::LayoutMode::Generic,
+                },
+            )
+            .with_evidence(crate::RecoveryEvidenceRequest::all()),
             &mut budget,
         );
         assert!(report.produced(), "{:?}", report.outcome);

@@ -13,8 +13,8 @@
 //! `AD`/`GA` from the array-store soundness patrol (the `AD`/`CM`/`GA` class files are byte-identical
 //! to the patrols' jars, checked by SHA in the fixture README) — plus this change's `PT` (the static
 //! field as an array index inside a ternary arm), `SR` (the array store's own right side and its
-//! local index write), `IX` (the local and static-field index positions) and `NG` (the negatives:
-//! the two self-assignment traps, the field self-assignment and the multi-consumer form; its
+//! local index write), `IX` (the local and static-field index positions) and `NG` (the typed local
+//! self-assignment sequences and remaining field self-assignment refusal; its
 //! `condShape` was this fixture's Phase-B out-of-scope gate and is presented whole by
 //! `recover-postfix-condition-positions`).
 //!
@@ -255,28 +255,51 @@ const PHASE_A: &[(&str, &[&str])] = &[
     ("IX", IX_SHAPES),
 ];
 
-/// The negatives, verbatim: the two local self-assignment traps, the field self-assignment and the
-/// multi-consumer form. Each keeps its own refusal.
+/// The remaining negative, verbatim. The formerly refused local update methods now present their
+/// typed sequences.
 ///
 /// `NG.condShape` was the A-phase fixture's **out-of-scope gate** — a Phase-B condition position.
 /// `recover-postfix-condition-positions` presents it (see [`NG_COND_SHAPE`] below), so it left this
-/// list when that slice landed; the four traps are untouched.
-const NG_NEGATIVES: &[(&str, &str)] = &[
+/// list when that slice landed; `fieldSelf` remains refused.
+const NG_NEGATIVES: &[(&str, &str)] = &[(
+    "fieldSelf",
+    "// the old-value update ending at BCI 19 has no complete same-target, single-consumer, same-handler and evaluation-order proof",
+)];
+
+const NG_RECOVERED_SEQUENCES: &[(&str, &str, &[&str])] = &[
     (
         "postSelf",
-        "// the value at BCI 6 is the value local 0 held at BCI 2, and the slot does not hold it at BCI 6",
+        "static int postSelf()",
+        &[
+            "int local0 = 5;",
+            "int saved0 = local0;",
+            "local0 = local0 + 1;",
+            "local0 = saved0;",
+            "return local0;",
+        ],
     ),
     (
         "postSelfDec",
-        "// the value at BCI 6 is the value local 0 held at BCI 2, and the slot does not hold it at BCI 6",
-    ),
-    (
-        "fieldSelf",
-        "// the old-value update ending at BCI 19 has no complete same-target, single-consumer, same-handler and evaluation-order proof",
+        "static int postSelfDec()",
+        &[
+            "int local0 = 5;",
+            "int saved0 = local0;",
+            "local0 = local0 - 1;",
+            "local0 = saved0;",
+            "return local0;",
+        ],
     ),
     (
         "compoundSelf",
-        "// the value at BCI 10 is the value local 1 held at BCI 2, and the slot does not hold it at BCI 10",
+        "int compoundSelf()",
+        &[
+            "int local1 = 5;",
+            "int saved0 = local1;",
+            "int saved1 = local1;",
+            "local1 = local1 + 1;",
+            "local1 = saved0 + (saved1 + 1);",
+            "return local1;",
+        ],
     ),
 ];
 
@@ -326,6 +349,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// One class-source presentation over the snapshot's own root container.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -515,14 +539,33 @@ fn the_healthy_shapes_stay_byte_identical_on_both_legs() {
 // The negatives keep their refusals.
 // -------------------------------------------------------------------------------------------
 
-/// The self-assignment traps and the multi-consumer form keep exactly the refusals they had: this
-/// slice's Non-Goal. `NG.condShape` — the Phase-B condition position the A-phase fixture froze as
+/// The `fieldSelf` store-back trap keeps its refusal: this slice's remaining Non-Goal. `NG.condShape`
+/// — the Phase-B condition position the A-phase fixture froze as
 /// its out-of-scope gate — is presented whole by `recover-postfix-condition-positions`.
 #[test]
 fn the_negatives_keep_their_refusals_on_both_legs() {
     for leg in LEGS {
         let snapshot = open(&leg.fixture("NG"));
         let report = presented(&snapshot, "NG");
+        for (method, signature, expected) in NG_RECOVERED_SEQUENCES {
+            let body = method_body(&report.text, signature);
+            assert!(
+                !body.contains("not recovered"),
+                "`NG.{method}` on {} should present the proven typed sequence:\n{body}",
+                leg.label
+            );
+            let statements: Vec<_> = body
+                .lines()
+                .map(str::trim)
+                .filter(|line| !line.is_empty() && !line.starts_with("//") && !line.ends_with('{'))
+                .collect();
+            assert_eq!(
+                statements.as_slice(),
+                *expected,
+                "`NG.{method}` on {} lost its typed value/update ordering:\n{body}",
+                leg.label
+            );
+        }
         for (method, refusal) in NG_NEGATIVES {
             assert!(
                 report.text.contains(refusal),
@@ -558,18 +601,6 @@ fn the_negatives_keep_their_refusals_on_both_legs() {
                 );
             }
         }
-        // `i = i++`/`i = i--` still carry the store-back form's own refusal: the value read back
-        // into the slot it was read from is not claimed.
-        assert!(
-            report
-                .text
-                .matches("the value at BCI 6 is the value local 0 held at BCI 2")
-                .count()
-                >= 2,
-            "`NG` on {} lost one of the two local self-assignment refusals:\n{}",
-            leg.label,
-            report.text
-        );
     }
 }
 

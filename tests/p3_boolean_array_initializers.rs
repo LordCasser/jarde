@@ -104,6 +104,7 @@ fn complete_recovered_class_recompiles_and_matches_the_verified_fixture() {
         .open(ArtifactInput::bytes(FIXTURE.to_vec()), &mut budget())
         .expect("fixture is a standalone Java 8 class");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("BoolInit"),
         },
@@ -232,6 +233,7 @@ fn effectful_initializer_recovery_preserves_order_and_partial_exception_trace() 
         )
         .expect("effectful fixture is a standalone Java 8 class");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("BoolInitEffectful"),
         },

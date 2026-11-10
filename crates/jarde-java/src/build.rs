@@ -25,7 +25,7 @@
 //!   and [`Operation::Negate`] are not: they produce a value whose text lands where the value is
 //!   consumed, and a load whose value nobody consumes has no Java effect either.
 //! * [`Operation::Comparison`] is not: the branch that tests it prints it — as an `if`'s condition
-//!   (the *negation* of the jump sense, because a branch transfers only when its sense holds), or as
+//!   (the *negation* of the jump sense, because use a branch transfers only when its sense holds), or as
 //!   part of the quoted bytecode when the region could not be structured.
 //! * [`Operation::Other`], and an instruction this run decoded no operation for, are *stated* as
 //!   unusable: neither is dropped silently, because a silently dropped instruction is exactly the
@@ -40,6 +40,7 @@
 mod loop_transfer;
 pub(crate) use loop_transfer::project_dead_loop_transfer_handler;
 
+use jarde_reader::model::JvmBytes;
 use std::cell::OnceCell;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 
@@ -49,7 +50,7 @@ use jarde_jvm::method_ir::{
     CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Definition, PhiInput, RefType, Slot,
     SsaInstruction, SsaTable, SsaValue, Value, ValueId,
 };
-use jarde_reader::budget::{Budget, BudgetDimension, CountedBudgetDimension};
+use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{
     BootstrapMethodFacts, CpEntryFacts, DescriptorKind, MethodCodeFacts, cp_class_name,
     descriptor_facts,
@@ -57,6 +58,12 @@ use jarde_reader::classfile::{
 use jarde_reader::error::Error as ReaderError;
 
 use crate::accessor::{self, AccessorRecord, AccessorRefusal, AccessorShape};
+use crate::assignability::array_reference_widens;
+#[cfg(test)]
+use crate::assignability::{
+    java_lang_throwable_widens, platform_array_argument_widens, platform_interface_argument_widens,
+    release_reference_argument_widens,
+};
 use crate::ast::{
     AssignOp, BinaryOp, ConcatPart, ConstructorTarget, Expr, ExprKind, LambdaParam,
     PostfixDirection, ResourceDecl, Stmt, StmtKind, SwitchArm, SwitchLabels, Type,
@@ -66,7 +73,7 @@ use crate::concat;
 use crate::decode::Operations;
 use crate::enumswitch;
 use crate::evidence::Publication;
-use crate::facts::ACC_PRIVATE;
+use crate::facts::{ACC_PRIVATE, ACC_STATIC};
 use crate::facts::{
     ArithmeticOp, BitwiseOp, CallTarget, ClassMembers, CompareOp, ConstantValue, DynamicSite,
     FieldAccess, InvokeKind, NumericComparisonOp, Operation, ShiftOp, SpecialValuePresentation,
@@ -78,7 +85,7 @@ use crate::lambda::{
     self, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, Reach, Refusal, TypeConversion,
 };
 use crate::names::{DebugLocal, LocalVariable, NameTable, RenderedName, is_java_identifier};
-use crate::pass::{LAMBDA, Precondition, RecoveryProfile};
+use crate::pass::{LAMBDA, Precondition, SourceTarget};
 use crate::refusal::Gap;
 use crate::region::{
     CatchClause, CompoundCondition, CompoundTest, Continuation, FallbackReason, ForHeader,
@@ -141,11 +148,9 @@ pub(crate) struct Program {
 /// A proved, class-source-only array constructor site before class-wide use census.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ArrayConstructorSite {
+    /// These anchors join the implementation handle in this same run's immutable IR.
     pub(crate) use_site: u32,
     pub(crate) site_cp: u16,
-    pub(crate) helper_owner: String,
-    pub(crate) helper_name: String,
-    pub(crate) helper_descriptor: String,
     pub(crate) array_type: String,
     pub(crate) target_type: String,
 }
@@ -174,9 +179,9 @@ pub(crate) struct LambdaSite {
     /// The `BootstrapMethods` entry the site names.
     pub(crate) bootstrap_index: u16,
     /// The name the site presents.
-    pub(crate) sam_name: String,
+    pub(crate) sam_name: jarde_reader::model::JvmBytes,
     /// The descriptor the site presents.
-    pub(crate) sam_descriptor: String,
+    pub(crate) sam_descriptor: jarde_reader::model::JvmBytes,
     /// The bootstrap evidence the rule read.
     pub(crate) evidence: lambda::Evidence,
     /// Which writing the site took; `None` when it was refused.
@@ -187,6 +192,9 @@ pub(crate) struct LambdaSite {
     pub(crate) refusal: Option<LambdaRefusal>,
     /// Every value the site captures, in the order the instruction reads it off the stack.
     pub(crate) captures: Vec<LambdaCapture>,
+    /// The same-run method envelope for a physical name still awaiting class projection.
+    /// Shared only by such sites; this is core refusal provenance, not optional evidence.
+    pub(crate) unclosed_body_bcis: Option<std::sync::Arc<[u32]>>,
 }
 
 impl LambdaSite {
@@ -208,11 +216,27 @@ impl LambdaSite {
             bootstrap_index: self.bootstrap_index,
             bootstrap: self.evidence.bootstrap.clone(),
             bootstrap_arguments: self.evidence.bootstrap_arguments,
-            sam_name: self.sam_name.clone(),
-            sam_descriptor: self.sam_descriptor.clone(),
-            sam_method_type: self.evidence.sam_method_type.clone(),
-            instantiated_method_type: self.evidence.instantiated_method_type.clone(),
-            implementation: self.evidence.implementation.clone(),
+            sam_name: crate::facts::display_jvm_bytes(&self.sam_name),
+            sam_descriptor: crate::facts::display_jvm_bytes(&self.sam_descriptor),
+            raw_sam_name: self.sam_name.clone(),
+            raw_sam_descriptor: self.sam_descriptor.clone(),
+            raw_sam_method_type: self.evidence.sam_method_type.clone(),
+            raw_instantiated_method_type: self.evidence.instantiated_method_type.clone(),
+            sam_method_type: self
+                .evidence
+                .sam_method_type
+                .as_ref()
+                .map(crate::facts::display_jvm_bytes),
+            instantiated_method_type: self
+                .evidence
+                .instantiated_method_type
+                .as_ref()
+                .map(crate::facts::display_jvm_bytes),
+            implementation: self
+                .evidence
+                .implementation
+                .as_ref()
+                .map(lambda::Member::diagnostic),
             captures: self.captures.clone(),
             form: self.form,
             refusal: self.refusal.clone(),
@@ -308,7 +332,8 @@ pub(crate) struct Inputs<'a> {
     /// The class's `BootstrapMethods` table, as the same read decoded it.
     pub(crate) bootstrap: &'a [BootstrapMethodFacts],
     /// The profile this run presents under: the gate the `lambda@1` rule is admitted through.
-    pub(crate) profile: RecoveryProfile,
+    pub(crate) profile: SourceTarget,
+    pub(crate) runtime_release: u16,
     /// How many local slots the method's parameters occupy, `this` included when the caller
     /// counted it: the slots below this one are declared by the signature, not by the body.
     pub(crate) parameters: u16,
@@ -348,19 +373,20 @@ pub(crate) struct Inputs<'a> {
     pub(crate) members: Option<&'a ClassMembers>,
     /// The selected class-source member targets whose proved paths may spell nested owners in this
     /// run's static calls.
-    pub(crate) member_inner_targets: &'a [crate::report::ProvedMemberInnerTarget],
-    pub(crate) typed_functional_target: Option<crate::report::TypedFunctionalTarget>,
+    pub(crate) member_inner_targets: &'a [crate::report::MemberInnerTargetInput],
+    pub(crate) typed_functional_target: Option<crate::report::FunctionalTargetInput>,
     /// The exact interface-special targets whose Java source binding the facade proved.
-    pub(crate) interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
-    pub(crate) reference_overload_calls: &'a [crate::report::ProvedReferenceOverloadCall],
-    pub(crate) snapshot_hierarchy_widenings: &'a [crate::report::ProvedSnapshotHierarchyWidening],
-    pub(crate) captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
-    pub(crate) outer_super_calls: &'a [crate::report::ProvedOuterSuperCall],
+    pub(crate) interface_super_calls: &'a [crate::report::InterfaceSuperCallInput],
+    pub(crate) reference_overload_calls: &'a [crate::report::ReferenceOverloadCallInput],
+    pub(crate) reference_relations: &'a [crate::report::ReferenceRelationInput],
+    pub(crate) declared_types: Option<&'a crate::report::DeclaredGenericTypes>,
+    pub(crate) captured_outer_reads: &'a [crate::report::CapturedOuterReadInput],
+    pub(crate) outer_super_calls: &'a [crate::report::OuterSuperCallInput],
     /// The member classes the declaring class's own `InnerClasses` attribute states, in the
     /// dotted spelling the presentation compares with (`A12$Nested`, `p.A$B$C`). The fact that
     /// separates a class literal of a really-nested class from one of a top-level `$` name: the
     /// structural-reflection refusal below fires only for the former.
-    pub(crate) nested_class_members: &'a [String],
+    pub(crate) source_names: crate::names::SourceClassNames<'a>,
     /// Whether this presentation keeps member classes pool-spelled (no fold will rewrite them to
     /// source nesting): under it even a direct member's literal is refused in the structural
     /// reads, because its text is a top-level class however the run proves the relation.
@@ -394,7 +420,7 @@ pub(crate) struct Inputs<'a> {
     /// The field accesses this body's instructions were verified to be (P3 2.3, `field@1`).
     pub(crate) fields: &'a field::Plan,
     /// The same array proof already consulted by construction-site verification.
-    pub(crate) array_initializers: ArrayInitializers,
+    pub(crate) array_initializers: &'a ArrayInitializers,
     /// The dispatch-table reads this body performs (P3 2.3, `enumswitch@1`).
     pub(crate) enums: &'a enumswitch::Plan,
     /// Whether this presentation may omit a proved array helper and write `T[]::new`. The
@@ -467,7 +493,9 @@ struct Declarations {
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct GenericLocalProjection {
     source_type: String,
-    allocation_bci: u32,
+    erased: Type,
+    type_index: Option<usize>,
+    allocation_bci: Option<u32>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -492,15 +520,13 @@ enum DeclarationPlacement {
 
 /// What the plan decided about one local variable's type before a statement of this body existed.
 ///
-/// The decision is the same evidence the layer always read — a descriptor, a read of a variable the
-/// same plan decided `boolean`, otherwise the frame's own type — read **once**, for every variable,
-/// and then only consumed. Deciding here rather than at each use is what keeps the two declaration
-/// paths from answering differently, and what lets every write be checked against one answer.
+/// Descriptor/producer facts, all physical writes and required uses are reconciled once. The
+/// declaration paths, assignments and readers consume that single decision; an unknown relation
+/// cannot be replaced by a different guess at a later use.
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum Decided {
-    /// The variable holds this type: `boolean` when a descriptor states it or a variable this plan
-    /// decided boolean is copied into it, and otherwise the type the frames state for the value its
-    /// first write stores.
+    /// The declared type satisfies this variable's producer, copy and use constraints. Boolean
+    /// and char refinements retain their descriptor/constant certificates.
     Type(Type),
     /// No type can be decided for the variable, with the fact that stopped it: a write of it can
     /// then not be published as a declaration, and the structure that write belongs to is refused.
@@ -548,6 +574,9 @@ enum NoType {
     /// The value the variable's first write stores has a frame entry that names a descriptor this
     /// layer cannot spell as a Java type.
     Unspellable(String),
+    ReferenceConstraints {
+        relations: Vec<crate::report::ReferenceRelation>,
+    },
     /// No single Java declaration was proved sound for the source-local lifetime. This includes
     /// JVM category conflicts and ambiguous or incompatible reference writes.
     ConflictingWrites {
@@ -565,6 +594,9 @@ impl NoType {
             Self::NoFrameEntry => format!("local {slot} has no frame entry stating its type"),
             Self::Unspellable(name) => format!(
                 "the local written at BCI {at} holds a value the frames name `{name}`, which is a descriptor this layer cannot spell as a Java type, so the declaration is refused instead of writing it"
+            ),
+            Self::ReferenceConstraints { relations } => format!(
+                "local {slot} has no unique reference declaration proved compatible with all writes, copies and descriptor uses; relation outcomes for its accesses: {relations:?}; unresolved hierarchy relations do not authorize a conversion"
             ),
             Self::ConflictingWrites {
                 first,
@@ -620,12 +652,12 @@ enum Declaration {
 /// any generic path whose source arguments this recovery layer does not model.
 fn local_declaration_source_type_name(
     ty: &Type,
-    targets: &[crate::report::ProvedMemberInnerTarget],
+    targets: &[crate::report::MemberInnerTargetInput],
 ) -> Option<String> {
     let Type::Reference(name) = ty else {
         return None;
     };
-    let binary_name = name.replace('.', "/");
+    let binary_name = JvmBytes::from_unicode(&name.replace('.', "/"));
     let mut selected: Option<(jarde_reader::model::PhysicalDefinitionId, String)> = None;
     for target in targets {
         let path = &target.source_type_path;
@@ -641,15 +673,22 @@ fn local_declaration_source_type_name(
             || last.binary_name != target.owner
             || last.definition != target.definition
             || path[path.len() - 2].binary_name != target.outer
-            || target.owner != format!("{}${}", target.outer, target.simple_name)
+            || target.owner.0
+                != [
+                    target.outer.0.as_slice(),
+                    b"$",
+                    JvmBytes::from_unicode(&target.simple_name).0.as_slice(),
+                ]
+                .concat()
             || path.iter().any(|segment| segment.type_parameter_count != 0)
         {
             return None;
         }
         let root = &path[0];
         if root.enclosing_binary_name.is_some()
-            || root.binary_name.contains('$')
-            || root.source_name != root.binary_name.replace('/', ".")
+            || root.binary_name.0.contains(&b'$')
+            || crate::names::source_class_name(&root.binary_name).as_deref()
+                != Some(root.source_name.as_str())
         {
             return None;
         }
@@ -664,7 +703,7 @@ fn local_declaration_source_type_name(
             else {
                 return None;
             };
-            if member.enclosing_binary_name.as_deref() != Some(outer.binary_name.as_str())
+            if member.enclosing_binary_name.as_ref() != Some(&outer.binary_name)
                 || !is_java_identifier(suffix)
             {
                 return None;
@@ -721,6 +760,9 @@ fn declarations(
     debug_locals: &[DebugLocal],
     code: &MethodCodeFacts,
     sites: &init::Sites,
+    runtime_release: u16,
+    reference_relations: &[crate::report::ReferenceRelationInput],
+    declared_types: Option<&crate::report::DeclaredGenericTypes>,
     budget: &mut Budget,
 ) -> Result<Declarations, StopReason> {
     let paths = region_paths(regions);
@@ -768,14 +810,17 @@ fn declarations(
         operations,
         reuse,
         parameters,
+        has_receiver,
         parameter_types,
         return_type,
         fields,
         &short_circuit_booleans,
         &paths.catch_parameters,
+        runtime_release,
+        reference_relations,
         budget,
     )?;
-    let generic_locals = prove_debug_generic_locals(
+    let mut generic_locals = prove_debug_generic_locals(
         debug_locals,
         &uses,
         &decided,
@@ -788,6 +833,18 @@ fn declarations(
         sites,
         budget,
     )?;
+    if let Some(types) = declared_types {
+        generic_locals.extend(prove_declared_generic_locals(
+            types,
+            &uses,
+            &decided,
+            ssa,
+            operations,
+            reuse,
+            has_receiver,
+            budget,
+        )?);
+    }
     let mut plan = Declarations {
         decided,
         generic_locals,
@@ -1208,13 +1265,11 @@ fn declarations(
             && !resource_guard_lead
             && (!store_type_is_proven
                 || !(joined_value_certified
-                    || all_reads_reach_presented_writes(
+                    || all_reads_reach_source_writes(
                         ssa,
                         operations,
-                        sites,
                         variable_uses,
                         &paths,
-                        plan.decided.get(variable),
                         budget,
                     )?))
         {
@@ -1576,7 +1631,7 @@ fn supported_this_alias_consumer(
                     && declaring_class == Some(target.owner())) =>
         {
             let Ok(descriptor) =
-                descriptor_facts(target.descriptor().as_bytes(), DescriptorKind::Method)
+                descriptor_facts(target.raw_descriptor().0.as_slice(), DescriptorKind::Method)
             else {
                 return false;
             };
@@ -1628,10 +1683,478 @@ fn bci_is_in_presented_region(
         .is_some_and(|path| !paths.fallbacks.contains(path))
 }
 
-/// Proves the single supported LVTT local before either its declaration or its allocation AST is
-/// built. Its semantic frame type stays erased; the returned source spelling and allocation BCI are
-/// one atomic presentation decision keyed by the existing local identity.
+/// Choose a declared source application in the same local identity/placement plan as erasure.
+/// Every write must fit, and each source-sensitive consumer must carry its selected member facts.
 #[allow(clippy::too_many_arguments)]
+fn prove_declared_generic_locals(
+    types: &crate::report::DeclaredGenericTypes,
+    uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
+    decided: &BTreeMap<LocalVariable, Decided>,
+    ssa: &SsaTable,
+    operations: &Operations,
+    reuse: &reuse::Plan,
+    has_receiver: bool,
+    budget: &mut Budget,
+) -> Result<BTreeMap<LocalVariable, GenericLocalProjection>, StopReason> {
+    use crate::generic_types::{
+        erased_type, has_source_arguments, proved_assignment, spell_declared_type,
+    };
+    use crate::report::DeclaredGenericMemberTypes;
+    let mut projections = BTreeMap::new();
+    if types.values.len() != ssa.values().len() {
+        return Ok(projections);
+    }
+    charge(
+        budget,
+        CountedBudgetDimension::IrItems,
+        ssa.values().len() as u64,
+        None,
+    )?;
+    let indices: BTreeMap<_, _> = ssa
+        .values_with_ids()
+        .enumerate()
+        .map(|(index, (id, _))| (id, index))
+        .collect();
+    let bounds = crate::assignability::reference_bounds(ssa, operations, has_receiver, budget)
+        .map_err(|error| crate::stop::stop_from_error(budget, error, None))?;
+    let mut requirements = BTreeMap::<LocalVariable, Vec<(u8, Option<usize>)>>::new();
+    let mut add_requirement = |value, required, budget: &mut Budget| -> Result<(), StopReason> {
+        for (slot, bci, peel) in bounds
+            .local_sources(value, budget)
+            .map_err(|error| crate::stop::stop_from_error(budget, error, None))?
+        {
+            if let Some(variable) = reuse.variable_at(slot, bci) {
+                charge(budget, CountedBudgetDimension::IrItems, 1, Some(bci))?;
+                requirements
+                    .entry(variable)
+                    .or_default()
+                    .push((peel, required));
+            }
+        }
+        Ok(())
+    };
+    for block in ssa.blocks() {
+        for instruction in block.instructions() {
+            let bci = instruction.bci();
+            poll(budget, Some(bci))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                instruction.reads().len() as u64,
+                Some(bci),
+            )?;
+            let stack: Vec<_> = instruction
+                .reads()
+                .iter()
+                .filter_map(|(slot, value)| match slot {
+                    Slot::Stack(depth) => Some((*depth, *value)),
+                    _ => None,
+                })
+                .collect();
+            let mut member = None;
+            for (owner, candidate) in &types.members {
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+                let at = match candidate {
+                    DeclaredGenericMemberTypes::Field { bci, .. }
+                    | DeclaredGenericMemberTypes::Method { bci, .. } => *bci,
+                };
+                if owner == block.block() && at == bci {
+                    member = Some(candidate);
+                    break;
+                }
+            }
+            match operations.get(bci) {
+                Some(Operation::Invoke(target)) => {
+                    let mut stack = stack;
+                    stack.sort_unstable_by_key(|(depth, _)| *depth);
+                    let formal = match member {
+                        Some(DeclaredGenericMemberTypes::Method {
+                            application,
+                            parameters,
+                            result,
+                            ..
+                        }) => {
+                            let descriptor = jarde_reader::classfile::descriptor_facts(
+                                &target.raw_descriptor().0,
+                                jarde_reader::classfile::DescriptorKind::Method,
+                            )
+                            .ok();
+                            let mut compatible = descriptor.as_ref().is_some_and(|descriptor| {
+                                descriptor.parameters().len() == parameters.len()
+                            });
+                            let mut unique = false;
+                            for (owner, call) in &types.unique_calls {
+                                charge(
+                                    budget,
+                                    CountedBudgetDimension::AnalysisSteps,
+                                    1,
+                                    Some(bci),
+                                )?;
+                                if *call == bci && owner == block.block() {
+                                    unique = true;
+                                    break;
+                                }
+                            }
+                            compatible &= unique;
+                            if let Some(descriptor) = &descriptor {
+                                let receiver = usize::from(target.kind() != InvokeKind::Static);
+                                for (position, (parameter, original)) in
+                                    parameters.iter().zip(descriptor.parameters()).enumerate()
+                                {
+                                    let actual = erased_type(types, *parameter, budget).map_err(
+                                        |error| {
+                                            crate::stop::stop_from_error(budget, error, Some(bci))
+                                        },
+                                    )?;
+                                    if actual != crate::lambda::type_of_component(original) {
+                                        let index = stack
+                                            .get(receiver + position)
+                                            .and_then(|(_, value)| indices.get(value));
+                                        compatible &=
+                                            if let Some(index) = index {
+                                                crate::generic_types::proved_declared_conversion(
+                                                    types, *index, *parameter, budget,
+                                                )
+                                                .map_err(|error| {
+                                                    crate::stop::stop_from_error(
+                                                        budget,
+                                                        error,
+                                                        Some(bci),
+                                                    )
+                                                })?
+                                            } else {
+                                                false
+                                            };
+                                    }
+                                }
+                                if let Some(result) = result {
+                                    let actual =
+                                        erased_type(types, *result, budget).map_err(|error| {
+                                            crate::stop::stop_from_error(budget, error, Some(bci))
+                                        })?;
+                                    let original = descriptor
+                                        .result()
+                                        .and_then(crate::lambda::type_of_component);
+                                    if actual != original
+                                        || has_source_arguments(types, *result, budget).map_err(
+                                            |error| {
+                                                crate::stop::stop_from_error(
+                                                    budget,
+                                                    error,
+                                                    Some(bci),
+                                                )
+                                            },
+                                        )?
+                                    {
+                                        compatible &= generic_result_consumers_have_physical_cast(
+                                            ssa,
+                                            operations,
+                                            instruction,
+                                            actual.as_ref(),
+                                            budget,
+                                        )?;
+                                    }
+                                }
+                            }
+                            if compatible {
+                                Some((*application, parameters))
+                            } else {
+                                None
+                            }
+                        }
+                        _ => None,
+                    };
+                    let receiver = usize::from(target.kind() != InvokeKind::Static);
+                    if receiver == 1
+                        && let Some((_, value)) = stack.first()
+                    {
+                        add_requirement(
+                            *value,
+                            formal.as_ref().map(|(application, _)| *application),
+                            budget,
+                        )?;
+                    }
+                    for (position, (_, value)) in stack.iter().skip(receiver).enumerate() {
+                        let required = formal
+                            .as_ref()
+                            .and_then(|(_, parameters)| parameters.get(position))
+                            .copied();
+                        add_requirement(*value, required, budget)?;
+                    }
+                }
+                Some(Operation::Field {
+                    access,
+                    is_static,
+                    descriptor,
+                    ..
+                }) => {
+                    let mut stack = stack;
+                    stack.sort_unstable_by_key(|(depth, _)| *depth);
+                    if !is_static && let Some((_, receiver)) = stack.first() {
+                        let application = match member {
+                            Some(DeclaredGenericMemberTypes::Field {
+                                application, ty, ..
+                            }) => {
+                                let actual = erased_type(types, *ty, budget).map_err(|error| {
+                                    crate::stop::stop_from_error(budget, error, Some(bci))
+                                })?;
+                                let original = jarde_reader::classfile::descriptor_facts(
+                                    &descriptor.0,
+                                    jarde_reader::classfile::DescriptorKind::Field,
+                                )
+                                .ok()
+                                .and_then(|facts| {
+                                    facts.single().and_then(crate::lambda::type_of_component)
+                                });
+                                let changed = actual != original
+                                    || has_source_arguments(types, *ty, budget).map_err(
+                                        |error| {
+                                            crate::stop::stop_from_error(budget, error, Some(bci))
+                                        },
+                                    )?;
+                                let closed = !changed
+                                    || (*access == FieldAccess::Read
+                                        && generic_result_consumers_have_physical_cast(
+                                            ssa,
+                                            operations,
+                                            instruction,
+                                            actual.as_ref(),
+                                            budget,
+                                        )?);
+                                closed.then_some(*application)
+                            }
+                            _ => None,
+                        };
+                        add_requirement(*receiver, application, budget)?;
+                    }
+                    if *access == FieldAccess::Write
+                        && let Some((_, value)) = stack.last()
+                    {
+                        let required = match member {
+                            Some(DeclaredGenericMemberTypes::Field { ty, .. }) => Some(*ty),
+                            _ => None,
+                        };
+                        add_requirement(*value, required, budget)?;
+                    }
+                }
+                Some(Operation::Return) => {
+                    for (_, value) in stack {
+                        add_requirement(value, types.result, budget)?;
+                    }
+                }
+                Some(Operation::Comparison { .. } | Operation::InstanceOf { .. }) => {
+                    // Generic arguments participate in reference comparability even when their
+                    // erasures are equal. Keep the original declaration until the final-source
+                    // comparison proof can check both operands together.
+                    for (_, value) in stack {
+                        add_requirement(value, None, budget)?;
+                    }
+                }
+                // Other reference positions retain exactly the same erasure. The ordinary
+                // declaration/scope/effect proofs continue to own these operations.
+                _ => {}
+            }
+        }
+    }
+    for (variable, accesses) in uses {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        let Some(Decided::Type(erased @ Type::Reference(_))) = decided.get(variable) else {
+            continue;
+        };
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            accesses.len() as u64,
+            None,
+        )?;
+        let writes: Vec<_> = accesses
+            .iter()
+            .filter_map(|access| access.stored.or(access.written))
+            .collect();
+        if writes.is_empty() {
+            continue;
+        }
+        let mut incoming = Vec::new();
+        let mut complete = true;
+        for value in writes {
+            let Some(Some(nodes)) = indices
+                .get(&value)
+                .and_then(|index| types.values.get(*index))
+            else {
+                complete = false;
+                break;
+            };
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                nodes.len() as u64,
+                None,
+            )?;
+            incoming.extend(nodes.iter().copied());
+        }
+        if !complete || incoming.is_empty() {
+            continue;
+        }
+        for candidate in &types.admissible {
+            poll(budget, None)?;
+            let candidate_erasure = erased_type(types, *candidate, budget)
+                .map_err(|error| crate::stop::stop_from_error(budget, error, None))?;
+            if candidate_erasure.as_ref() != Some(erased)
+                || !has_source_arguments(types, *candidate, budget)
+                    .map_err(|error| crate::stop::stop_from_error(budget, error, None))?
+            {
+                continue;
+            }
+            let mut valid = true;
+            for source in &incoming {
+                if !proved_assignment(types, *source, *candidate, budget)
+                    .map_err(|error| crate::stop::stop_from_error(budget, error, None))?
+                {
+                    valid = false;
+                    break;
+                }
+            }
+            if !valid {
+                continue;
+            }
+            for (peel, required) in requirements.get(variable).into_iter().flatten() {
+                let Some(required) = required else {
+                    valid = false;
+                    break;
+                };
+                let mut source = *candidate;
+                for _ in 0..*peel {
+                    let Some(crate::report::DeclaredGenericType::Array(component)) =
+                        types.types.get(source)
+                    else {
+                        valid = false;
+                        break;
+                    };
+                    source = *component;
+                }
+                if !valid
+                    || !proved_assignment(types, source, *required, budget)
+                        .map_err(|error| crate::stop::stop_from_error(budget, error, None))?
+                {
+                    valid = false;
+                    break;
+                }
+            }
+            if !valid {
+                continue;
+            }
+            let Some(source_type) = spell_declared_type(types, *candidate, budget)
+                .map_err(|error| crate::stop::stop_from_error(budget, error, None))?
+            else {
+                continue;
+            };
+            charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+            projections.insert(
+                *variable,
+                GenericLocalProjection {
+                    source_type,
+                    erased: erased.clone(),
+                    type_index: Some(*candidate),
+                    allocation_bci: None,
+                },
+            );
+            break;
+        }
+    }
+    Ok(projections)
+}
+
+/// A more precise member result must meet an original physical type check before a consumer
+/// can rely on the new source type. In particular a field's old Object result must not silently
+/// retarget an overload, and a nested parameterized receiver must not acquire changed formals.
+/// Copy identities come from SSA; no stack-opcode or textual-expression reconstruction is used.
+fn generic_result_consumers_have_physical_cast(
+    ssa: &SsaTable,
+    operations: &Operations,
+    producer: &SsaInstruction,
+    required: Option<&Type>,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let Some(required) = required else {
+        return Ok(false);
+    };
+    let mut pending = Vec::new();
+    let mut seen = BTreeSet::new();
+    for (slot, value) in producer.writes() {
+        if matches!(slot, Slot::Stack(_)) {
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(producer.bci()),
+            )?;
+            pending.push(*value);
+        }
+    }
+    while let Some(value) = pending.pop() {
+        poll(budget, Some(producer.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(producer.bci()),
+        )?;
+        if !seen.insert(value) {
+            continue;
+        }
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(producer.bci()),
+        )?;
+        for consumer in ssa.value(value).uses() {
+            let Some(bci) = consumer.bci() else {
+                return Ok(false);
+            };
+            let mut instruction = None;
+            for block in ssa.blocks() {
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+                if block.block() != consumer.block() {
+                    continue;
+                }
+                for candidate in block.instructions() {
+                    charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+                    if candidate.bci() == bci {
+                        instruction = Some(candidate);
+                        break;
+                    }
+                }
+                break;
+            }
+            let Some(instruction) = instruction else {
+                return Ok(false);
+            };
+            let mut copied = false;
+            for (output, input) in instruction.copies() {
+                if *input == value {
+                    charge(budget, CountedBudgetDimension::IrItems, 1, Some(bci))?;
+                    pending.push(*output);
+                    copied = true;
+                }
+            }
+            if copied {
+                continue;
+            }
+            match operations.get(bci) {
+                Some(Operation::CheckCast { ty })
+                    if spell_class_operand(ty).as_deref() == Some(required.spell()) => {}
+                _ => return Ok(false),
+            }
+        }
+    }
+    Ok(true)
+}
+
+/// Proves the existing LVTT allocation projection before declaration and allocation AST emission.
+/// It remains until the declared-type path covers its valid source/diamond contract together.
 fn prove_debug_generic_locals(
     debug_locals: &[DebugLocal],
     uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
@@ -1688,7 +2211,10 @@ fn prove_debug_generic_locals(
         let Some(variable) = reuse.variable_at(local.slot(), start) else {
             continue;
         };
-        if names.text(variable) != Some(local.name())
+        if names
+            .name(variable)
+            .and_then(crate::names::RenderedName::raw)
+            != Some(local.name())
             || !matches!(
                 decided.get(&variable),
                 Some(Decided::Type(Type::Reference(name))) if name == "java.util.HashMap"
@@ -1730,9 +2256,9 @@ fn prove_debug_generic_locals(
         let Some(site) = sites.site_producing(ssa, stored) else {
             continue;
         };
-        if site.class != "java/util/HashMap"
+        if site.class.0 != b"java/util/HashMap"
             || !site.arguments.is_empty()
-            || !matches!(operations.get(site.head), Some(Operation::Allocate { ty }) if ty == "java/util/HashMap")
+            || !matches!(operations.get(site.head), Some(Operation::Allocate { ty }) if ty.0 == b"java/util/HashMap")
             || !matches!(
                 operations.get(site.constructor),
                 Some(Operation::Invoke(target))
@@ -1792,7 +2318,9 @@ fn prove_debug_generic_locals(
             variable,
             GenericLocalProjection {
                 source_type: "java.util.Map<java.lang.String, java.lang.String>".to_owned(),
-                allocation_bci: site.head,
+                erased: Type::Reference("java.util.HashMap".to_owned()),
+                type_index: None,
+                allocation_bci: Some(site.head),
             },
         );
     }
@@ -1830,20 +2358,16 @@ fn signature_parse_stop(error: ReaderError, at: u32) -> Option<StopReason> {
     match error {
         ReaderError::Cancelled { .. } => Some(StopReason::Cancelled { at: Some(at) }),
         ReaderError::BudgetExceeded {
-            dimension: BudgetDimension::AnalysisSteps,
+            dimension,
             limit,
-            ..
+            consumed,
+            requested,
         } => Some(StopReason::Budget {
-            dimension: CountedBudgetDimension::AnalysisSteps,
+            dimension,
+            consumed,
+            requested,
             written: 0,
             limit,
-            at: Some(at),
-        }),
-        ReaderError::BudgetExceeded {
-            dimension: BudgetDimension::ElapsedMillis,
-            ..
-        } => Some(StopReason::Interrupted {
-            code: crate::stop::BUDGET_INTERRUPTED_CODE,
             at: Some(at),
         }),
         _ => None,
@@ -2267,7 +2791,7 @@ fn proves_boolean_local_store(
                     descriptor,
                     ..
                 }),
-            ) if descriptor == "Z" => fields
+            ) if descriptor.0.as_slice() == b"Z" => fields
                 .claim(consumer_bci)
                 .is_some_and(|(_, shape)| shape.value == Some(*loaded)),
             (0xac, Some(Operation::Return)) => return_type == Some(&Type::Boolean),
@@ -2423,8 +2947,8 @@ struct FirstWrite {
 /// * a **direct char producer** and every physical write: at least one exact `C` call, field,
 ///   entry-parameter load or `i2c`, with all other writes restricted to such producers or literals
 ///   in `0..=65535`, can refine a non-parameter local to `char`;
-/// * an **actual null first write** followed only by null or direct producers of the same exact
-///   reference type, with at least one non-null producer, can refine that local's reference type;
+/// * **complete reference producer bounds**, including null, copies, phis and array elements,
+///   reconciled with all writes and descriptor uses by [`legalize_reference_locals`];
 /// * the **frame's type** for the value a variable's first write stores is the fallback. Frames
 ///   state one slot shape for the four int-sized primitives;
 /// * **nothing else**: an isolated `0`/`1` literal is refused as *initiating* evidence (a fresh local
@@ -2432,8 +2956,9 @@ struct FirstWrite {
 ///   `true`/`false` only where the target is already decided boolean — which is how the consumers
 ///   spell it, not a decision of this pass.
 ///
-/// A variable whose first write states no usable type is [`Decided::Unknown`]: the write that would
-/// have declared it refuses instead, and no second place decides a type for it.
+/// Incompatible JVM kinds, unsupported Boolean writes and an absent unique reference solution
+/// become [`Decided::Unknown`] before a statement exists. First-write frame/guard answers below
+/// are provisional for references and are replaced by the complete reference solution.
 ///
 /// Boolean copy propagation runs on a worklist to a fixpoint, so a chain is decided the same way
 /// whatever order the variables are met in, and every queue entry is billed and polled against the
@@ -2449,11 +2974,14 @@ fn decide_types(
     operations: &Operations,
     reuse: &reuse::Plan,
     parameters: u16,
+    has_receiver: bool,
     parameter_types: &BTreeMap<u16, Type>,
     return_type: Option<&Type>,
     fields: &field::Plan,
     short_circuit_booleans: &BTreeSet<LocalVariable>,
     catch_parameters: &BTreeMap<RegionPath, (u16, CanonicalBlockId)>,
+    runtime_release: u16,
+    reference_relations: &[crate::report::ReferenceRelationInput],
     budget: &mut Budget,
 ) -> Result<BTreeMap<LocalVariable, Decided>, StopReason> {
     // The write each variable's type is decided from: the first one in method order, which is the
@@ -2982,8 +3510,16 @@ fn decide_types(
                         }
                     }
                     if let Ok(Some(observed)) = written_type(ssa, operations, written)
-                        && matches!(declared, Type::Reference(_))
-                            != matches!(observed, Type::Reference(_))
+                        && !matches!(
+                            (&declared, &observed),
+                            (
+                                Type::Boolean | Type::Byte | Type::Short | Type::Char | Type::Int,
+                                Type::Boolean | Type::Byte | Type::Short | Type::Char | Type::Int
+                            ) | (Type::Long, Type::Long)
+                                | (Type::Float, Type::Float)
+                                | (Type::Double, Type::Double)
+                                | (Type::Reference(_), Type::Reference(_))
+                        )
                     {
                         conflict = Some(NoType::ConflictingWrites {
                             first: write.at,
@@ -2993,6 +3529,45 @@ fn decide_types(
                         });
                         break;
                     }
+                    // This certificate already checked the sole physical store and its complete
+                    // 0/1 phi. The scalar expression proof below intentionally does not re-prove
+                    // that control-flow graph as a tree.
+                    if declared == Type::Boolean && !short_circuit_booleans.contains(variable) {
+                        let is_boolean_local = |value, at| {
+                            read_variable(ssa, operations, reuse, value, at)
+                                .is_some_and(|dependency| boolean_variables.contains(&dependency))
+                        };
+                        let mut visit = |at| charge_bitwise_proof_node(operations, at, budget);
+                        let mut context = BooleanProofContext {
+                            ssa,
+                            operations,
+                            parameter_types,
+                            fields,
+                            is_boolean_local,
+                            visit: &mut visit,
+                        };
+                        if !boolean_proof(
+                            &mut context,
+                            use_.stored.unwrap_or(written),
+                            use_.bci,
+                            0,
+                            &mut BTreeMap::new(),
+                        )?
+                        .is_boolean()
+                        {
+                            conflict = Some(match written_type(ssa, operations, written) {
+                                Ok(Some(observed)) => NoType::ConflictingWrites {
+                                    first: write.at,
+                                    later: use_.bci,
+                                    declared: Type::Boolean,
+                                    observed,
+                                },
+                                Ok(None) => NoType::NoFrameEntry,
+                                Err(name) => NoType::Unspellable(name),
+                            });
+                            break;
+                        }
+                    }
                 }
                 conflict.map_or(Decided::Type(declared), Decided::Unknown)
             }
@@ -3000,7 +3575,457 @@ fn decide_types(
         };
         decided.insert(*variable, decision);
     }
+    legalize_reference_locals(
+        uses,
+        ssa,
+        operations,
+        reuse,
+        parameters,
+        has_receiver,
+        parameter_types,
+        return_type,
+        resource_slots,
+        runtime_release,
+        reference_relations,
+        &mut decided,
+        budget,
+    )?;
     Ok(decided)
+}
+
+/// Reconcile complete producer bounds and descriptor requirements before any statement exists.
+/// Copies constrain the declared types at both ends; a value's narrower frame type cannot stand
+/// in for the source variable that Java will actually read.
+#[allow(clippy::too_many_arguments)]
+fn legalize_reference_locals(
+    uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
+    ssa: &SsaTable,
+    operations: &Operations,
+    reuse: &reuse::Plan,
+    parameters: u16,
+    has_receiver: bool,
+    parameter_types: &BTreeMap<u16, Type>,
+    return_type: Option<&Type>,
+    resource_slots: &BTreeSet<u16>,
+    runtime_release: u16,
+    relations: &[crate::report::ReferenceRelationInput],
+    decided: &mut BTreeMap<LocalVariable, Decided>,
+    budget: &mut Budget,
+) -> Result<(), StopReason> {
+    use crate::assignability::{reference_constraints, reference_intrinsically_assignable};
+    let mut facts = BTreeMap::new();
+    let mut relation_outcomes = BTreeMap::<u32, Vec<crate::report::ReferenceRelation>>::new();
+    for relation in relations {
+        poll(budget, Some(relation.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(relation.bci),
+        )?;
+        facts
+            .entry((
+                relation.bci,
+                relation.source.as_str(),
+                relation.target.as_str(),
+            ))
+            .and_modify(|valid| *valid &= relation.relation.is_assignable(runtime_release))
+            .or_insert(relation.relation.is_assignable(runtime_release));
+        if !relation.relation.is_assignable(runtime_release) {
+            let outcomes = relation_outcomes.entry(relation.bci).or_default();
+            if !outcomes.contains(&relation.relation) {
+                outcomes.push(relation.relation);
+            }
+        }
+    }
+    let assignable = |source: &str, target: &str, at: u32| {
+        reference_intrinsically_assignable(source, target)
+            || facts.get(&(at, source, target)).copied().unwrap_or(false)
+    };
+    // Missing platform relations collected at the call sites (`ReferenceRelationInput`) are
+    // recorded under the invocation's own bci, while every judgment this planner makes queries
+    // under a store/load bci — the exact keys can never meet. The main-line ruling restores the
+    // planner's contract: a declaration stands on its write types, and a use-site conversion is
+    // refused at the call site, by its own verbatim sentence. A Missing relation authorizes no
+    // conversion, but it is absent evidence, not a negative one — it must not veto the
+    // declaration either. `Incompatible` is a judgment, not an absence, and still refuses a
+    // candidate; `Ambiguous`/`Unknown` keep the pre-existing strict treatment.
+    let missing_relations = |source: &str, target: &str| {
+        relations.iter().any(|relation| {
+            matches!(relation.relation, crate::report::ReferenceRelation::Missing)
+                && relation.source.as_str() == source
+                && relation.target.as_str() == target
+        })
+    };
+    let constraints = reference_constraints(ssa, operations, return_type, has_receiver, budget)
+        .map_err(|error| crate::stop::stop_from_error(budget, error, None))?;
+    // The receiver is a fact the frames state on the slot-0 entry, and the bounds graph holds its
+    // spelled type. A copy from the receiver constrains its target exactly like a parameter
+    // descriptor does: without seeding it here, every `local = this` copy loses the one producer
+    // its domain had and the target is decided unknown with no relations.
+    let receiver_domain = if has_receiver {
+        let mut names = BTreeSet::new();
+        for (id, value) in ssa.values_with_ids() {
+            poll(budget, None)?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+            if matches!(
+                value.def(),
+                Definition::Entry {
+                    slot: Slot::Local(0),
+                    ..
+                }
+            ) && let Some(bound) = constraints.bounds.types_of(id)
+            {
+                names.extend(bound.map(str::to_owned));
+            }
+        }
+        names
+    } else {
+        BTreeSet::new()
+    };
+    let mut domains = BTreeMap::<LocalVariable, BTreeSet<String>>::new();
+    let mut first_store = BTreeMap::new();
+    let mut copies = Vec::new();
+    for (variable, accesses) in uses {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        if matches!(decided.get(variable), Some(Decided::Unknown(NoType::ConflictingWrites { declared, observed, .. }))
+            if matches!(declared, Type::Reference(_)) != matches!(observed, Type::Reference(_)))
+            || matches!(
+                decided.get(variable),
+                Some(Decided::Unknown(NoType::Unspellable(_)))
+            )
+        {
+            continue;
+        }
+        // A catch or resource header owns its declaration and is checked by its existing scope
+        // proof. It must not be silently turned into an ordinary local by this solver.
+        if resource_slots.contains(&variable.slot())
+            || accesses.iter().any(|access| {
+                access.stored.is_some_and(|value| {
+                    matches!(ssa.value(value).def(), Definition::Caught { .. })
+                })
+            })
+        {
+            continue;
+        }
+        let writes: Vec<_> = accesses
+            .iter()
+            .filter(|access| access.written.is_some())
+            .collect();
+        if writes.is_empty() {
+            continue;
+        }
+        if !writes.iter().any(|access| {
+            matches!(
+                ssa.value(access.stored.or(access.written).unwrap()).ty(),
+                Value::Ref(_) | Value::Null
+            )
+        }) {
+            continue;
+        }
+        let mut domain = constraints
+            .domains
+            .get(&variable.slot())
+            .cloned()
+            .unwrap_or_default();
+        if variable.slot() < parameters {
+            domain = match parameter_types.get(&variable.slot()) {
+                Some(Type::Reference(name)) => BTreeSet::from([name.clone()]),
+                _ => BTreeSet::new(),
+            };
+        }
+        first_store.insert(
+            *variable,
+            writes.iter().map(|access| access.bci).min().unwrap(),
+        );
+        for access in writes {
+            let value = access.stored.or(access.written).unwrap();
+            let Some(types) = constraints.bounds.types_of(value) else {
+                domain.clear();
+                continue;
+            };
+            let types: Vec<_> = types.collect();
+            let mut retained = BTreeSet::new();
+            for candidate in domain {
+                poll(budget, Some(access.bci))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    types.len() as u64 + 1,
+                    Some(access.bci),
+                )?;
+                if types
+                    .iter()
+                    .all(|source| {
+                        assignable(source, &candidate, access.bci)
+                            || missing_relations(source, &candidate)
+                    })
+                {
+                    retained.insert(candidate);
+                }
+            }
+            domain = retained;
+            for (slot, load, projection) in constraints
+                .bounds
+                .local_sources(value, budget)
+                .map_err(|error| crate::stop::stop_from_error(budget, error, Some(access.bci)))?
+            {
+                if let Some(source) = reuse.variable_at(slot, load) {
+                    copies.push((source, projection, *variable, access.bci));
+                }
+            }
+        }
+        for access in accesses.iter().filter(|access| access.read.is_some()) {
+            for (_, _, projection) in constraints
+                .array_uses
+                .range((variable.slot(), access.bci, 0)..=(variable.slot(), access.bci, u8::MAX))
+            {
+                let mut retained = BTreeSet::new();
+                for candidate in domain {
+                    poll(budget, Some(access.bci))?;
+                    charge(
+                        budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(access.bci),
+                    )?;
+                    let mut component = candidate.as_str();
+                    for _ in 0..*projection {
+                        component = component.strip_suffix("[]").unwrap_or("");
+                    }
+                    if component.ends_with("[]") {
+                        retained.insert(candidate);
+                    }
+                }
+                domain = retained;
+            }
+            if let Some(targets) = constraints.requirements.get(&(variable.slot(), access.bci)) {
+                let mut retained = BTreeSet::new();
+                for candidate in domain {
+                    poll(budget, Some(access.bci))?;
+                    charge(
+                        budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        targets.len() as u64 + 1,
+                        Some(access.bci),
+                    )?;
+                    if targets
+                        .iter()
+                        .all(|target| {
+                            assignable(&candidate, target, access.bci)
+                                || missing_relations(&candidate, target)
+                        })
+                    {
+                        retained.insert(candidate);
+                    }
+                }
+                domain = retained;
+            }
+        }
+        domains.insert(*variable, domain);
+    }
+    // Read-only parameters have a fixed descriptor type even though they have no Store.
+    for (source, _, _, _) in &copies {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        if !domains.contains_key(source) {
+            let fixed = if source.slot() == 0 && receiver_domain.len() == 1 {
+                receiver_domain
+                    .iter()
+                    .next()
+                    .map(|name| Type::Reference(name.clone()))
+            } else if source.slot() < parameters {
+                parameter_types.get(&source.slot()).cloned()
+            } else if let Some(Decided::Type(ty)) = decided.get(source) {
+                Some(ty.clone())
+            } else {
+                None
+            };
+            if let Some(Type::Reference(name)) = fixed {
+                domains.insert(*source, BTreeSet::from([name]));
+            }
+        }
+    }
+    let fits = |source: &str, projection: u8, target: &str, at: u32| {
+        let mut component = source;
+        for _ in 0..projection {
+            let Some(inner) = component.strip_suffix("[]") else {
+                return false;
+            };
+            component = inner;
+        }
+        assignable(component, target, at)
+    };
+    let mut readers = BTreeMap::<LocalVariable, BTreeSet<usize>>::new();
+    for (index, (source, _, target, _)) in copies.iter().enumerate() {
+        charge(budget, CountedBudgetDimension::IrEdges, 2, None)?;
+        readers.entry(*source).or_default().insert(index);
+        readers.entry(*target).or_default().insert(index);
+    }
+    let mut queue: VecDeque<_> = domains.keys().copied().collect();
+    let mut queued: BTreeSet<_> = domains.keys().copied().collect();
+    while let Some(variable) = queue.pop_front() {
+        queued.remove(&variable);
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        for index in readers.get(&variable).into_iter().flatten() {
+            let (source, projection, target, at) = copies[*index];
+            let source_domain = domains.get(&source).cloned().unwrap_or_default();
+            let target_domain = domains.get(&target).cloned().unwrap_or_default();
+            let mut source_kept = BTreeSet::new();
+            let mut target_kept = BTreeSet::new();
+            for from in &source_domain {
+                for to in &target_domain {
+                    poll(budget, Some(at))?;
+                    charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+                    if fits(from, projection, to, at) {
+                        source_kept.insert(from.clone());
+                        target_kept.insert(to.clone());
+                    }
+                }
+            }
+            if source_domain.is_empty() { target_kept = target_domain.clone(); }
+            if target_domain.is_empty() { source_kept = source_domain.clone(); }
+            for (variable, old, kept) in [
+                (source, source_domain, source_kept),
+                (target, target_domain, target_kept),
+            ] {
+                if old != kept {
+                    domains.insert(variable, kept);
+                    if queued.insert(variable) {
+                        queue.push_back(variable);
+                    }
+                }
+            }
+        }
+    }
+    let mut selected = BTreeMap::new();
+    for (variable, domain) in &domains {
+        let Some(at) = first_store.get(variable).copied() else {
+            continue;
+        };
+        // Feasibility is proof, not absence: a candidate can stand as the declaration only
+        // where every write provably flows into it. A Missing pair excuses a candidate from
+        // being vetoed by the retention above, but absence is not evidence, so an excused
+        // candidate can neither win the choice nor displace a proved-feasible one.
+        let mut feasible = BTreeMap::<&String, bool>::new();
+        for candidate in domain {
+            let mut proved = true;
+            for access in uses.get(variable).into_iter().flatten() {
+                if access.written.is_none() {
+                    continue;
+                }
+                poll(budget, Some(access.bci))?;
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(access.bci))?;
+                let value = access.stored.or(access.written).unwrap();
+                proved &= constraints.bounds.types_of(value).is_some_and(|mut types| {
+                    types.all(|ty| assignable(ty, candidate, access.bci))
+                });
+            }
+            feasible.insert(candidate, proved);
+        }
+        let mut minima = Vec::new();
+        for candidate in domain {
+            poll(budget, Some(at))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                domain.len() as u64 + 1,
+                Some(at),
+            )?;
+            // A candidate survives as the declaration only if it is assignable to every other
+            // candidate — the most specific of the set. An unproved `candidate → other` pair
+            // excuses the candidate only while it is a widening with no facts: when the reverse
+            // edge is proved (`other` widens to `candidate`), `candidate → other` is a narrowing,
+            // which no conversion evidence ever states, so the candidate loses to the more
+            // specific `other` instead of deadlocking the choice — but only where that `other`
+            // is itself proved feasible. An `other` whose own writes flow in only through Missing
+            // exemptions states no conversion either, so the narrowing it claims rests on the
+            // same absence. (`Other$Tagged extends Other$Box` in the same jar: the bounds hold
+            // {Box, Tagged}; the unproved Box → Tagged pair must not keep Box alive beside the
+            // proved-widening, write-feasible Tagged. Two branches writing unrelated `First`/
+            // `Second` values under one proved `Answer` descriptor keep `Answer` alive: neither
+            // `First` nor `Second` is proved feasible, so neither displaces it.)
+            if domain.iter().all(|other| {
+                assignable(candidate, other, at)
+                    || (missing_relations(candidate, other)
+                        && (!assignable(other, candidate, at) || !feasible[other]))
+            }) {
+                minima.push(candidate);
+            }
+        }
+        // Among the most specific survivors, a candidate whose feasibility is proved outranks
+        // one whose retention rested on Missing exemptions; with no proved-feasible survivor
+        // the survivors stand as they are, and a divided set still refuses to fabricate a
+        // declaration.
+        let mut choice: Vec<&String> = minima
+            .iter()
+            .filter(|candidate| feasible[*candidate])
+            .copied()
+            .collect();
+        if choice.is_empty() {
+            choice.extend(minima.iter());
+        }
+        if let [name] = choice.as_slice() {
+            selected.insert(*variable, (*name).clone());
+        }
+    }
+    // Verify the selected declaration pair, rather than assuming arc consistency chose one.
+    let mut conflicts = BTreeSet::new();
+    for (source, projection, target, at) in &copies {
+        poll(budget, Some(*at))?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(*at))?;
+        let from = selected.get(source).or_else(|| {
+            if source.slot() == 0 && receiver_domain.len() == 1 {
+                receiver_domain.iter().next()
+            } else if source.slot() < parameters {
+                parameter_types.get(&source.slot()).and_then(|ty| {
+                    if let Type::Reference(name) = ty {
+                        Some(name)
+                    } else {
+                        None
+                    }
+                })
+            } else {
+                None
+            }
+        });
+        let proved = from
+            .zip(selected.get(target))
+            .is_some_and(|(from, to)| fits(from, *projection, to, *at));
+        if !proved && from.is_some() {
+            conflicts.insert(*target);
+        }
+    }
+    for variable in first_store.keys() {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        let decision = if !conflicts.contains(variable)
+            && let Some(name) = selected.remove(variable)
+        {
+            Decided::Type(Type::Reference(name))
+        } else {
+            let mut relations = Vec::new();
+            for access in uses.get(variable).into_iter().flatten() {
+                poll(budget, Some(access.bci))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(access.bci),
+                )?;
+                for outcome in relation_outcomes.get(&access.bci).into_iter().flatten() {
+                    if !relations.contains(outcome) {
+                        relations.push(*outcome);
+                    }
+                }
+            }
+            Decided::Unknown(NoType::ReferenceConstraints { relations })
+        };
+        decided.insert(*variable, decision);
+    }
+    Ok(())
 }
 
 /// Widen one ordinary first-write reference only when every write is reference-safe and every
@@ -3232,7 +4257,7 @@ fn local_reference_write_compatibility(
         };
         let stored = access.stored.unwrap_or(written);
         let direct_type = direct_reference_write_type(stored, ssa, operations);
-        let named_array = matches!(ssa.value(stored).ty(), Value::Ref(RefType::Named { name, .. }) if array_descriptor(&String::from_utf8_lossy(name)).is_some());
+        let named_array = matches!(ssa.value(stored).ty(), Value::Ref(RefType::Named { name, .. }) if array_descriptor(name).is_some());
         if named_array
             || matches!(direct_type, Some(Type::Reference(ref name)) if name.ends_with("[]"))
         {
@@ -3332,12 +4357,14 @@ fn local_value_has_char_source(
         Some(Operation::PrimitiveConversion {
             target: Type::Char, ..
         }) => true,
-        Some(Operation::Invoke(target)) => return_type(target.descriptor()) == Some(Type::Char),
+        Some(Operation::Invoke(target)) => {
+            return_type_bytes(&target.raw_descriptor().0) == Some(Type::Char)
+        }
         Some(Operation::Field {
             access: FieldAccess::Read,
             descriptor,
             ..
-        }) => descriptor == "C",
+        }) => descriptor.0.as_slice() == b"C",
         Some(Operation::Load { slot }) if *slot < parameters => {
             if parameter_types.get(slot) != Some(&Type::Char) {
                 false
@@ -3418,16 +4445,16 @@ fn direct_reference_write_type(
             Some(Type::Reference("java.lang.Class".to_owned()))
         }
         Operation::Invoke(target) => {
-            let result = return_type(target.descriptor());
+            let result = return_type_bytes(&target.raw_descriptor().0);
             match result {
                 Some(ty @ Type::Reference(_)) => Some(ty),
                 None if target.kind() == InvokeKind::Special
                     && target.name() == "<init>"
-                    && target.descriptor().ends_with(")V")
+                    && target.raw_descriptor().0.ends_with(b")V")
                     && matches!(
                         ssa.value(value).ty(),
                         Value::Ref(RefType::Named { name, .. })
-                            if name.as_slice() == target.owner().as_bytes()
+                            if name.as_slice() == target.raw_owner().0.as_slice()
                     ) =>
                 {
                     // Frame verification permits exactly this call to convert an uninitialized
@@ -3443,8 +4470,8 @@ fn direct_reference_write_type(
             access: FieldAccess::Read,
             descriptor,
             ..
-        } => descriptor_type(descriptor).filter(|ty| matches!(ty, Type::Reference(_))),
-        Operation::Allocate { ty } => spell_reference(ty).map(Type::Reference),
+        } => descriptor_type_bytes(&descriptor.0).filter(|ty| matches!(ty, Type::Reference(_))),
+        Operation::Allocate { ty } => crate::names::source_class_name(ty).map(Type::Reference),
         Operation::NewArray {
             element,
             total_dimensions,
@@ -4418,6 +5445,7 @@ fn cross_exception_store_type_is_proven(decided: Option<&Decided>, has_increment
 /// verifier type proves assignment to that declaration. Without class hierarchy evidence this
 /// accepts an exact type or any reference assigned to Object; unknown/subtype relations stay
 /// refused instead of treating `Reference` as a complete compatibility proof.
+#[cfg(test)]
 fn presented_reference_load_matches_declared_type(
     value: ValueId,
     ssa: &SsaTable,
@@ -4441,22 +5469,17 @@ fn presented_reference_load_matches_declared_type(
 /// This intentionally rejects more shapes than the JVM could verify; it never infers assignment
 /// from bytecode order.
 #[allow(clippy::too_many_arguments)]
-fn all_reads_reach_presented_writes(
+fn all_reads_reach_source_writes(
     ssa: &SsaTable,
     operations: &Operations,
-    sites: &init::Sites,
     uses: &[SlotUse],
     paths: &RegionPaths,
-    decided: Option<&Decided>,
     budget: &mut Budget,
 ) -> Result<bool, StopReason> {
-    // A reaching local definition is useful only if its value can be written at the store. Keep
-    // this proof smaller than the general expression renderer: the accepted chain is an unshared
-    // numeric literal or a same-block load / static call / addition tree, or — this slice — a
-    // same-block array element read whose array is a local and whose index is one of those
-    // trees, or a same-block verified construction site or zero-argument static call the store
-    // alone consumes. In particular, the call must remain in the protected arm containing its
-    // store, with its result consumed exactly once.
+    // Declaration placement proves assignment on the SSA paths. The actual builder owns RHS
+    // syntax and evaluation order; duplicating that grammar here rejects otherwise valid stores.
+    // If rendering later refuses one of these writes, the presentation checkpoint closes all
+    // dependent declarations and reads rather than publishing an unassigned Java variable.
     for write in uses.iter().filter(|use_| use_.written.is_some()) {
         charge(
             budget,
@@ -4470,97 +5493,40 @@ fn all_reads_reach_presented_writes(
         let Definition::Instruction { block, bci } = ssa.value(written).def() else {
             return Ok(false);
         };
-        if *bci != write.bci {
-            return Ok(false);
-        }
-        // `iinc` reads and writes one local at one BCI. The builder presents it as a single
-        // assignment, with no stack expression to move to the write. Require the read and the
-        // write to be the same reuse variable in this exact presented region; the later SSA
-        // read walk still proves the incoming value comes only from presented definitions.
-        if let Some(Operation::Increment { slot, .. }) = operations.get(write.bci) {
-            let Some(step) = ssa.block(block).and_then(|block| {
-                block
-                    .instructions()
-                    .iter()
-                    .find(|step| step.bci() == write.bci)
-            }) else {
-                return Ok(false);
-            };
-            if write.stored.is_some()
-                || step.reads().len() != 1
-                || step.writes() != &[(Slot::Local(*slot), written)]
-                || step.reads()[0].0 != Slot::Local(*slot)
-                || !uses.iter().any(|use_| {
-                    use_.bci == write.bci
-                        && use_.path == write.path
-                        && use_.read == Some(step.reads()[0].1)
-                })
-                || paths.paths.get(block).is_none_or(|path| {
-                    paths.fallbacks.contains(path) || write.path.as_ref() != Some(path)
-                })
-            {
-                return Ok(false);
-            }
-            continue;
-        }
-        let Some(stored) = write.stored else {
-            return Ok(false);
-        };
-        let mut seen = BTreeSet::new();
-        let inline = presented_int_store_value(
-            ssa, operations, paths, stored, block, write.bci, &mut seen, budget, 0,
-        )?;
-        let reference_load = matches!(
-            ssa.value(stored).def(),
-            Definition::Instruction { bci, .. }
-                if matches!(operations.get(*bci), Some(Operation::Load { .. }))
-        );
-        if !inline
-            && (!presented_reference_store_value(
-                ssa, operations, sites, paths, stored, block, write.bci, budget,
-            )? || (reference_load
-                && !presented_reference_load_matches_declared_type(stored, ssa, decided)))
-        {
-            return Ok(false);
-        }
-        if !inline {
-            continue;
-        }
-        let Some(first) = seen
-            .iter()
-            .filter_map(|value| match ssa.value(*value).def() {
-                Definition::Instruction { bci, .. } => Some(*bci),
-                _ => None,
+        if *bci != write.bci
+            || paths.paths.get(block).is_none_or(|path| {
+                paths.fallbacks.contains(path) || write.path.as_ref() != Some(path)
             })
-            .min()
-        else {
-            return Ok(false);
-        };
-        // Inline rendering evaluates the whole tree at the store. A separate instruction between
-        // its first producer and that store could have an effect or change a local the tree reads.
-        // Every instruction in that interval must therefore belong to this one expression.
-        let Some(block) = ssa.block(block) else {
-            return Ok(false);
-        };
-        for instruction in block
-            .instructions()
-            .iter()
-            .filter(|instruction| instruction.bci() >= first && instruction.bci() < write.bci)
         {
-            charge(
-                budget,
-                CountedBudgetDimension::AnalysisSteps,
-                1,
-                Some(instruction.bci()),
-            )?;
-            if !seen.iter().any(|value| {
-                matches!(
-                    ssa.value(*value).def(),
-                    Definition::Instruction { bci, .. } if *bci == instruction.bci()
-                )
-            }) {
-                return Ok(false);
+            return Ok(false);
+        }
+        let Some(step) = instruction_at(ssa, *bci) else {
+            return Ok(false);
+        };
+        match operations.get(*bci) {
+            Some(Operation::Store { slot }) => {
+                if step.writes() != &[(Slot::Local(*slot), written)]
+                    || write.stored != store_operand(operations, step)
+                    || write.stored.is_none()
+                {
+                    return Ok(false);
+                }
             }
+            Some(Operation::Increment { slot, .. }) => {
+                if write.stored.is_some()
+                    || step.reads().len() != 1
+                    || step.writes() != &[(Slot::Local(*slot), written)]
+                    || step.reads()[0].0 != Slot::Local(*slot)
+                    || !uses.iter().any(|use_| {
+                        use_.bci == write.bci
+                            && use_.path == write.path
+                            && use_.read == Some(step.reads()[0].1)
+                    })
+                {
+                    return Ok(false);
+                }
+            }
+            _ => return Ok(false),
         }
     }
     let writes: BTreeSet<u32> = uses
@@ -4586,6 +5552,7 @@ fn all_reads_reach_presented_writes(
         saw_read = true;
         let mut pending = vec![use_.read.expect("filtered local read")];
         let mut visited = BTreeSet::new();
+        let mut reached_write = false;
         while let Some(value) = pending.pop() {
             charge(
                 budget,
@@ -4602,7 +5569,9 @@ fn all_reads_reach_presented_writes(
                 continue;
             }
             match named.def() {
-                Definition::Instruction { bci, .. } if writes.contains(bci) => {}
+                Definition::Instruction { bci, .. } if writes.contains(bci) => {
+                    reached_write = true;
+                }
                 Definition::Phi { .. } => {
                     let Some(inputs) = phis.get(&value) else {
                         return Ok(false);
@@ -4613,7 +5582,10 @@ fn all_reads_reach_presented_writes(
                     for input in inputs.iter() {
                         match input {
                             PhiInput::Value(value) => pending.push(*value),
-                            PhiInput::Itself => return Ok(false),
+                            // A backedge retaining the current value does not assign it. The
+                            // other inputs must still reach a real presented definition; a
+                            // cycle with no such root is rejected below.
+                            PhiInput::Itself => {}
                         }
                     }
                 }
@@ -4622,136 +5594,11 @@ fn all_reads_reach_presented_writes(
                 | Definition::Caught { .. } => return Ok(false),
             }
         }
-    }
-    Ok(saw_read)
-}
-
-/// The computed value a cross-exception store can safely present at that store's position.
-/// Each producer belongs to the store's basic block and is consumed once by the next node in this
-/// expression tree. This rules out moving a call across a branch, a catch boundary, or another
-/// statement, and rules out printing an effectful producer twice. The tree's leaves are unshared
-/// numeric literals and same-block local loads, its inner nodes are additions and static `int`
-/// calls in the protected arm, and — this slice — one array element read whose array operand is a
-/// same-block local load ([`presented_array_operand`]) and whose index is one of those trees: the
-/// read is evaluated in place, so restoring the store's statement re-runs exactly the subscript
-/// the bytecode ran. Other expression shapes keep the existing whole-slice refusal until their
-/// own presentation rules can supply the same proof.
-#[allow(clippy::too_many_arguments)]
-fn presented_int_store_value(
-    ssa: &SsaTable,
-    operations: &Operations,
-    paths: &RegionPaths,
-    value: ValueId,
-    store_block: &CanonicalBlockId,
-    consumer: u32,
-    seen: &mut BTreeSet<ValueId>,
-    budget: &mut Budget,
-    depth: usize,
-) -> Result<bool, StopReason> {
-    charge(
-        budget,
-        CountedBudgetDimension::AnalysisSteps,
-        1,
-        Some(consumer),
-    )?;
-    if depth > MAX_VALUE_DEPTH || !seen.insert(value) {
-        return Ok(false);
-    }
-    let Definition::Instruction { block, bci } = ssa.value(value).def() else {
-        return Ok(false);
-    };
-    // A numeric value is one the accepted literals, loads and additions spell; a reference is
-    // spellable here only as the array an element read subscripts, never as the read's own
-    // result standing alone — an `astore` of a bare copy is no initializer this proof states.
-    let array_read = matches!(
-        operations.get(*bci),
-        Some(Operation::ArrayLoad | Operation::ArrayElementLoad { .. })
-    );
-    if !(matches!(
-        ssa.value(value).ty(),
-        Value::Int | Value::Long | Value::Float | Value::Double
-    ) || (array_read && matches!(ssa.value(value).ty(), Value::Ref(_))))
-        || block != store_block
-        || *bci >= consumer
-        || !single_use_at_with_budget(ssa, value, block, consumer, budget)?
-        || paths
-            .paths
-            .get(block)
-            .is_none_or(|path| paths.fallbacks.contains(path))
-    {
-        return Ok(false);
-    }
-    let Some(instruction) = instruction_at(ssa, *bci) else {
-        return Ok(false);
-    };
-    let operands = stack_operands(instruction);
-    let presentable = match operations.get(*bci) {
-        Some(Operation::Push(
-            ConstantValue::Int(_)
-            | ConstantValue::Long(_)
-            | ConstantValue::Float(_)
-            | ConstantValue::Double(_),
-        )) => operands.is_empty(),
-        Some(Operation::Load { slot }) => {
-            operands.is_empty() && local_read(instruction, *slot).is_some()
-        }
-        Some(Operation::Arithmetic {
-            op: ArithmeticOp::Add,
-        }) => operands.len() == 2,
-        Some(Operation::ArrayLoad) | Some(Operation::ArrayElementLoad { .. }) => {
-            operands.len() == 2
-        }
-        Some(Operation::Invoke(target)) => {
-            let protected = paths.tries.iter().any(|try_path| {
-                paths.paths.get(block).is_some_and(|path| {
-                    path.starts_with(try_path) && path.get(try_path.len()) == Some(&0)
-                })
-            });
-            protected
-                && target.kind() == InvokeKind::Static
-                && return_type(target.descriptor()) == Some(Type::Int)
-                && is_java_identifier(target.name())
-        }
-        _ => false,
-    };
-    if !presentable {
-        return Ok(false);
-    }
-    // A call and its operands are evaluated at the store; the region path is attached to the
-    // basic block, so requiring the same block also preserves the exception table's try arm.
-    // The final store itself stays at its original BCI and retains its normal/exception edges.
-    // An element read's array operand is a reference the numeric tree cannot spell, so it goes
-    // to its own rule; its index and every other operand recurse through this one.
-    for (position, (_, operand)) in operands.into_iter().enumerate() {
-        let accepted = if array_read && position == 0 {
-            presented_array_operand(
-                ssa,
-                operations,
-                paths,
-                operand,
-                store_block,
-                *bci,
-                seen,
-                budget,
-            )?
-        } else {
-            presented_int_store_value(
-                ssa,
-                operations,
-                paths,
-                operand,
-                store_block,
-                *bci,
-                seen,
-                budget,
-                depth + 1,
-            )?
-        };
-        if !accepted {
+        if !reached_write {
             return Ok(false);
         }
     }
-    Ok(true)
+    Ok(saw_read)
 }
 
 /// The array one accepted element read subscripts: one local load of the array reference, in the
@@ -4762,6 +5609,7 @@ fn presented_int_store_value(
 /// the one expression tree owns. A deeper array expression (a field read, a call, another element
 /// read) is a later slice's question, and stays refused here.
 #[allow(clippy::too_many_arguments)]
+#[cfg(test)]
 fn presented_array_operand(
     ssa: &SsaTable,
     operations: &Operations,
@@ -4805,6 +5653,7 @@ fn presented_array_operand(
     Ok(local_read(instruction, *slot).is_some())
 }
 
+#[cfg(test)]
 fn presented_load_is_immediate_predecessor(
     instructions: &[SsaInstruction],
     producer: u32,
@@ -4830,6 +5679,7 @@ fn presented_load_is_immediate_predecessor(
 /// Store/Load/Phi aliases. Such a value belongs to its catch clause; using it to initialize a
 /// declaration that crosses that clause can assign an unrelated exception type to the declared
 /// local. Entry values remain valid here because a method parameter is already in scope.
+#[cfg(test)]
 fn presented_reference_load_is_independent_of_caught_parameter(
     ssa: &SsaTable,
     operations: &Operations,
@@ -4878,6 +5728,7 @@ fn presented_reference_load_is_independent_of_caught_parameter(
 /// requires its complete exact site/run proof; zero-argument static calls retain their protected-arm
 /// requirement. Every accepted value stays in its original block and evaluation position.
 #[allow(clippy::too_many_arguments)]
+#[cfg(test)]
 fn presented_reference_store_value(
     ssa: &SsaTable,
     operations: &Operations,
@@ -4996,7 +5847,10 @@ fn presented_reference_store_value(
                 .collect();
             if run.len() != 1
                 || !is_java_identifier(target.name())
-                || !matches!(return_type(target.descriptor()), Some(Type::Reference(_)))
+                || !matches!(
+                    return_type_bytes(&target.raw_descriptor().0),
+                    Some(Type::Reference(_))
+                )
             {
                 return Ok(false);
             }
@@ -5647,8 +6501,8 @@ pub(crate) enum ConditionalValueAttempt {
 /// separate from the ordinary, disjoint-arm conditional proof and is not an emission plan.
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum ShortCircuitConsumer {
-    Field(String, String, String),
-    InstanceField(String, String, String, ValueId),
+    Field(JvmBytes, JvmBytes, JvmBytes),
+    InstanceField(JvmBytes, JvmBytes, JvmBytes, ValueId),
     BooleanArray(ValueId, ValueId),
     Return,
     Invoke(CallTarget),
@@ -7959,7 +8813,7 @@ fn prove_short_circuit_value(
                 name,
                 descriptor,
             }),
-        ) if descriptor == "Z" && !owner.is_empty() && !name.is_empty() => {
+        ) if descriptor.0.as_slice() == b"Z" && !owner.0.is_empty() && !name.0.is_empty() => {
             ShortCircuitConsumer::Field(owner.clone(), name.clone(), descriptor.clone())
         }
         (
@@ -7971,7 +8825,7 @@ fn prove_short_circuit_value(
                 name,
                 descriptor,
             }),
-        ) if descriptor == "Z" && !owner.is_empty() && !name.is_empty() => {
+        ) if descriptor.0.as_slice() == b"Z" && !owner.0.is_empty() && !name.0.is_empty() => {
             let Some(receiver) = instance_receiver else {
                 return Ok(ShortCircuitValueAttempt::Refused(
                     ShortCircuitValueRefusal::Consumer,
@@ -9393,7 +10247,7 @@ pub(crate) fn build(
         inputs.declaring_class,
         inputs.direct_super_class,
         inputs.direct_interfaces,
-        inputs.nested_class_members,
+        inputs.source_names,
         inputs.class_attributes,
         inputs.class_methods,
         inputs.physical_method,
@@ -9421,7 +10275,7 @@ pub(crate) fn build(
         inputs.code,
         inputs.fields,
         inputs.class_fields,
-        inputs.declaring_class,
+        inputs.source_names.current_class,
         inputs.physical_method,
         inputs.method_access_flags,
         inputs.has_receiver,
@@ -9468,6 +10322,9 @@ pub(crate) fn build(
         inputs.debug_locals,
         inputs.code,
         inputs.sites,
+        inputs.runtime_release,
+        inputs.reference_relations,
+        inputs.declared_types,
         budget,
     )?;
     let local_assignments = prove_local_assignments(
@@ -9490,6 +10347,7 @@ pub(crate) fn build(
         pool: inputs.pool,
         bootstrap: inputs.bootstrap,
         profile: inputs.profile,
+        runtime_release: inputs.runtime_release,
         parameters: inputs.parameters,
         has_receiver: inputs.has_receiver,
         parameter_types: inputs.parameter_types,
@@ -9503,10 +10361,11 @@ pub(crate) fn build(
         typed_functional_target: inputs.typed_functional_target,
         interface_super_calls: inputs.interface_super_calls,
         reference_overload_calls: inputs.reference_overload_calls,
-        snapshot_hierarchy_widenings: inputs.snapshot_hierarchy_widenings,
+        reference_relations: inputs.reference_relations,
+        declared_types: inputs.declared_types,
         captured_outer_reads: inputs.captured_outer_reads,
         outer_super_calls: inputs.outer_super_calls,
-        nested_class_members: inputs.nested_class_members,
+        source_names: inputs.source_names,
         pool_spelled_members: inputs.pool_spelled_members,
         declaring_class: inputs.declaring_class,
         direct_super_class: inputs.direct_super_class,
@@ -9547,6 +10406,7 @@ pub(crate) fn build(
         accessors: Vec::new(),
         deferred: Vec::new(),
         binding_plans: BTreeMap::new(),
+        copy_inputs: BTreeSet::new(),
         forward_conditional_carries: BTreeMap::new(),
         guarded_return_exits,
         binding_rejections: BTreeMap::new(),
@@ -9585,6 +10445,7 @@ pub(crate) fn build(
         finally_catch_pop: None,
         shared_finally: None,
     };
+    let declaration_checkpoint = builder.checkpoint();
     if let Some(reason) = builder.declarations.incomplete.get(&Vec::new()).cloned() {
         // An access outside every claimed region has no narrower complete closure. Refuse the
         // method before any statement or declaration is published, and account for every
@@ -9638,6 +10499,51 @@ pub(crate) fn build(
             let path = child(&[], u32::try_from(index).unwrap_or(u32::MAX));
             builder.region(region, &path)?;
         }
+    }
+    let mut failed_declaration = None;
+    for (variable, placement) in &builder.declarations.placements {
+        charge(
+            builder.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            None,
+        )?;
+        if matches!(placement, DeclarationPlacement::Elevated { .. })
+            && let Some(name) = builder.names.text(*variable)
+            && builder.undeclared.contains(name)
+        {
+            failed_declaration = Some(name.to_owned());
+            break;
+        }
+    }
+    if let Some(name) = failed_declaration {
+        let bcis = builder
+            .instructions
+            .keys()
+            .copied()
+            .chain(regions.iter().flat_map(unaccounted_region_bcis))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>();
+        let at = bcis.first().copied().unwrap_or(0);
+        let reason = format!(
+            "a required write of the elevated source variable `{name}` was refused; its declarations, reads and dependent effects are quoted together"
+        );
+        let mut refusals = Vec::new();
+        visit_fallbacks(&builder.stmts, &mut |statement| refusals.push(statement));
+        charge(
+            builder.budget,
+            CountedBudgetDimension::IrItems,
+            refusals.len() as u64,
+            Some(at),
+        )?;
+        let refusals = refusals.into_iter().cloned().collect::<Vec<_>>();
+        builder.restore(declaration_checkpoint);
+        builder.fallback(bcis, reason, at)?;
+        // These diagnostic-only nodes were already billed before cloning; retaining each node
+        // keeps its original primary/derived origins and one-comment-line emission contract.
+        builder.statements += refusals.len();
+        builder.stmts.extend(refusals);
     }
     let unconsumed_local_assignment = if builder.local_assignments.is_empty() {
         false
@@ -9776,7 +10682,7 @@ pub(crate) fn build(
         let refused = refused_value.expect("the guard read the refusal it tested");
         let mut presented = Vec::new();
         for (index, stmt) in builder.stmts.drain(..).enumerate() {
-            let Stmt { kind, origin } = stmt;
+            let Stmt { kind, origin, .. } = stmt;
             match kind {
                 // The value's own quote leads where it already led, and takes the dropped
                 // statements' indexes after the ones it stated itself, so its line grows only at the
@@ -9895,6 +10801,40 @@ pub(crate) fn build(
         builder.names,
         builder.budget,
     )?;
+    let pending_names: Vec<usize> = builder
+        .lambdas
+        .iter()
+        .enumerate()
+        .filter_map(|(index, site)| {
+            (site.form.is_some()
+                && site
+                    .evidence
+                    .implementation
+                    .as_ref()
+                    .is_some_and(lambda::Member::needs_source_name))
+            .then_some(index)
+        })
+        .collect();
+    if !pending_names.is_empty() {
+        // No per-value/region deletion is claimed: an unresolved physical reference quotes its
+        // complete method envelope, including captures, deferred producers and all effects.
+        let count = u64::try_from(inputs.code.instructions.len()).unwrap_or(u64::MAX);
+        charge(builder.budget, CountedBudgetDimension::IrItems, count, None)?;
+        let mut bcis = Vec::with_capacity(inputs.code.instructions.len());
+        for instruction in &inputs.code.instructions {
+            charge(
+                builder.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(instruction.bci),
+            )?;
+            bcis.push(instruction.bci);
+        }
+        let bcis: std::sync::Arc<[u32]> = bcis.into();
+        for index in pending_names {
+            builder.lambdas[index].unclosed_body_bcis = Some(bcis.clone());
+        }
+    }
     Ok(Program {
         field_increments,
         statements: builder.statements,
@@ -10060,31 +11000,39 @@ fn value_level_refusal(reason: &str) -> bool {
 /// The accounting check of the consumer-position snapshots reads this: an instruction a snapshot
 /// absorbed is accounted for when some quote names it, wherever in the tree that quote landed.
 fn collect_quoted_bcis(statements: &[Stmt], quoted: &mut BTreeSet<u32>) {
+    visit_fallbacks(statements, &mut |statement| {
+        if let StmtKind::Fallback { bcis, .. } = &statement.kind {
+            quoted.extend(bcis.iter().copied());
+        }
+    });
+}
+
+fn visit_fallbacks<'a>(statements: &'a [Stmt], visit: &mut impl FnMut(&'a Stmt)) {
     for statement in statements {
         match &statement.kind {
-            StmtKind::Fallback { bcis, .. } => quoted.extend(bcis.iter().copied()),
+            StmtKind::Fallback { .. } => visit(statement),
             StmtKind::If {
                 then_body,
                 else_body,
                 ..
             } => {
-                collect_quoted_bcis(then_body, quoted);
-                collect_quoted_bcis(else_body, quoted);
+                visit_fallbacks(then_body, visit);
+                visit_fallbacks(else_body, visit);
             }
             StmtKind::While { body, .. }
             | StmtKind::DoWhile { body, .. }
             | StmtKind::ForEach { body, .. }
-            | StmtKind::Synchronized { body, .. } => collect_quoted_bcis(body, quoted),
+            | StmtKind::Synchronized { body, .. } => visit_fallbacks(body, visit),
             StmtKind::For {
                 init, update, body, ..
             } => {
-                collect_quoted_bcis(std::slice::from_ref(init.as_ref()), quoted);
-                collect_quoted_bcis(std::slice::from_ref(update.as_ref()), quoted);
-                collect_quoted_bcis(body, quoted);
+                visit_fallbacks(std::slice::from_ref(init.as_ref()), visit);
+                visit_fallbacks(std::slice::from_ref(update.as_ref()), visit);
+                visit_fallbacks(body, visit);
             }
             StmtKind::Switch { arms, .. } => {
                 for arm in arms {
-                    collect_quoted_bcis(&arm.body, quoted);
+                    visit_fallbacks(&arm.body, visit);
                 }
             }
             StmtKind::Try {
@@ -10093,12 +11041,12 @@ fn collect_quoted_bcis(statements: &[Stmt], quoted: &mut BTreeSet<u32>) {
                 finally_body,
                 ..
             } => {
-                collect_quoted_bcis(body, quoted);
+                visit_fallbacks(body, visit);
                 for clause in catches {
-                    collect_quoted_bcis(&clause.body, quoted);
+                    visit_fallbacks(&clause.body, visit);
                 }
                 if let Some(finally) = finally_body {
-                    collect_quoted_bcis(finally, quoted);
+                    visit_fallbacks(finally, visit);
                 }
             }
             _ => {}
@@ -10366,7 +11314,7 @@ fn has_early_return_tail(region: &Region) -> bool {
 /// Refuse the whole request if it does not: silently ignoring a stale fact could let the caller
 /// publish a family projection while this body still contains a physical capture field.
 fn validate_captured_outer_reads(
-    reads: &[crate::report::ProvedCapturedOuterRead],
+    reads: &[crate::report::CapturedOuterReadInput],
     method: Option<&jarde_reader::model::PhysicalMethodId>,
     declaring_class: Option<&str>,
     has_receiver: bool,
@@ -10388,7 +11336,8 @@ fn validate_captured_outer_reads(
         let valid_name = !read.outer_source_name.is_empty()
             && read.outer_source_name.split('.').all(is_java_identifier);
         let valid = method == Some(&read.method)
-            && declaring_class == Some(read.field_owner.as_str())
+            && declaring_class
+                .is_some_and(|owner| read.field_owner == JvmBytes::from_unicode(owner))
             && has_receiver
             && read.constructor.owner == read.method.owner
             && read.constructor.name.0 == b"<init>"
@@ -10396,8 +11345,9 @@ fn validate_captured_outer_reads(
                 .constructor
                 .descriptor
                 .0
-                .starts_with(format!("(L{};", read.outer_internal_name).as_bytes())
-            && read.field_descriptor == format!("L{};", read.outer_internal_name)
+                .starts_with(&[b"(L".as_slice(), &read.outer_internal_name.0, b";"].concat())
+            && read.field_descriptor.0
+                == [b"L".as_slice(), &read.outer_internal_name.0, b";"].concat()
             && valid_name
             && seen.insert(read.read_bci)
             && matches!(fields.claim(read.read_bci), Some((evidence, shape))
@@ -10423,8 +11373,8 @@ fn validate_captured_outer_reads(
 /// and the SSA values in this body before any projection can consume the handoff.
 #[allow(clippy::too_many_arguments)]
 fn validate_outer_super_calls(
-    calls: &[crate::report::ProvedOuterSuperCall],
-    reads: &[crate::report::ProvedCapturedOuterRead],
+    calls: &[crate::report::OuterSuperCallInput],
+    reads: &[crate::report::CapturedOuterReadInput],
     method: Option<&jarde_reader::model::PhysicalMethodId>,
     declaring_class: Option<&str>,
     operations: &Operations,
@@ -10452,33 +11402,35 @@ fn validate_outer_super_calls(
             Some(Operation::Invoke(target)) => Some(target),
             _ => None,
         };
-        let params = parameter_descriptors(&proof.target_descriptor);
+        let params = parameter_descriptors(&proof.target_descriptor.0);
         let valid = match (capture, call, target, params) {
             (Some(capture), Some(call), Some(target), Some(params)) => {
-                let bridge_descriptor = std::str::from_utf8(&proof.bridge.descriptor.0).ok();
-                let target_tail = proof.target_descriptor.strip_prefix('(');
-                let expected_prefix = format!("(L{};", capture.outer_internal_name);
+                let bridge_descriptor = &proof.bridge.descriptor.0;
+                let target_tail = proof.target_descriptor.0.strip_prefix(b"(");
+                let expected_prefix =
+                    [b"(L".as_slice(), &capture.outer_internal_name.0, b";"].concat();
                 let operands = stack_operands(call);
                 let read = instructions.get(&proof.capture_read_bci).copied();
                 let capture_shape = fields.claim(proof.capture_read_bci);
-                let expected_bridge = bridge_descriptor.zip(target_tail).is_some_and(
-                    |(bridge_descriptor, target_tail)| {
-                        bridge_descriptor.strip_prefix(&expected_prefix) == Some(target_tail)
-                    },
-                );
+                let expected_bridge = target_tail.is_some_and(|tail| {
+                    bridge_descriptor.strip_prefix(expected_prefix.as_slice()) == Some(tail)
+                });
                 method == Some(&proof.caller)
                     && declaring_class.is_some_and(|owner| owner != target.owner())
-                    && target.owner() == capture.outer_internal_name
+                    && target.raw_owner() == &capture.outer_internal_name
                     && target.kind() == InvokeKind::Static
                     && !target.is_interface_reference()
                     && call.opcode() == 0xb8
-                    && target.name().as_bytes() == proof.bridge.name.0
-                    && target.descriptor().as_bytes() == proof.bridge.descriptor.0
+                    && target.raw_name().0.as_slice() == proof.bridge.name.0
+                    && target.raw_descriptor().0.as_slice() == proof.bridge.descriptor.0
                     && proof.call_bci > proof.capture_read_bci
                     && seen.insert(proof.call_bci)
                     && proof.outer_source_name == capture.outer_source_name
-                    && spell_reference(&proof.target_owner).is_some()
-                    && is_java_identifier(&proof.target_name)
+                    && crate::source_proof::source_method_target_is_spellable(
+                        &proof.target_owner,
+                        &proof.target_name,
+                        &proof.target_descriptor,
+                    )
                     && expected_bridge
                     && params.len() == proof.argument_bcis.len()
                     && operands.len() == proof.argument_bcis.len() + 1
@@ -10703,7 +11655,8 @@ struct Builder<'a> {
     /// The class's bootstrap table: the only fact that says whether a site is a lambda.
     bootstrap: &'a [BootstrapMethodFacts],
     /// The profile whose rule set this build admits.
-    profile: RecoveryProfile,
+    profile: SourceTarget,
+    runtime_release: u16,
     /// How many local slots the method's parameters occupy, `this` included when the caller
     /// counted it: the slots below this one are declared by the signature, not by the body.
     parameters: u16,
@@ -10727,16 +11680,17 @@ struct Builder<'a> {
     field_copies: &'a FieldCopies,
     /// The class's other members, when the caller handed them over (P3 2.2, A12).
     members: Option<&'a ClassMembers>,
-    member_inner_targets: &'a [crate::report::ProvedMemberInnerTarget],
-    typed_functional_target: Option<crate::report::TypedFunctionalTarget>,
-    interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
-    reference_overload_calls: &'a [crate::report::ProvedReferenceOverloadCall],
-    snapshot_hierarchy_widenings: &'a [crate::report::ProvedSnapshotHierarchyWidening],
-    captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
-    outer_super_calls: &'a [crate::report::ProvedOuterSuperCall],
+    member_inner_targets: &'a [crate::report::MemberInnerTargetInput],
+    typed_functional_target: Option<crate::report::FunctionalTargetInput>,
+    interface_super_calls: &'a [crate::report::InterfaceSuperCallInput],
+    reference_overload_calls: &'a [crate::report::ReferenceOverloadCallInput],
+    reference_relations: &'a [crate::report::ReferenceRelationInput],
+    declared_types: Option<&'a crate::report::DeclaredGenericTypes>,
+    captured_outer_reads: &'a [crate::report::CapturedOuterReadInput],
+    outer_super_calls: &'a [crate::report::OuterSuperCallInput],
     /// The declaring class's own `InnerClasses` member names, in the dotted spelling the
     /// structural-reflection refusal compares the literal's class against.
-    nested_class_members: &'a [String],
+    source_names: crate::names::SourceClassNames<'a>,
     /// Whether this presentation keeps member classes pool-spelled: under it the refusal covers
     /// the direct members too, whose literals would otherwise read as their own pool-spelled
     /// top-level spelling (see [`Inputs::pool_spelled_members`]).
@@ -10784,7 +11738,7 @@ struct Builder<'a> {
     snapshots_rendered: BTreeSet<ValueId>,
     /// Complete, same-block array initializer chains proved from their allocation through their
     /// final consumer. Their copy/index/store scaffolding is hidden only after this pass succeeds.
-    array_initializers: ArrayInitializers,
+    array_initializers: &'a ArrayInitializers,
     /// Exact local assignment expressions proved from one physical copy and one terminal test.
     local_assignments: BTreeMap<u32, LocalAssignment>,
     /// How many times each proved copy's **statement-free** presentation was rendered: the
@@ -10849,6 +11803,8 @@ struct Builder<'a> {
     /// constructor for a construction site), so the declaration is written before the old deferred
     /// value could be rendered at its consumer.
     binding_plans: BTreeMap<u32, BindingPlan>,
+    /// Inputs of unclaimed, frame-proved stack copies; these require one producer evaluation.
+    copy_inputs: BTreeSet<ValueId>,
     /// Complete same-value carry certificates; no unproved Phi use changes its consumer count.
     forward_conditional_carries: BTreeMap<ValueId, ForwardConditionalCarry>,
     /// Producer positions whose final consumer or dependency closure could not be proved. They
@@ -11042,10 +11998,9 @@ struct FinallyCheckpoint {
     switch_break_targets: Vec<SwitchBreakTarget>,
 }
 
-/// The extra expression and active-guard state a CompoundIf trial can touch beyond the existing
-/// finally checkpoint. Its restore is local to this trial so the established finally behavior
-/// remains unchanged.
-struct CompoundIfCheckpoint {
+/// Expression and active-guard presentation state shared by speculative region builds and
+/// the method's declaration failure closure. Restoring it never restores the spent budget.
+struct BuildCheckpoint {
     finally: FinallyCheckpoint,
     snapshots_rendered: BTreeSet<ValueId>,
     snapshot_quote: BTreeSet<u32>,
@@ -11648,7 +12603,7 @@ fn field_test_copy_at(
     if store.opcode() != 0xb5
         || evidence.access != FieldAccess::Write
         || evidence.is_static
-        || evidence.descriptor != "I"
+        || evidence.descriptor.0.as_slice() != b"I"
         || !store_shape.writes()
     {
         return Ok(None);
@@ -12943,7 +13898,7 @@ impl StaticPrefixReturn {
         declaring_class: Option<&str>,
         direct_super_class: Option<&jarde_reader::model::JvmBytes>,
         direct_interfaces: &[jarde_reader::model::JvmString],
-        nested_class_members: &[String],
+        source_names: crate::names::SourceClassNames<'_>,
         class_attributes: Option<&[jarde_reader::classfile::AttributeShell]>,
         class_methods: Option<&[jarde_reader::classfile::MemberHeader]>,
         physical_method: Option<&jarde_reader::model::PhysicalMethodId>,
@@ -13049,11 +14004,11 @@ impl StaticPrefixReturn {
             || write_field.access != FieldAccess::Write
             || !read_field.is_static
             || !write_field.is_static
-            || read_field.owner != owner
-            || write_field.owner != owner
+            || read_field.owner != JvmBytes::from_unicode(owner)
+            || write_field.owner != JvmBytes::from_unicode(owner)
             || read_field.name != write_field.name
-            || read_field.descriptor != "I"
-            || write_field.descriptor != "I"
+            || read_field.descriptor.0.as_slice() != b"I"
+            || write_field.descriptor.0.as_slice() != b"I"
             || read_shape.writes()
             || !write_shape.writes()
             || read_shape.receiver.is_some()
@@ -13121,7 +14076,10 @@ impl StaticPrefixReturn {
             return Ok(None);
         };
         if !owner_path.split('.').all(is_java_identifier)
-            || !is_java_identifier(&read_field.name)
+            || !read_field
+                .name
+                .to_unicode()
+                .is_some_and(|name| is_java_identifier(&name))
             || current_class_simple_name(owner).is_none()
             || class_literal_path_is_shadowed(&owner_path, Some(owner))
         {
@@ -13140,7 +14098,7 @@ impl StaticPrefixReturn {
             if candidate.name.raw().0 == root.as_bytes() {
                 return Ok(None);
             }
-            if candidate.name.raw().0 == read_field.name.as_bytes() {
+            if candidate.name.raw().0 == read_field.name.0.as_slice() {
                 if declaration.is_some() {
                     return Ok(None);
                 }
@@ -13156,8 +14114,10 @@ impl StaticPrefixReturn {
         {
             return Ok(None);
         }
-        let member_prefix = format!("{}$", owner.replace('/', "."));
-        for member in nested_class_members {
+        let member_name = jarde_reader::model::JvmBytes::from_unicode(
+            &format!("{owner}${root}").replace('.', "/"),
+        );
+        for member in source_names.inner_classes {
             poll(budget, Some(read.bci()))?;
             charge(
                 budget,
@@ -13165,10 +14125,7 @@ impl StaticPrefixReturn {
                 1,
                 Some(read.bci()),
             )?;
-            if member
-                .strip_prefix(&member_prefix)
-                .is_some_and(|tail| tail == root)
-            {
+            if member.class == member_name.0 {
                 return Ok(None);
             }
         }
@@ -13221,7 +14178,7 @@ impl StaticPrefixReturn {
         poll(budget, Some(returns.bci()))?;
         Ok(Some(Self {
             owner_path,
-            name: read_field.name.clone(),
+            name: read_field.spelled_name(),
             chain: [
                 read.bci(),
                 one.bci(),
@@ -13369,8 +14326,8 @@ impl LongAssignmentResult {
         };
         if field.access != FieldAccess::Write
             || field.is_static
-            || field.owner != owner
-            || field.descriptor != "J"
+            || field.owner != JvmBytes::from_unicode(owner)
+            || field.descriptor.0.as_slice() != b"J"
         {
             return Ok(None);
         }
@@ -13379,7 +14336,7 @@ impl LongAssignmentResult {
         };
         let same_name: Vec<_> = class_fields
             .iter()
-            .filter(|candidate| candidate.name.raw().0 == field.name.as_bytes())
+            .filter(|candidate| candidate.name.raw().0 == field.name.0.as_slice())
             .collect();
         if same_name.len() != 1
             || same_name[0].descriptor.raw().0 != b"J"
@@ -13500,7 +14457,7 @@ struct WriteAccessorShape {
 
 /// The closed set of field types a value-returning write accessor is proved for, keyed by the
 /// field's own descriptor — which the accessor also spells as its parameter and return descriptor.
-fn write_accessor_shape(descriptor: &str) -> Option<WriteAccessorShape> {
+fn write_accessor_shape(descriptor: &[u8]) -> Option<WriteAccessorShape> {
     const OPCODE_ILOAD_1: u8 = 0x1b;
     const OPCODE_LLOAD_1: u8 = 0x1f;
     const OPCODE_FLOAD_1: u8 = 0x23;
@@ -13535,13 +14492,13 @@ fn write_accessor_shape(descriptor: &str) -> Option<WriteAccessorShape> {
         })
     };
     match descriptor {
-        "Z" | "I" | "B" | "S" | "C" => {
+        b"Z" | b"I" | b"B" | b"S" | b"C" => {
             single_slot(OPCODE_ILOAD_1, OPCODE_IRETURN, AccessorSlotKind::Int)
         }
-        "F" => single_slot(OPCODE_FLOAD_1, OPCODE_FRETURN, AccessorSlotKind::Float),
-        "J" => two_slot(OPCODE_LLOAD_1, OPCODE_LRETURN, AccessorSlotKind::Long),
-        "D" => two_slot(OPCODE_DLOAD_1, OPCODE_DRETURN, AccessorSlotKind::Double),
-        value if value.starts_with('L') || value.starts_with('[') => {
+        b"F" => single_slot(OPCODE_FLOAD_1, OPCODE_FRETURN, AccessorSlotKind::Float),
+        b"J" => two_slot(OPCODE_LLOAD_1, OPCODE_LRETURN, AccessorSlotKind::Long),
+        b"D" => two_slot(OPCODE_DLOAD_1, OPCODE_DRETURN, AccessorSlotKind::Double),
+        value if value.starts_with(b"L") || value.starts_with(b"[") => {
             single_slot(OPCODE_ALOAD_1, OPCODE_ARETURN, AccessorSlotKind::Reference)
         }
         _ => None,
@@ -13549,17 +14506,22 @@ fn write_accessor_shape(descriptor: &str) -> Option<WriteAccessorShape> {
 }
 
 /// The accessor's one field type: the descriptor its parameter and its return spell, which the
-/// field it writes states again. The body is the exact `(L{owner};V)V` form and `V` must be in
-/// the closed type set — anything else is refused, as the boolean first slice refused it.
-fn write_accessor_key(owner: &str, descriptor: &[u8]) -> Option<String> {
-    let descriptor = std::str::from_utf8(descriptor).ok()?;
-    let rest = descriptor.strip_prefix(format!("(L{owner};").as_str())?;
-    let (value, returned) = rest.split_once(')')?;
-    if returned != value {
+/// field it writes states again. The method is exactly `(L{owner};T)T`; the descriptor reader
+/// supplies each original component span, and `T` must remain in the closed type set.
+fn write_accessor_key(owner: &[u8], descriptor: &[u8]) -> Option<JvmBytes> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
+    let [receiver, value] = facts.parameters() else {
+        return None;
+    };
+    if receiver.is_array() || receiver.object_name()?.0.as_slice() != owner {
+        return None;
+    }
+    let value = value.bytes(descriptor)?;
+    if facts.result()?.bytes(descriptor)? != value {
         return None;
     }
     write_accessor_shape(value)?;
-    Some(value.to_owned())
+    Some(JvmBytes(value.to_vec()))
 }
 
 /// The Java 8 private-setter helper's complete physical body: the value-returning write accessor
@@ -13573,7 +14535,7 @@ struct WriteAccessorAssignment {
     assignment: LongAssignmentResult,
     /// The accessor's field descriptor — the table key the proof matched — restated where the
     /// emitted statements re-check their field evidence.
-    expected_descriptor: String,
+    expected_descriptor: JvmBytes,
 }
 
 impl WriteAccessorAssignment {
@@ -13585,7 +14547,7 @@ impl WriteAccessorAssignment {
         code: &MethodCodeFacts,
         fields: &field::Plan,
         class_fields: Option<&[jarde_reader::classfile::MemberHeader]>,
-        declaring_class: Option<&str>,
+        declaring_class: Option<&[u8]>,
         method: Option<&jarde_reader::model::PhysicalMethodId>,
         flags: Option<u16>,
         has_receiver: bool,
@@ -13597,21 +14559,31 @@ impl WriteAccessorAssignment {
         let Some(owner) = declaring_class else {
             return Ok(None);
         };
-        let Some(key) = method.and_then(|method| write_accessor_key(owner, &method.descriptor.0))
+        let Some(method) = method else {
+            return Ok(None);
+        };
+        if !method.name.0.starts_with(b"access$")
+            || !flags.is_some_and(|flags| flags & (0x1000 | 0x0008) == (0x1000 | 0x0008))
+            || has_receiver
+        {
+            return Ok(None);
+        }
+        let Some(key) = write_accessor_key(owner, &method.descriptor.0) else {
+            return Ok(None);
+        };
+        let Some(table) = write_accessor_shape(&key.0) else {
+            return Ok(None);
+        };
+        let Some(owner_type) =
+            crate::names::source_class_name(&JvmBytes(owner.to_vec())).map(Type::Reference)
         else {
             return Ok(None);
         };
-        let Some(table) = write_accessor_shape(&key) else {
-            return Ok(None);
-        };
-        if !method.is_some_and(|method| method.name.0.starts_with(b"access$"))
-            || !flags.is_some_and(|flags| flags & (0x1000 | 0x0008) == (0x1000 | 0x0008))
-            || has_receiver
-            // The accessor's parameters are the receiver slot plus the value's own slots — one
-            // more slot per category-2 field type, the width the table row carries.
-            || parameters != 1 + table.slots
+        // The accessor's parameters are the receiver slot plus the value's own slots — one
+        // more slot per category-2 field type, the width the table row carries.
+        if parameters != 1 + table.slots
             || parameter_types.len() != 2
-            || parameter_types.get(&0) != Some(&Type::Reference(owner.replace('/', ".")))
+            || parameter_types.get(&0) != Some(&owner_type)
             || !canonical.completeness().is_complete()
             || !canonical.unreachable().is_empty()
             || canonical.blocks().len() != 1
@@ -13624,7 +14596,7 @@ impl WriteAccessorAssignment {
         };
         // The parsed parameter and return types state the same field type the descriptor spelled:
         // one more copy of the fact, checked the way the boolean slice checked it.
-        let Some(expected_type) = descriptor_type(&key) else {
+        let Some(expected_type) = descriptor_type_bytes(&key.0) else {
             return Ok(None);
         };
         if parameter_types.get(&1) != Some(&expected_type)
@@ -13680,7 +14652,7 @@ impl WriteAccessorAssignment {
         let Some((field, shape)) = fields.claim(3) else {
             return Ok(None);
         };
-        if field.owner != owner
+        if field.owner.0.as_slice() != owner
             || field.descriptor != key
             || field.access != FieldAccess::Write
             || field.is_static
@@ -13698,10 +14670,10 @@ impl WriteAccessorAssignment {
         )?;
         let matching: Vec<_> = class_fields
             .iter()
-            .filter(|candidate| candidate.name.raw().0 == field.name.as_bytes())
+            .filter(|candidate| candidate.name.raw().0 == field.name.0.as_slice())
             .collect();
         if matching.len() != 1
-            || matching[0].descriptor.raw().0 != key.as_bytes()
+            || matching[0].descriptor.raw().0 != key.0.as_slice()
             || matching[0].access_flags & (0x0002 | 0x0008) != 0x0002
         {
             return Ok(None);
@@ -13730,7 +14702,7 @@ impl WriteAccessorAssignment {
             // A reference slot is named with the component's own descriptor spelling — the table
             // key itself, `L…;` and `[…` alike (`frame.rs`'s `component_frame_type`).
             AccessorSlotKind::Reference => {
-                matches!(actual, Value::Ref(RefType::Named { name, .. }) if name.as_slice() == key.as_bytes())
+                matches!(actual, Value::Ref(RefType::Named { name, .. }) if name.as_slice() == key.0.as_slice())
             }
         };
         let outputs = stack_writes(duplicate);
@@ -14806,7 +15778,7 @@ impl Builder<'_> {
                 };
                 if read.access != FieldAccess::Read
                     || read_shape.writes()
-                    || read.descriptor != "I"
+                    || read.descriptor.0.as_slice() != b"I"
                     || read_shape.receiver.is_some() != below.is_some()
                 {
                     continue;
@@ -15036,12 +16008,12 @@ impl Builder<'_> {
                         target: match receiver {
                             Some((_, source)) => SnapshotTarget::Field {
                                 receiver: source,
-                                name: read.name.clone(),
+                                name: read.spelled_name(),
                                 read: read_bci,
                             },
                             None => SnapshotTarget::Static {
-                                owner: read.owner.clone(),
-                                name: read.name.clone(),
+                                owner: read.owner.to_unicode().expect("claimed scalar owner"),
+                                name: read.spelled_name(),
                                 read: read_bci,
                             },
                         },
@@ -15219,14 +16191,14 @@ fn unit_static_candidate(window: &[SsaInstruction], operations: &Operations) -> 
 
 fn declared_field_is_updateable_int(
     class_fields: Option<&[jarde_reader::classfile::MemberHeader]>,
-    name: &str,
+    name: &JvmBytes,
     is_static: bool,
 ) -> bool {
     let Some(class_fields) = class_fields else {
         return false;
     };
     let mut matches = class_fields.iter().filter(|field| {
-        field.name.raw().0.as_slice() == name.as_bytes()
+        field.name.raw().0.as_slice() == name.0.as_slice()
             && field.descriptor.raw().0.as_slice() == b"I"
     });
     let Some(field) = matches.next() else {
@@ -15305,11 +16277,11 @@ fn prove_unit_instance_update(
         || write_field.access != FieldAccess::Write
         || read_field.is_static
         || write_field.is_static
-        || read_field.owner != declaring_class
-        || write_field.owner != declaring_class
+        || read_field.owner != JvmBytes::from_unicode(declaring_class)
+        || write_field.owner != JvmBytes::from_unicode(declaring_class)
         || read_field.owner != write_field.owner
         || read_field.name != write_field.name
-        || read_field.descriptor != "I"
+        || read_field.descriptor.0.as_slice() != b"I"
         || read_field.descriptor != write_field.descriptor
         || !declared_field_is_updateable_int(class_fields, &read_field.name, false)
         || read_shape.writes()
@@ -15365,8 +16337,8 @@ fn prove_unit_instance_update(
         return Ok(None);
     }
     Ok(Some(UnitFieldUpdate {
-        owner: read_field.owner.clone(),
-        name: read_field.name.clone(),
+        owner: read_field.owner.to_unicode().expect("claimed scalar owner"),
+        name: read_field.spelled_name(),
         static_field: false,
         direction: PostfixDirection::Increment,
         load: Some(load.bci()),
@@ -15424,11 +16396,11 @@ fn prove_unit_static_update(
         || write_field.access != FieldAccess::Write
         || !read_field.is_static
         || !write_field.is_static
-        || read_field.owner != declaring_class
-        || write_field.owner != declaring_class
+        || read_field.owner != JvmBytes::from_unicode(declaring_class)
+        || write_field.owner != JvmBytes::from_unicode(declaring_class)
         || read_field.owner != write_field.owner
         || read_field.name != write_field.name
-        || read_field.descriptor != "I"
+        || read_field.descriptor.0.as_slice() != b"I"
         || read_field.descriptor != write_field.descriptor
         || !declared_field_is_updateable_int(class_fields, &read_field.name, true)
         || read_shape.receiver.is_some()
@@ -15464,8 +16436,8 @@ fn prove_unit_static_update(
         return Ok(None);
     }
     Ok(Some(UnitFieldUpdate {
-        owner: read_field.owner.clone(),
-        name: read_field.name.clone(),
+        owner: read_field.owner.to_unicode().expect("claimed scalar owner"),
+        name: read_field.spelled_name(),
         static_field: true,
         direction: PostfixDirection::Decrement,
         load: None,
@@ -17026,7 +17998,7 @@ fn prove_field_update(
     if store.opcode() != 0xb5
         || written_field.access != FieldAccess::Write
         || written_field.is_static
-        || written_field.descriptor != "I"
+        || written_field.descriptor.0.as_slice() != b"I"
     {
         return Ok(None);
     }
@@ -17640,7 +18612,7 @@ fn prove_postfix_field(
         || write_field.access != FieldAccess::Write
         || read_field.is_static
         || write_field.is_static
-        || read_field.descriptor != "I"
+        || read_field.descriptor.0.as_slice() != b"I"
         || read_field.owner != write_field.owner
         || read_field.name != write_field.name
         || read_field.descriptor != write_field.descriptor
@@ -17722,7 +18694,7 @@ fn prove_postfix_field(
     Ok(Some(PostfixUpdate {
         target: PostfixTarget::Field {
             receiver,
-            name: read_field.name.clone(),
+            name: read_field.spelled_name(),
         },
         read: read.bci(),
         store: store.bci(),
@@ -18277,7 +19249,7 @@ fn compound_origin(store: u32, duplicate: u32, read: u32, add: u32) -> OriginSet
         })
 }
 
-impl Builder<'_> {
+impl<'a> Builder<'a> {
     fn finally_checkpoint(&self) -> FinallyCheckpoint {
         FinallyCheckpoint {
             stmts: self.stmts.clone(),
@@ -18345,8 +19317,8 @@ impl Builder<'_> {
         self.shared_finally = None;
     }
 
-    fn compound_if_checkpoint(&self) -> CompoundIfCheckpoint {
-        CompoundIfCheckpoint {
+    fn checkpoint(&self) -> BuildCheckpoint {
+        BuildCheckpoint {
             finally: self.finally_checkpoint(),
             snapshots_rendered: self.snapshots_rendered.clone(),
             snapshot_quote: self.snapshot_quote.clone(),
@@ -18362,7 +19334,7 @@ impl Builder<'_> {
         }
     }
 
-    fn restore_compound_if(&mut self, checkpoint: CompoundIfCheckpoint) {
+    fn restore(&mut self, checkpoint: BuildCheckpoint) {
         self.restore_finally(checkpoint.finally);
         self.snapshots_rendered = checkpoint.snapshots_rendered;
         self.snapshot_quote = checkpoint.snapshot_quote;
@@ -19378,7 +20350,7 @@ impl Builder<'_> {
         // Type and renderability are part of the proof consumed by deferred-binding analysis.
         // Stage the actual root lead first so locals such as a saved scale are available exactly
         // where emission will see them; then undo only presentation state, retaining budget use.
-        let checkpoint = self.compound_if_checkpoint();
+        let checkpoint = self.checkpoint();
         let prefix_start = checkpoint.finally.stmts.len();
         let attempt = (|| {
             for block in prefix {
@@ -19399,7 +20371,7 @@ impl Builder<'_> {
             }
             Ok(())
         })();
-        self.restore_compound_if(checkpoint);
+        self.restore(checkpoint);
         attempt
     }
 
@@ -19723,7 +20695,7 @@ impl Builder<'_> {
                 let receiver = if self.fields.simple_static_final_write(at) {
                     None
                 } else {
-                    let owner = spell_reference(owner).ok_or_else(|| {
+                    let owner = evidence.spelled_owner().ok_or_else(|| {
                         ConditionalValueBuildError::Refused(format!(
                             "the short-circuit field owner at BCI {at} has no Java type spelling"
                         ))
@@ -19731,10 +20703,10 @@ impl Builder<'_> {
                     Some(Expr::direct(ExprKind::Path(owner), at))
                 };
                 let value =
-                    self.field_value(Some(descriptor), proof.phi, expression.clone(), at)?;
+                    self.field_value(Some(&descriptor.0), proof.phi, expression.clone(), at)?;
                 let kind = StmtKind::FieldAssign {
                     receiver,
-                    name: name.clone(),
+                    name: evidence.spelled_name(),
                     op: AssignOp::Assign,
                     value: value.clone(),
                 };
@@ -19757,7 +20729,7 @@ impl Builder<'_> {
                         "the field plan at BCI {at} does not bind the proved instance receiver and Phi"
                     )));
                 }
-                let Some(owner_type) = spell_reference(owner) else {
+                let Some(owner_type) = evidence.spelled_owner() else {
                     return Err(ConditionalValueBuildError::Refused(format!(
                         "the short-circuit field owner at BCI {at} has no Java type spelling"
                     )));
@@ -19769,10 +20741,10 @@ impl Builder<'_> {
                     )));
                 }
                 let value =
-                    self.field_value(Some(descriptor), proof.phi, expression.clone(), at)?;
+                    self.field_value(Some(&descriptor.0), proof.phi, expression.clone(), at)?;
                 let kind = StmtKind::FieldAssign {
                     receiver: Some(receiver),
-                    name: name.clone(),
+                    name: evidence.spelled_name(),
                     op: AssignOp::Assign,
                     value: value.clone(),
                 };
@@ -20095,7 +21067,16 @@ impl Builder<'_> {
             },
         };
         let expression = Expr::direct(kind, proof.consumer_bci);
-        let Some(ty) = expression.presented.clone() else {
+        // A reference conditional used once by a physical store has the assignment context
+        // already proved by the variable plan. Its Java type need not be guessed again from the
+        // two frame types (or from null, which has no standalone Type in this AST).
+        let contextual_type = if expression.presented.is_none() {
+            self.reference_conditional_store_type(proof, &expression)
+                .map_err(ConditionalValueBuildError::Stop)?
+        } else {
+            None
+        };
+        let Some(ty) = expression.presented.clone().or(contextual_type) else {
             return Err(ConditionalValueBuildError::Refused(format!(
                 "the two values joined at BCI {} do not have a conditional Java type this run can prove",
                 proof.consumer_bci
@@ -20130,6 +21111,71 @@ impl Builder<'_> {
             }
         }
         Ok(Expr::new(expression.kind, origin).presenting(ty))
+    }
+
+    fn reference_conditional_store_type(
+        &mut self,
+        proof: &ConditionalValueProof,
+        expression: &Expr,
+    ) -> Result<Option<Type>, StopReason> {
+        let ExprKind::Conditional {
+            when_true,
+            when_false,
+            ..
+        } = &expression.kind
+        else {
+            return Ok(None);
+        };
+        let Some(instruction) = self.instructions.get(&proof.consumer_bci).copied() else {
+            return Ok(None);
+        };
+        let Some(Operation::Store { slot }) = self.operations.get(proof.consumer_bci) else {
+            return Ok(None);
+        };
+        if store_operand(self.operations, instruction) != Some(proof.phi) {
+            return Ok(None);
+        }
+        for use_ in self.ssa.value(proof.phi).uses() {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(proof.consumer_bci),
+            )?;
+            if use_.bci() != Some(proof.consumer_bci) || use_.block() != &proof.join {
+                return Ok(None);
+            }
+        }
+        let Some(variable) = self.reuse.variable_at(*slot, proof.consumer_bci) else {
+            return Ok(None);
+        };
+        let Some(Type::Reference(target)) = self.decided_type(variable) else {
+            return Ok(None);
+        };
+        for arm in [when_true, when_false] {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(proof.consumer_bci),
+            )?;
+            if matches!(arm.kind, ExprKind::Null) {
+                continue;
+            }
+            let Some(Type::Reference(source)) = &arm.presented else {
+                return Ok(None);
+            };
+            if !crate::assignability::reference_assignable(
+                self.runtime_release,
+                source,
+                &target,
+                proof.consumer_bci,
+                self.reference_relations,
+            ) {
+                return Ok(None);
+            }
+        }
+        Ok(Some(Type::Reference(target)))
     }
 
     /// The two arm constants a consumer position that already requires a boolean may read as one.
@@ -20252,7 +21298,7 @@ impl Builder<'_> {
         if !matches!(op, CompareOp::JumpIfSame | CompareOp::JumpIfDifferent) {
             return false;
         }
-        let Some(parameters) = parameter_descriptors(target.descriptor()) else {
+        let Some(parameters) = parameter_descriptors(&target.raw_descriptor().0) else {
             return false;
         };
         let Some(instruction) = self.instructions.get(&proof.consumer_bci) else {
@@ -20269,7 +21315,7 @@ impl Builder<'_> {
         arguments
             .iter()
             .position(|(_, value)| *value == proof.phi)
-            .is_some_and(|index| parameters[index] == "Z")
+            .is_some_and(|index| parameters[index] == b"Z")
     }
 
     /// A field descriptor and the sole physical call parameter jointly justify the source type
@@ -20288,7 +21334,7 @@ impl Builder<'_> {
         let Some(Operation::Invoke(target)) = self.operations.get(proof.consumer_bci) else {
             return unchanged();
         };
-        let Some((parameters, _)) = lambda::parse_method(target.descriptor()) else {
+        let Some((parameters, _)) = lambda::parse_method_bytes(&target.raw_descriptor().0) else {
             return unchanged();
         };
         let [required] = parameters.as_slice() else {
@@ -20935,7 +21981,7 @@ impl Builder<'_> {
                 // Prefix blocks, root-test statements, the condition, and both arms are one
                 // candidate. Every fallible operation runs inside the trial so Refusal and Stop
                 // both restore presentation state; the budget itself remains charged.
-                let checkpoint = self.compound_if_checkpoint();
+                let checkpoint = self.checkpoint();
                 let prefix_start = checkpoint.finally.stmts.len();
                 let attempt = (|| -> Result<(), ValueRenderFailure> {
                     for block in prefix {
@@ -20990,12 +22036,12 @@ impl Builder<'_> {
                 match attempt {
                     Ok(()) => Ok(()),
                     Err(ValueRenderFailure::Refusal(reason)) => {
-                        self.restore_compound_if(checkpoint);
+                        self.restore(checkpoint);
                         let bcis = self.region_quote(region, root.branch_bci);
                         self.fallback(bcis, &reason, root.branch_bci)
                     }
                     Err(ValueRenderFailure::Stop(stop)) => {
-                        self.restore_compound_if(checkpoint);
+                        self.restore(checkpoint);
                         Err(stop)
                     }
                 }
@@ -21574,7 +22620,7 @@ impl Builder<'_> {
         // All cloned checkpoint collections above are empty. Poll before taking the existing
         // bounded snapshot; emitted statements and the repeated prefix are charged below.
         poll(self.budget, Some(at))?;
-        let checkpoint = self.compound_if_checkpoint();
+        let checkpoint = self.checkpoint();
         let attempt = (|| -> Result<(), ValueRenderFailure> {
             let entry_cond = self
                 .test_expr(*entry_test_bci, *entry_prefix_taken)?
@@ -21738,11 +22784,11 @@ impl Builder<'_> {
         match attempt {
             Ok(()) => Ok(()),
             Err(ValueRenderFailure::Refusal(reason)) => {
-                self.restore_compound_if(checkpoint);
+                self.restore(checkpoint);
                 refuse(self, &reason)
             }
             Err(ValueRenderFailure::Stop(stop)) => {
-                self.restore_compound_if(checkpoint);
+                self.restore(checkpoint);
                 Err(stop)
             }
         }
@@ -24166,10 +25212,10 @@ impl Builder<'_> {
                     "the catch type at constant-pool index {index} is not a `CONSTANT_Class` entry, so the clause names no class"
                 )
             })?;
-            let internal = String::from_utf8_lossy(&internal.0).into_owned();
-            let ty = spell_reference(&internal).ok_or_else(|| {
+            let ty = crate::names::source_class_name(&internal).ok_or_else(|| {
                 format!(
-                    "the catch type `{internal}` is not a class name this layer can spell as a Java type, so the clause cannot be named"
+                    "the catch type `{}` is not a class name this layer can spell as a Java type, so the clause cannot be named",
+                    crate::facts::display_jvm_bytes(&internal)
                 )
             })?;
             types.push(ty);
@@ -24201,10 +25247,10 @@ impl Builder<'_> {
                 clause.catch_type()
             )
         })?;
-        let internal = String::from_utf8_lossy(&internal.0).into_owned();
-        let ty = spell_reference(&internal).ok_or_else(|| {
+        let ty = crate::names::source_class_name(&internal).ok_or_else(|| {
             format!(
-                "the catch type `{internal}` is not a class name this layer can spell as a Java type, so the clause cannot be named"
+                "the catch type `{}` is not a class name this layer can spell as a Java type, so the clause cannot be named",
+                crate::facts::display_jvm_bytes(&internal)
             )
         })?;
         // The slot of a clause's parameter is never split (P3 3.4): the header writes the
@@ -24399,8 +25445,7 @@ impl Builder<'_> {
         let StmtKind::While { cond, body, .. } = kind else {
             return Ok(None);
         };
-        if self.profile.java_release < 8
-            || !matches!(&cond.kind, ExprKind::Call { name, args, .. }
+        if !matches!(&cond.kind, ExprKind::Call { name, args, .. }
                 if name == "hasNext" && args.is_empty())
             || !matches!(self.operations.get(cond.origin.primary().bci()),
                 Some(Operation::Invoke(target))
@@ -25070,8 +26115,7 @@ impl Builder<'_> {
         kind: &StmtKind,
         regions: &[Region],
     ) -> Result<Option<(StmtKind, OriginSet, bool, Vec<usize>)>, StopReason> {
-        if self.profile.java_release < 8
-            || !matches!(kind, StmtKind::For { .. })
+        if !matches!(kind, StmtKind::For { .. })
             || !self.stmts.last().is_some_and(|stmt| {
                 matches!(
                     stmt.kind,
@@ -26236,6 +27280,19 @@ impl Builder<'_> {
     /// local store, a merge, or an unknown operation, so a final statement is the position whose
     /// effect the producer must precede.
     fn prepare_deferred_bindings(&mut self) -> Result<(), StopReason> {
+        for instruction in self.instructions.values() {
+            if self.unclaimed_stack_copy(instruction) {
+                for (_, input) in instruction.copies() {
+                    charge(
+                        self.budget,
+                        CountedBudgetDimension::IrItems,
+                        1,
+                        Some(instruction.bci()),
+                    )?;
+                    self.copy_inputs.insert(*input);
+                }
+            }
+        }
         let mut candidates = Vec::new();
         let mut rejections = Vec::new();
         let folded = self.regions.first().and_then(|region| {
@@ -26341,6 +27398,68 @@ impl Builder<'_> {
             {
                 continue;
             };
+            if let Some(Operation::Load { slot }) = self.operations.get(producer)
+                && !self.copy_inputs.contains(&value)
+            {
+                let Some(reader) = self.terminal_consumer(value, 0, None)? else {
+                    continue;
+                };
+                // The save is read only where this value's own use renders it. A reader past an
+                // interior expression hop makes the chain dead: the statement that would read
+                // the saved name is the hop's own, and where that hop's other operands fail the
+                // run's answer is the baseline per-instruction quote — a saved declaration the
+                // text never reads states less, not more (the held-use negative pins this).
+                let chain_alive = self
+                    .ssa
+                    .value(value)
+                    .uses()
+                    .iter()
+                    .any(|use_| use_.bci() == Some(reader));
+                if !chain_alive {
+                    continue;
+                }
+                let Some(old) = local_read(instruction, *slot) else {
+                    continue;
+                };
+                if self.slot_name_denotes_the_same_value(*slot, old, reader) {
+                    continue;
+                }
+            }
+            if self.copy_inputs.contains(&value) {
+                if std::env::var("JARDE_TRACE_BINDINGS").is_ok() {
+                    eprintln!("TRACE copy-input candidate value={value:?} producer={producer} anchor={anchor}");
+                }
+                if let Some(readers) = self.copy_readers(value, anchor)? {
+                    // A load-produced copy whose slot still holds the value at every reader
+                    // renders in place as the slot's own name, so a saved declaration would be
+                    // dead text replacing the direct rendering (the write-accessor shape:
+                    // `arg0.flag = arg1;` keeps its argument slots — it grows no saved
+                    // declarations for slots nothing overwrote). A load this run cannot state a
+                    // read for is skipped outright, as the non-copy load branch above skips it.
+                    let renders_in_place = match self.operations.get(producer) {
+                        Some(Operation::Load { slot }) => {
+                            match local_read(instruction, *slot) {
+                                Some(old) => readers.iter().all(|reader| {
+                                    self.slot_name_denotes_the_same_value(*slot, old, *reader)
+                                }),
+                                None => true,
+                            }
+                        }
+                        _ => false,
+                    };
+                    if !renders_in_place {
+                        candidates.push((value, producer, anchor));
+                    }
+                } else {
+                    // No complete same-region consumer closure: the value is not this branch's
+                    // candidate. Skipping it leaves every consumer the handling it would have
+                    // had without the branch — a rejection here would mark the value refused
+                    // and replace the consumers' own refusals (or their proven shapes, like an
+                    // outer-member construction reading the same value) with the cascade.
+                    continue;
+                }
+                continue;
+            }
             let crosses_cut = self.crosses_a_proved_cut(value);
             let pending_carry = pending_carries.get(&value).cloned();
             let original_consumers = self.binding_consumers(value, crosses_cut);
@@ -26497,6 +27616,9 @@ impl Builder<'_> {
         }
         let candidates = retained.into_iter();
         for (index, (value, producer, anchor)) in candidates.enumerate() {
+            if std::env::var("JARDE_TRACE_BINDINGS").is_ok() {
+                eprintln!("TRACE retained candidate index={index} value={value:?} producer={producer} anchor={anchor}");
+            }
             poll(self.budget, Some(anchor))?;
             charge(
                 self.budget,
@@ -26546,6 +27668,150 @@ impl Builder<'_> {
                 .or_insert(rejection);
         }
         Ok(())
+    }
+
+    fn unclaimed_stack_copy(&self, instruction: &SsaInstruction) -> bool {
+        let at = instruction.bci();
+        if instruction.copies().is_empty()
+            || self.sites.owns(at)
+            || self.chains.owns(at)
+            || self.array_initializers.owns(at)
+            || self.postfix.owns(at)
+            || self.compounds.owns_copy(at)
+            || self.field_copies.owns(at)
+            || self.local_assignments.contains_key(&at)
+            || self.chained_pair(at).is_some()
+        {
+            return false;
+        }
+        // A pre-existing owned expression may absorb an update or construction. Its own proof
+        // continues to govern it; forwarding its result must not replay that absorbed effect.
+        instruction.copies().iter().all(|(_, source)| {
+            if self.postfix.snapshot_at(*source).is_some() {
+                return false;
+            }
+            !matches!(self.ssa.value(*source).def(), Definition::Instruction { bci, .. }
+                if self.field_copies.owns(*bci) || self.compounds.owns_read(*bci)
+                    || self.compounds.keeps_inline(*bci) || self.chains.owns(*bci))
+        })
+    }
+
+    fn sequential_copy(&self, instruction: &SsaInstruction) -> bool {
+        !self.copy_inputs.is_empty()
+            && self.unclaimed_stack_copy(instruction)
+            && instruction
+                .copies()
+                .iter()
+                .all(|(_, input)| self.saved_copy_input(*input, 0))
+    }
+
+    fn saved_copy_input(&self, value: ValueId, depth: usize) -> bool {
+        if depth > MAX_VALUE_DEPTH {
+            return false;
+        }
+        if self.bindings.contains_key(&value) {
+            return true;
+        }
+        let Definition::Instruction { bci, .. } = self.ssa.value(value).def() else {
+            return false;
+        };
+        if self
+            .binding_plans
+            .get(bci)
+            .is_some_and(|plan| plan.value == value)
+        {
+            return true;
+        }
+        if matches!(self.operations.get(*bci), Some(Operation::Push(_)))
+            && self
+                .binding_producer(value, self.ssa.value(value))
+                .is_none()
+        {
+            return true;
+        }
+        let Some(instruction) = self.instructions.get(bci).copied() else {
+            return false;
+        };
+        self.unclaimed_stack_copy(instruction)
+            && instruction
+                .copies()
+                .iter()
+                .find(|(output, _)| *output == value)
+                .is_some_and(|(_, input)| self.saved_copy_input(*input, depth + 1))
+    }
+
+    /// Prove all copy/expression uses in the producer's block before publishing a saved value.
+    /// Local stores are terminal consumers: later local reads are owned by the variable plan.
+    fn copy_readers(
+        &mut self,
+        root: ValueId,
+        anchor: u32,
+    ) -> Result<Option<BTreeSet<u32>>, StopReason> {
+        let Some(block) = self.block_of.get(&anchor).cloned() else {
+            return Ok(None);
+        };
+        charge(
+            self.budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(anchor),
+        )?;
+        let mut pending = vec![root];
+        let mut seen = BTreeSet::new();
+        let mut readers = BTreeSet::new();
+        let ssa = self.ssa;
+        while let Some(value) = pending.pop() {
+            poll(self.budget, Some(anchor))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(anchor),
+            )?;
+            if !seen.insert(value) {
+                continue;
+            }
+            for use_ in ssa.value(value).uses() {
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(anchor),
+                )?;
+                let Some(at) = use_.bci() else {
+                    return Ok(None);
+                };
+                if use_.block() != &block || at <= anchor {
+                    return Ok(None);
+                }
+                let Some(instruction) = self.instructions.get(&at).copied() else {
+                    return Ok(None);
+                };
+                if self.unclaimed_stack_copy(instruction) {
+                    for (output, input) in instruction.copies() {
+                        if *input == value {
+                            charge(self.budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
+                            pending.push(*output);
+                        }
+                    }
+                } else if self.expression_value_instruction(at) {
+                    let Some((_, output)) = one_stack_output(instruction) else {
+                        return Ok(None);
+                    };
+                    if output != root && self.copy_inputs.contains(&output) {
+                        readers.insert(at);
+                    } else {
+                        charge(self.budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
+                        pending.push(output);
+                    }
+                } else if self.renders_the_value_it_reads(at) {
+                    readers.insert(at);
+                } else {
+                    return Ok(None);
+                }
+            }
+        }
+        Ok((!readers.is_empty()).then_some(readers))
     }
 
     /// Whether one value crosses a verified chain's **proved conditional cut**.
@@ -26645,7 +27911,7 @@ impl Builder<'_> {
     /// The instruction and source anchor that produce one value, when this value is one of the
     /// supported deferred shapes. A construction site is one producer even though its value's SSA
     /// definition is the constructor instruction rather than the allocation.
-    fn binding_producer(&self, _value: ValueId, value_facts: &SsaValue) -> Option<(u32, u32, u32)> {
+    fn binding_producer(&self, value: ValueId, value_facts: &SsaValue) -> Option<(u32, u32, u32)> {
         let Definition::Instruction { bci, .. } = value_facts.def() else {
             return None;
         };
@@ -26661,7 +27927,10 @@ impl Builder<'_> {
             return Some((producer, site.constructor, site.constructor));
         }
         let supported = match self.operations.get(producer) {
-            Some(Operation::Invoke(_)) => true,
+            Some(Operation::Invoke(_) | Operation::Load { .. }) => true,
+            Some(Operation::Shift { .. } | Operation::Bitwise { .. } | Operation::Negate) => {
+                self.copy_inputs.contains(&value)
+            }
             Some(Operation::Field { .. }) => self
                 .fields
                 .claim(producer)
@@ -26671,7 +27940,8 @@ impl Builder<'_> {
             ) if !self.enums.owns(producer) => true,
             Some(Operation::NewArray { .. }) => true,
             Some(Operation::Arithmetic { op }) => {
-                matches!(op, ArithmeticOp::Divide | ArithmeticOp::Remainder)
+                self.copy_inputs.contains(&value)
+                    || matches!(op, ArithmeticOp::Divide | ArithmeticOp::Remainder)
             }
             Some(Operation::PrimitiveConversion { .. }) => true,
             Some(Operation::InstanceOf { .. }) => true,
@@ -26681,7 +27951,16 @@ impl Builder<'_> {
             // expression, and the compiler's fold of that expression is not provably the operation
             // the class file ran (`fneg` of the canonical NaN is the recorded case). Saving the
             // operand into the existing non-final named value keeps the operation at run time.
-            Some(Operation::Push(constant)) => self.folding_candidate(value_facts, constant),
+            Some(Operation::Push(constant)) => {
+                (self.copy_inputs.contains(&value)
+                    && match constant {
+                        ConstantValue::String(_) | ConstantValue::Class { .. } => true,
+                        ConstantValue::Float(bits) => !ConstantValue::float_is_finite(*bits),
+                        ConstantValue::Double(bits) => !ConstantValue::double_is_finite(*bits),
+                        _ => false,
+                    })
+                    || self.folding_candidate(value_facts, constant)
+            }
             _ => false,
         };
         supported.then_some((producer, producer, producer))
@@ -26917,6 +28196,9 @@ impl Builder<'_> {
             // Following the saved value to the join would falsely move its input across it.
             return Ok(Some(reader));
         }
+        if self.copy_inputs.contains(&output) {
+            return Ok(Some(reader));
+        }
         self.terminal_consumer(output, depth + 1, None)
     }
 
@@ -27005,6 +28287,15 @@ impl Builder<'_> {
         bcis.insert(bci);
         if let Some(site) = self.sites.site_of(bci) {
             bcis.extend(site.owned.iter().copied());
+        }
+        if let Some(instruction) = self.instructions.get(&bci).copied()
+            && self.unclaimed_stack_copy(instruction)
+            && let Some((_, input)) = instruction
+                .copies()
+                .iter()
+                .find(|(output, _)| *output == value)
+        {
+            return self.collect_dependency_bcis(*input, absorbed, seen, bcis, depth + 1);
         }
         if matches!(self.operations.get(bci), None | Some(Operation::Other)) {
             return Ok(false);
@@ -27103,25 +28394,37 @@ impl Builder<'_> {
         self.fallback(bcis, &rejection.reason, rejection.anchor)
     }
 
-    fn bind_value(&mut self, plan: BindingPlan) -> Result<(), StopReason> {
+    /// Commits one binding plan at its anchor, answering whether this run engaged the anchor.
+    ///
+    /// The plan holds two states, carried by the structures that own it. Before the declaration
+    /// statement lands, the plan is only a planning entry (`binding_plans`): a failure there
+    /// abandons the whole plan — the entry is withdrawn and no saved name, no refused value and
+    /// no carry registration is left behind, so the anchor instruction keeps exactly the handling
+    /// it would have had without the plan. A plan whose value a forward conditional carry admitted
+    /// is the one exception: the carry's own proof is what put the value on the save list, so its
+    /// pre-push failure keeps the carry's primary reason instead of the failing render's text
+    /// ([`Self::refuse_carry_binding`]). Once the `Declare` is pushed the run is committed to
+    /// the text it wrote: a failure then keeps the existing half-commit protection — the value is
+    /// marked refused, so no later consumer reads a name that never became a binding. `false`
+    /// (the pre-push abandonment) lets [`Self::instruction`] continue its own walk.
+    fn bind_value(&mut self, plan: BindingPlan) -> Result<bool, StopReason> {
         let expression = match self.render_value(plan.value, plan.anchor, 0) {
             Ok(expression) => expression,
             Err(ValueRenderFailure::Stop(stop)) => return Err(stop),
-            Err(ValueRenderFailure::Refusal(reason)) => {
-                let reason = self.refuse_binding(&plan).unwrap_or(reason);
-                let bcis = self.binding_quote_bcis(plan.anchor)?;
-                return self.fallback(bcis, &reason, plan.anchor);
+            Err(ValueRenderFailure::Refusal(_)) => {
+                if self.refuse_carry_binding(&plan)? {
+                    return Ok(true);
+                }
+                self.abandon_binding(&plan);
+                return Ok(false);
             }
         };
         let Some(ty) = expression.presented.clone() else {
-            let reason = self.refuse_binding(&plan).unwrap_or_else(|| {
-                format!(
-                    "the saved value at BCI {} has no declared Java type",
-                    plan.anchor
-                )
-            });
-            let bcis = self.binding_quote_bcis(plan.anchor)?;
-            return self.fallback(bcis, reason, plan.anchor);
+            if self.refuse_carry_binding(&plan)? {
+                return Ok(true);
+            }
+            self.abandon_binding(&plan);
+            return Ok(false);
         };
         self.push(Stmt::new(
             StmtKind::Declare {
@@ -27141,9 +28444,9 @@ impl Builder<'_> {
         ) {
             if let Some(reason) = self.refuse_binding(&plan) {
                 let bcis = self.binding_quote_bcis(plan.anchor)?;
-                return self.fallback(bcis, reason, plan.anchor);
+                self.fallback(bcis, &reason, plan.anchor)?;
             }
-            return Ok(());
+            return Ok(true);
         }
         self.bindings.insert(
             plan.value,
@@ -27153,7 +28456,36 @@ impl Builder<'_> {
                 anchor: plan.anchor,
             },
         );
-        Ok(())
+        Ok(true)
+    }
+
+    /// Withdraws a binding plan that failed before its statement landed. Nothing the plan's
+    /// establishment registered survives it: the planning entry, and the forward carry the
+    /// retained candidate inserted, are both removed — the same clearing [`Self::refuse_binding`]
+    /// performs once a committed plan fails, applied while no text depends on the plan. A carry's
+    /// own pre-push failure does not take this withdrawal: [`Self::refuse_carry_binding`] keeps
+    /// the carry's primary reason, so only a non-carry plan's failure arrives here.
+    fn abandon_binding(&mut self, plan: &BindingPlan) {
+        self.binding_plans.remove(&plan.anchor);
+        self.forward_conditional_carries.remove(&plan.value);
+    }
+
+    /// Refuses a binding plan whose value a forward conditional carry admitted, after its
+    /// initializer failed before the declaration statement landed. The carry's own proof is what
+    /// put the value on the save list — the proof states one local binding cannot prove the
+    /// producer's execution count — so the failure keeps that primary reason
+    /// ([`Self::refuse_binding`]) and quotes the anchor, rather than the failing render's text or
+    /// the traceless withdrawal a plan without a carry takes. Answers whether the carry refusal
+    /// engaged the anchor.
+    fn refuse_carry_binding(&mut self, plan: &BindingPlan) -> Result<bool, StopReason> {
+        if self.forward_conditional_carries.contains_key(&plan.value)
+            && let Some(reason) = self.refuse_binding(plan)
+        {
+            let bcis = self.binding_quote_bcis(plan.anchor)?;
+            self.fallback(bcis, &reason, plan.anchor)?;
+            return Ok(true);
+        }
+        Ok(false)
     }
 
     /// Appends the statement one instruction became, if it became one.
@@ -27229,7 +28561,11 @@ impl Builder<'_> {
             return self.reject_binding(rejection);
         }
         if let Some(plan) = self.binding_plans.get(&at).cloned() {
-            return self.bind_value(plan);
+            if self.bind_value(plan)? {
+                return Ok(());
+            }
+            // The plan abandoned itself before its statement landed: this instruction keeps the
+            // handling it would have had without the plan, so the walk continues below.
         }
         if let Some(result) = self
             .long_assignment_result
@@ -27239,7 +28575,7 @@ impl Builder<'_> {
             if self.assignment_result_refused || at != result.store_bci {
                 return Ok(());
             }
-            return self.assignment_result_statement(&result, "J");
+            return self.assignment_result_statement(&result, b"J");
         }
         if let Some((result, expected_descriptor)) = self
             .write_accessor_assignment
@@ -27250,7 +28586,7 @@ impl Builder<'_> {
             if self.assignment_result_refused || at != result.store_bci {
                 return Ok(());
             }
-            return self.assignment_result_statement(&result, &expected_descriptor);
+            return self.assignment_result_statement(&result, &expected_descriptor.0);
         }
         if let Some(update) = self.unit_field_updates.statement_at(at).cloned() {
             return self.unit_field_update_statement(&update);
@@ -27315,6 +28651,9 @@ impl Builder<'_> {
                 Slot::Local(slot) => Some((*slot, *value)),
                 Slot::Stack(_) => None,
             });
+        if self.sequential_copy(instruction) {
+            return Ok(());
+        }
         match self.operations.get(at) {
             Some(Operation::Store { .. }) => {
                 let Some((slot, _written)) = write else {
@@ -27921,6 +29260,18 @@ impl Builder<'_> {
         eval_bci: u32,
         return_bci: u32,
     ) -> Result<Expr, ValueRenderFailure> {
+        if let Some(types) = self.declared_types
+            && let Some(result) = types.result
+            && crate::generic_types::has_source_arguments(types, result, self.budget).map_err(
+                |error| crate::stop::stop_from_error(self.budget, error, Some(return_bci)),
+            )?
+        {
+            let rendered = self.render_value(value, eval_bci, 0)?;
+            if let Some(erased) = types.erased_result {
+                self.original_reference_type(value, erased, return_bci, &rendered)?;
+            }
+            return self.declared_conversion(rendered, value, result, return_bci);
+        }
         if let Some(rendered) = self.proved_return_boxing(value, return_bci)? {
             return Ok(rendered);
         }
@@ -28799,11 +30150,11 @@ impl Builder<'_> {
             returns: returns.bci(),
             anchors,
             text: if post {
-                format!("{name}.{field}++", field = read.name)
+                format!("{name}.{field}++", field = read.spelled_name())
             } else {
-                format!("++{name}.{field}", field = read.name)
+                format!("++{name}.{field}", field = read.spelled_name())
             },
-            field_type: descriptor_type(&read.descriptor),
+            field_type: descriptor_type_bytes(&read.descriptor.0),
         })
     }
 
@@ -28944,6 +30295,7 @@ impl Builder<'_> {
         match self.decision(variable) {
             Some(Decided::Type(Type::Boolean)) => {
                 if !self.boolean_value(stored, at) {
+                    self.declaration_refused(variable.slot(), at);
                     return self
                         .fallback(
                             vec![at],
@@ -28966,16 +30318,12 @@ impl Builder<'_> {
                 // literal is not one of them: it is the same bytes for both, and it keeps the
                 // integer spelling the decision states.
                 if self.boolean_proven(stored, at) {
-                    return self
-                        .fallback(
-                            vec![at],
-                            format!(
-                                "the value at BCI {at} is stored into `{name}`, which this run decided holds `{}`, and this layer presents the value as a boolean (a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this run decided `boolean`): the `boolean` spelling this layer would write is text the variable's own type rejects",
-                                ty.spell()
-                            ),
-                            at,
-                        )
-                        .map(|()| false);
+                    let reason = format!(
+                        "the value at BCI {at} is stored into `{name}`, which this run decided holds `{}`, and this layer presents the value as a boolean (a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this run decided `boolean`): the `boolean` spelling this layer would write is text the variable's own type rejects",
+                        ty.spell()
+                    );
+                    self.declaration_refused(variable.slot(), at);
+                    return self.fallback(vec![at], reason, at).map(|()| false);
                 }
                 self.push(Stmt::new(
                     StmtKind::Assign { name, value },
@@ -29082,11 +30430,15 @@ impl Builder<'_> {
         let Some(variable) = self.reuse.variable_at(slot, at) else {
             return;
         };
-        // A variable that already has its declaration — the one a region wrote at its own start, a
-        // `catch` clause's parameter, a resource header — lost nothing here: every one of those
-        // declarations precedes every use of the variable, so the name a later statement spells is
-        // declared. Only the in-place declaration this write would have carried can be refused.
-        if self.declared.contains(&variable) {
+        // Clause/resource/parameter bindings keep their independent initializer. An ordinary
+        // elevated declaration still needs its SSA-backed writes: a refused initializer must
+        // invalidate later reads and close the declaration's presentation transaction.
+        if self.declared.contains(&variable)
+            && !matches!(
+                self.declarations.placements.get(&variable),
+                Some(DeclarationPlacement::Elevated { .. })
+            )
+        {
             return;
         }
         if let Some(name) = self.names.text(variable) {
@@ -29432,8 +30784,31 @@ impl Builder<'_> {
     /// whose own type it cannot state.
     fn local(&self, variable: LocalVariable, name: &str, at: u32) -> Expr {
         let local = Expr::direct(ExprKind::Local(name.to_string()), at);
-        match self.decided_type(variable) {
+        let local = match self.decided_type(variable) {
             Some(ty) => local.presenting(ty),
+            None => local,
+        };
+        let declared = self
+            .declarations
+            .generic_locals
+            .get(&variable)
+            .and_then(|projection| projection.type_index)
+            .or_else(|| {
+                self.declared_types.and_then(|types| {
+                    if variable.slot() == 0 && self.has_receiver {
+                        types.receiver
+                    } else if variable.slot() < self.parameters {
+                        types
+                            .parameters
+                            .iter()
+                            .find_map(|(slot, ty)| (*slot == variable.slot()).then_some(*ty))
+                    } else {
+                        None
+                    }
+                })
+            });
+        match declared {
+            Some(ty) => local.declaring(ty),
             None => local,
         }
     }
@@ -29450,7 +30825,7 @@ impl Builder<'_> {
         self.declarations
             .generic_locals
             .get(&variable)
-            .filter(|_| matches!(ty, Type::Reference(name) if name == "java.util.HashMap"))
+            .filter(|projection| &projection.erased == ty)
             .map(|projection| projection.source_type.clone())
             .or_else(|| local_declaration_source_type_name(ty, self.member_inner_targets))
     }
@@ -29598,37 +30973,60 @@ impl Builder<'_> {
             return Ok(receiver);
         }
         if let Definition::Instruction { bci, .. } = self.ssa.value(value).def()
-            && let Some(Operation::Arithmetic { op }) = self.operations.get(*bci)
+            && let Some(Operation::Arithmetic { op: _ }) = self.operations.get(*bci)
             && self.sites.site_of(*bci).is_none()
         {
-            let bci = *bci;
-            let Some(instruction) = self.instructions.get(&bci).copied() else {
-                return Err(format!("no names record for the instruction at BCI {bci}").into());
-            };
-            let operands = stack_operands(instruction);
-            if operands.len() != 2 {
-                return Err(format!(
-                    "the arithmetic at BCI {bci} reads {} values, not two",
-                    operands.len()
-                )
-                .into());
-            }
-            // Both operands are read by the sum, so both are checked where the sum is
-            // evaluated: a nested arithmetic does not move the use point to itself
-            // (P3-R8 — the value the operand names is on the stack when the sum runs,
-            // whatever the slot holds by then).
-            let left = self.render_value(operands[0].1, at, depth + 1)?;
-            let right = self.render_value(operands[1].1, at, depth + 1)?;
-            return Ok(Expr::direct(
-                ExprKind::Binary {
-                    op: arithmetic_op(*op),
-                    left: Box::new(left),
-                    right: Box::new(right),
-                },
-                bci,
-            ));
+            return self.render_arithmetic_value(*bci, at, depth);
         }
         self.render_value_definition(value, at, depth)
+    }
+
+    /// One `render_value` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]). The renderer recurses through this arm for every
+    /// unowned arithmetic node, so its operands' frames live here rather than in the
+    /// recursion's shared [`Self::render_value`] frame.
+    #[inline(never)]
+    fn render_arithmetic_value(
+        &mut self,
+        bci: u32,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Operation::Arithmetic { op } = operation else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!("no names record for the instruction at BCI {bci}").into());
+        };
+        let operands = stack_operands(instruction);
+        if operands.len() != 2 {
+            return Err(format!(
+                "the arithmetic at BCI {bci} reads {} values, not two",
+                operands.len()
+            )
+            .into());
+        }
+        // Both operands are read by the sum, so both are checked where the sum is
+        // evaluated: a nested arithmetic does not move the use point to itself
+        // (P3-R8 — the value the operand names is on the stack when the sum runs,
+        // whatever the slot holds by then).
+        let left = self.render_value(operands[0].1, at, depth + 1)?;
+        let right = self.render_value(operands[1].1, at, depth + 1)?;
+        Ok(Expr::direct(
+            ExprKind::Binary {
+                op: arithmetic_op(*op),
+                left: Box::new(left),
+                right: Box::new(right),
+            },
+            bci,
+        ))
     }
 
     fn render_value_definition(
@@ -29637,6 +31035,16 @@ impl Builder<'_> {
         at: u32,
         depth: usize,
     ) -> Result<Expr, ValueRenderFailure> {
+        if let Definition::Instruction { bci, .. } = self.ssa.value(value).def()
+            && let Some(instruction) = self.instructions.get(bci).copied()
+            && self.sequential_copy(instruction)
+            && let Some((_, input)) = instruction
+                .copies()
+                .iter()
+                .find(|(output, _)| *output == value)
+        {
+            return Ok(self.render_value(*input, at, depth + 1)?.derived_from(*bci));
+        }
         match self.ssa.value(value).def() {
             Definition::Entry { block, slot } | Definition::Phi { block, slot } => match slot {
                 Slot::Local(slot) => {
@@ -29681,51 +31089,8 @@ impl Builder<'_> {
                     ).into());
                 };
                 match operation {
-                    Operation::Push(constant) => {
-                        let origin = match constant {
-                            ConstantValue::Class { ty, pool_index } => {
-                                if class_literal_path_is_shadowed(ty, self.declaring_class) {
-                                    return Err(format!(
-                                        "the Class constant at BCI {bci} names `{ty}`, whose Java type path is shadowed by this class's own type name"
-                                    ).into());
-                                }
-                                OriginSet::new(Origin::direct(bci).with_cp(*pool_index))
-                            }
-                            _ => OriginSet::new(Origin::direct(bci)),
-                        };
-                        // A floating constant's own bits decide what it is presented as: a finite
-                        // value is its exact literal leaf, the three admitted special values are
-                        // the proved constant divisions of those leaves, and any other NaN pattern
-                        // names no expression this run may publish — the refusal is the value's
-                        // own answer, stated at the constant's BCI so the consumer quoting it
-                        // cannot be mistaken for a recovery.
-                        match match constant {
-                            ConstantValue::Float(bits) => Some((
-                                ConstantValue::float_presentation(*bits),
-                                SpecialValueWidth::Float,
-                            )),
-                            ConstantValue::Double(bits) => Some((
-                                ConstantValue::double_presentation(*bits),
-                                SpecialValueWidth::Double,
-                            )),
-                            _ => None,
-                        } {
-                            None => Ok(Expr::new(literal(constant), origin)),
-                            Some((SpecialValuePresentation::Finite, _)) => {
-                                Ok(Expr::new(literal(constant), origin))
-                            }
-                            Some((presentation @ (SpecialValuePresentation::PositiveInfinity
-                            | SpecialValuePresentation::NegativeInfinity
-                            | SpecialValuePresentation::CanonicalNan), width)) => {
-                                Ok(special_value(bci, presentation, width))
-                            }
-                            Some((SpecialValuePresentation::UnpresentableNan, _)) => {
-                                Err(format!(
-                                    "the floating constant at BCI {bci} has a NaN sign, payload or signaling pattern this run cannot present exactly, and no constant expression of this layer normalizes it"
-                                )
-                                .into())
-                            }
-                        }
+                    Operation::Push(_) => {
+                        self.render_push_constant_value(bci, value, at, depth)
                     }
                     Operation::NumericComparison { .. } => Err(format!(
                         "the numeric comparison at BCI {bci} is not consumed by its proven zero branch"
@@ -29738,346 +31103,29 @@ impl Builder<'_> {
                     // is the same expression only while the slot still holds it (P3 1.3d); where
                     // the body wrote the slot in between, the name would read the newer value and
                     // the text would state the opposite program, so the read is refused instead.
-                    Operation::Load { slot } => {
-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
-                            return Err(format!("no names record for the load at BCI {bci}").into());
-                        };
-                        let Some(read) = local_read(instruction, *slot) else {
-                            return Err(format!(
-                                "the value at BCI {at} comes from the load at BCI {bci}, whose read of local {slot} this run does not state"
-                            ).into());
-                        };
-                        if !self.slot_name_denotes_the_same_value(*slot, read, at) {
-                            return Err(format!(
-                                "the value at BCI {at} is the value local {slot} held at BCI {bci}, and the slot does not hold it at BCI {at}: the slot's name would read the value the body wrote in between"
-                            ).into());
-                        }
-                        // The load is a read of the slot, so the variable it names is the one whose
-                        // record covers the load's own BCI (P3 3.4).
-                        match self.reuse.variable_at(*slot, bci) {
-                            Some(variable) => match self.names.text(variable) {
-                                Some(name) => {
-                                    let local = self.local(variable, name, bci);
-                                    // A read of a named clause's own binding presents the row type
-                                    // the header spells, not the slot's decision: where the
-                                    // parameter reuses an earlier store's slot, the decision states
-                                    // that store's type and the header's declaration contradicts it.
-                                    match self.caught_clause_parameter_type(*slot, read) {
-                                        Some(ty) => Ok(local.presenting(ty)),
-                                        None => Ok(local),
-                                    }
-                                }
-                                None => Err(format!("local {slot} has no name to write").into()),
-                            },
-                            None => Err(format!(
-                                "the load at BCI {bci} reads local {slot}, and the two variables the debug table states over that slot do not place this read in either"
-                            ).into()),
-                        }
+                    Operation::Load { slot: _ } => {
+                        self.render_load_value(bci, value, at, depth)
                     }
-                    Operation::Shift { op } => {
-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
-                            return Err(format!("no names record for the shift at BCI {bci}").into());
-                        };
-                        let operands = stack_operands(instruction);
-                        let [(_, left_value), (_, right_value)] = operands.as_slice() else {
-                            return Err(format!(
-                                "the shift at BCI {bci} reads {} values, not two",
-                                operands.len()
-                            ).into());
-                        };
-                        let left = self.render_value(*left_value, at, depth + 1)?;
-                        let right = self.render_value(*right_value, at, depth + 1)?;
-                        let expected = match instruction.opcode() {
-                            0x78 | 0x7a | 0x7c => Type::Int,
-                            0x79 | 0x7b | 0x7d => Type::Long,
-                            opcode => {
-                                return Err(format!(
-                                    "the shift at BCI {bci} has unexpected opcode {opcode:#04x}"
-                                ).into());
-                            }
-                        };
-                        let expression = Expr::direct(
-                            ExprKind::Binary {
-                                op: shift_op(*op),
-                                left: Box::new(left),
-                                right: Box::new(right),
-                            },
-                            bci,
-                        );
-                        if expression.presented.as_ref() != Some(&expected) {
-                            return Err(format!(
-                                "the shift `{}` at BCI {bci} has operands that cannot present the opcode's {} result in Java",
-                                shift_op(*op).spell(),
-                                expected.spell()
-                            ).into());
-                        }
-                        Ok(expression)
+                    Operation::Shift { op: _ } => {
+                        self.render_shift_value(bci, value, at, depth)
                     }
-                    Operation::Bitwise { op } => {
-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
-                            return Err(format!(
-                                "no names record for the bitwise instruction at BCI {bci}"
-                            ).into());
-                        };
-                        let operands = stack_operands(instruction);
-                        let [(_, left_value), (_, right_value)] = operands.as_slice() else {
-                            return Err(format!(
-                                "the bitwise operator at BCI {bci} reads {} values, not two",
-                                operands.len()
-                            ).into());
-                        };
-                        let boolean_xor_literal = if *op == BitwiseOp::Xor
-                            && instruction.opcode() == 0x82
-                            && instruction.reads().len() == 2
-                            && instruction.writes().len() == 1
-                            && matches!(
-                                self.ssa.value(value).def(),
-                                Definition::Instruction { bci: definition, .. }
-                                    if *definition == bci
-                            )
-                            && instruction.writes()[0].1 == value
-                        {
-                            let right_literal = match self.ssa.value(*right_value).def() {
-                                Definition::Instruction {
-                                    bci: literal_bci, ..
-                                } if matches!(
-                                    self.operations.get(*literal_bci),
-                                    Some(Operation::Push(ConstantValue::Int(0 | 1)))
-                                ) && self.ssa.value(*right_value).uses().len() == 1
-                                    && self.ssa.value(*right_value).uses()[0].bci() == Some(bci) =>
-                                {
-                                    match self.operations.get(*literal_bci) {
-                                        Some(Operation::Push(ConstantValue::Int(value))) => {
-                                            Some((*value == 1, *literal_bci))
-                                        }
-                                        _ => None,
-                                    }
-                                }
-                                _ => None,
-                            };
-                            right_literal.filter(|_| {
-                                self.boolean_evidence(*left_value, at).has_seed()
-                            })
-                        } else {
-                            None
-                        };
-                        let mut left = self.render_value(*left_value, at, depth + 1)?;
-                        if let Some((negate, literal_bci)) = boolean_xor_literal
-                            && left.presented == Some(Type::Boolean)
-                        {
-                            if negate {
-                                let origin = OriginSet::new(Origin::direct(bci))
-                                    .plus_derived(Origin::derived(literal_bci));
-                                return Ok(Expr::new(
-                                    ExprKind::Not {
-                                        value: Box::new(left),
-                                    },
-                                    origin,
-                                ));
-                            }
-                            left.origin = left
-                                .origin
-                                .clone()
-                                .plus_derived(Origin::derived(bci))
-                                .plus_derived(Origin::derived(literal_bci));
-                            return Ok(left);
-                        }
-                        let right = self.render_value(*right_value, at, depth + 1)?;
-                        let boolean = self.boolean_evidence(value, at).has_seed();
-                        let (left, right) = if boolean {
-                            (boolean_spelling(left), boolean_spelling(right))
-                        } else {
-                            (left, right)
-                        };
-                        let left_type = left
-                            .presented
-                            .as_ref()
-                            .map_or_else(|| "unknown".to_owned(), |ty| ty.spell().to_owned());
-                        let right_type = right
-                            .presented
-                            .as_ref()
-                            .map_or_else(|| "unknown".to_owned(), |ty| ty.spell().to_owned());
-                        let expression = Expr::direct(
-                            ExprKind::Binary {
-                                op: bitwise_op(*op),
-                                left: Box::new(left),
-                                right: Box::new(right),
-                            },
-                            bci,
-                        );
-                        if expression.presented.is_none() {
-                            return Err(format!(
-                                "the bitwise operator `{}` at BCI {bci} has operands presented as `{left_type}` and `{right_type}`, which no Java integral or boolean bitwise expression accepts",
-                                bitwise_op(*op).spell()
-                            ).into());
-                        }
-                        Ok(expression)
+                    Operation::Bitwise { op: _ } => {
+                        self.render_bitwise_value(bci, value, at, depth)
                     }
                     Operation::Negate => {
-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
-                            return Err(format!("no names record for the negation at BCI {bci}").into());
-                        };
-                        let operands = stack_operands(instruction);
-                        if operands.len() != 1 {
-                            return Err(format!(
-                                "the negation at BCI {bci} reads {} values, not one",
-                                operands.len()
-                            ).into());
-                        }
-                        let value = self.render_value(operands[0].1, at, depth + 1)?;
-                        let negated = Expr::direct(
-                            ExprKind::Neg {
-                                value: Box::new(value),
-                            },
-                            bci,
-                        );
-                        if negated.presented.is_none() {
-                            return Err(format!(
-                                "the negation at BCI {bci} reads a value whose numeric type this run cannot state"
-                            ).into());
-                        }
-                        Ok(negated)
+                        self.render_negate_value(bci, value, at, depth)
                     }
-                    Operation::PrimitiveConversion { source, target } => {
-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
-                            return Err(format!(
-                                "no names record for the primitive conversion at BCI {bci}"
-                            ).into());
-                        };
-                        let Some((_, operand)) = single_stack_read(instruction) else {
-                            return Err(format!(
-                                "the primitive conversion at BCI {bci} does not read exactly one stack value this run states"
-                            ).into());
-                        };
-                        let value = self.render_value(operand, at, depth + 1)?;
-                        let Some(presented) = value.presented.as_ref() else {
-                            return Err(format!(
-                                "the primitive conversion at BCI {bci} expects `{}`, but its operand has no proved Java primitive type",
-                                source.spell()
-                            ).into());
-                        };
-                        if !primitive_conversion_source_matches(source, presented) {
-                            return Err(format!(
-                                "the primitive conversion at BCI {bci} expects `{}` but its operand is presented as `{}`, which does not meet the opcode's source category",
-                                source.spell(),
-                                presented.spell()
-                            ).into());
-                        }
-                        Ok(Expr::new(
-                            ExprKind::Cast {
-                                ty: target.clone(),
-                                value: Box::new(value),
-                            },
-                            OriginSet::new(Origin::direct(bci)),
-                        ))
+                    Operation::PrimitiveConversion { source: _, target: _ } => {
+                        self.render_primitive_conversion_value(bci, value, at, depth)
                     }
-                    Operation::Invoke(target) => {
-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
-                            return Err(format!("no names record for the call at BCI {bci}").into());
-                        };
-                        // The `toString` a verified concatenation chain ends in *is* the
-                        // concatenation: the expression is written here, where its value is read,
-                        // and every original BCI of the chain stays in the table as an anchor.
-                        if let Some(chain) = self.chains.value_at(bci) {
-                            return self.concat_expr(chain, at, depth);
-                        }
-                        // The call is written where its value is consumed, so its receiver and its
-                        // arguments are evaluated *there* and are checked at `at` — not at the
-                        // call's own BCI, which nothing in the text rewinds to (P3-R8's call half).
-                        self.invoke_expr(bci, instruction, target, at, depth)
+                    Operation::Invoke(_) => {
+                        self.render_invoke_value(bci, value, at, depth)
                     }
-                    Operation::CheckCast { ty } => {
-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
-                            return Err(format!("no names record for the cast at BCI {bci}").into());
-                        };
-                        let Some((_, value)) = single_stack_read(instruction) else {
-                            return Err(format!(
-                                "the cast at BCI {bci} does not read exactly one value this run states"
-                            ).into());
-                        };
-                        if self.bridge_owns(bci) {
-                            // The cast is dropped *and* kept: the value is written where the
-                            // forwarded invocation wrote it, and the cast's own BCI stays in the
-                            // segment table as a derived anchor of the node that presents it. The
-                            // value it drops is read where the cast's own value is used, so it is
-                            // checked at `at`.
-                            let expr = self.render_value(value, at, depth + 1)?;
-                            return Ok(expr.derived_from(bci));
-                        }
-                        // A normal checkcast is a real Java expression. Its pool fact is the target
-                        // type, and its operand is evaluated at the final consumer's position so
-                        // deferred calls, locals and nested checks keep the same single-evaluation
-                        // protocol as every other value expression.
-                        let ty = spell_reference(ty).ok_or_else(|| {
-                            format!(
-                                "the cast at BCI {bci} names `{ty}`, which this layer cannot spell as a Java reference type"
-                            )
-                        })?;
-                        let value = self.render_value(value, at, depth + 1)?;
-                        Ok(Expr::new(
-                            ExprKind::Cast {
-                                ty: Type::Reference(ty),
-                                value: Box::new(value),
-                            },
-                            OriginSet::new(Origin::direct(bci)),
-                        ))
+                    Operation::CheckCast { ty: _ } => {
+                        self.render_checkcast_value(bci, value, at, depth)
                     }
-                    Operation::InstanceOf { ty } => {
-                        let instruction =
-                            self.instructions.get(&bci).copied().ok_or_else(|| {
-                                format!("no names record for the type test at BCI {bci}")
-                            })?;
-                        let (_, operand) = single_stack_read(instruction).ok_or_else(|| {
-                            format!(
-                                "the type test at BCI {bci} does not read exactly one stack value"
-                            )
-                        })?;
-                        let ty = spell_reference(ty).ok_or_else(|| {
-                            format!(
-                                "the type test at BCI {bci} names an invalid Java reference type"
-                            )
-                        })?;
-                        let value = self.render_value(operand, at, depth + 1)?;
-                        let value = if matches!(
-                            value.kind,
-                            ExprKind::Lambda { .. } | ExprKind::MethodReference { .. }
-                        ) {
-                            let target = value.presented.clone().ok_or_else(|| {
-                                format!("the functional operand of the type test at BCI {bci} has no proven factory target")
-                            })?;
-                            Expr::new(
-                                ExprKind::Cast {
-                                    ty: target,
-                                    value: Box::new(value),
-                                },
-                                OriginSet::new(Origin::derived(bci)),
-                            )
-                        } else {
-                            value
-                        };
-                        let value = match value.presented.as_ref() {
-                            None if matches!(value.kind, ExprKind::Null) => value,
-                            Some(Type::Reference(name)) if name == "java.lang.Object" => value,
-                            Some(Type::Reference(_)) => Expr::new(
-                                ExprKind::Cast {
-                                    ty: Type::Reference("java.lang.Object".to_string()),
-                                    value: Box::new(value),
-                                },
-                                OriginSet::new(Origin::derived(bci)),
-                            ),
-                            _ => {
-                                return Err(format!(
-                                    "the type test at BCI {bci} has no proven reference operand"
-                                ).into());
-                            }
-                        };
-                        Ok(Expr::direct(
-                            ExprKind::InstanceOf {
-                                value: Box::new(value),
-                                ty,
-                            },
-                            bci,
-                        ))
+                    Operation::InstanceOf { ty: _ } => {
+                        self.render_instance_of_value(bci, value, at, depth)
                     }
                     // A dynamic call site is a *value* whose shape this layer decides from the
                     // class's own bootstrap table: a verified `LambdaMetafactory` site becomes a
@@ -30097,68 +31145,7 @@ impl Builder<'_> {
                     // whose receiver is the owner type itself. The member's owner and name are the
                     // instruction's own pool facts; nothing is spelled from a guess (P3 2.3).
                     Operation::Field { .. } => {
-                        let fields = self.fields;
-                        let Some((evidence, shape)) = fields.claim(bci) else {
-                            return Err(format!(
-                                "the value at BCI {at} comes from the field access at BCI {bci}, which this run did not prove names the member its receiver's type declares"
-                            ).into());
-                        };
-                        let receiver = match shape.receiver {
-                            // The receiver the read dereferences is evaluated where the read's own
-                            // value is used: a chain of reads is one expression, and its inner
-                            // reads answer to the position its value is consumed at (P3-R8).
-                            Some(value) => self.render_value(value, at, depth + 1)?,
-                            None => {
-                                // A static read's receiver is the owner type itself, and the owner
-                                // is the pool's own name: one this layer cannot spell as a Java type
-                                // has no expression to be, and is refused where it would be written.
-                                let owner = spell_reference(&evidence.owner).ok_or_else(|| {
-                                    format!(
-                                        "the field read at BCI {bci} names the owner `{}`, which this layer cannot spell as a Java type",
-                                        evidence.owner
-                                    )
-                                })?;
-                                Expr::direct(ExprKind::Path(owner), bci)
-                            }
-                        };
-                        if let Some(capture) = self
-                            .captured_outer_reads
-                            .iter()
-                            .find(|read| read.read_bci == bci)
-                        {
-                            // The family certificate named a read through the child's own entry
-                            // receiver. Keep the load and read origins in this child method, while
-                            // the constructor's distinct method origin stays in the handoff fact.
-                            if !shape.receiver.is_some_and(|value| self.receiver_is_entry_this(value))
-                                || !matches!(&receiver.kind, ExprKind::Local(name) if name == "this")
-                            {
-                                return Err(format!(
-                                    "the captured-outer field read at BCI {bci} is not through this child's entry receiver"
-                                ).into());
-                            }
-                            return Ok(Expr::new(
-                                ExprKind::QualifiedThis {
-                                    qualifier: capture.outer_source_name.clone(),
-                                },
-                                OriginSet::new(Origin::direct(bci))
-                                    .plus_derived(Origin::derived(receiver.origin.primary().bci())),
-                            )
-                            .presenting(Type::Reference(capture.outer_source_name.clone())));
-                        }
-                        let field = Expr::new(
-                            ExprKind::Field {
-                                receiver: Box::new(receiver),
-                                name: evidence.name.clone(),
-                            },
-                            OriginSet::new(Origin::direct(bci)),
-                        );
-                        // The read presents the type the field's own descriptor states: `field@1`
-                        // claimed this member by its pool entry, and the descriptor of that entry is
-                        // the fact that says what the read's value is.
-                        Ok(match descriptor_type(&evidence.descriptor) {
-                            Some(ty) => field.presenting(ty),
-                            None => field,
-                        })
+                        self.render_field_read_value(bci, value, at, depth)
                     }
                     // One element of an array (P3 2b): the array and the index are the two values
                     // the read indexes with, and the read's value is used at `at` — so both are
@@ -30166,82 +31153,12 @@ impl Builder<'_> {
                     // **is** comes from the array's own type where the frames state one, and from
                     // the opcode where they do not ([`array_element`]).
                     Operation::ArrayLoad | Operation::ArrayElementLoad { .. } => {
-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
-                            return Err(format!("no names record for the array read at BCI {bci}").into());
-                        };
-                        let operands = stack_operands(instruction);
-                        if operands.len() != 2 {
-                            return Err(format!(
-                                "the array read at BCI {bci} reads {} value(s), not an array and an index",
-                                operands.len()
-                            ).into());
-                        }
-                        // The dispatch table of an enum `switch` is this very read, claimed by the
-                        // rule that proved which table and which index it indexes (P3 2.3): its text
-                        // is the table indexed by the call the switch read its case index out of,
-                        // and both original BCIs stay as derived anchors of the node.
-                        let enums = self.enums;
-                        if let Some((table, index)) = enums.claim(bci) {
-                            let array = self.render_value(operands[0].1, at, depth + 1)?;
-                            let selector = self.render_value(operands[1].1, at, depth + 1)?;
-                            let origin = OriginSet::new(Origin::direct(bci))
-                                .plus_derived(Origin::derived(table.bci))
-                                .plus_derived(Origin::derived(index.bci));
-                            return Ok(Expr::new(
-                                ExprKind::Index {
-                                    array: Box::new(array),
-                                    index: Box::new(selector),
-                                },
-                                origin,
-                            )
-                            // The table the rule claimed is an `int[]` indexed by an `int`: the
-                            // read's value is the `int` the switch's selector is.
-                            .presenting(Type::Int));
-                        }
-                        let stated = stated_element(operation);
-                        let element = array_element(
-                            self.ssa,
-                            self.operations,
-                            operands[0].1,
-                            stated.as_ref(),
-                        );
-                        let array = self.render_value(operands[0].1, at, depth + 1)?;
-                        let index = self.render_value(operands[1].1, at, depth + 1)?;
-                        let read = Expr::new(
-                            ExprKind::Index {
-                                array: Box::new(array),
-                                index: Box::new(index),
-                            },
-                            OriginSet::new(Origin::direct(bci)),
-                        );
-                        // The element type, where the array's own type or the opcode states one: it
-                        // is what the consuming position converts against, and stating none is the
-                        // honest answer for a read of an array whose type this run cannot name.
-                        Ok(match element {
-                            Some(ty) => read.presenting(ty),
-                            None => read,
-                        })
+                        self.render_array_load_value(bci, value, at, depth)
                     }
                     // `array.length` (P3 2b): the length of the one array the instruction reads. Its
                     // own shape states the type — a length is an `int` whatever the element is.
                     Operation::ArrayLength => {
-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
-                            return Err(format!(
-                                "no names record for the length read at BCI {bci}"
-                            ).into());
-                        };
-                        let Some((_, array)) = single_stack_read(instruction) else {
-                            return Err(format!(
-                                "the length read at BCI {bci} does not read exactly one array"
-                            ).into());
-                        };
-                        let array = self.render_value(array, at, depth + 1)?;
-                        Ok(Expr::new(
-                            ExprKind::ArrayLength {
-                                array: Box::new(array),
-                            },
-                            OriginSet::new(Origin::direct(bci)),
-                        ))
+                        self.render_array_length_value(bci, value, at, depth)
                     }
                     // `new T[n]`, and the multi-dimensional `new T[n][m]` (P3 2b): one length per
                     // dimension the instruction allocates, in the order it reads them off the
@@ -30249,115 +31166,11 @@ impl Builder<'_> {
                     // the lengths are evaluated where the creation's value is consumed — the
                     // instruction runs where its text lands.
                     Operation::NewArray {
-                        element,
-                        dimensions,
-                        total_dimensions,
+                        element: _,
+                        dimensions: _,
+                        total_dimensions: _,
                     } => {
-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
-                            return Err(format!(
-                                "no names record for the array creation at BCI {bci}"
-                            ).into());
-                        };
-                        let operands = stack_operands(instruction);
-                        if operands.len() != usize::from(*dimensions) {
-                            return Err(format!(
-                                "the array creation at BCI {bci} allocates {} dimension(s) and its record states {} length(s)",
-                                *dimensions,
-                                operands.len()
-                            ).into());
-                        }
-                        let mut lengths = Vec::with_capacity(operands.len());
-                        let mut initializers = None;
-                        let mut origin = OriginSet::new(Origin::direct(bci));
-                        if let Some(initializer) =
-                            self.array_initializers.at_allocation(bci).cloned()
-                        {
-                            let component = if *total_dimensions == 1 {
-                                element.clone()
-                            } else {
-                                Type::Reference(format!(
-                                    "{}{}", element.spell(),
-                                    "[]".repeat(usize::from(*total_dimensions) - 1)
-                                ))
-                            };
-                            let mut rendered = Vec::with_capacity(initializer.elements.len());
-                            for (element_index, (value, store_bci)) in
-                                initializer.elements.into_iter().enumerate()
-                            {
-                                if let Some(expected_head) = initializer
-                                    .element_sites
-                                    .get(element_index)
-                                    .copied()
-                                    .flatten()
-                                {
-                                    let Some(site) = self.sites.site_at_head(expected_head) else {
-                                        return Err(format!(
-                                            "the array element at BCI {store_bci} has no committed construction site at BCI {expected_head}"
-                                        )
-                                        .into());
-                                    };
-                                    if site.finished_value != Some(value) {
-                                        return Err(format!(
-                                            "the construction site at BCI {expected_head} does not own the exact value stored at BCI {store_bci}"
-                                        )
-                                        .into());
-                                    }
-                                }
-                                let element_value = if let Some(postfix) =
-                                    initializer.local_postfix.get(&store_bci)
-                                {
-                                    let (variable, name) = self
-                                        .write_target(postfix.slot, postfix.update, "postfix increment")
-                                        .map_err(ValueRenderFailure::from)?;
-                                    if self.reuse.variable_at(postfix.slot, postfix.load) != Some(variable)
-                                        || self.decided_type(variable) != Some(Type::Int)
-                                        || !self.slot_name_denotes_the_same_value(
-                                            postfix.slot, postfix.old_local, postfix.load,
-                                        )
-                                    {
-                                        return Err(format!(
-                                            "the local postfix element at BCI {} has no single declared int local name for its old and updated values",
-                                            postfix.update,
-                                        ).into());
-                                    }
-                                    Expr::direct(
-                                        ExprKind::PostfixUpdate {
-                                            target: Box::new(self.local(variable, &name, postfix.load)),
-                                            direction: PostfixDirection::Increment,
-                                        },
-                                        postfix.update,
-                                    )
-                                } else {
-                                    self.render_value(value, at, depth + 1)?
-                                };
-                                rendered.push(self.array_initializer_element(
-                                    value,
-                                    element_value,
-                                    &component,
-                                    at,
-                                    store_bci,
-                                )?);
-                            }
-                            for source in initializer.owned {
-                                if source != bci {
-                                    origin = origin.plus_derived(Origin::derived(source));
-                                }
-                            }
-                            initializers = Some(rendered);
-                        } else {
-                            for (_, length) in operands {
-                                lengths.push(self.render_value(length, at, depth + 1)?);
-                            }
-                        }
-                        Ok(Expr::new(
-                            ExprKind::NewArray {
-                                element: element.clone(),
-                                lengths,
-                                initializers,
-                                total_dimensions: *total_dimensions,
-                            },
-                            origin,
-                        ))
+                        self.render_new_array_value(bci, value, at, depth)
                     }
                     // A `dup_x1` this plan proved is a copy whose text is the receiver expression
                     // its consumers are written with (`recover-chained-field-assignment`), exactly
@@ -30373,6 +31186,930 @@ impl Builder<'_> {
             Definition::Caught { bci, .. } => Err(format!(
                 "the value at BCI {at} is the exception reference of the throw site at BCI {bci}"
             ).into()),
+        }
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own. The renderer recurses
+    /// through these arms ([`Self::render_value`], [`Self::render_value_definition`]), so each arm
+    /// carries its own stack slot: an arm that stays inline would hold **every** arm's locals in
+    /// the recursion's shared frame at once, and the deepest bodies this layer renders sit at the
+    /// recursion bound. The arm re-reads its own operation rather than receiving it, so no borrow
+    /// of the decode table crosses the recursive calls; the re-read observes the same immutable
+    /// entry the dispatch already matched. `#[inline(never)]` holds the boundary the frame needs.
+    #[inline(never)]
+    fn render_shift_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = (value, depth);
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Operation::Shift { op } = operation else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let op = *op;
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!("no names record for the shift at BCI {bci}").into());
+        };
+        let operands = stack_operands(instruction);
+        let [(_, left_value), (_, right_value)] = operands.as_slice() else {
+            return Err(format!(
+                "the shift at BCI {bci} reads {} values, not two",
+                operands.len()
+            ).into());
+        };
+        let left = self.render_value(*left_value, at, depth + 1)?;
+        let right = self.render_value(*right_value, at, depth + 1)?;
+        let expected = match instruction.opcode() {
+            0x78 | 0x7a | 0x7c => Type::Int,
+            0x79 | 0x7b | 0x7d => Type::Long,
+            opcode => {
+                return Err(format!(
+                    "the shift at BCI {bci} has unexpected opcode {opcode:#04x}"
+                ).into());
+            }
+        };
+        let expression = Expr::direct(
+            ExprKind::Binary {
+                op: shift_op(op),
+                left: Box::new(left),
+                right: Box::new(right),
+            },
+            bci,
+        );
+        if expression.presented.as_ref() != Some(&expected) {
+            return Err(format!(
+                "the shift `{}` at BCI {bci} has operands that cannot present the opcode's {} result in Java",
+                shift_op(op).spell(),
+                expected.spell()
+            ).into());
+        }
+        Ok(expression)
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_load_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = (value, depth);
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Operation::Load { slot } = operation else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let slot = *slot;
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!("no names record for the load at BCI {bci}").into());
+        };
+        let Some(read) = local_read(instruction, slot) else {
+            return Err(format!(
+                "the value at BCI {at} comes from the load at BCI {bci}, whose read of local {slot} this run does not state"
+            ).into());
+        };
+        if !self.slot_name_denotes_the_same_value(slot, read, at) {
+            return Err(format!(
+                "the value at BCI {at} is the value local {slot} held at BCI {bci}, and the slot does not hold it at BCI {at}: the slot's name would read the value the body wrote in between"
+            ).into());
+        }
+        // The load is a read of the slot, so the variable it names is the one whose
+        // record covers the load's own BCI (P3 3.4).
+        match self.reuse.variable_at(slot, bci) {
+            Some(variable) => match self.names.text(variable) {
+                Some(name) => {
+                    let local = self.local(variable, name, bci);
+                    // A read of a named clause's own binding presents the row type
+                    // the header spells, not the slot's decision: where the
+                    // parameter reuses an earlier store's slot, the decision states
+                    // that store's type and the header's declaration contradicts it.
+                    match self.caught_clause_parameter_type(slot, read) {
+                        Some(ty) => Ok(local.presenting(ty)),
+                        None => Ok(local),
+                    }
+                }
+                None => Err(format!("local {slot} has no name to write").into()),
+            },
+            None => Err(format!(
+                "the load at BCI {bci} reads local {slot}, and the two variables the debug table states over that slot do not place this read in either"
+            ).into()),
+        }
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_negate_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = (value, depth);
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!("no names record for the negation at BCI {bci}").into());
+        };
+        let operands = stack_operands(instruction);
+        if operands.len() != 1 {
+            return Err(format!(
+                "the negation at BCI {bci} reads {} values, not one",
+                operands.len()
+            ).into());
+        }
+        let value = self.render_value(operands[0].1, at, depth + 1)?;
+        let negated = Expr::direct(
+            ExprKind::Neg {
+                value: Box::new(value),
+            },
+            bci,
+        );
+        if negated.presented.is_none() {
+            return Err(format!(
+                "the negation at BCI {bci} reads a value whose numeric type this run cannot state"
+            ).into());
+        }
+        Ok(negated)
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_bitwise_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Operation::Bitwise { op } = operation else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let op = *op;
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!(
+                "no names record for the bitwise instruction at BCI {bci}"
+            ).into());
+        };
+        let operands = stack_operands(instruction);
+        let [(_, left_value), (_, right_value)] = operands.as_slice() else {
+            return Err(format!(
+                "the bitwise operator at BCI {bci} reads {} values, not two",
+                operands.len()
+            ).into());
+        };
+        let boolean_xor_literal = if op == BitwiseOp::Xor
+            && instruction.opcode() == 0x82
+            && instruction.reads().len() == 2
+            && instruction.writes().len() == 1
+            && matches!(
+                self.ssa.value(value).def(),
+                Definition::Instruction { bci: definition, .. }
+                    if *definition == bci
+            )
+            && instruction.writes()[0].1 == value
+        {
+            let right_literal = match self.ssa.value(*right_value).def() {
+                Definition::Instruction {
+                    bci: literal_bci, ..
+                } if matches!(
+                    self.operations.get(*literal_bci),
+                    Some(Operation::Push(ConstantValue::Int(0 | 1)))
+                ) && self.ssa.value(*right_value).uses().len() == 1
+                    && self.ssa.value(*right_value).uses()[0].bci() == Some(bci) =>
+                {
+                    match self.operations.get(*literal_bci) {
+                        Some(Operation::Push(ConstantValue::Int(value))) => {
+                            Some((*value == 1, *literal_bci))
+                        }
+                        _ => None,
+                    }
+                }
+                _ => None,
+            };
+            right_literal.filter(|_| {
+                self.boolean_evidence(*left_value, at).has_seed()
+            })
+        } else {
+            None
+        };
+        let mut left = self.render_value(*left_value, at, depth + 1)?;
+        if let Some((negate, literal_bci)) = boolean_xor_literal
+            && left.presented == Some(Type::Boolean)
+        {
+            if negate {
+                let origin = OriginSet::new(Origin::direct(bci))
+                    .plus_derived(Origin::derived(literal_bci));
+                return Ok(Expr::new(
+                    ExprKind::Not {
+                        value: Box::new(left),
+                    },
+                    origin,
+                ));
+            }
+            left.origin = left
+                .origin
+                .clone()
+                .plus_derived(Origin::derived(bci))
+                .plus_derived(Origin::derived(literal_bci));
+            return Ok(left);
+        }
+        let right = self.render_value(*right_value, at, depth + 1)?;
+        let boolean = self.boolean_evidence(value, at).has_seed();
+        let (left, right) = if boolean {
+            (boolean_spelling(left), boolean_spelling(right))
+        } else {
+            (left, right)
+        };
+        let left_type = left
+            .presented
+            .as_ref()
+            .map_or_else(|| "unknown".to_owned(), |ty| ty.spell().to_owned());
+        let right_type = right
+            .presented
+            .as_ref()
+            .map_or_else(|| "unknown".to_owned(), |ty| ty.spell().to_owned());
+        let expression = Expr::direct(
+            ExprKind::Binary {
+                op: bitwise_op(op),
+                left: Box::new(left),
+                right: Box::new(right),
+            },
+            bci,
+        );
+        if expression.presented.is_none() {
+            return Err(format!(
+                "the bitwise operator `{}` at BCI {bci} has operands presented as `{left_type}` and `{right_type}`, which no Java integral or boolean bitwise expression accepts",
+                bitwise_op(op).spell()
+            ).into());
+        }
+        Ok(expression)
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_primitive_conversion_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = value;
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Operation::PrimitiveConversion { source, target } = operation else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let source = source.clone();
+        let target = target.clone();
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!(
+                "no names record for the primitive conversion at BCI {bci}"
+            ).into());
+        };
+        let Some((_, operand)) = single_stack_read(instruction) else {
+            return Err(format!(
+                "the primitive conversion at BCI {bci} does not read exactly one stack value this run states"
+            ).into());
+        };
+        let value = self.render_value(operand, at, depth + 1)?;
+        let Some(presented) = value.presented.as_ref() else {
+            return Err(format!(
+                "the primitive conversion at BCI {bci} expects `{}`, but its operand has no proved Java primitive type",
+                source.spell()
+            ).into());
+        };
+        if !primitive_conversion_source_matches(&source, presented) {
+            return Err(format!(
+                "the primitive conversion at BCI {bci} expects `{}` but its operand is presented as `{}`, which does not meet the opcode's source category",
+                source.spell(),
+                presented.spell()
+            ).into());
+        }
+        Ok(Expr::new(
+            ExprKind::Cast {
+                ty: target,
+                value: Box::new(value),
+                source_type_name: None,
+            },
+            OriginSet::new(Origin::direct(bci)),
+        ))
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_invoke_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = value;
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Operation::Invoke(target) = operation else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!("no names record for the call at BCI {bci}").into());
+        };
+        // The `toString` a verified concatenation chain ends in *is* the
+        // concatenation: the expression is written here, where its value is read,
+        // and every original BCI of the chain stays in the table as an anchor.
+        if let Some(chain) = self.chains.value_at(bci) {
+            return self.concat_expr(chain, at, depth);
+        }
+        // The call is written where its value is consumed, so its receiver and its
+        // arguments are evaluated *there* and are checked at `at` — not at the
+        // call's own BCI, which nothing in the text rewinds to (P3-R8's call half).
+        self.invoke_expr(bci, instruction, target, at, depth)
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_checkcast_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = value;
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Operation::CheckCast { ty } = operation else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!("no names record for the cast at BCI {bci}").into());
+        };
+        let Some((_, operand)) = single_stack_read(instruction) else {
+            return Err(format!(
+                "the cast at BCI {bci} does not read exactly one value this run states"
+            ).into());
+        };
+        if self.bridge_owns(bci) {
+            // The cast is dropped *and* kept: the value is written where the
+            // forwarded invocation wrote it, and the cast's own BCI stays in the
+            // segment table as a derived anchor of the node that presents it. The
+            // value it drops is read where the cast's own value is used, so it is
+            // checked at `at`.
+            let expr = self.render_value(operand, at, depth + 1)?;
+            return Ok(expr.derived_from(bci));
+        }
+        // A normal checkcast is a real Java expression. Its pool fact is the target
+        // type, and its operand is evaluated at the final consumer's position so
+        // deferred calls, locals and nested checks keep the same single-evaluation
+        // protocol as every other value expression.
+        let ty = spell_class_operand(ty).ok_or_else(|| {
+            format!(
+                "the cast at BCI {bci} names {ty:?}, which this layer cannot spell as a Java reference type"
+            )
+        })?;
+        let value = self.render_value(operand, at, depth + 1)?;
+        let target = Type::Reference(ty);
+        let value = reference_check_operand(
+            value,
+            Some(&target),
+            bci,
+            self.profile.java_release(),
+            self.reference_relations,
+            self.budget,
+        )?;
+        Ok(Expr::new(
+            ExprKind::Cast {
+                ty: target,
+                value: Box::new(value),
+                source_type_name: None,
+            },
+            OriginSet::new(Origin::direct(bci)),
+        ))
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_instance_of_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = value;
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Operation::InstanceOf { ty } = operation else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let instruction = self.instructions.get(&bci).copied().ok_or_else(|| {
+            format!("no names record for the type test at BCI {bci}")
+        })?;
+        let (_, operand) = single_stack_read(instruction).ok_or_else(|| {
+            format!(
+                "the type test at BCI {bci} does not read exactly one stack value"
+            )
+        })?;
+        let ty = spell_class_operand(ty).ok_or_else(|| {
+            format!(
+                "the type test at BCI {bci} names an invalid Java reference type"
+            )
+        })?;
+        let value = self.render_value(operand, at, depth + 1)?;
+        let value = reference_check_operand(
+            value,
+            None,
+            bci,
+            self.profile.java_release(),
+            self.reference_relations,
+            self.budget,
+        )?;
+        Ok(Expr::direct(
+            ExprKind::InstanceOf {
+                value: Box::new(value),
+                ty,
+            },
+            bci,
+        ))
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_field_read_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = value;
+        let fields = self.fields;
+        let Some((evidence, shape)) = fields.claim(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from the field access at BCI {bci}, which this run did not prove names the member its receiver's type declares"
+            ).into());
+        };
+        let mut receiver = match shape.receiver {
+            // The receiver the read dereferences is evaluated where the read's own
+            // value is used: a chain of reads is one expression, and its inner
+            // reads answer to the position its value is consumed at (P3-R8).
+            Some(value) => self.render_value(value, at, depth + 1)?,
+            None => {
+                // A static read's receiver is the owner type itself, and the owner
+                // is the pool's own name: one this layer cannot spell as a Java type
+                // has no expression to be, and is refused where it would be written.
+                let owner = evidence.spelled_owner().ok_or_else(|| {
+                    format!(
+                        "the field read at BCI {bci} names the owner `{}`, which this layer cannot spell as a Java type",
+                        crate::facts::display_jvm_bytes(&evidence.owner)
+                    )
+                })?;
+                Expr::direct(ExprKind::Path(owner), bci)
+            }
+        };
+        if let Some(capture) = self
+            .captured_outer_reads
+            .iter()
+            .find(|read| read.read_bci == bci)
+        {
+            // The family certificate named a read through the child's own entry
+            // receiver. Keep the load and read origins in this child method, while
+            // the constructor's distinct method origin stays in the handoff fact.
+            if !shape.receiver.is_some_and(|value| self.receiver_is_entry_this(value))
+                || !matches!(&receiver.kind, ExprKind::Local(name) if name == "this")
+            {
+                return Err(format!(
+                    "the captured-outer field read at BCI {bci} is not through this child's entry receiver"
+                ).into());
+            }
+            return Ok(Expr::new(
+                ExprKind::QualifiedThis {
+                    qualifier: capture.outer_source_name.clone(),
+                },
+                OriginSet::new(Origin::direct(bci))
+                    .plus_derived(Origin::derived(receiver.origin.primary().bci())),
+            )
+            .presenting(Type::Reference(capture.outer_source_name.clone())));
+        }
+        let source_receiver_typed = receiver.declared_type.is_some();
+        if shape.owner_cast {
+            let owner = self.field_owner_type(bci, evidence)?;
+            receiver = cast_argument(receiver, &owner, bci);
+        }
+        let mut declared_type = None;
+        if let Some(types) = self.declared_types
+            && let Some(member @ crate::report::DeclaredGenericMemberTypes::Field { application, ty, access_flags, .. }) = self.declared_member_at(bci)? {
+                let instance = shape.receiver.is_some() && source_receiver_typed;
+                let static_field = *access_flags & ACC_STATIC != 0;
+                let mut typed = false;
+                for node in std::iter::once(application).chain(std::iter::once(ty)).chain(receiver.declared_type.as_ref()) {
+                    typed |= crate::generic_types::has_source_arguments(types, *node, self.budget)
+                        .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?;
+                }
+                if typed && (instance || static_field) {
+                    if let Some(value) = shape.receiver {
+                        receiver = self.declared_field_receiver(receiver, value, member, bci)?;
+                    } else {
+                        let owner = crate::generic_types::spell_declared_type(types, *application, self.budget)
+                            .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+                            .ok_or_else(|| format!("the generic static field at BCI {bci} has no bound declaring type spelling"))?;
+                        receiver = Expr::direct(ExprKind::Path(owner), bci);
+                    }
+                    declared_type = Some(*ty);
+                }
+            }
+        let field = Expr::new(
+            ExprKind::Field {
+                receiver: Box::new(receiver),
+                name: evidence.spelled_name(),
+            },
+            OriginSet::new(Origin::direct(bci)),
+        );
+        // The read presents the type the field's own descriptor states: `field@1`
+        // claimed this member by its pool entry, and the descriptor of that entry is
+        // the fact that says what the read's value is.
+        if let (Some(types), Some(node)) = (self.declared_types, declared_type) {
+            let ty = crate::generic_types::erased_type(types, node, self.budget)
+                .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+                .ok_or_else(|| format!("the generic field read at BCI {bci} has no faithful erasure"))?;
+            return Ok(field.presenting(ty).declaring(node));
+        }
+        Ok(match descriptor_type_bytes(&evidence.descriptor.0) {
+            Some(ty) => field.presenting(ty),
+            None => field,
+        })
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_array_load_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = value;
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        if !matches!(operation, Operation::ArrayLoad | Operation::ArrayElementLoad { .. }) {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        }
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!("no names record for the array read at BCI {bci}").into());
+        };
+        let operands = stack_operands(instruction);
+        if operands.len() != 2 {
+            return Err(format!(
+                "the array read at BCI {bci} reads {} value(s), not an array and an index",
+                operands.len()
+            ).into());
+        }
+        // The dispatch table of an enum `switch` is this very read, claimed by the
+        // rule that proved which table and which index it indexes (P3 2.3): its text
+        // is the table indexed by the call the switch read its case index out of,
+        // and both original BCIs stay as derived anchors of the node.
+        let enums = self.enums;
+        if let Some((table, index)) = enums.claim(bci) {
+            let array = self.render_value(operands[0].1, at, depth + 1)?;
+            let selector = self.render_value(operands[1].1, at, depth + 1)?;
+            let origin = OriginSet::new(Origin::direct(bci))
+                .plus_derived(Origin::derived(table.bci))
+                .plus_derived(Origin::derived(index.bci));
+            return Ok(Expr::new(
+                ExprKind::Index {
+                    array: Box::new(array),
+                    index: Box::new(selector),
+                },
+                origin,
+            )
+            // The table the rule claimed is an `int[]` indexed by an `int`: the
+            // read's value is the `int` the switch's selector is.
+            .presenting(Type::Int));
+        }
+        let stated = stated_element(operation);
+        let element = array_element(
+            self.ssa,
+            self.operations,
+            operands[0].1,
+            stated.as_ref(),
+        );
+        let array = self.render_value(operands[0].1, at, depth + 1)?;
+        let element = match array.presented.as_ref() {
+            Some(ty) => Some(ty.array_component().ok_or_else(|| {
+                format!("the array read at BCI {bci} presents non-array type `{}`", ty.spell())
+            })?),
+            None => element,
+        };
+        let index = self.render_value(operands[1].1, at, depth + 1)?;
+        let declared = self.declared_types.and_then(|types| array.declared_type.and_then(|node| {
+            match types.types.get(node) {
+                Some(crate::report::DeclaredGenericType::Array(component)) => Some(*component),
+                _ => None,
+            }
+        }));
+        let read = Expr::new(
+            ExprKind::Index {
+                array: Box::new(array),
+                index: Box::new(index),
+            },
+            OriginSet::new(Origin::direct(bci)),
+        );
+        // The element type, where the array's own type or the opcode states one: it
+        // is what the consuming position converts against, and stating none is the
+        // honest answer for a read of an array whose type this run cannot name.
+        let read = match element {
+            Some(ty) => read.presenting(ty),
+            None => read,
+        };
+        Ok(match declared { Some(node) => read.declaring(node), None => read })
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_array_length_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = value;
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!(
+                "no names record for the length read at BCI {bci}"
+            ).into());
+        };
+        let Some((_, array)) = single_stack_read(instruction) else {
+            return Err(format!(
+                "the length read at BCI {bci} does not read exactly one array"
+            ).into());
+        };
+        let array = self.render_value(array, at, depth + 1)?;
+        Ok(Expr::new(
+            ExprKind::ArrayLength {
+                array: Box::new(array),
+            },
+            OriginSet::new(Origin::direct(bci)),
+        ))
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_new_array_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = value;
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Operation::NewArray {
+            element,
+            dimensions,
+            total_dimensions,
+        } = operation else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let element = element.clone();
+        let dimensions = *dimensions;
+        let total_dimensions = *total_dimensions;
+        let Some(instruction) = self.instructions.get(&bci).copied() else {
+            return Err(format!(
+                "no names record for the array creation at BCI {bci}"
+            ).into());
+        };
+        let operands = stack_operands(instruction);
+        if operands.len() != usize::from(dimensions) {
+            return Err(format!(
+                "the array creation at BCI {bci} allocates {} dimension(s) and its record states {} length(s)",
+                dimensions,
+                operands.len()
+            ).into());
+        }
+        let mut lengths = Vec::with_capacity(operands.len());
+        let mut initializers = None;
+        let mut origin = OriginSet::new(Origin::direct(bci));
+        if let Some(initializer) =
+            self.array_initializers.at_allocation(bci).cloned()
+        {
+            let component = if total_dimensions == 1 {
+                element.clone()
+            } else {
+                Type::Reference(format!(
+                    "{}{}", element.spell(),
+                    "[]".repeat(usize::from(total_dimensions) - 1)
+                ))
+            };
+            let mut rendered = Vec::with_capacity(initializer.elements.len());
+            for (element_index, (value, store_bci)) in
+                initializer.elements.into_iter().enumerate()
+            {
+                if let Some(expected_head) = initializer
+                    .element_sites
+                    .get(element_index)
+                    .copied()
+                    .flatten()
+                {
+                    let Some(site) = self.sites.site_at_head(expected_head) else {
+                        return Err(format!(
+                            "the array element at BCI {store_bci} has no committed construction site at BCI {expected_head}"
+                        )
+                        .into());
+                    };
+                    if site.finished_value != Some(value) {
+                        return Err(format!(
+                            "the construction site at BCI {expected_head} does not own the exact value stored at BCI {store_bci}"
+                        )
+                        .into());
+                    }
+                }
+                let element_value = if let Some(postfix) =
+                    initializer.local_postfix.get(&store_bci)
+                {
+                    let (variable, name) = self
+                        .write_target(postfix.slot, postfix.update, "postfix increment")
+                        .map_err(ValueRenderFailure::from)?;
+                    if self.reuse.variable_at(postfix.slot, postfix.load) != Some(variable)
+                        || self.decided_type(variable) != Some(Type::Int)
+                        || !self.slot_name_denotes_the_same_value(
+                            postfix.slot, postfix.old_local, postfix.load,
+                        )
+                    {
+                        return Err(format!(
+                            "the local postfix element at BCI {} has no single declared int local name for its old and updated values",
+                            postfix.update,
+                        ).into());
+                    }
+                    Expr::direct(
+                        ExprKind::PostfixUpdate {
+                            target: Box::new(self.local(variable, &name, postfix.load)),
+                            direction: PostfixDirection::Increment,
+                        },
+                        postfix.update,
+                    )
+                } else {
+                    self.render_value(value, at, depth + 1)?
+                };
+                rendered.push(self.array_initializer_element(
+                    value,
+                    element_value,
+                    &component,
+                    at,
+                    store_bci,
+                )?);
+            }
+            for source in initializer.owned {
+                if source != bci {
+                    origin = origin.plus_derived(Origin::derived(source));
+                }
+            }
+            initializers = Some(rendered);
+        } else {
+            for (_, length) in operands {
+                lengths.push(self.render_value(length, at, depth + 1)?);
+            }
+        }
+        Ok(Expr::new(
+            ExprKind::NewArray {
+                element,
+                lengths,
+                initializers,
+                total_dimensions,
+            },
+            origin,
+        ))
+    }
+
+    /// One `render_value_definition` operation arm, in a frame of its own (see
+    /// [`Self::render_shift_value`]).
+    #[inline(never)]
+    fn render_push_constant_value(
+        &mut self,
+        bci: u32,
+        value: ValueId,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let _ = (value, depth);
+        let Some(operation) = self.operations.get(bci) else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let Operation::Push(constant) = operation else {
+            return Err(format!(
+                "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
+            ).into());
+        };
+        let origin = match constant {
+            ConstantValue::Class { ty, pool_index } => {
+                if class_literal_path_is_shadowed(ty, self.declaring_class) {
+                    return Err(format!(
+                        "the Class constant at BCI {bci} names `{ty}`, whose Java type path is shadowed by this class's own type name"
+                    ).into());
+                }
+                OriginSet::new(Origin::direct(bci).with_cp(*pool_index))
+            }
+            _ => OriginSet::new(Origin::direct(bci)),
+        };
+        // A floating constant's own bits decide what it is presented as: a finite
+        // value is its exact literal leaf, the three admitted special values are
+        // the proved constant divisions of those leaves, and any other NaN pattern
+        // names no expression this run may publish — the refusal is the value's
+        // own answer, stated at the constant's BCI so the consumer quoting it
+        // cannot be mistaken for a recovery.
+        match match constant {
+            ConstantValue::Float(bits) => Some((
+                ConstantValue::float_presentation(*bits),
+                SpecialValueWidth::Float,
+            )),
+            ConstantValue::Double(bits) => Some((
+                ConstantValue::double_presentation(*bits),
+                SpecialValueWidth::Double,
+            )),
+            _ => None,
+        } {
+            None => Ok(Expr::new(literal(constant), origin)),
+            Some((SpecialValuePresentation::Finite, _)) => {
+                Ok(Expr::new(literal(constant), origin))
+            }
+            Some((presentation @ (SpecialValuePresentation::PositiveInfinity
+            | SpecialValuePresentation::NegativeInfinity
+            | SpecialValuePresentation::CanonicalNan), width)) => {
+                Ok(special_value(bci, presentation, width))
+            }
+            Some((SpecialValuePresentation::UnpresentableNan, _)) => {
+                Err(format!(
+                    "the floating constant at BCI {bci} has a NaN sign, payload or signaling pattern this run cannot present exactly, and no constant expression of this layer normalizes it"
+                )
+                .into())
+            }
         }
     }
 
@@ -30415,7 +32152,12 @@ impl Builder<'_> {
             for (_, value) in &operands[1..] {
                 arguments.push(self.render_value(*value, at, depth + 1)?);
             }
-            let arguments = self.arguments(&proof.target_descriptor, arguments, bci)?;
+            let arguments = self.arguments(&proof.target_descriptor.0, arguments, bci)?;
+            let name = crate::names::source_method_name(&proof.target_name).ok_or_else(|| {
+                ValueRenderFailure::from(format!(
+                    "the proved outer-super target at BCI {bci} has no Java method spelling"
+                ))
+            })?;
             let receiver = Expr::new(
                 ExprKind::Super {
                     qualifier: Some(proof.outer_source_name.clone()),
@@ -30428,15 +32170,24 @@ impl Builder<'_> {
             let call = Expr::new(
                 ExprKind::Call {
                     receiver: Some(Box::new(receiver)),
-                    name: proof.target_name.clone(),
+                    name,
                     args: arguments,
                 },
                 origin,
             );
-            return Ok(match return_type(&proof.target_descriptor) {
+            return Ok(match return_type_bytes(&proof.target_descriptor.0) {
                 Some(ty) => call.presenting(ty),
                 None => call,
             });
+        }
+        if self.profile.java_release() < 8
+            && target.is_interface_reference()
+            && matches!(target.kind(), InvokeKind::Static | InvokeKind::Special)
+        {
+            return Err(format!(
+                "the interface invocation at BCI {bci} requires Java source target 8"
+            )
+            .into());
         }
         let (receiver, args) = match target.kind() {
             // A static call reads no receiver from the stack: what its text names is the class its
@@ -30509,7 +32260,7 @@ impl Builder<'_> {
                     // `.` and `$` is kept. A name with no Java type to be has no receiver to be
                     // either, and the call is refused where it would have been written.
                     let owner = self
-                        .source_type_path_name(target.owner())
+                        .source_type_path_name(target.raw_owner())
                         .or_else(|| spell_reference(target.owner()))
                         .ok_or_else(|| {
                         format!(
@@ -30546,11 +32297,43 @@ impl Builder<'_> {
                 } else {
                     rendered
                 };
+                // A receiver whose text states a type must keep the pool owner's type in source, so
+                // overload selection cannot retarget the call. A receiver whose text states **no**
+                // type is not evidence of a *different* one: there is nothing to compare, and the
+                // argument rules refuse a value they cannot type at all, so treating the absence as
+                // a mismatch refused the enclosing shape instead of writing the receiver. Such a
+                // receiver keeps the text it rendered with.
+                let rendered =
+                    if matches!(target.kind(), InvokeKind::Virtual | InvokeKind::Interface)
+                        && self.has_receiver
+                        && rendered.presented.is_some()
+                        && reference_lifetime_type(self.ssa, self.operations, receiver.1)
+                            != rendered.presented
+                    {
+                        let owner = spell_class_operand(target.raw_owner()).ok_or_else(|| {
+                            ValueRenderFailure::from(format!(
+                                "the receiver owner at BCI {bci} has no faithful source spelling"
+                            ))
+                        })?;
+                        let required = Type::Reference(owner);
+                        if rendered.presented.as_ref() == Some(&required) {
+                            rendered
+                        } else {
+                            self.invocation_argument(
+                                rendered,
+                                &required,
+                                bci,
+                                "invocation receiver",
+                            )?
+                        }
+                    } else {
+                        rendered
+                    };
                 if let Some(refusal) = structural_reflection_over_pool_spelled_literal(
                     &rendered,
                     target,
                     self.declaring_class,
-                    self.nested_class_members,
+                    self.source_names,
                     self.pool_spelled_members,
                     bci,
                 ) {
@@ -30563,7 +32346,92 @@ impl Builder<'_> {
         for (_, value) in args {
             arguments.push(self.render_value(*value, at, depth + 1)?);
         }
-        let mut arguments = self.arguments(target.descriptor(), arguments, bci)?;
+        let mut receiver = receiver;
+        if let (Some(types), Some(rendered)) = (self.declared_types, receiver.as_deref_mut())
+            && matches!(target.kind(), InvokeKind::Virtual | InvokeKind::Interface)
+            && let ExprKind::Cast {
+                source_type_name, ..
+            } = &mut rendered.kind
+            && source_type_name.is_none()
+        {
+            let cast_bci = rendered.origin.primary().bci();
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                types.unique_calls.len() as u64,
+                Some(bci),
+            )?;
+            if types
+                .unique_calls
+                .iter()
+                .any(|(block, call)| *call == bci && Some(block) == self.block_of.get(&bci))
+            {
+                for (block, at, node) in &types.casts {
+                    charge(
+                        self.budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(bci),
+                    )?;
+                    if *at != cast_bci || Some(block) != self.block_of.get(&cast_bci) {
+                        continue;
+                    }
+                    charge(
+                        self.budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        types.admissible.len() as u64,
+                        Some(bci),
+                    )?;
+                    if !types.admissible.contains(node) {
+                        break;
+                    }
+                    if let Some(source) =
+                        crate::generic_types::spell_declared_type(types, *node, self.budget)
+                            .map_err(|error| {
+                                crate::stop::stop_from_error(self.budget, error, Some(bci))
+                            })?
+                    {
+                        *source_type_name = Some(source);
+                        rendered.declared_type = Some(*node);
+                    }
+                    break;
+                }
+            }
+        }
+        if let Some(types) = self.declared_types
+            && (target.kind() == InvokeKind::Static
+                || (matches!(target.kind(), InvokeKind::Virtual | InvokeKind::Interface)
+                    && receiver
+                        .as_ref()
+                        .is_some_and(|receiver| receiver.declared_type.is_some())))
+        {
+            let mut typed = false;
+            if let Some(source) = receiver
+                .as_ref()
+                .and_then(|receiver| receiver.declared_type)
+            {
+                typed = crate::generic_types::has_source_arguments(types, source, self.budget)
+                    .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?;
+            }
+            if let Some(crate::report::DeclaredGenericMemberTypes::Method {
+                application,
+                parameters,
+                result,
+                ..
+            }) = self.declared_member_at(bci)?
+            {
+                for node in std::iter::once(application).chain(parameters).chain(result) {
+                    typed |= crate::generic_types::has_source_arguments(types, *node, self.budget)
+                        .map_err(|error| {
+                            crate::stop::stop_from_error(self.budget, error, Some(bci))
+                        })?;
+                }
+            }
+            if typed {
+                return self.declared_call_expr(bci, target, receiver, args, arguments);
+            }
+        }
+        let mut arguments = self.arguments(&target.raw_descriptor().0, arguments, bci)?;
         let mut origin = OriginSet::new(Origin::direct(bci));
         if let Some(varargs_parameter) = declared_varargs_parameter_descriptor(
             target,
@@ -30608,27 +32476,455 @@ impl Builder<'_> {
             }
             arguments.extend(elements);
         }
+        let name = crate::names::source_method_name(target.raw_name()).ok_or_else(|| {
+            ValueRenderFailure::from(format!(
+                "the invocation at BCI {bci} has raw method name {:?}, which has no faithful Java method spelling",
+                target.raw_name().0
+            ))
+        })?;
         let call = Expr::new(
             ExprKind::Call {
                 receiver,
-                name: target.name().to_string(),
+                name,
                 args: arguments,
             },
             origin,
         );
-        Ok(match return_type(target.descriptor()) {
+        Ok(match return_type_bytes(&target.raw_descriptor().0) {
             Some(ty) => call.presenting(ty),
             None => call,
         })
     }
 
+    fn declared_member_at(
+        &mut self,
+        bci: u32,
+    ) -> Result<Option<&'a crate::report::DeclaredGenericMemberTypes>, StopReason> {
+        let Some(types) = self.declared_types else {
+            return Ok(None);
+        };
+        for (owner, member) in &types.members {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(bci),
+            )?;
+            let at = match member {
+                crate::report::DeclaredGenericMemberTypes::Field { bci, .. }
+                | crate::report::DeclaredGenericMemberTypes::Method { bci, .. } => *bci,
+            };
+            if at == bci && Some(owner) == self.block_of.get(&bci) {
+                return Ok(Some(member));
+            }
+        }
+        Ok(None)
+    }
+
+    fn declared_field_receiver(
+        &mut self,
+        receiver: Expr,
+        value: ValueId,
+        member: &crate::report::DeclaredGenericMemberTypes,
+        bci: u32,
+    ) -> Result<Expr, ValueRenderFailure> {
+        let crate::report::DeclaredGenericMemberTypes::Field { application, .. } = member else {
+            unreachable!()
+        };
+        let types = self
+            .declared_types
+            .expect("a declared field belongs to its bound request");
+        if receiver.declared_type != Some(*application)
+            && !crate::generic_types::field_qualifier_accessible(types, member)
+        {
+            return Err(format!("the generic field at BCI {bci} cannot be qualified by its declaring type under the original access rules").into());
+        }
+        self.original_reference_type(value, *application, bci, &receiver)?;
+        self.declared_conversion(receiver, value, *application, bci)
+    }
+
+    fn field_owner_type(
+        &mut self,
+        bci: u32,
+        evidence: &field::Evidence,
+    ) -> Result<Type, ValueRenderFailure> {
+        if let Some(types) = self.declared_types
+            && let Some(crate::report::DeclaredGenericMemberTypes::Field { application, .. }) =
+                self.declared_member_at(bci)?
+            && let Some(crate::report::DeclaredGenericType::Reference { declaration, .. }) =
+                types.types.get(*application)
+        {
+            for (node, ty) in types.types.iter().enumerate() {
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(bci),
+                )?;
+                if matches!(ty, crate::report::DeclaredGenericType::Reference { declaration: selected, arguments } if selected == declaration && arguments.is_empty())
+                {
+                    let spelling = crate::generic_types::spell_declared_type(types, node, self.budget)
+                            .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+                            .ok_or_else(|| format!("the resolved field owner at BCI {bci} has no source name in this method's loader"))?;
+                    return Ok(Type::Reference(spelling));
+                }
+            }
+            return Err(
+                format!("the resolved field owner at BCI {bci} has no bound erasure").into(),
+            );
+        }
+        evidence
+            .spelled_owner()
+            .map(Type::Reference)
+            .ok_or_else(|| {
+                format!("the field owner at BCI {bci} has no faithful source spelling").into()
+            })
+    }
+
+    /// Intrinsic source leaves preserve their original constant operation without a conversion.
+    /// JVM frames deliberately leave ldc references unknown; this does not invent a selected
+    /// runtime class for them. Only the identical source type or Object needs no new type check.
+    fn unchanged_reference_literal(
+        &mut self,
+        expression: &Expr,
+        target: usize,
+        bci: u32,
+    ) -> Result<bool, StopReason> {
+        if !matches!(
+            expression.kind,
+            ExprKind::Str(_) | ExprKind::ClassLiteral { .. } | ExprKind::Null
+        ) {
+            return Ok(false);
+        }
+        let types = self
+            .declared_types
+            .expect("a declared literal belongs to the bound request");
+        if crate::generic_types::has_source_arguments(types, target, self.budget)
+            .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+        {
+            return Ok(false);
+        }
+        let required = crate::generic_types::erased_type(types, target, self.budget)
+            .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?;
+        let Some(Type::Reference(name)) = required else {
+            return Ok(false);
+        };
+        if !matches!(expression.kind, ExprKind::Null)
+            && expression.presented.as_ref() != Some(&Type::Reference(name.clone()))
+            && name != "java.lang.Object"
+        {
+            return Ok(false);
+        }
+        Ok(
+            crate::generic_types::spell_declared_type(types, target, self.budget)
+                .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+                == Some(name),
+        )
+    }
+
+    fn original_reference_type(
+        &mut self,
+        value: ValueId,
+        target: usize,
+        bci: u32,
+        expression: &Expr,
+    ) -> Result<(), ValueRenderFailure> {
+        if self.unchanged_reference_literal(expression, target, bci)? {
+            return Ok(());
+        }
+        let types = self
+            .declared_types
+            .expect("a physical consumer type belongs to the bound request");
+        if matches!(
+            types.types.get(target),
+            Some(crate::report::DeclaredGenericType::Base(_))
+        ) {
+            return Ok(());
+        }
+        for (index, (candidate, _)) in self.ssa.values_with_ids().enumerate() {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(bci),
+            )?;
+            if candidate == value {
+                if crate::generic_types::proved_runtime_upcast(types, index, target, self.budget)
+                    .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+                {
+                    return Ok(());
+                }
+                break;
+            }
+        }
+        Err(format!("the source consumer at BCI {bci} could add a type check absent from its original descriptor flow").into())
+    }
+
+    /// Consume the final receiver declaration and the original call binding together. Reference
+    /// casts added here must already be runtime upcasts; the Signature alone is never that proof.
+    fn declared_call_expr(
+        &mut self,
+        bci: u32,
+        target: &CallTarget,
+        receiver: Option<Box<Expr>>,
+        operands: &[(Slot, ValueId)],
+        arguments: Vec<Expr>,
+    ) -> Result<Expr, ValueRenderFailure> {
+        use crate::generic_types::erased_type;
+        use crate::report::DeclaredGenericMemberTypes;
+        let types = self
+            .declared_types
+            .expect("the typed receiver belongs to this request");
+        let block = self.block_of.get(&bci);
+        let mut unique = false;
+        for (owner, call) in &types.unique_calls {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(bci),
+            )?;
+            if *call == bci && Some(owner) == block {
+                unique = true;
+                break;
+            }
+        }
+        if !unique {
+            return Err(format!(
+                "the generic invocation at BCI {bci} has no proved source overload target"
+            )
+            .into());
+        }
+        let contract = self.declared_member_at(bci)?;
+        let Some(DeclaredGenericMemberTypes::Method {
+            application,
+            parameters,
+            erased_parameters,
+            result,
+            ..
+        }) = contract
+        else {
+            return Err(
+                format!("the generic invocation at BCI {bci} has no bound declaration").into(),
+            );
+        };
+        if parameters.len() != arguments.len() {
+            return Err(
+                format!("the generic invocation at BCI {bci} has incomplete formal types").into(),
+            );
+        }
+        let receiver = if target.kind() == InvokeKind::Static {
+            if let Some((_, value)) = self.pops().qualifier_at(bci) {
+                let expression = *receiver.expect("the discarded static qualifier was rendered");
+                self.original_reference_type(value, *application, bci, &expression)?;
+                self.declared_conversion(expression, value, *application, bci)?
+            } else {
+                let owner =
+                    crate::generic_types::spell_declared_type(types, *application, self.budget)
+                        .map_err(|error| {
+                            crate::stop::stop_from_error(self.budget, error, Some(bci))
+                        })?
+                        .ok_or_else(|| {
+                            format!("the static declaration at BCI {bci} has no source owner")
+                        })?;
+                Expr::direct(ExprKind::Path(owner), bci)
+            }
+        } else {
+            let receiver_value = self
+                .instructions
+                .get(&bci)
+                .and_then(|instruction| {
+                    stack_operands(instruction).first().map(|(_, value)| *value)
+                })
+                .ok_or_else(|| {
+                    format!("the generic invocation at BCI {bci} has no receiver value")
+                })?;
+            self.original_reference_type(
+                receiver_value,
+                *application,
+                bci,
+                receiver
+                    .as_deref()
+                    .expect("an instance call has its receiver"),
+            )?;
+            self.declared_conversion(
+                *receiver.expect("an instance call has its rendered receiver"),
+                receiver_value,
+                *application,
+                bci,
+            )?
+        };
+        let mut written = Vec::new();
+        charge(
+            self.budget,
+            CountedBudgetDimension::IrItems,
+            arguments.len() as u64,
+            Some(bci),
+        )?;
+        for (((argument, (_, value)), parameter), erased) in
+            typed_arguments(&target.raw_descriptor().0, arguments)
+                .into_iter()
+                .zip(operands)
+                .zip(parameters)
+                .zip(erased_parameters)
+        {
+            self.original_reference_type(*value, *erased, bci, &argument)?;
+            let required = erased_type(types, *parameter, self.budget)
+                .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+                .ok_or_else(|| {
+                    format!("the generic invocation at BCI {bci} has an unspellable formal type")
+                })?;
+            let argument = if matches!(required, Type::Reference(_)) {
+                self.declared_conversion(argument, *value, *parameter, bci)?
+            } else {
+                self.invocation_argument(argument, &required, bci, "generic invocation parameter")?
+            };
+            written.push(argument);
+        }
+        let name = crate::names::source_method_name(target.raw_name()).ok_or_else(|| {
+            format!("the generic invocation at BCI {bci} has no faithful method spelling")
+        })?;
+        let mut call = Expr::direct(
+            ExprKind::Call {
+                receiver: Some(Box::new(receiver)),
+                name,
+                args: written,
+            },
+            bci,
+        );
+        if let Some(result) = result {
+            if let Some(ty) = erased_type(types, *result, self.budget)
+                .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+            {
+                call = call.presenting(ty).declaring(*result);
+            }
+        }
+        call.declared_call = true;
+        Ok(call)
+    }
+
+    fn declared_conversion(
+        &mut self,
+        argument: Expr,
+        value: ValueId,
+        required: usize,
+        bci: u32,
+    ) -> Result<Expr, ValueRenderFailure> {
+        use crate::generic_types::{
+            erased_type, has_source_arguments, proved_declared_conversion, proved_runtime_upcast,
+            proved_source_conversion, spell_declared_type,
+        };
+        let types = self
+            .declared_types
+            .expect("a declared conversion belongs to a bound request");
+        let admissible = types.admissible.iter().try_fold(false, |found, node| {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(bci),
+            )?;
+            Ok::<_, StopReason>(found || *node == required)
+        })?;
+        if !admissible {
+            return Err(format!(
+                "the source type required at BCI {bci} has unproved declaration bounds"
+            )
+            .into());
+        }
+        let erased = erased_type(types, required, self.budget)
+            .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+            .ok_or_else(|| {
+                format!("the source type required at BCI {bci} has no faithful erasure")
+            })?;
+        if self.unchanged_reference_literal(&argument, required, bci)? {
+            return Ok(argument);
+        }
+        if argument.declared_type == Some(required) && argument.presented.as_ref() == Some(&erased)
+        {
+            return Ok(argument);
+        }
+        if let Some(source) = argument.declared_type
+            && !proved_source_conversion(types, source, required, self.budget)
+                .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+        {
+            return Err(format!(
+                "the final source declaration at BCI {bci} cannot be assigned to the generic formal"
+            )
+            .into());
+        }
+        let mut index = None;
+        for (position, (id, _)) in self.ssa.values_with_ids().enumerate() {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(bci),
+            )?;
+            if id == value {
+                index = Some(position);
+                break;
+            }
+        }
+        let proved = if let Some(index) = index {
+            (if has_source_arguments(types, required, self.budget)
+                .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+            {
+                proved_declared_conversion(types, index, required, self.budget)
+            } else {
+                proved_runtime_upcast(types, index, required, self.budget)
+            })
+            .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+        } else {
+            false
+        };
+        if !proved {
+            return Err(format!(
+                "the generic conversion at BCI {bci} would require an unproved runtime check"
+            )
+            .into());
+        }
+        let source = spell_declared_type(types, required, self.budget)
+            .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+            .ok_or_else(|| {
+                format!("the generic formal at BCI {bci} has no bound source spelling")
+            })?;
+        let mut argument = argument;
+        if argument.presented.as_ref() == Some(&erased)
+            && !has_source_arguments(types, required, self.budget)
+                .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
+        {
+            return Ok(argument);
+        }
+        if let ExprKind::Cast {
+            ty,
+            source_type_name,
+            ..
+        } = &mut argument.kind
+            && *ty == erased
+            && source_type_name.is_none()
+        {
+            *source_type_name = Some(source);
+            return Ok(argument.declaring(required));
+        }
+        Ok(Expr::direct(
+            ExprKind::Cast {
+                ty: erased,
+                value: Box::new(argument),
+                source_type_name: Some(source),
+            },
+            bci,
+        )
+        .declaring(required))
+    }
+
     /// The source spelling proved for a nested type in this class-source request, if any. Multiple
     /// target sites must agree on the same selected path before it can affect a static owner.
-    fn source_type_path_name(&self, binary_name: &str) -> Option<String> {
+    fn source_type_path_name(&self, binary_name: &JvmBytes) -> Option<String> {
         let mut selected: Option<&str> = None;
         for target in self.member_inner_targets {
             for segment in &target.source_type_path {
-                if segment.binary_name != binary_name {
+                if &segment.binary_name != binary_name {
                     continue;
                 }
                 if selected.is_some_and(|previous| previous != segment.source_name) {
@@ -30661,7 +32957,7 @@ impl Builder<'_> {
                 "the non-constructor invokespecial at BCI {bci} is not proven to receive the entry `this`"
             ));
         }
-        let owner = target.owner().as_bytes();
+        let owner = target.raw_owner().0.as_slice();
         if !target.is_interface_reference()
             && self
                 .direct_super_class
@@ -30679,9 +32975,14 @@ impl Builder<'_> {
                 .any(|interface| interface.raw().0.as_slice() == owner)
         {
             if !self.interface_super_calls.iter().any(|call| {
-                call.owner == target.owner()
-                    && call.name == target.name()
-                    && call.descriptor == target.descriptor()
+                &call.owner == target.raw_owner()
+                    && &call.name == target.raw_name()
+                    && &call.descriptor == target.raw_descriptor()
+                    && crate::source_proof::source_method_target_is_spellable(
+                        &call.owner,
+                        &call.name,
+                        &call.descriptor,
+                    )
             }) {
                 return Err(format!(
                     "the interface-special target `{}.{}` with descriptor `{}` at BCI {bci} has no selected proof of a legal source qualifier and unique default binding",
@@ -30690,7 +32991,7 @@ impl Builder<'_> {
                     target.descriptor()
                 ));
             }
-            let qualifier = spell_reference(target.owner()).ok_or_else(|| {
+            let qualifier = crate::names::source_class_name(target.raw_owner()).ok_or_else(|| {
                 format!(
                     "the direct interface owner `{}` of the invokespecial at BCI {bci} cannot be spelled as a Java type",
                     target.owner()
@@ -30727,16 +33028,16 @@ impl Builder<'_> {
         // header, and it must never override a public declaration from the header.
         if let Some(methods) = self.class_methods {
             return methods.iter().any(|method| {
-                method.name.raw().0.as_slice() == target.name().as_bytes()
-                    && method.descriptor.raw().0.as_slice() == target.descriptor().as_bytes()
+                method.name.raw().0.as_slice() == target.raw_name().0.as_slice()
+                    && method.descriptor.raw().0.as_slice() == target.raw_descriptor().0.as_slice()
                     && method.access_flags & ACC_PRIVATE != 0
             });
         }
         self.members.is_some_and(|members| {
-            members.owner() == owner
+            members.raw_owner() == target.raw_owner()
                 && members.members().iter().any(|member| {
-                    member.name() == target.name()
-                        && member.descriptor() == target.descriptor()
+                    member.raw_name() == target.raw_name()
+                        && member.raw_descriptor() == target.raw_descriptor()
                         && member.access_flags() & ACC_PRIVATE != 0
                 })
         })
@@ -30762,7 +33063,7 @@ impl Builder<'_> {
     /// of a construction site and of a `super(…)`/`this(…)` prologue.
     fn arguments(
         &self,
-        descriptor: &str,
+        descriptor: &[u8],
         arguments: Vec<Expr>,
         bci: u32,
     ) -> Result<Vec<Expr>, String> {
@@ -30774,7 +33075,7 @@ impl Builder<'_> {
     /// be checked under the descriptor's remaining positions without weakening overload fixing.
     fn arguments_after_first_parameter(
         &self,
-        descriptor: &str,
+        descriptor: &[u8],
         arguments: Vec<Expr>,
         bci: u32,
         member: Option<&init::MemberInnerSite>,
@@ -30782,13 +33083,17 @@ impl Builder<'_> {
         let member = member.ok_or_else(|| {
             format!("the constructor at BCI {bci} has no proved member parameter prefix")
         })?;
-        let Some((parameters, _)) = lambda::parse_method(descriptor) else {
+        let Some((parameters, _)) = lambda::parse_method_bytes(descriptor) else {
             return Err(format!(
                 "the member constructor at BCI {bci} has an unreadable method descriptor"
             ));
         };
-        let expected_outer = spell_reference(&format!("L{};", member.outer))
-            .ok_or_else(|| format!("the proven outer type `{}` cannot be spelled", member.outer))?;
+        let expected_outer = crate::names::source_class_name(&member.outer).ok_or_else(|| {
+            format!(
+                "the proven outer type `{}` cannot be spelled",
+                crate::facts::display_jvm_bytes(&member.outer)
+            )
+        })?;
         if parameters.first() != Some(&Type::Reference(expected_outer.clone())) {
             return Err(format!(
                 "the first physical parameter of the member constructor at BCI {bci} does not name the proven outer type `{expected_outer}`"
@@ -30814,7 +33119,7 @@ impl Builder<'_> {
 
     fn arguments_with_parameter_offset(
         &self,
-        descriptor: &str,
+        descriptor: &[u8],
         arguments: Vec<Expr>,
         bci: u32,
         parameter_offset: usize,
@@ -30824,7 +33129,7 @@ impl Builder<'_> {
         } else {
             typed_arguments_with_offset(descriptor, arguments, parameter_offset)
         };
-        let Some((parameters, _)) = lambda::parse_method(descriptor) else {
+        let Some((parameters, _)) = lambda::parse_method_bytes(descriptor) else {
             return Err(format!(
                 "the invocation at BCI {bci} has an unreadable method descriptor"
             ));
@@ -30946,52 +33251,39 @@ impl Builder<'_> {
                     // the proved widening means that check cannot fail for this operand.
                     return Ok(cast_argument(argument, required, bci));
                 }
-                if platform_array_argument_widens(
-                    self.profile.java_release,
+                if crate::assignability::reference_assignable(
+                    self.runtime_release,
                     &presented_name,
                     required_name,
+                    bci,
+                    self.reference_relations,
                 ) {
-                    // The same answer for the array position of the platform tables: the component
-                    // pair is one of their rows, so the array widening is proved and the cast
-                    // above pins the parameter type the pool selected.
                     return Ok(cast_argument(argument, required, bci));
                 }
-                if self.reference_overload_calls.iter().any(|proof| {
+                // Low-level callers may state an exact call-site proof without a Header backend.
+                // An explicit unresolved or incompatible environment result takes precedence.
+                if !self.reference_relations.iter().any(|proof| {
+                    proof.bci == bci
+                        && proof.source == presented_name
+                        && proof.target == *required_name
+                }) && self.reference_overload_calls.iter().any(|proof| {
                     proof.bci == bci
                         && proof.source == presented_name
                         && proof.target == *required_name
                 }) {
                     return Ok(cast_argument(argument, required, bci));
                 }
-                if release_reference_argument_widens(
-                    self.profile.java_release,
-                    &presented_name,
-                    required_name,
-                ) {
-                    return Ok(cast_argument(argument, required, bci));
-                }
-                if java_lang_throwable_widens(&presented_name, required_name) {
-                    return Ok(cast_argument(argument, required, bci));
-                }
-                if platform_interface_argument_widens(
-                    self.profile.java_release,
-                    &presented_name,
-                    required_name,
-                ) {
-                    return Ok(cast_argument(argument, required, bci));
-                }
-                // The last reference answer, and only after every earlier one: the argument's own
-                // snapshot states the chain, so the pool's selected parameter type stays in the
-                // source and the call cannot retarget to an overload the bytes never selected.
-                if self.snapshot_hierarchy_widenings.iter().any(|proof| {
-                    proof.bci == bci
-                        && proof.source == presented_name
-                        && proof.target == *required_name
-                }) {
-                    return Ok(cast_argument(argument, required, bci));
-                }
+                let relation = self
+                    .reference_relations
+                    .iter()
+                    .find(|proof| {
+                        proof.bci == bci
+                            && proof.source == presented_name
+                            && proof.target == *required_name
+                    })
+                    .map(|proof| proof.relation);
                 Err(format!(
-                    "{position} presents `{presented_name}` but the invocation requires `{required_name}` and this layer has no safe reference conversion evidence"
+                    "{position} presents `{presented_name}` but the invocation requires `{required_name}` and this layer has no safe reference conversion evidence (relation: {relation:?})"
                 ))
             }
             _ => {
@@ -31080,7 +33372,7 @@ impl Builder<'_> {
                     let presented = match evidence
                         .field
                         .as_ref()
-                        .and_then(|field| descriptor_type(&field.descriptor))
+                        .and_then(|field| descriptor_type_bytes(&field.descriptor.0))
                     {
                         Some(ty) => field.presenting(ty),
                         None => field,
@@ -31147,7 +33439,7 @@ impl Builder<'_> {
                     evidence
                         .field
                         .as_ref()
-                        .map(|field| field.descriptor.as_str()),
+                        .map(|field| field.descriptor.0.as_slice()),
                     stored,
                     value,
                     at,
@@ -31293,8 +33585,11 @@ impl Builder<'_> {
             // re-entering `new_expr` through the member site's owned `dup` value.
             let qualifier = self.render_value(*qualifier_value, at, depth + 1)?;
             let expected_outer =
-                spell_reference(&format!("L{};", member.outer)).ok_or_else(|| {
-                    format!("the proven outer type `{}` cannot be spelled", member.outer)
+                crate::names::source_class_name(&member.outer).ok_or_else(|| {
+                    format!(
+                        "the proven outer type `{}` cannot be spelled",
+                        crate::facts::display_jvm_bytes(&member.outer)
+                    )
                 })?;
             if qualifier.presented != Some(Type::Reference(expected_outer.clone())) {
                 return Err(format!(
@@ -31343,14 +33638,22 @@ impl Builder<'_> {
                 .clone()
         } else {
             self.source_type_path_name(&site.class)
-                .or_else(|| spell_reference(&site.class))
+                .or_else(|| spell_class_operand(&site.class))
                 .ok_or_else(|| {
                     format!(
                         "the construction at BCI {} names the class `{}`, which this layer cannot spell as a Java type",
-                        site.constructor, site.class
+                        site.constructor, crate::facts::display_jvm_bytes(&site.class)
                     )
                 })?
         };
+        // A CONSTANT_Class operand may be an array descriptor ([`spell_class_operand`]); the
+        // construction's presented type spells it by the same array rule the source type does.
+        let semantic_type = spell_class_operand(&site.class).ok_or_else(|| {
+            format!(
+                "the constructed class at BCI {} has no faithful semantic type spelling",
+                site.constructor
+            )
+        })?;
         Ok(Expr::new(
             ExprKind::New {
                 ty: source_type,
@@ -31361,11 +33664,12 @@ impl Builder<'_> {
                         .declarations
                         .generic_locals
                         .values()
-                        .any(|projection| projection.allocation_bci == site.head),
+                        .any(|projection| projection.allocation_bci == Some(site.head)),
                 args,
             },
             origin,
-        ))
+        )
+        .presenting(Type::Reference(semantic_type)))
     }
 
     /// Writes the one statement a **statement-position** construction is: `new X(args);`.
@@ -31450,9 +33754,9 @@ impl Builder<'_> {
     /// `None` when the instruction is not an invocation of this decode: a site that names no
     /// `invoke*` states no descriptor, and a caller then leaves its arguments as they were rendered
     /// rather than guessing a signature (P3-R5's argument side).
-    fn invoke_descriptor(&self, bci: u32) -> Option<String> {
+    fn invoke_descriptor(&self, bci: u32) -> Option<Vec<u8>> {
         match self.operations.get(bci) {
-            Some(Operation::Invoke(target)) => Some(target.descriptor().to_string()),
+            Some(Operation::Invoke(target)) => Some(target.raw_descriptor().0.clone()),
             _ => None,
         }
     }
@@ -31597,13 +33901,28 @@ impl Builder<'_> {
                 return self.fallback(bcis, &reason, at);
             }
         };
-        let value = match self.render_value(written, at, 0) {
+        let mut value = match self.render_value(written, at, 0) {
             Ok(value) => value,
             Err(reason) => {
                 let bcis = self.quoted_bcis(at);
                 return self.fallback(bcis, &reason, at);
             }
         };
+        if let Some(types) = self.declared_types
+            && let Some(node) = array.declared_type
+            && let Some(crate::report::DeclaredGenericType::Array(component)) =
+                types.types.get(node)
+            && crate::generic_types::has_source_arguments(types, *component, self.budget)
+                .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(at)))?
+        {
+            let adapted = self
+                .original_reference_type(written, *component, at, &value)
+                .and_then(|()| self.declared_conversion(value, written, *component, at));
+            value = match adapted {
+                Ok(value) => value,
+                Err(error) => return self.fallback(self.quoted_bcis(at), &error, at),
+            };
+        }
         let value = match element {
             Some(Type::Boolean) => {
                 if self.boolean_literal(written) || self.boolean_proven(written, at) {
@@ -31739,11 +34058,11 @@ impl Builder<'_> {
                 return Ok(value);
             }
             if initializer_reference_widens(
-                self.profile.java_release,
+                self.runtime_release,
                 actual,
                 expected,
                 store_bci,
-                self.snapshot_hierarchy_widenings,
+                self.reference_relations,
             ) {
                 return Ok(value);
             }
@@ -31877,7 +34196,7 @@ impl Builder<'_> {
             self.push(Stmt::new(
                 StmtKind::FieldAssign {
                     receiver: Some(receiver),
-                    name: evidence.name.clone(),
+                    name: evidence.spelled_name(),
                     op,
                     value,
                 },
@@ -31885,31 +34204,30 @@ impl Builder<'_> {
             ))?;
             return Ok(());
         }
-        let receiver = if self.fields.simple_static_final_write(at) {
+        let mut source_receiver_typed = false;
+        let mut receiver = if self.fields.simple_static_final_write(at) {
             None
         } else {
             Some(match shape.receiver {
                 Some(value) => match self.render_value(value, at, 0) {
                     Ok(receiver) if shape.owner_cast => {
-                        let Some(owner) = spell_reference(&evidence.owner) else {
-                            return self.fallback(
-                                self.quoted_bcis(at),
-                                format!(
-                                    "the proved field owner `{}` cannot be spelled",
-                                    evidence.owner
-                                ),
-                                at,
-                            );
+                        source_receiver_typed = receiver.declared_type.is_some();
+                        let owner = match self.field_owner_type(at, evidence) {
+                            Ok(owner) => owner,
+                            Err(error) => return self.fallback(self.quoted_bcis(at), &error, at),
                         };
-                        cast_argument(receiver, &Type::Reference(owner), at)
+                        cast_argument(receiver, &owner, at)
                     }
-                    Ok(receiver) => receiver,
+                    Ok(receiver) => {
+                        source_receiver_typed = receiver.declared_type.is_some();
+                        receiver
+                    }
                     Err(reason) => {
                         let bcis = self.quoted_bcis(at);
                         return self.fallback(bcis, &reason, at);
                     }
                 },
-                None => match spell_reference(&evidence.owner) {
+                None => match evidence.spelled_owner() {
                     Some(owner) => Expr::direct(ExprKind::Path(owner), at),
                     // A static write's receiver is the owner type itself: a name this layer cannot
                     // spell as a Java type has no receiver to be, and the write is quoted.
@@ -31919,7 +34237,7 @@ impl Builder<'_> {
                             bcis,
                             format!(
                                 "the field write at BCI {at} names the owner `{}`, which this layer cannot spell as a Java type",
-                                evidence.owner
+                                crate::facts::display_jvm_bytes(&evidence.owner)
                             ),
                             at,
                         );
@@ -31934,29 +34252,94 @@ impl Builder<'_> {
                 at,
             );
         };
-        let value = match self.render_value(stored, at, 0) {
+        let mut value = match self.render_value(stored, at, 0) {
             Ok(value) => value,
             Err(reason) => {
                 let bcis = self.quoted_bcis(at);
                 return self.fallback(bcis, &reason, at);
             }
         };
-        let value = match self.field_value(Some(&evidence.descriptor), stored, value, at) {
-            Ok(value) => value,
-            Err(reason) => {
-                let bcis = self.quoted_bcis(at);
-                return self.fallback(bcis, &reason, at);
+        let mut typed = false;
+        if let Some(types) = self.declared_types
+            && let Some(
+                member @ crate::report::DeclaredGenericMemberTypes::Field {
+                    application,
+                    ty,
+                    erased_ty,
+                    access_flags,
+                    ..
+                },
+            ) = self.declared_member_at(at)?
+        {
+            let instance = source_receiver_typed && shape.receiver.is_some();
+            let static_field = *access_flags & ACC_STATIC != 0;
+            let mut generic = false;
+            for node in [*application, *ty].into_iter().chain(
+                receiver
+                    .as_ref()
+                    .and_then(|receiver| receiver.declared_type),
+            ) {
+                generic |= crate::generic_types::has_source_arguments(types, node, self.budget)
+                    .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(at)))?;
+            }
+            if generic && (instance || static_field) {
+                let adapted = (|| -> Result<_, ValueRenderFailure> {
+                    let receiver = match (shape.receiver, receiver.take()) {
+                        (Some(input), Some(receiver)) => {
+                            Some(self.declared_field_receiver(receiver, input, member, at)?)
+                        }
+                        (None, Some(_)) => {
+                            let owner = crate::generic_types::spell_declared_type(types, *application, self.budget)
+                                    .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(at)))?
+                                    .ok_or_else(|| format!("the generic static field at BCI {at} has no bound declaring type spelling"))?;
+                            Some(Expr::direct(ExprKind::Path(owner), at))
+                        }
+                        (_, None) => None,
+                    };
+                    self.original_reference_type(stored, *erased_ty, at, &value)?;
+                    let required = crate::generic_types::erased_type(types, *ty, self.budget)
+                        .map_err(|error| {
+                            crate::stop::stop_from_error(self.budget, error, Some(at))
+                        })?;
+                    let value = if matches!(required, Some(Type::Reference(_))) {
+                        self.declared_conversion(value, stored, *ty, at)?
+                    } else {
+                        self.field_value(Some(&evidence.descriptor.0), stored, value, at)?
+                    };
+                    Ok((receiver, value))
+                })();
+                match adapted {
+                    Ok((adapted_receiver, adapted_value)) => {
+                        receiver = adapted_receiver;
+                        value = adapted_value;
+                        typed = true;
+                    }
+                    Err(error) => return self.fallback(self.quoted_bcis(at), &error, at),
+                }
+            }
+        }
+        let value = if typed {
+            value
+        } else {
+            match self.field_value(Some(&evidence.descriptor.0), stored, value, at) {
+                Ok(value) => value,
+                Err(reason) => {
+                    let bcis = self.quoted_bcis(at);
+                    return self.fallback(bcis, &reason, at);
+                }
             }
         };
-        self.push(Stmt::new(
+        let mut statement = Stmt::new(
             StmtKind::FieldAssign {
                 receiver,
-                name: evidence.name.clone(),
+                name: evidence.spelled_name(),
                 op: AssignOp::Assign,
                 value,
             },
             OriginSet::new(Origin::direct(at)),
-        ))
+        );
+        statement.declared_field = typed;
+        self.push(statement)
     }
 
     /// Publishes a proved field store and return as one prepared pair. The stack copy is never
@@ -31967,7 +34350,7 @@ impl Builder<'_> {
     fn assignment_result_statement(
         &mut self,
         result: &LongAssignmentResult,
-        expected_descriptor: &str,
+        expected_descriptor: &[u8],
     ) -> Result<(), StopReason> {
         let bcis = [
             result.anchors[0],
@@ -31987,7 +34370,7 @@ impl Builder<'_> {
         };
         if evidence.access != FieldAccess::Write
             || evidence.is_static
-            || evidence.descriptor != expected_descriptor
+            || evidence.descriptor.0.as_slice() != expected_descriptor
             || shape.receiver != Some(result.receiver_copy)
             || shape.value != Some(result.field_copy)
         {
@@ -32012,7 +34395,7 @@ impl Builder<'_> {
             }
         };
         let value = match self.field_value(
-            Some(&evidence.descriptor),
+            Some(&evidence.descriptor.0),
             result.field_copy,
             value,
             result.store_bci,
@@ -32041,7 +34424,7 @@ impl Builder<'_> {
         let assignment = Stmt::new(
             StmtKind::FieldAssign {
                 receiver: Some(receiver),
-                name: evidence.name.clone(),
+                name: evidence.spelled_name(),
                 op: AssignOp::Assign,
                 value,
             },
@@ -32095,12 +34478,12 @@ impl Builder<'_> {
     /// for — states no requirement, and the value is written as it was rendered.
     fn field_value(
         &self,
-        descriptor: Option<&str>,
+        descriptor: Option<&[u8]>,
         stored: ValueId,
         value: Expr,
         at: u32,
     ) -> Result<Expr, String> {
-        let Some(ty) = descriptor.and_then(descriptor_type) else {
+        let Some(ty) = descriptor.and_then(descriptor_type_bytes) else {
             return Ok(value);
         };
         if ty == Type::Boolean {
@@ -32182,6 +34565,13 @@ impl Builder<'_> {
     /// Everything else is a stated gap, and a value whose only reader is a stated gap has no place
     /// in the body: the instruction that produced it must write it itself.
     fn renders_the_value_it_reads(&self, bci: u32) -> bool {
+        if self
+            .instructions
+            .get(&bci)
+            .is_some_and(|instruction| self.sequential_copy(instruction))
+        {
+            return true;
+        }
         if self.compounds.owns_copy(bci) {
             return true;
         }
@@ -32498,6 +34888,63 @@ impl Builder<'_> {
                     into.push(bci);
                 }
                 return Ok(());
+            }
+            // Follow the frame-verified output-to-input edge rather than reclassifying the
+            // opcode or walking every value the permutation happened to read. The copy itself is
+            // named where **every** value it produced feeds a named deferred producer — a
+            // call the quote already names because its own text lands in the refused reader:
+            // there the copy's one identity rides beside that call exactly once (the shared
+            // argument of one refused call, quoted once and budgeted with it) — or where the
+            // value it duplicates is held by a proved binding, and the refused reader names it
+            // itself. Everywhere else
+            // the copy is plumbing: either its own shape carries a per-instruction quote, or its
+            // consumers are quoted for what they read — naming it beside those would fold one
+            // quote into another (the held-use negative pins this).
+            if let Some((_, input)) = instruction
+                .copies()
+                .iter()
+                .find(|(output, _)| *output == value)
+            {
+                let rides_with_a_named_call = instruction.copies().iter().all(|(output, _)| {
+                    self.ssa.value(*output).uses().iter().all(|use_| {
+                        let Some(at) = use_.bci() else {
+                            return false;
+                        };
+                        let Some(consumer) = self.instructions.get(&at) else {
+                            return false;
+                        };
+                        let Some((_, produced)) = one_stack_output(consumer) else {
+                            return false;
+                        };
+                        self.deferred
+                            .iter()
+                            .any(|(deferred_value, _)| *deferred_value == produced)
+                    })
+                });
+                // A refused reader whose value this copy duplicated also names the copy when the
+                // duplicated value is held by a proved binding: the binding's statement states
+                // the held half as structured text, not a quote, so the copy has no quote of its
+                // own to fold into and dropping it here would leave the bytecode position the
+                // refused text stood for unmapped (`refused_checkcast_quote_retains_the_stack_
+                // copy_origin`).
+                let held_by_a_proved_binding = self.bindings.contains_key(input);
+                if (rides_with_a_named_call || held_by_a_proved_binding)
+                    && !into.contains(&bci)
+                {
+                    if let Some(budget) = budget {
+                        poll(budget, Some(bci))?;
+                    }
+                    into.push(bci);
+                }
+                return self.deferred_producers(
+                    *input,
+                    reader,
+                    into,
+                    seen,
+                    stable_loads,
+                    depth + 1,
+                    budget,
+                );
             }
             // A refused downstream consumer still has to name every ordinary checkcast in the
             // value chain. The cast that reaches the consumer is not itself a producer that writes
@@ -32926,6 +35373,7 @@ impl Builder<'_> {
                     ExprKind::Cast {
                         ty: object.clone(),
                         value: Box::new(part.value),
+                        source_type_name: None,
                     },
                     origin.clone(),
                 )
@@ -32960,7 +35408,7 @@ impl Builder<'_> {
     ///
     /// Everything read here is the payload's own: the class's bootstrap table and pool decide *what
     /// the site is* ([`crate::lambda`]), the run's names decide the captured values and their BCIs,
-    /// and the frames decide a capture's type. The record is pushed here, where the decision is
+    /// and the declaration plan decides a captured local's type. The record is pushed here, where the decision is
     /// made, so no site can be presented without a record and no record can describe text that was
     /// never written.
     fn lambda_expr(
@@ -32983,27 +35431,70 @@ impl Builder<'_> {
             Some(tail) if value == tail.copy_value => tail.receiver,
             _ => value,
         };
-        let captures: Vec<(Option<u32>, Option<Type>)> = operands
+        // Capture checks consume the same declaration type as a rendered local. A frame's
+        // merged Object shape must not replace the type already proved for all writes and uses.
+        let mut captures: Vec<(Option<u32>, Option<Type>)> = operands
             .iter()
             .map(|(_, value)| {
-                (
-                    self.value_bci(*value),
-                    // A capture whose frame fact is a descriptor with no Java spelling is a value
-                    // this layer cannot state a type for, and `lambda::plan` refuses a site with an
-                    // unstated capture type under its own preconditions: the site is refused with
-                    // its record and the capture's BCI, which is the answer a spelling failure gets
-                    // here rather than a second refusal vocabulary.
-                    //
-                    // The type is read by [`capture_value_type`], which spells the frames' own
-                    // named reference and, for the one reference the frames leave unknown by
-                    // design (`newarray`'s primitive array), reads the `atype` the creating
-                    // instruction states — the same fact [`written_type`] declares that local with.
-                    capture_value_type(self.ssa, self.operations, *value)
+                let capture_bci = self.value_bci(*value);
+                let value = captured_value(*value);
+                let ty = match self.ssa.value(value).def() {
+                    Definition::Instruction { bci, .. } => match self.operations.get(*bci) {
+                        Some(Operation::Load { slot }) => local_read(self.instructions[bci], *slot)
+                            .and_then(|read| self.caught_clause_parameter_type(*slot, read))
+                            .or_else(|| {
+                                self.reuse
+                                    .variable_at(*slot, *bci)
+                                    .and_then(|variable| self.decided_type(variable))
+                            }),
+                        _ => capture_value_type(self.ssa, self.operations, value)
+                            .ok()
+                            .flatten(),
+                    },
+                    Definition::Entry {
+                        slot: Slot::Local(slot),
+                        ..
+                    }
+                    | Definition::Phi {
+                        slot: Slot::Local(slot),
+                        ..
+                    } => self
+                        .reuse
+                        .variable_at(*slot, bci)
+                        .and_then(|variable| self.decided_type(variable)),
+                    _ => capture_value_type(self.ssa, self.operations, value)
                         .ok()
                         .flatten(),
-                )
+                };
+                (capture_bci, ty)
             })
             .collect();
+        // A proved reference widening has no creation-time conversion effect. Plan the site's
+        // exact operand type, then spell that same widening on the captured expression so an
+        // overloaded implementation call cannot acquire the local's newly refined subtype.
+        if let Some((parameters, _)) = lambda::parse_method_bytes(&site.raw_descriptor().0) {
+            for ((_, presented), required) in captures.iter_mut().zip(parameters) {
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(bci),
+                )?;
+                if let (Some(Type::Reference(source)), Type::Reference(target)) =
+                    (&*presented, &required)
+                    && source != target
+                    && crate::assignability::reference_assignable(
+                        self.runtime_release,
+                        source,
+                        target,
+                        bci,
+                        self.reference_relations,
+                    )
+                {
+                    *presented = Some(required);
+                }
+            }
+        }
         let receiver_nonnull = receiver_tail.is_some()
             || match operands.as_slice() {
                 [(_, receiver)] => {
@@ -33088,9 +35579,6 @@ impl Builder<'_> {
             self.array_constructor_sites.push(ArrayConstructorSite {
                 use_site: bci,
                 site_cp: site.cp(),
-                helper_owner: plan.implementation.owner().to_owned(),
-                helper_name: plan.implementation.name().to_owned(),
-                helper_descriptor: plan.implementation.descriptor().to_owned(),
                 array_type: array_constructor.array_type.spell().to_owned(),
                 target_type: plan.target_type.spell().to_owned(),
             });
@@ -33129,7 +35617,7 @@ impl Builder<'_> {
             let (at, _) = captures[index];
             let (_, value) = operands[index];
             let value = captured_value(value);
-            if let Some(reason) = self.unreplayable(value) {
+            if let Some(reason) = self.unreplayable(value, bci)? {
                 let refusal = Refusal::unmet(
                     &LAMBDA,
                     Precondition::Replayable,
@@ -33159,14 +35647,36 @@ impl Builder<'_> {
         for index in 0..plan.captures {
             let (at, _) = captures[index];
             let (_, value) = operands[index];
-            let expr = match self.render_value(captured_value(value), bci, 0) {
+            let rendered = self
+                .render_value(captured_value(value), bci, 0)
+                .and_then(|expr| {
+                    if let Some(required @ Type::Reference(_)) = &captures[index].1
+                        && expr.presented.as_ref() != Some(required)
+                    {
+                        let factory_cast = u64::from(matches!(
+                            expr.kind,
+                            ExprKind::Lambda { .. } | ExprKind::MethodReference { .. }
+                        ));
+                        charge(
+                            self.budget,
+                            CountedBudgetDimension::IrItems,
+                            1 + factory_cast,
+                            Some(bci),
+                        )?;
+                        self.invocation_argument(expr, required, bci, "captured operand")
+                            .map_err(ValueRenderFailure::from)
+                    } else {
+                        Ok(expr)
+                    }
+                });
+            let expr = match rendered {
                 Ok(expr) => expr,
                 Err(ValueRenderFailure::Stop(stop)) => return Err(stop.into()),
-                Err(ValueRenderFailure::Refusal(_)) => {
+                Err(ValueRenderFailure::Refusal(reason)) => {
                     let refusal = Refusal::shape(
                         "jre_lambda_capture",
                         format!(
-                            "the value captured for the site's argument {index} (BCI {}) produces no expression this subset writes",
+                            "the value captured for the site's argument {index} (BCI {}) produces no expression this subset writes: {reason}",
                             at.map_or_else(|| "unknown".to_string(), |at| at.to_string())
                         ),
                     );
@@ -33235,6 +35745,7 @@ impl Builder<'_> {
                         ExprKind::Cast {
                             ty: adaptation.dynamic.clone(),
                             value: Box::new(value),
+                            source_type_name: None,
                         },
                         site_origin.clone(),
                     );
@@ -33247,6 +35758,7 @@ impl Builder<'_> {
                         ExprKind::Cast {
                             ty: adaptation.implementation.clone(),
                             value: Box::new(value),
+                            source_type_name: None,
                         },
                         site_origin.clone(),
                     );
@@ -33388,13 +35900,14 @@ impl Builder<'_> {
             use_site: bci,
             site_cp: site.cp(),
             bootstrap_index: site.bootstrap_index(),
-            sam_name: site.name().to_string(),
-            sam_descriptor: site.descriptor().to_string(),
+            sam_name: site.raw_name().clone(),
+            sam_descriptor: site.raw_descriptor().clone(),
             evidence,
             form,
             typed_reference,
             refusal: shape,
             captures: captures.to_vec(),
+            unclosed_body_bcis: None,
         });
     }
 
@@ -33434,17 +35947,21 @@ impl Builder<'_> {
     /// have been written as a statement of its own — a call whose result the site captures is a call
     /// statement *and* an argument. So the value is replayable only when re-reading its text is the
     /// same thing as having read it once: a literal, or a local the body writes exactly once.
-    fn unreplayable(&self, value: ValueId) -> Option<String> {
-        match self.ssa.value(value).def() {
+    fn unreplayable(&mut self, value: ValueId, at: u32) -> Result<Option<String>, StopReason> {
+        let local = match self.ssa.value(value).def() {
             Definition::Instruction { bci, .. } => match self.operations.get(*bci) {
-                Some(Operation::Push(_)) => None,
-                Some(Operation::Load { slot }) => self.written_once(*slot),
-                Some(operation) => Some(format!(
-                    "it comes from an {operation:?} at BCI {bci}, whose text would run again (or run later) inside the shape"
-                )),
-                None => Some(format!(
-                    "it comes from the instruction at BCI {bci}, which this run did not decode"
-                )),
+                Some(Operation::Push(_)) => return Ok(None),
+                Some(Operation::Load { slot }) => self.reuse.variable_at(*slot, *bci),
+                Some(operation) => {
+                    return Ok(Some(format!(
+                        "it comes from an {operation:?} at BCI {bci}, whose text would run again (or run later) inside the shape"
+                    )));
+                }
+                None => {
+                    return Ok(Some(format!(
+                        "the instruction at BCI {bci} was not decoded"
+                    )));
+                }
             },
             Definition::Entry {
                 slot: Slot::Local(slot),
@@ -33453,49 +35970,100 @@ impl Builder<'_> {
             | Definition::Phi {
                 slot: Slot::Local(slot),
                 ..
-            } => self.written_once(*slot),
-            Definition::Entry {
-                slot: Slot::Stack(depth),
-                ..
+            } => self.reuse.variable_at(*slot, at),
+            _ => {
+                return Ok(Some(
+                    "the capture is not a literal or a named local".to_owned(),
+                ));
             }
-            | Definition::Phi {
-                slot: Slot::Stack(depth),
-                ..
-            } => Some(format!(
-                "it is the entry state of stack depth {depth}, which no instruction produced"
-            )),
-            Definition::Caught { bci, .. } => Some(format!(
-                "it is the exception reference of the throw site at BCI {bci}"
-            )),
-        }
+        };
+        let Some(variable) = local else {
+            return Ok(Some(
+                "the capture has no source variable at its read".to_owned(),
+            ));
+        };
+        self.capture_local_replayable(variable)
     }
 
-    /// Why one local's text cannot be read again, when it cannot: the body writes it more than once.
-    ///
-    /// A local the body writes exactly once is *effectively final* in the source's own sense, and
-    /// reading it again — which is what writing it inside a lambda body does — reads the same value.
-    /// A local written twice might not: a later write could land between the site and the lambda's
-    /// invocation, and the recovered text would then read a value the bytecode never captured.
-    /// Refusing is the honest answer, because this layer has no liveness analysis that could prove
-    /// the writes apart.
-    fn written_once(&self, slot: u16) -> Option<String> {
-        let mut writes = 0usize;
+    /// A source local is effectively final when its writes are mutually exclusive. The existing
+    /// declaration proof owns definite assignment; this check additionally forbids any path from
+    /// one physical write to another. Parameters already carry their caller's initial assignment.
+    fn capture_local_replayable(
+        &mut self,
+        variable: LocalVariable,
+    ) -> Result<Option<String>, StopReason> {
+        let mut writers = BTreeSet::new();
+        let mut writes = 0;
         for block in self.ssa.blocks() {
             for instruction in block.instructions() {
-                if instruction
-                    .writes()
-                    .iter()
-                    .any(|(written, _)| *written == Slot::Local(slot))
-                {
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(instruction.bci()),
+                )?;
+                if instruction.writes().iter().any(|(slot, _)| {
+                    *slot == Slot::Local(variable.slot())
+                        && self.reuse.variable_at(variable.slot(), instruction.bci())
+                            == Some(variable)
+                }) {
                     writes += 1;
+                    if !writers.insert(block.block().clone()) {
+                        return Ok(Some(
+                            "the captured variable has multiple writes in one block".to_owned(),
+                        ));
+                    }
                 }
             }
         }
-        (writes > 1).then(|| {
-            format!(
-                "the local {slot} is written {writes} times in this body, so reading it again inside the shape would not read the value the site captured"
-            )
-        })
+        if variable.slot() < self.parameters && writes != 0 {
+            return Ok(Some("the captured parameter is assigned again".to_owned()));
+        }
+        if writes <= 1 {
+            return Ok(None);
+        }
+        if !matches!(
+            self.declarations.placements.get(&variable),
+            Some(DeclarationPlacement::Elevated { .. })
+        ) {
+            return Ok(Some(
+                "the captured variable has no complete common declaration".to_owned(),
+            ));
+        }
+        let mut edges: BTreeMap<_, Vec<_>> = BTreeMap::new();
+        for edge in self.canonical.edges() {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(edge.from().bci()),
+            )?;
+            edges
+                .entry(edge.from().clone())
+                .or_default()
+                .push(edge.to().clone());
+        }
+        for writer in &writers {
+            let mut pending = edges.get(writer).cloned().unwrap_or_default();
+            let mut seen = BTreeSet::new();
+            while let Some(block) = pending.pop() {
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(block.bci()),
+                )?;
+                if writers.contains(&block) {
+                    return Ok(Some(
+                        "a captured variable write can reach another write".to_owned(),
+                    ));
+                }
+                if seen.insert(block.clone()) {
+                    pending.extend(edges.get(&block).into_iter().flatten().cloned());
+                }
+            }
+        }
+        Ok(None)
     }
 
     /// Whether one value reaches a statement — a read by an instruction this subset *renders* its
@@ -33938,7 +36506,7 @@ fn class_source_array_target_is_sufficient(plan: &lambda::Plan) -> bool {
 /// One place is deliberately **not** this shape: the arguments a lambda's factory site binds are the
 /// site's own captures, whose types the `invokedynamic` descriptor states for the SAM rather than for
 /// the implementation the reference names, so nothing there is re-typed.
-pub(crate) fn typed_arguments(descriptor: &str, arguments: Vec<Expr>) -> Vec<Expr> {
+pub(crate) fn typed_arguments(descriptor: &[u8], arguments: Vec<Expr>) -> Vec<Expr> {
     typed_arguments_with_offset(descriptor, arguments, 0)
 }
 
@@ -33960,17 +36528,16 @@ fn declared_varargs_parameter_descriptor<'a>(
     {
         return None;
     }
-    let mut named = methods?.filter(|(name, _, _)| *name == target.name().as_bytes());
+    let mut named = methods?.filter(|(name, _, _)| *name == target.raw_name().0.as_slice());
     let (_, descriptor, flags) = named.next()?;
     if named.next().is_some()
-        || descriptor != target.descriptor().as_bytes()
+        || descriptor != target.raw_descriptor().0.as_slice()
         || flags & ACC_VARARGS == 0
     {
         return None;
     }
-    let parameter = parameter_descriptors(target.descriptor())?
-        .last()?
-        .to_string();
+    let parameters = parameter_descriptors(&target.raw_descriptor().0)?;
+    let parameter = jarde_reader::model::JvmBytes(parameters.last()?.to_vec()).to_unicode()?;
     parameter.starts_with('[').then_some(parameter)
 }
 
@@ -34009,7 +36576,7 @@ fn single_varargs_element_may_be_fixed_array(element: &Expr, parameter_array: &T
 }
 
 fn typed_arguments_with_offset(
-    descriptor: &str,
+    descriptor: &[u8],
     arguments: Vec<Expr>,
     parameter_offset: usize,
 ) -> Vec<Expr> {
@@ -34028,8 +36595,8 @@ fn typed_arguments_with_offset(
 
 /// Applies the one descriptor-only spelling shared by every call position: an int-shaped literal
 /// `0`/`1` passed to a boolean parameter is the boolean the descriptor declares.
-fn typed_argument(argument: Expr, parameter: &str) -> Expr {
-    if parameter != "Z" {
+fn typed_argument(argument: Expr, parameter: &[u8]) -> Expr {
+    if parameter != b"Z" {
         return argument;
     }
     let ExprKind::Integer(value) = argument.kind else {
@@ -34054,9 +36621,84 @@ fn cast_argument(argument: Expr, required: &Type, bci: u32) -> Expr {
         ExprKind::Cast {
             ty: required.clone(),
             value: Box::new(argument),
+            source_type_name: None,
         },
         origin,
     )
+}
+
+/// A physical reference check accepts any reference, while Java can reject a direct cast
+/// between two refined final types. The Object upcast has no runtime check and evaluates its
+/// operand once; the enclosing CHECKCAST/INSTANCEOF retains its original target and origin.
+/// Functional expressions first keep the factory target already proved for their creation.
+fn reference_check_operand(
+    value: Expr,
+    cast_target: Option<&Type>,
+    bci: u32,
+    java_release: u16,
+    relations: &[crate::report::ReferenceRelationInput],
+    budget: &mut Budget,
+) -> Result<Expr, ValueRenderFailure> {
+    if cast_target.is_some_and(|target| value.presented.as_ref() == Some(target)) {
+        return Ok(value);
+    }
+    let value = if matches!(
+        value.kind,
+        ExprKind::Lambda { .. } | ExprKind::MethodReference { .. }
+    ) {
+        let target = value.presented.clone().ok_or_else(|| {
+            format!("the functional operand of the reference check at BCI {bci} has no proven factory target")
+        })?;
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(bci))?;
+        Expr::new(
+            ExprKind::Cast {
+                ty: target,
+                value: Box::new(value),
+                source_type_name: None,
+            },
+            OriginSet::new(Origin::derived(bci)),
+        )
+    } else {
+        value
+    };
+    match value.presented.as_ref() {
+        None if matches!(value.kind, ExprKind::Null) => Ok(value),
+        Some(Type::Reference(name)) if name == "java.lang.Object" => Ok(value),
+        Some(Type::Reference(name)) => {
+            // A proved downcast is one Java cast: the bytecode's own checkcast already names the
+            // target, and the operand's presented type reaches it through the stated hierarchy,
+            // so an `(Object)` stair would only restate that check. The hierarchy evidence is the
+            // intrinsic rows **or the same pair's proved header walk** — a jar-local pair the
+            // relation pass resolved (`Other$Tagged implements Other$Mark` reads the class's own
+            // interfaces) states in either direction that the plain cast compiles, which is all
+            // the stair existed to guarantee. The stair stays for operand pairs no row and no
+            // proved relation relates, where the target cast alone would not compile.
+            let proved_downcast = cast_target.is_some_and(|target| {
+                matches!(target, Type::Reference(target_name)
+                    if crate::assignability::reference_intrinsically_assignable(target_name, name)
+                        || relations.iter().any(|proof| {
+                            ((proof.source == *target_name && proof.target == *name)
+                                || (proof.source == *name && proof.target == *target_name))
+                                && proof.relation.is_assignable(java_release)
+                        }))
+            });
+            if proved_downcast {
+                return Ok(value);
+            }
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(bci))?;
+            Ok(Expr::new(
+                ExprKind::Cast {
+                    ty: Type::Reference("java.lang.Object".to_owned()),
+                    value: Box::new(value),
+                    source_type_name: None,
+                },
+                OriginSet::new(Origin::derived(bci)),
+            ))
+        }
+        _ => {
+            Err(format!("the reference check at BCI {bci} has no proven reference operand").into())
+        }
+    }
 }
 
 /// States one conditional as byte/short only when both source arms have local evidence.
@@ -34115,7 +36757,7 @@ fn structural_reflection_over_pool_spelled_literal(
     rendered: &Expr,
     target: &CallTarget,
     declaring_class: Option<&str>,
-    nested_class_members: &[String],
+    source_names: crate::names::SourceClassNames<'_>,
     pool_spelled_members: bool,
     bci: u32,
 ) -> Option<String> {
@@ -34134,7 +36776,11 @@ fn structural_reflection_over_pool_spelled_literal(
         Some((element, _)) => element,
         None => ty.as_str(),
     };
-    let stated = nested_class_members.iter().any(|member| member == element);
+    let raw_element = jarde_reader::model::JvmBytes::from_unicode(&element.replace('.', "/"));
+    let stated = source_names
+        .inner_classes
+        .iter()
+        .any(|row| row.class == raw_element.0);
     if !stated {
         return None;
     }
@@ -34266,6 +36912,7 @@ fn meeting_position(
                     ExprKind::Cast {
                         ty: required.clone(),
                         value: Box::new(value),
+                        source_type_name: None,
                     },
                     origin,
                 ))
@@ -34435,46 +37082,13 @@ fn narrowed_literal(value: Expr, required: &Type) -> Expr {
 /// reading of both: a callee's parameter, a field's own declaration, and the type a write has to
 /// meet.
 fn descriptor_type(descriptor: &str) -> Option<Type> {
-    let facts = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Field).ok()?;
+    let bytes = jarde_reader::model::JvmBytes::from_unicode(descriptor);
+    descriptor_type_bytes(&bytes.0)
+}
+
+fn descriptor_type_bytes(descriptor: &[u8]) -> Option<Type> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Field).ok()?;
     lambda::type_of_component(facts.single()?)
-}
-
-/// The scalar reference relations already stated by the closed Java 8 tables. A caller may use
-/// these for a scalar initializer element, or lift the same relation through an equal-rank
-/// reference-array shape; no invocation-site overload proof participates in initializer typing.
-fn known_scalar_initializer_reference_widens(
-    java_release: u16,
-    presented: &str,
-    required: &str,
-) -> bool {
-    release_reference_argument_widens(java_release, presented, required)
-        || java_lang_throwable_widens(presented, required)
-        || platform_interface_argument_widens(java_release, presented, required)
-}
-
-/// A spelling's deepest component and rank, for an actual reference array only. Primitive arrays
-/// are handled by the closed array-shape predicate and never borrow a class widening.
-fn reference_array_leaf(name: &str) -> Option<(&str, usize)> {
-    const MAX_ARRAY_DIMENSIONS: usize = 255;
-    let mut leaf = name;
-    let mut rank = 0usize;
-    while let Some(component) = leaf.strip_suffix("[]") {
-        rank += 1;
-        if rank > MAX_ARRAY_DIMENSIONS {
-            return None;
-        }
-        leaf = component;
-    }
-    if rank == 0
-        || leaf.is_empty()
-        || matches!(
-            leaf,
-            "boolean" | "byte" | "char" | "short" | "int" | "long" | "float" | "double" | "void"
-        )
-    {
-        return None;
-    }
-    Some((leaf, rank))
 }
 
 /// Whether one proved initializer element can be assigned to its component without changing the
@@ -34488,627 +37102,30 @@ fn initializer_reference_widens(
     presented: &str,
     required: &str,
     store_bci: u32,
-    snapshot_hierarchy_widenings: &[crate::report::ProvedSnapshotHierarchyWidening],
+    reference_relations: &[crate::report::ReferenceRelationInput],
 ) -> bool {
-    if array_reference_widens(presented, required)
-        || platform_array_argument_widens(java_release, presented, required)
-        || known_scalar_initializer_reference_widens(java_release, presented, required)
-        || snapshot_hierarchy_widenings.iter().any(|proof| {
-            proof.bci == store_bci && proof.source == presented && proof.target == required
-        })
-    {
-        return true;
-    }
-
-    let (Some((presented_leaf, presented_rank)), Some((required_leaf, required_rank))) = (
-        reference_array_leaf(presented),
-        reference_array_leaf(required),
-    ) else {
-        return false;
-    };
-    presented_rank == required_rank
-        && known_scalar_initializer_reference_widens(java_release, presented_leaf, required_leaf)
-}
-
-/// Whether one presented array type can be widened to a proven array type or array supertype using
-/// only Java's closed array component rules. Class and interface inheritance is deliberately not
-/// consulted here.
-///
-/// Both names are Java spellings read from existing type facts; this helper only peels their array
-/// suffixes. A descriptor can contain at most 255 array dimensions, which bounds the component
-/// walk.
-fn array_reference_widens(presented: &str, required: &str) -> bool {
-    const MAX_ARRAY_DIMENSIONS: usize = 255;
-
-    fn array_parts(name: &str) -> Option<(&str, usize)> {
-        let mut base = name;
-        let mut dimensions = 0usize;
-        while let Some(component) = base.strip_suffix("[]") {
-            dimensions += 1;
-            if dimensions > MAX_ARRAY_DIMENSIONS {
-                return None;
-            }
-            base = component;
-        }
-        if dimensions == 0 || base.is_empty() || base == "void" {
-            return None;
-        }
-        Some((base, dimensions))
-    }
-
-    fn primitive(name: &str) -> bool {
-        matches!(
-            name,
-            "boolean" | "byte" | "char" | "short" | "int" | "long" | "float" | "double"
-        )
-    }
-
-    let Some((presented_base, mut presented_dimensions)) = array_parts(presented) else {
-        return false;
-    };
-    let (required_base, mut required_dimensions) = match array_parts(required) {
-        Some((base, dimensions)) => (base, dimensions),
-        // Every array type implements these two marker interfaces. A class component with one of
-        // these names is not enough evidence: the marker shortcut applies only to an array value.
-        None if matches!(required, "java.lang.Cloneable" | "java.io.Serializable") => {
-            return true;
-        }
-        None => return false,
-    };
-
-    loop {
-        // The current outer arrays have been reduced to their component types. An array component
-        // is a reference even when its own element type is primitive (`int[]` is an Object).
-        let presented_component_is_array = presented_dimensions > 1;
-        let required_component_is_array = required_dimensions > 1;
-        let presented_component_is_reference =
-            presented_component_is_array || !primitive(presented_base);
-
-        if !required_component_is_array
-            && required_base == "java.lang.Object"
-            && presented_component_is_reference
-        {
-            return true;
-        }
-
-        if !required_component_is_array
-            && matches!(
-                required_base,
-                "java.lang.Cloneable" | "java.io.Serializable"
-            )
-            && presented_component_is_array
-        {
-            return true;
-        }
-
-        if presented_component_is_array && required_component_is_array {
-            presented_dimensions -= 1;
-            required_dimensions -= 1;
-            continue;
-        }
-
-        if !presented_component_is_array && !required_component_is_array {
-            // Primitive components are invariant; reference components are admitted only when
-            // identical here. The Object and marker cases above are the sole widenings proved by
-            // array shape.
-            return presented_base == required_base;
-        }
-
-        // An array component cannot become an arbitrary class/interface component, and an
-        // arbitrary class/interface component cannot become an array component.
-        return false;
-    }
-}
-
-/// The array position of the platform tables above: whether one presented **array** type can be
-/// widened to a required array type whose deepest reference components are a pair one of those
-/// closed tables proves. `String[]` at a `CharSequence[]` position is the shape
-/// `String.join(CharSequence, CharSequence...)` writes for a `String[]` argument, and
-/// `String[][]` at a `CharSequence[][]` position is the same relation one rank deeper.
-///
-/// The array shapes must agree rank for rank — a primitive component never stands in for a
-/// reference one, and an array component never meets a class component — exactly as
-/// [`array_reference_widens`] states them; this predicate then states no fact of its own, it only
-/// asks these tables the scalar positions ask. The two channels that answered arrays before this
-/// change are deliberately **not** consulted here: [`release_reference_argument_widens`] and
-/// [`java_lang_throwable_widens`] keep the array answer they always stated, so an
-/// `IllegalStateException[]` argument at a `Throwable[]` position stays refused exactly as before.
-fn platform_array_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
-    const MAX_ARRAY_DIMENSIONS: usize = 255;
-
-    let mut presented = presented;
-    let mut required = required;
-    for _ in 0..MAX_ARRAY_DIMENSIONS {
-        let (Some(presented_component), Some(required_component)) =
-            (presented.strip_suffix("[]"), required.strip_suffix("[]"))
-        else {
-            return false;
-        };
-        if presented_component.is_empty() || required_component.is_empty() {
-            return false;
-        }
-        let presented_is_array = presented_component.ends_with("[]");
-        let required_is_array = required_component.ends_with("[]");
-        if presented_is_array != required_is_array {
-            return false;
-        }
-        if !presented_is_array {
-            return platform_interface_argument_widens(
-                java_release,
-                presented_component,
-                required_component,
-            );
-        }
-        presented = presented_component;
-        required = required_component;
-    }
-    false
-}
-
-/// The Java 8 `java.util` collection hierarchy one invocation argument may cross, stated as the
-/// fixed direct edges of the release-8 tree, plus the two `java.io` reader edges the three-layer
-/// stream-construction chain states. A class row is a javadoc `extends` (one superclass) or
-/// `implements` (one interface) relation of that class; an interface row is a javadoc `extends`
-/// relation of that interface. The walk follows the rows to their roots, so the answer is exactly
-/// the ancestors this closed set reaches — `List -> Collection -> Iterable`, `TreeSet ->
-/// NavigableSet -> SortedSet -> Set -> Collection`, and the like — and nothing outside the
-/// enumerated `java.util` collection types (`java.util.concurrent`, the `Collections`/`Arrays`
-/// factories, `EnumSet`/`IdentityHashMap`/`PriorityQueue` and the non-collection `java.util` types
-/// such as `Dictionary`/`Date`, plus every user class), and nothing outside the two `java.io`
-/// edges' own ancestors, widens until a resolution-environment hierarchy proof exists. The same
-/// channel already states the `java.lang` Throwable tree ([`java_lang_throwable_widens`]); this is
-/// its `java.util` counterpart.
-///
-/// The two `java.io` rows are the third layer of the wrapped-stream construction: a
-/// `BufferedReader` over an `InputStreamReader` over a `FileInputStream` presents each inner
-/// stream at the next constructor's own parameter type. Both rows are `javap` transcriptions of
-/// the release-8 library (`InputStreamReader`'s constructor is `(java.io.InputStream,
-/// java.lang.String)` and `BufferedReader`'s is `(java.io.Reader)`, and each class's own header
-/// names the direct superclass the row states); the transcription and its self-check live in
-/// `openspec/evidence/java-syntax-2026-10-05/widening-row-sources/`. The set stays closed: a
-/// presented type widens exactly to the ancestors these declared edges reach, and no other
-/// `java.io` type states an edge here, so `java.io.FileReader` (a subclass of `InputStreamReader`)
-/// and every other reader stay refused until their own row is transcribed.
-pub(crate) fn release_reference_argument_widens(
-    java_release: u16,
-    presented: &str,
-    required: &str,
-) -> bool {
-    // One row per documented direct `extends`/`implements` of the release-8 `java.util` collection
-    // tree. A row's two names are the javadoc's own declaration of that type.
-    const DIRECT_EDGES: &[(&str, &str)] = &[
-        // The `Abstract*` skeletons the concrete classes are built on.
-        ("java.util.AbstractCollection", "java.util.Collection"),
-        ("java.util.AbstractList", "java.util.AbstractCollection"),
-        ("java.util.AbstractList", "java.util.List"),
-        ("java.util.AbstractSequentialList", "java.util.AbstractList"),
-        ("java.util.AbstractSet", "java.util.AbstractCollection"),
-        ("java.util.AbstractSet", "java.util.Set"),
-        ("java.util.AbstractMap", "java.util.Map"),
-        // The `List` implementations.
-        ("java.util.ArrayList", "java.util.AbstractList"),
-        ("java.util.ArrayList", "java.util.List"),
-        ("java.util.LinkedList", "java.util.AbstractSequentialList"),
-        ("java.util.LinkedList", "java.util.List"),
-        ("java.util.LinkedList", "java.util.Deque"),
-        ("java.util.Vector", "java.util.AbstractList"),
-        ("java.util.Vector", "java.util.List"),
-        ("java.util.Stack", "java.util.Vector"),
-        // The `Set` implementations.
-        ("java.util.HashSet", "java.util.AbstractSet"),
-        ("java.util.HashSet", "java.util.Set"),
-        ("java.util.LinkedHashSet", "java.util.HashSet"),
-        ("java.util.LinkedHashSet", "java.util.Set"),
-        ("java.util.TreeSet", "java.util.AbstractSet"),
-        ("java.util.TreeSet", "java.util.NavigableSet"),
-        // The `Map` implementations. `Hashtable`'s other javadoc parent is `java.util.Dictionary`,
-        // which is not a collection type: no row states it, so a `Dictionary` slot stays refused.
-        ("java.util.HashMap", "java.util.AbstractMap"),
-        ("java.util.HashMap", "java.util.Map"),
-        ("java.util.LinkedHashMap", "java.util.HashMap"),
-        ("java.util.LinkedHashMap", "java.util.Map"),
-        ("java.util.Hashtable", "java.util.Map"),
-        ("java.util.Properties", "java.util.Hashtable"),
-        ("java.util.TreeMap", "java.util.AbstractMap"),
-        ("java.util.TreeMap", "java.util.NavigableMap"),
-        // The `Deque` implementation and its skeleton.
-        ("java.util.ArrayDeque", "java.util.AbstractCollection"),
-        ("java.util.ArrayDeque", "java.util.Deque"),
-        // The interface chain itself, down to the `Iterable` root.
-        ("java.util.Collection", "java.lang.Iterable"),
-        ("java.util.List", "java.util.Collection"),
-        ("java.util.Queue", "java.util.Collection"),
-        ("java.util.Deque", "java.util.Queue"),
-        ("java.util.Set", "java.util.Collection"),
-        ("java.util.SortedSet", "java.util.Set"),
-        ("java.util.NavigableSet", "java.util.SortedSet"),
-        ("java.util.SortedMap", "java.util.Map"),
-        ("java.util.NavigableMap", "java.util.SortedMap"),
-        // The two `java.io` edges of the three-layer stream chain: `FileInputStream` at
-        // `InputStreamReader(InputStream, String)` and `InputStreamReader` at
-        // `BufferedReader(Reader)`. Each is the class's own `extends` clause (javap,
-        // release 8), transcribed with its header in the widening-row-sources protocol file.
-        ("java.io.FileInputStream", "java.io.InputStream"),
-        ("java.io.InputStreamReader", "java.io.Reader"),
-    ];
-    // The rows are one acyclic superclass/interface graph, so the walk from the presented type
-    // reaches every ancestor the table proves; the step cap only bounds a corrupted table the same
-    // way the array walk bounds a corrupted rank, and each parent is compared as it is appended, so
-    // the answer is the widening relation alone — a presented type equal to the required one is the
-    // dispatch's same-name answer, never this table's.
-    if java_release != 8 {
-        return false;
-    }
-    let mut frontier: Vec<&str> = vec![presented];
-    for _ in 0..DIRECT_EDGES.len() {
-        let mut next: Vec<&str> = Vec::new();
-        for current in &frontier {
-            for (child, parent) in DIRECT_EDGES {
-                if child == current {
-                    if *parent == required {
-                        return true;
-                    }
-                    next.push(parent);
-                }
-            }
-        }
-        if next.is_empty() {
-            return false;
-        }
-        frontier = next;
-    }
-    false
-}
-
-/// The JDK 8 `java.lang` Throwable family one invocation argument may cross. The JVM verifier
-/// already admitted the argument's value to the invoked descriptor's parameter, so an exception
-/// value a `Throwable` slot receives (a wrap-and-rethrow's cause, a forwarding method's caught
-/// exception) cannot fail the widening on either side — the relation is the platform's own fixed
-/// class hierarchy, the same closed knowledge [`release_reference_argument_widens`] states for
-/// its one pair. Every row is one direct superclass edge of the release-8 `java.lang` tree, kept
-/// spelled out for review; the walk admits exactly the ancestors these rows reach, and nothing
-/// outside `java.lang` (the `java.io`, `java.util` and user subclasses of the same family state
-/// no row here) widens until a resolution-environment hierarchy proof exists.
-fn java_lang_throwable_widens(presented: &str, required: &str) -> bool {
-    // (class, direct superclass), one row per documented `extends` of the JDK 8 java.lang
-    // Throwable tree. A row's two names are the javadoc's own declaration of that class.
-    const DIRECT_EDGES: &[(&str, &str)] = &[
-        // The two roots of the checked and unchecked halves.
-        ("java.lang.Exception", "java.lang.Throwable"),
-        ("java.lang.Error", "java.lang.Throwable"),
-        // The unchecked half under RuntimeException.
-        ("java.lang.RuntimeException", "java.lang.Exception"),
-        (
-            "java.lang.IllegalStateException",
-            "java.lang.RuntimeException",
-        ),
-        (
-            "java.lang.IllegalArgumentException",
-            "java.lang.RuntimeException",
-        ),
-        (
-            "java.lang.NullPointerException",
-            "java.lang.RuntimeException",
-        ),
-        ("java.lang.ClassCastException", "java.lang.RuntimeException"),
-        (
-            "java.lang.ArrayStoreException",
-            "java.lang.RuntimeException",
-        ),
-        (
-            "java.lang.ArithmeticException",
-            "java.lang.RuntimeException",
-        ),
-        (
-            "java.lang.IndexOutOfBoundsException",
-            "java.lang.RuntimeException",
-        ),
-        (
-            "java.lang.NegativeArraySizeException",
-            "java.lang.RuntimeException",
-        ),
-        (
-            "java.lang.IllegalMonitorStateException",
-            "java.lang.RuntimeException",
-        ),
-        ("java.lang.SecurityException", "java.lang.RuntimeException"),
-        (
-            "java.lang.UnsupportedOperationException",
-            "java.lang.RuntimeException",
-        ),
-        (
-            "java.lang.TypeNotPresentException",
-            "java.lang.RuntimeException",
-        ),
-        (
-            "java.lang.EnumConstantNotPresentException",
-            "java.lang.RuntimeException",
-        ),
-        // The checked half under Exception.
-        (
-            "java.lang.CloneNotSupportedException",
-            "java.lang.Exception",
-        ),
-        ("java.lang.InterruptedException", "java.lang.Exception"),
-        (
-            "java.lang.ReflectiveOperationException",
-            "java.lang.Exception",
-        ),
-        (
-            "java.lang.ClassNotFoundException",
-            "java.lang.ReflectiveOperationException",
-        ),
-        // The two documented IllegalArgumentException subclasses.
-        (
-            "java.lang.NumberFormatException",
-            "java.lang.IllegalArgumentException",
-        ),
-        (
-            "java.lang.IllegalThreadStateException",
-            "java.lang.IllegalArgumentException",
-        ),
-        // The two documented IndexOutOfBoundsException subclasses.
-        (
-            "java.lang.ArrayIndexOutOfBoundsException",
-            "java.lang.IndexOutOfBoundsException",
-        ),
-        (
-            "java.lang.StringIndexOutOfBoundsException",
-            "java.lang.IndexOutOfBoundsException",
-        ),
-        // The Error tree: the roots of its three branches, then each branch's own subclasses.
-        ("java.lang.ThreadDeath", "java.lang.Error"),
-        ("java.lang.AssertionError", "java.lang.Error"),
-        ("java.lang.LinkageError", "java.lang.Error"),
-        ("java.lang.VirtualMachineError", "java.lang.Error"),
-        ("java.lang.ClassCircularityError", "java.lang.LinkageError"),
-        ("java.lang.ClassFormatError", "java.lang.LinkageError"),
-        (
-            "java.lang.ExceptionInInitializerError",
-            "java.lang.LinkageError",
-        ),
-        ("java.lang.NoClassDefFoundError", "java.lang.LinkageError"),
-        ("java.lang.UnsatisfiedLinkError", "java.lang.LinkageError"),
-        ("java.lang.VerifyError", "java.lang.LinkageError"),
-        ("java.lang.BootstrapMethodError", "java.lang.LinkageError"),
-        (
-            "java.lang.IncompatibleClassChangeError",
-            "java.lang.LinkageError",
-        ),
-        (
-            "java.lang.AbstractMethodError",
-            "java.lang.IncompatibleClassChangeError",
-        ),
-        (
-            "java.lang.IllegalAccessError",
-            "java.lang.IncompatibleClassChangeError",
-        ),
-        (
-            "java.lang.InstantiationError",
-            "java.lang.IncompatibleClassChangeError",
-        ),
-        (
-            "java.lang.NoSuchFieldError",
-            "java.lang.IncompatibleClassChangeError",
-        ),
-        (
-            "java.lang.NoSuchMethodError",
-            "java.lang.IncompatibleClassChangeError",
-        ),
-        ("java.lang.InternalError", "java.lang.VirtualMachineError"),
-        (
-            "java.lang.OutOfMemoryError",
-            "java.lang.VirtualMachineError",
-        ),
-        (
-            "java.lang.StackOverflowError",
-            "java.lang.VirtualMachineError",
-        ),
-        ("java.lang.UnknownError", "java.lang.VirtualMachineError"),
-    ];
-    // The rows are one acyclic superclass chain, so the walk from the presented class reaches
-    // every ancestor the table proves; the step cap only bounds a corrupted table the same way
-    // the array walk bounds a corrupted rank. The parent is compared after each step, so the
-    // answer is the widening relation alone: a presented type equal to the required one is the
-    // dispatch's same-name answer, never this table's.
-    let mut current = presented;
-    for _ in 0..DIRECT_EDGES.len() {
-        let Some((_, parent)) = DIRECT_EDGES.iter().find(|(child, _)| *child == current) else {
-            return false;
-        };
-        current = parent;
-        if current == required {
-            return true;
-        }
-    }
-    false
-}
-
-/// The release-8 implementer sets and superclasses of the platform types the two tables above do
-/// not state: the `java.lang` interfaces `CharSequence` and `Comparable`, the `java.lang.Number`
-/// superclass of the six boxed numeric classes, `java.io.Serializable`, and the enum family's own
-/// `java.util.EnumSet` collection type.
-///
-/// The JVM verifier already admitted the argument's value to the invoked descriptor's parameter,
-/// so a value one of these rows names cannot fail the widening: every row is the platform's own
-/// fixed relation between two names the JDK ships, stated exactly as the release-8 javadoc
-/// declares it — a class row is the implementer's own declaration of that interface, or the
-/// superclass whose declaration carries it — and a pair no row states does not widen. The answer is
-/// therefore the same closed knowledge [`release_reference_argument_widens`] states for its
-/// `java.util` tree and [`java_lang_throwable_widens`] for its `java.lang` Throwable family, and a
-/// caller renders a hit exactly as it renders theirs.
-///
-/// An enum constant's value needs no row here: the enum class is a class of the analyzed snapshot,
-/// and its own class-file header names `java.lang.Enum`, which the snapshot hierarchy proof already
-/// states. Only the platform type a snapshot does not hold is tabled.
-///
-/// Two further families are stated the same way, both transcribed from the same release-8 `rt.jar`
-/// (`openspec/evidence/java-syntax-2026-10-05/widening-row-sources/`, the 2026-10-06 rows): the
-/// `java.time` Temporal family (its seven named types, each under `java.time.temporal.Temporal` and
-/// `java.time.temporal.TemporalAccessor` — the second read through the first's own header, the
-/// chain the `TEMPORAL_FAMILY` row note spells out) and `java.util.concurrent.CompletableFuture`'s
-/// two interfaces. Their rows, their gate and the render are this function's, so a `LocalDateTime`
-/// at a `TemporalAccessor` slot and a `CompletableFuture` at a `CompletionStage` slot are answered
-/// exactly as a `String` at a `CharSequence` slot is.
-///
-/// The boxed-number family the 2026-10-07 slice states is the `java.lang.Number` edge of the same
-/// six names the `COMPARABLE` and `SERIALIZABLE` tables already carry, transcribed from the same
-/// release-8 `rt.jar` (the six headers' own `extends java.lang.Number` clause, the lines
-/// `openspec/evidence/java-syntax-2026-10-05/widening-row-sources/javap-headers.txt` already
-/// holds). The release-8 direct-child check
-/// (`openspec/changes/recover-boxed-number-widening/results/probe/number-universe.out`) found
-/// exactly those six direct `java.lang` subclasses, with no intermediate `java.lang` class. This
-/// table additionally carries the separately verified `BigDecimal -> Number` header edge from
-/// `release8-header-root-v1.json`. `BigInteger` and the `java.util.concurrent.atomic` subclasses
-/// state no row; a pair no row states keeps its refusal.
-fn platform_interface_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
-    // `java.lang.CharSequence`'s implementers: `String`, `StringBuffer` and `StringBuilder`
-    // declare the interface in their own headers, and so does `java.nio.CharBuffer`. The closed
-    // four rows are the release-8 javadoc's set this change pins; the same javadoc's implementer
-    // list also names `javax.swing.text.Segment`, which states no row here, so that pair keeps its
-    // refusal rather than widening from memory.
-    const CHAR_SEQUENCE: &[(&str, &str)] = &[
-        ("java.lang.String", "java.lang.CharSequence"),
-        ("java.lang.StringBuffer", "java.lang.CharSequence"),
-        ("java.lang.StringBuilder", "java.lang.CharSequence"),
-        ("java.nio.CharBuffer", "java.lang.CharSequence"),
-    ];
-    // `java.lang.Comparable`'s `java.lang` implementers: `String` and the eight boxed types, each
-    // of which declares `Comparable<itself>` in its own header. The `java.math` and other JDK
-    // implementers state no row (this table is the `java.lang` set).
-    const COMPARABLE: &[(&str, &str)] = &[
-        ("java.lang.String", "java.lang.Comparable"),
-        ("java.lang.Byte", "java.lang.Comparable"),
-        ("java.lang.Short", "java.lang.Comparable"),
-        ("java.lang.Integer", "java.lang.Comparable"),
-        ("java.lang.Long", "java.lang.Comparable"),
-        ("java.lang.Float", "java.lang.Comparable"),
-        ("java.lang.Double", "java.lang.Comparable"),
-        ("java.lang.Character", "java.lang.Comparable"),
-        ("java.lang.Boolean", "java.lang.Comparable"),
-    ];
-    // `java.io.Serializable`'s `java.lang` implementers of the same nine names: `String`,
-    // `Character` and `Boolean` declare the interface in their own headers, and the six `Number`
-    // subclasses reach it through the `java.lang.Number` header that declares it — the javadoc's
-    // own implemented-interface list, read the way this file's java.util table reads
-    // `Properties -> java.util.Map` off `Hashtable`.
-    const SERIALIZABLE: &[(&str, &str)] = &[
-        ("java.lang.String", "java.io.Serializable"),
-        ("java.lang.Byte", "java.io.Serializable"),
-        ("java.lang.Short", "java.io.Serializable"),
-        ("java.lang.Integer", "java.io.Serializable"),
-        ("java.lang.Long", "java.io.Serializable"),
-        ("java.lang.Float", "java.io.Serializable"),
-        ("java.lang.Double", "java.io.Serializable"),
-        ("java.lang.Character", "java.io.Serializable"),
-        ("java.lang.Boolean", "java.io.Serializable"),
-    ];
-    // `java.lang.Number`'s direct children pinned here: the six boxed numbers and BigDecimal. The
-    // six boxed headers and the Corretto 8 `java.math.BigDecimal` header each state
-    // `extends java.lang.Number`; the latter is pinned by
-    // `openspec/changes/recover-bigdecimal-number-widening/results/release8-header-root-v1.json`
-    // (rt.jar SHA-256 `b27515a608ee447566b688e2bbb2257b1f0d8eceb96c307b87eb28d90a6630f4`).
-    // BigInteger and the `java.util.concurrent.atomic` family remain outside this closed set.
-    const NUMBER_FAMILY: &[(&str, &str)] = &[
-        ("java.lang.Byte", "java.lang.Number"),
-        ("java.lang.Short", "java.lang.Number"),
-        ("java.lang.Integer", "java.lang.Number"),
-        ("java.lang.Long", "java.lang.Number"),
-        ("java.lang.Float", "java.lang.Number"),
-        ("java.lang.Double", "java.lang.Number"),
-        ("java.math.BigDecimal", "java.lang.Number"),
-    ];
-    // The enum family's collection type: `java.util.EnumSet` extends `java.util.AbstractSet`, and
-    // the javadoc's implemented-interface list reaches `Set`, `Collection` and `Iterable` — the
-    // rows the `EnumSet.retainAll(Collection)` argument position of an `EnumSet` parameter needs.
-    // `EnumSet`'s `Cloneable`/`Serializable` relations state no row: the collection positions are
-    // the ones the enum change pins.
-    const ENUM_FAMILY: &[(&str, &str)] = &[
-        ("java.util.EnumSet", "java.util.AbstractSet"),
-        ("java.util.EnumSet", "java.util.Set"),
-        ("java.util.EnumSet", "java.util.Collection"),
-        ("java.util.EnumSet", "java.lang.Iterable"),
-    ];
-    // The `java.time` Temporal family: every one of the seven names declares
-    // `java.time.temporal.Temporal` in its own header, and the `TemporalAccessor` row of each name
-    // is that interface's own declaration (`java.time.temporal.Temporal extends
-    // java.time.temporal.TemporalAccessor`) — the javadoc-style read of an implemented-interface
-    // list through the header that carries it, the way this file's java.util table reads
-    // `Properties -> java.util.Map` off `Hashtable`. The chain is the same for all seven:
-    //
-    //   java.time.<name> --implements--> java.time.temporal.Temporal
-    //                    --extends-->    java.time.temporal.TemporalAccessor
-    //
-    // The closed fourteen rows are the ones the change pins after the header check: the MVP's
-    // `LocalDateTime`/`LocalDate`/`LocalTime` and the four the proposal admits (`Instant`,
-    // `ZonedDateTime`, `OffsetDateTime`, `OffsetTime`). The interface family's other platform
-    // implementers (`java.time.chrono.*`, the adjuster types) state no row here.
-    const TEMPORAL_FAMILY: &[(&str, &str)] = &[
-        ("java.time.LocalDateTime", "java.time.temporal.Temporal"),
-        (
-            "java.time.LocalDateTime",
-            "java.time.temporal.TemporalAccessor",
-        ),
-        ("java.time.LocalDate", "java.time.temporal.Temporal"),
-        ("java.time.LocalDate", "java.time.temporal.TemporalAccessor"),
-        ("java.time.LocalTime", "java.time.temporal.Temporal"),
-        ("java.time.LocalTime", "java.time.temporal.TemporalAccessor"),
-        ("java.time.Instant", "java.time.temporal.Temporal"),
-        ("java.time.Instant", "java.time.temporal.TemporalAccessor"),
-        ("java.time.ZonedDateTime", "java.time.temporal.Temporal"),
-        (
-            "java.time.ZonedDateTime",
-            "java.time.temporal.TemporalAccessor",
-        ),
-        ("java.time.OffsetDateTime", "java.time.temporal.Temporal"),
-        (
-            "java.time.OffsetDateTime",
-            "java.time.temporal.TemporalAccessor",
-        ),
-        ("java.time.OffsetTime", "java.time.temporal.Temporal"),
-        (
-            "java.time.OffsetTime",
-            "java.time.temporal.TemporalAccessor",
-        ),
-    ];
-    // The batch-2 rows the CompletableFuture patrol registered: one header line declares both
-    // interfaces (`CompletableFuture<T> implements Future<T>, CompletionStage<T>`), so both are
-    // stated and the rest of the `java.util.concurrent` tree is not.
-    const COMPLETABLE_FUTURE: &[(&str, &str)] = &[
-        (
-            "java.util.concurrent.CompletableFuture",
-            "java.util.concurrent.CompletionStage",
-        ),
-        (
-            "java.util.concurrent.CompletableFuture",
-            "java.util.concurrent.Future",
-        ),
-    ];
-    // Every row is a release-8 javadoc relation, so the gate the java.util table states for its own
-    // rows applies here too: another release's platform facts are not this table's.
-    if java_release != 8 {
-        return false;
-    }
-    [
-        CHAR_SEQUENCE,
-        COMPARABLE,
-        SERIALIZABLE,
-        NUMBER_FAMILY,
-        ENUM_FAMILY,
-        TEMPORAL_FAMILY,
-        COMPLETABLE_FUTURE,
-    ]
-    .iter()
-    .any(|rows| rows.contains(&(presented, required)))
+    crate::assignability::initializer_reference_assignable(
+        java_release,
+        presented,
+        required,
+        store_bci,
+        reference_relations,
+    )
 }
 
 /// The type one method descriptor's **result** states, when this layer can spell it (`V` is `None`).
 ///
 /// The member's own descriptor is the requirement every `return` of its body is written under, and a
 /// callee's descriptor is the type of the *value* a call site produces: the same reading answers
-/// both, and it is the reader's own reading of the production ([`lambda::parse_method`]).
+/// both. Production callers read [`return_type_bytes`] directly on the descriptor bytes they
+/// already hold; this text wrapper stays for the tests that spell a descriptor literal.
+#[cfg(test)]
 pub(crate) fn return_type(descriptor: &str) -> Option<Type> {
-    lambda::parse_method(descriptor)?.1
+    return_type_bytes(&jarde_reader::model::JvmBytes::from_unicode(descriptor).0)
+}
+
+fn return_type_bytes(descriptor: &[u8]) -> Option<Type> {
+    lambda::parse_method_bytes(descriptor)?.1
 }
 
 /// The parameter type descriptors one method descriptor states, in order
@@ -35119,16 +37136,12 @@ pub(crate) fn return_type(descriptor: &str) -> Option<Type> {
 /// answers is what a call's own descriptor says, in the same reading every other consumer of that
 /// descriptor uses. A descriptor that does not parse states no parameters a caller could line
 /// arguments up with, so the whole list is `None` rather than a prefix.
-fn parameter_descriptors(descriptor: &str) -> Option<Vec<&str>> {
-    let bytes = descriptor.as_bytes();
-    let facts = descriptor_facts(bytes, DescriptorKind::Method).ok()?;
+fn parameter_descriptors(descriptor: &[u8]) -> Option<Vec<&[u8]>> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
     facts
         .parameters()
         .iter()
-        .map(|component| {
-            let raw = component.bytes(bytes)?;
-            std::str::from_utf8(raw).ok()
-        })
+        .map(|component| component.bytes(descriptor))
         .collect()
 }
 
@@ -35165,7 +37178,7 @@ pub(crate) fn array_of_value(
         return None;
     }
     if let Value::Ref(RefType::Named { name, .. }) = ssa.value(value).ty() {
-        return array_descriptor(&String::from_utf8_lossy(name));
+        return array_descriptor(name);
     }
     let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
         return None;
@@ -35222,7 +37235,7 @@ pub(crate) fn array_of_value(
 pub(crate) struct AllocationBehind {
     /// The class the allocation builds, in internal form, exactly as the `new`'s own pool entry
     /// states it.
-    pub(crate) class: String,
+    pub(crate) class: JvmBytes,
     /// The local the chain's **first** load read, with the BCI it read it at, when the chain starts
     /// at a load. A store at a later BCI would replace the value in that slot, which is the one
     /// thing that can make "the value the bytecode captured" and "the slot a reader re-reads"
@@ -35307,8 +37320,8 @@ pub(crate) fn allocation_behind_value(
 /// The array one **descriptor** states, when this layer can spell it: its element type and its
 /// dimension count, read by this crate's one descriptor reading ([`crate::lambda::type_of_base`] for
 /// the base, the reader's own facts for the `[`s).
-fn array_descriptor(descriptor: &str) -> Option<(Type, u32)> {
-    let facts = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Field).ok()?;
+fn array_descriptor(descriptor: &[u8]) -> Option<(Type, u32)> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Field).ok()?;
     let component = facts.single()?;
     let dimensions = component.dimensions();
     if dimensions == 0 {
@@ -35461,6 +37474,7 @@ fn widen_covariant_store_receiver(array: Expr, component: &Type, value: &Expr) -
         ExprKind::Cast {
             ty: Type::Reference("java.lang.Object[]".to_owned()),
             value: Box::new(array),
+            source_type_name: None,
         },
         origin,
     )
@@ -35650,14 +37664,14 @@ where
         match context.operations.get(*bci) {
             Some(Operation::Push(ConstantValue::Int(0 | 1))) => BooleanEvidence::Literal,
             Some(Operation::InstanceOf { .. }) => BooleanEvidence::Proven,
-            Some(Operation::Invoke(target)) if returns_boolean(target.descriptor()) => {
+            Some(Operation::Invoke(target)) if returns_boolean(&target.raw_descriptor().0) => {
                 BooleanEvidence::Proven
             }
             Some(Operation::Field { .. })
                 if context
                     .fields
                     .claim(*bci)
-                    .is_some_and(|(evidence, _)| evidence.descriptor == "Z") =>
+                    .is_some_and(|(evidence, _)| evidence.descriptor.0.as_slice() == b"Z") =>
             {
                 BooleanEvidence::Proven
             }
@@ -36221,8 +38235,8 @@ fn store_operand(operations: &Operations, instruction: &SsaInstruction) -> Optio
 /// ([`descriptor_facts`]) through [`return_type`], so the return position is the one component that
 /// production states and not a substring of the text. A descriptor this reading cannot parse states
 /// no return type at all, and a value under it keeps the type it was rendered with.
-fn returns_boolean(descriptor: &str) -> bool {
-    matches!(return_type(descriptor), Some(Type::Boolean))
+fn returns_boolean(descriptor: &[u8]) -> bool {
+    matches!(return_type_bytes(descriptor), Some(Type::Boolean))
 }
 
 /// Locate a read that Java can move to the enhanced-for binding before the first body statement.
@@ -37102,7 +39116,7 @@ fn parameter_boolean(
 /// it in three places, so it is spelled once here — and a class name this layer cannot spell as a
 /// Java type refuses the site instead of being written as the pool spells it ([`spell_reference`]).
 fn implementation_owner(plan: &lambda::Plan, bci: u32) -> Result<String, String> {
-    spell_reference(plan.implementation.owner()).ok_or_else(|| {
+    plan.implementation.source_owner().ok_or_else(|| {
         format!(
             "the dynamic site at BCI {bci} implements `{}` in the class `{}`, which this layer cannot spell as a Java type",
             plan.implementation.name(),
@@ -37129,8 +39143,12 @@ fn value_type(value: &Value) -> Result<Option<Type>, String> {
         Value::Float => Some(Type::Float),
         Value::Double => Some(Type::Double),
         Value::Ref(RefType::Named { name, .. }) => {
-            let name = String::from_utf8_lossy(name).into_owned();
-            Some(Type::Reference(spell_reference(&name).ok_or(name)?))
+            let raw = JvmBytes(name.clone());
+            let spelling = raw
+                .to_unicode()
+                .and_then(|name| spell_reference(&name))
+                .ok_or_else(|| crate::facts::display_jvm_bytes(&raw))?;
+            Some(Type::Reference(spelling))
         }
         Value::Ref(_) | Value::Null => Some(Type::Reference("Object".to_string())),
         _ => None,
@@ -37155,41 +39173,90 @@ fn value_type(value: &Value) -> Result<Option<Type>, String> {
 ///   (`[`, `[V`, `[Lfoo`), a class type with no name (`L;`) — has no Java spelling to publish and is
 ///   `None`.
 /// * a **method descriptor** (`(I)V`) is not a type at all: `None`.
-/// * an **internal name** (`java/lang/Math`, the pool's own spelling of a class) is not a descriptor
-///   and keeps the historical reading, `/` → `.`. A bare name is never interpreted as one: a class
+/// * an **internal name** (`java/lang/Math`, the pool's own spelling of a class) follows the same
+///   source grammar as an object descriptor, through [`crate::names::source_class_name`]. A class
 ///   may be called `Lfoo`, so a name that merely looks like a truncated descriptor stays a name.
 pub(crate) fn spell_reference(descriptor: &str) -> Option<String> {
     match descriptor.as_bytes().first()? {
         // An array descriptor is read by the one descriptor parser of this crate: the elements it
         // spells are the object-name rule below, applied to the element the descriptor states.
-        b'[' => match crate::lambda::parse_type(descriptor.as_bytes(), 0) {
-            Some((Type::Reference(spelled), end)) if end == descriptor.len() => Some(spelled),
-            _ => None,
-        },
-        b'(' => None,
-        b'L' => match descriptor
-            .strip_prefix('L')
-            .and_then(|rest| rest.strip_suffix(';'))
-        {
-            // The object-descriptor form: its interior is the class name, which is never empty and
-            // never carries the `;` that would end it.
-            Some(internal) if !internal.is_empty() && !internal.contains(';') => {
-                Some(internal.replace('/', "."))
+        b'[' => {
+            let bytes = jarde_reader::model::JvmBytes::from_unicode(descriptor);
+            match crate::lambda::parse_type(&bytes.0, 0) {
+                Some((Type::Reference(spelled), end)) if end == bytes.0.len() => Some(spelled),
+                _ => None,
             }
-            Some(_) => None,
-            // No `L…;` wrapping to take off: the pool's own spelling of a class, kept as it is.
-            None => Some(descriptor.replace('/', ".")),
-        },
-        _ => Some(descriptor.replace('/', ".")),
+        }
+        b'(' => None,
+        _ => {
+            let internal = descriptor
+                .strip_prefix('L')
+                .and_then(|rest| rest.strip_suffix(';'))
+                .unwrap_or(descriptor);
+            crate::names::source_class_name(&JvmBytes::from_unicode(internal))
+        }
+    }
+}
+
+/// A CONSTANT_Class operand is an internal name or an array descriptor, never an object descriptor.
+/// Keep the raw MUTF-8 until this source boundary; malformed or unspellable types cannot be aliased.
+pub(crate) fn spell_class_operand(raw: &JvmBytes) -> Option<String> {
+    if raw.0.first() == Some(&b'[') {
+        match descriptor_type_bytes(&raw.0)? {
+            Type::Reference(name) => Some(name),
+            _ => None,
+        }
+    } else {
+        crate::names::source_class_name(raw)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn class_operands_spell_mutf8_without_descriptor_or_lossy_aliases() {
+        for (raw, expected) in [
+            ("p/𐐀Value", "p.𐐀Value"),
+            ("[[Lp/𐐀Value;", "p.𐐀Value[][]"),
+            ("[[I", "int[][]"),
+            ("p/Value$Literal", "p.Value$Literal"),
+            ("Lfoo", "Lfoo"),
+            ("_", "_"),
+        ] {
+            assert_eq!(
+                spell_class_operand(&JvmBytes::from_unicode(raw)).as_deref(),
+                Some(expected)
+            );
+        }
+        for raw in [
+            "Lp/Value;",
+            "p/😀",
+            "p/1Value",
+            "p/\0Value",
+            "[",
+            "[V",
+            "[[Lp/Value",
+        ] {
+            assert_eq!(
+                spell_class_operand(&JvmBytes::from_unicode(raw)),
+                None,
+                "{raw}"
+            );
+        }
+        for raw in [
+            vec![0xed, 0xa0, 0x80],
+            vec![0xed, 0xa0, 0x81],
+            vec![0xf0, 0x90, 0x90, 0x80],
+        ] {
+            assert_eq!(spell_class_operand(&JvmBytes(raw)), None);
+        }
+    }
     mod field_test_copy_tests;
     mod loop3_constructor_store_tests;
     mod loop5_catch_binding_tests;
+    mod reference_constraints_tests;
     use crate::names::{AliasReason, SlotEvidence};
 
     #[test]
@@ -37251,21 +39318,21 @@ mod tests {
     fn test_member_target(
         member_definition: jarde_reader::model::PhysicalDefinitionId,
         member_type_parameters: usize,
-    ) -> crate::report::ProvedMemberInnerTarget {
-        use crate::report::ProvedMemberInnerSourceSegment as Segment;
+    ) -> crate::report::MemberInnerTargetInput {
+        use crate::report::MemberInnerSourceSegmentInput as Segment;
         let outer_definition = test_definition("pkg/Outer");
-        crate::report::ProvedMemberInnerTarget {
+        crate::report::MemberInnerTargetInput {
             definition: member_definition.clone(),
-            owner: "pkg/Outer$Member".to_owned(),
-            outer: "pkg/Outer".to_owned(),
+            owner: JvmBytes::from_unicode("pkg/Outer$Member"),
+            outer: JvmBytes::from_unicode("pkg/Outer"),
             simple_name: "Member".to_owned(),
-            constructor_descriptor: "(Lpkg/Outer;)V".to_owned(),
-            capture_field: "this$0".to_owned(),
+            constructor_descriptor: JvmBytes::from_unicode("(Lpkg/Outer;)V"),
+            capture_field: jarde_reader::model::JvmBytes::from_unicode("this$0"),
             generic_diamond: false,
             source_type_path: vec![
                 Segment {
                     definition: outer_definition,
-                    binary_name: "pkg/Outer".to_owned(),
+                    binary_name: jarde_reader::model::JvmBytes::from_unicode("pkg/Outer"),
                     source_name: "pkg.Outer".to_owned(),
                     type_parameter_count: 0,
                     enclosing_binary_name: None,
@@ -37273,10 +39340,12 @@ mod tests {
                 },
                 Segment {
                     definition: member_definition,
-                    binary_name: "pkg/Outer$Member".to_owned(),
+                    binary_name: jarde_reader::model::JvmBytes::from_unicode("pkg/Outer$Member"),
                     source_name: "pkg.Outer.Member".to_owned(),
                     type_parameter_count: member_type_parameters,
-                    enclosing_binary_name: Some("pkg/Outer".to_owned()),
+                    enclosing_binary_name: Some(jarde_reader::model::JvmBytes::from_unicode(
+                        "pkg/Outer",
+                    )),
                     is_static: false,
                 },
             ],
@@ -37351,8 +39420,8 @@ mod tests {
         };
         let method = PhysicalMethodId {
             owner: definition.clone(),
-            name: JvmBytes(name.as_bytes().to_vec()),
-            descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+            name: JvmBytes::from_unicode(name),
+            descriptor: JvmBytes::from_unicode(descriptor),
         };
         let domain = LoadDomain {
             loader: LoaderId("app".to_owned()),
@@ -37394,7 +39463,7 @@ mod tests {
 
     #[test]
     fn proved_int_array_subtract_uses_real_ir_and_keeps_existing_boundaries() {
-        use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension};
+        use jarde_reader::budget::{Budget, CancellationToken};
 
         const DEBUG: &[u8] = include_bytes!(
             "../../../tests/fixtures/recover-proved-loop-continue-ladder-joins/original/debug/classes/jadx/tests/integration/loops/TestContinueInLoop$TestCls.class"
@@ -37509,7 +39578,7 @@ mod tests {
             assert!(matches!(
                 CompoundAssignments::prove(ssa, &operations, &fields, None, &mut stopped_budget,),
                 Err(crate::stop::StopReason::Budget {
-                    dimension: CountedBudgetDimension::IrItems,
+                    dimension: jarde_reader::budget::BudgetDimension::IrItems,
                     ..
                 })
             ));
@@ -37543,10 +39612,11 @@ mod tests {
             operations,
             &|_| None,
             Some(&declaration),
-            "bump",
-            "()I",
+            b"bump",
+            b"()I",
             ir.class_fields(),
             &[],
+            None,
             &mut child_array_test_budget(),
         )
         .unwrap()
@@ -37570,7 +39640,7 @@ mod tests {
             Some("FO"),
             ir.direct_super_class(),
             ir.direct_interfaces(),
-            &[],
+            crate::names::SourceClassNames::default(),
             ir.class_attributes(),
             ir.class_methods(),
             Some(method),
@@ -37780,7 +39850,7 @@ mod tests {
                 &mut stopped
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(9),
                 written: 0,
                 ..
@@ -38225,7 +40295,7 @@ mod tests {
                 &mut stopped
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 written: 0,
                 at: Some(0),
                 ..
@@ -38285,9 +40355,9 @@ mod tests {
         records
             .iter()
             .map(|record| {
-                DebugLocal::over(
+                DebugLocal::over_raw(
                     record.slot,
-                    record.name_lossy(),
+                    record.name.clone(),
                     record.start_bci,
                     record.end_bci,
                 )
@@ -38378,6 +40448,9 @@ mod tests {
             &debug_locals,
             code,
             &sites,
+            8,
+            &[],
+            None,
             &mut budget,
         )
         .expect("fixture declaration ownership plan");
@@ -38513,7 +40586,7 @@ mod tests {
                         &mut stopped,
                     ),
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         at: Some(2),
                         ..
                     })
@@ -38558,7 +40631,7 @@ mod tests {
             matches!(
                 presented_load_is_immediate_predecessor(block.instructions(), 4, 8, &mut stopped),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(_),
                     ..
                 })
@@ -38607,6 +40680,142 @@ mod tests {
             )
             .expect("unprotected invoke refusal completes")
         );
+    }
+
+    #[test]
+    fn raw_field_descriptor_types_decode_mutf8_without_display_roundtrip() {
+        let descriptor = JvmBytes::from_unicode("[[Lp/𐐀Type;");
+        assert_eq!(
+            descriptor_type_bytes(&descriptor.0),
+            Some(Type::Reference("p.𐐀Type[][]".to_owned()))
+        );
+        assert_eq!(descriptor_type_bytes(b"Lp/\xed\xa0\x81;"), None);
+        // U+FFFD is a distinct, scalar JVM name, but is not a Java identifier. Both inputs keep
+        // their own physical descriptor; neither can be published as a Java source type.
+        let surrogate = b"Lp/\xed\xa0\x81;";
+        let replacement = b"Lp/\xef\xbf\xbd;";
+        assert_ne!(surrogate, replacement);
+        for raw in [surrogate, replacement] {
+            assert!(
+                jarde_reader::classfile::descriptor_facts(
+                    raw,
+                    jarde_reader::classfile::DescriptorKind::Field
+                )
+                .is_ok()
+            );
+            assert_eq!(descriptor_type_bytes(raw), None);
+        }
+    }
+
+    #[test]
+    fn named_array_shape_uses_the_raw_frame_entry_from_real_ir() {
+        let class = include_bytes!("../tests/fixtures/s1-raw-arrays/RawArrayUse.class");
+        let (analysis, _) = analyze_test_method(class, "len", "([Lp/𐐀Type;)I", 8);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("fixture SSA");
+        let operations = Operations::of(ir.code().expect("fixture code"), ir.constant_pool());
+        let (_, array) = single_stack_read(instruction_at(ssa, 1).expect("arraylength at BCI 1"))
+            .expect("arraylength reads one array");
+        let raw = JvmBytes::from_unicode("[Lp/𐐀Type;");
+        assert!(
+            matches!(ssa.value(array).ty(), Value::Ref(RefType::Named { name, .. }) if name == &raw.0)
+        );
+        assert_eq!(
+            array_of_value(ssa, &operations, array, 0),
+            Some((Type::Reference("p.𐐀Type".to_owned()), 1))
+        );
+    }
+
+    #[test]
+    fn raw_dynamic_rule_record_retains_names_and_both_bootstrap_types() {
+        use jarde_reader::model::JvmBytes;
+        let name = JvmBytes(b"\xed\xa0\x81".to_vec());
+        let descriptor = JvmBytes::from_unicode("()Ltest/Function;");
+        let sam = JvmBytes(b"(Lp/\xed\xa0\x81;)V".to_vec());
+        let instantiated = JvmBytes::from_unicode("(Lp/𐐀;)V");
+        let record = LambdaSite {
+            use_site: 0,
+            site_cp: 7,
+            bootstrap_index: 0,
+            sam_name: name.clone(),
+            sam_descriptor: descriptor.clone(),
+            evidence: lambda::Evidence {
+                bootstrap: None,
+                bootstrap_arguments: 3,
+                sam_method_type: Some(sam.clone()),
+                instantiated_method_type: Some(instantiated.clone()),
+                implementation: None,
+            },
+            form: None,
+            typed_reference: false,
+            refusal: None,
+            captures: Vec::new(),
+            unclosed_body_bcis: None,
+        }
+        .record();
+        assert_eq!(record.raw_sam_name, name);
+        assert_eq!(record.raw_sam_descriptor, descriptor);
+        assert_eq!(record.raw_sam_method_type, Some(sam));
+        assert_eq!(record.raw_instantiated_method_type, Some(instantiated));
+        assert_eq!(record.sam_name, "\\uD801");
+        assert_eq!(record.instantiated_method_type.as_deref(), Some("(Lp/𐐀;)V"));
+    }
+
+    #[test]
+    fn invocation_reference_type_uses_raw_descriptor_not_escaped_display() {
+        use jarde_reader::classfile::CpEntryKind;
+        use jarde_reader::model::JvmBytes;
+
+        let context = iterator_test_context(
+            REFERENCE_LOAD_STATIC_CONTROL,
+            "handlerWrite",
+            "()Ljava/lang/Object;",
+            23,
+        );
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().expect("fixture SSA");
+        let code = ir.code().expect("fixture code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let (value, _, producer, _) =
+            reference_invoke_to_store(ssa, &operations, InvokeKind::Static, false);
+        let index = code
+            .instructions
+            .iter()
+            .find(|instruction| instruction.bci == producer)
+            .and_then(|instruction| instruction.constant_pool_index)
+            .expect("invocation CP index");
+        for (descriptor, expected) in [
+            (
+                JvmBytes::from_unicode("()Lp/𐐀;"),
+                Some(Type::Reference("p.𐐀".into())),
+            ),
+            (JvmBytes(b"()Lp/\xed\xa0\x81;".to_vec()), None),
+            (JvmBytes(b"()Lp/\xed\xa0\x82;".to_vec()), None),
+        ] {
+            let mut pool = ir.constant_pool().to_vec();
+            let entry = pool
+                .iter_mut()
+                .find(|entry| entry.index == index)
+                .expect("method reference");
+            let CpEntryKind::MethodRef {
+                descriptor: called, ..
+            } = &mut entry.kind
+            else {
+                panic!("fixture static call uses Methodref");
+            };
+            *called = descriptor.clone();
+            let operations = Operations::of(code, &pool);
+            let Some(Operation::Invoke(target)) = operations.get(producer) else {
+                panic!("the decoder preserves the invocation");
+            };
+            assert_eq!(target.raw_descriptor(), &descriptor);
+            assert_eq!(
+                direct_reference_write_type(value, ssa, &operations),
+                expected,
+                "diagnostic descriptor {} must not invent a source type",
+                target.descriptor()
+            );
+        }
     }
 
     #[test]
@@ -38681,8 +40890,8 @@ mod tests {
         assert_eq!(
             context.reuse.evidence().get(5),
             Some(&SlotEvidence::Split(vec![
-                Some("value".to_owned()),
-                Some("value".to_owned()),
+                Some(jarde_reader::model::JvmBytes::from_unicode("value")),
+                Some(jarde_reader::model::JvmBytes::from_unicode("value")),
             ]))
         );
         assert_eq!(context.names.text(first), Some("value"));
@@ -38859,7 +41068,7 @@ mod tests {
 
     #[test]
     fn raw_alias_escape_full_reuse_plan_stops_atomically_during_lvt_matching() {
-        use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+        use jarde_reader::budget::{Budget, CancellationToken, Limits};
 
         let context = iterator_test_context(
             RAW_ALIAS_ESCAPE_CLASS,
@@ -38904,8 +41113,8 @@ mod tests {
         assert_eq!(
             complete_plan.evidence().get(5),
             Some(&SlotEvidence::Split(vec![
-                Some("value".to_owned()),
-                Some("value".to_owned()),
+                Some(jarde_reader::model::JvmBytes::from_unicode("value")),
+                Some(jarde_reader::model::JvmBytes::from_unicode("value")),
             ])),
             "the complete run must reach and accept the two actual slot-5 LVT rows"
         );
@@ -38925,9 +41134,11 @@ mod tests {
         assert_eq!(
             stopped,
             StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 written: 0,
                 limit: cut_limit,
+                consumed: cut_limit,
+                requested: 1,
                 at: Some(74),
             }
         );
@@ -38985,7 +41196,9 @@ mod tests {
         let uses = slot_uses(ssa, &operations, &context.reuse, &paths, &elided_cleanup);
         let debug_matches = iterator_test_debug_locals(code)
             .into_iter()
-            .filter(|local| local.name() == target_name)
+            .filter(|local| {
+                local.name() == &jarde_reader::model::JvmBytes::from_unicode(target_name)
+            })
             .collect::<Vec<_>>();
         assert_eq!(
             debug_matches.len(),
@@ -39346,7 +41559,7 @@ mod tests {
             .expect("slot-reuse fixture method code");
         let previous_debug = iterator_test_debug_locals(code)
             .into_iter()
-            .find(|local| local.name() == "first")
+            .find(|local| local.name() == &jarde_reader::model::JvmBytes::from_unicode("first"))
             .expect("debug table states the previous source lifetime");
         let (previous_start, _) = previous_debug
             .range()
@@ -39360,7 +41573,7 @@ mod tests {
         assert_eq!(previous.slot(), reuse.variable.slot());
         let (target_start, _) = iterator_test_debug_locals(code)
             .into_iter()
-            .find(|local| local.name() == "target")
+            .find(|local| local.name() == &jarde_reader::model::JvmBytes::from_unicode("target"))
             .and_then(|local| local.range())
             .expect("target source lifetime has a bounded debug range");
         assert!(
@@ -39462,7 +41675,7 @@ mod tests {
             matches!(
                 stop,
                 StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(at),
                     ..
                 } if at == return_bci
@@ -39569,7 +41782,7 @@ mod tests {
 
     #[test]
     fn ancestor_iterator_cleanup_requires_unique_direct_visible_iterator_row() {
-        use jarde_reader::budget::{Budget, CountedBudgetDimension, Limits};
+        use jarde_reader::budget::{Budget, Limits};
 
         let mut context = iterator_test_context(
             HOISTED_ITERATOR_CLASS,
@@ -39653,7 +41866,7 @@ mod tests {
                 &mut switch_budget,
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 ..
             })
         ));
@@ -39711,7 +41924,7 @@ mod tests {
                 &mut try_budget,
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 ..
             })
         ));
@@ -39975,7 +42188,7 @@ mod tests {
                 &mut stopped_budget,
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(33),
                 ..
             })
@@ -40001,9 +42214,10 @@ mod tests {
                 &context.names,
                 &mut deadline_budget,
             ),
-            Err(StopReason::Interrupted {
-                code: crate::stop::BUDGET_INTERRUPTED_CODE,
+            Err(StopReason::Budget {
+                dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
                 at: Some(42),
+                ..
             })
         ));
         assert_eq!(deadline_count, 2);
@@ -40095,7 +42309,7 @@ mod tests {
 
     #[test]
     fn ancestor_iterator_cleanup_closes_the_complete_physical_local_variable() {
-        use jarde_reader::budget::{Budget, CountedBudgetDimension, Limits};
+        use jarde_reader::budget::{Budget, Limits};
 
         let context = iterator_test_context(
             HOISTED_ITERATOR_CLASS,
@@ -40192,7 +42406,7 @@ mod tests {
                 42,
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 at: Some(42),
                 ..
             })
@@ -40389,7 +42603,7 @@ mod tests {
             matches!(
                 stop,
                 StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(35),
                     ..
                 }
@@ -40767,7 +42981,7 @@ mod tests {
             matches!(
                 stop,
                 StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(35),
                     ..
                 }
@@ -41248,7 +43462,7 @@ mod tests {
     fn build_own_grid(
         analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
         physical_method: &jarde_reader::model::PhysicalMethodId,
-        widenings: &[crate::report::ProvedSnapshotHierarchyWidening],
+        widenings: &[crate::report::ReferenceRelationInput],
         budget: &mut Budget,
         cancel_before_build: bool,
     ) -> Result<Program, crate::stop::StopReason> {
@@ -41309,6 +43523,7 @@ mod tests {
                 pool: ir.constant_pool(),
                 bootstrap: ir.bootstrap_methods(),
                 profile: crate::pass::JAVA_8.clone(),
+                runtime_release: 8,
                 parameters: 0,
                 has_receiver: false,
                 parameter_types: &parameter_types,
@@ -41324,10 +43539,11 @@ mod tests {
                 typed_functional_target: None,
                 interface_super_calls: &[],
                 reference_overload_calls: &[],
-                snapshot_hierarchy_widenings: widenings,
+                reference_relations: widenings,
+                declared_types: None,
                 captured_outer_reads: &[],
                 outer_super_calls: &[],
-                nested_class_members: &[],
+                source_names: crate::names::SourceClassNames::default(),
                 pool_spelled_members: false,
                 physical_method: Some(physical_method),
                 declaring_class: Some("Main"),
@@ -41340,7 +43556,7 @@ mod tests {
                 sites: &sites,
                 prologues: &prologues,
                 fields: &fields,
-                array_initializers: arrays,
+                array_initializers: &arrays,
                 enums: &enums,
                 allow_array_constructor_method_references: false,
             },
@@ -41418,6 +43634,7 @@ mod tests {
                 pool: ir.constant_pool(),
                 bootstrap: ir.bootstrap_methods(),
                 profile: crate::pass::JAVA_8.clone(),
+                runtime_release: 8,
                 parameters: 1,
                 has_receiver: false,
                 parameter_types: &parameter_types,
@@ -41433,10 +43650,11 @@ mod tests {
                 typed_functional_target: None,
                 interface_super_calls: &[],
                 reference_overload_calls: &[],
-                snapshot_hierarchy_widenings: &[],
+                reference_relations: &[],
+                declared_types: None,
                 captured_outer_reads: &[],
                 outer_super_calls: &[],
-                nested_class_members: &[],
+                source_names: crate::names::SourceClassNames::default(),
                 pool_spelled_members: false,
                 physical_method: Some(declaration.identity()),
                 declaring_class: Some("LoopTransferFinally"),
@@ -41449,7 +43667,7 @@ mod tests {
                 sites: &sites,
                 prologues: &prologues,
                 fields: &fields,
-                array_initializers: arrays,
+                array_initializers: &arrays,
                 enums: &enums,
                 allow_array_constructor_method_references: false,
             },
@@ -41565,7 +43783,7 @@ mod tests {
                 &mut budget
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(45),
                 ..
             })
@@ -41884,7 +44102,7 @@ mod tests {
             assert!(matches!(
                 prove_own_grid(&analysis, &mut child_limited),
                 Err(crate::stop::StopReason::Budget {
-                    dimension: CountedBudgetDimension::IrItems,
+                    dimension: jarde_reader::budget::BudgetDimension::IrItems,
                     at: Some(31),
                     ..
                 })
@@ -41898,7 +44116,7 @@ mod tests {
             assert!(matches!(
                 prove_own_grid(&analysis, &mut limited),
                 Err(crate::stop::StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(37),
                     ..
                 })
@@ -41928,12 +44146,14 @@ mod tests {
             "../../../tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Main.class"
         );
         let exact_widenings = [
-            crate::report::ProvedSnapshotHierarchyWidening {
+            crate::report::ReferenceRelationInput {
+                relation: crate::report::ReferenceRelation::SelectedHeaders,
                 bci: 24,
                 source: "DerivedA[]".to_owned(),
                 target: "Base[]".to_owned(),
             },
-            crate::report::ProvedSnapshotHierarchyWidening {
+            crate::report::ReferenceRelationInput {
+                relation: crate::report::ReferenceRelation::SelectedHeaders,
                 bci: 45,
                 source: "DerivedB[]".to_owned(),
                 target: "Base[]".to_owned(),
@@ -41968,7 +44188,8 @@ mod tests {
                 (
                     "wrong source type at the right store",
                     vec![
-                        crate::report::ProvedSnapshotHierarchyWidening {
+                        crate::report::ReferenceRelationInput {
+                            relation: crate::report::ReferenceRelation::SelectedHeaders,
                             bci: 24,
                             source: "DerivedB[]".to_owned(),
                             target: "Base[]".to_owned(),
@@ -41979,7 +44200,8 @@ mod tests {
                 (
                     "wrong target type at the right store",
                     vec![
-                        crate::report::ProvedSnapshotHierarchyWidening {
+                        crate::report::ReferenceRelationInput {
+                            relation: crate::report::ReferenceRelation::SelectedHeaders,
                             bci: 24,
                             source: "DerivedA[]".to_owned(),
                             target: "LocalInterface[]".to_owned(),
@@ -42024,7 +44246,7 @@ mod tests {
                     false,
                 ),
                 Err(crate::stop::StopReason::Budget {
-                    dimension: CountedBudgetDimension::IrItems,
+                    dimension: jarde_reader::budget::BudgetDimension::IrItems,
                     at: Some(46),
                     ..
                 })
@@ -42091,6 +44313,37 @@ mod tests {
             local_declaration_source_type_name(&ty, &[conflicting]),
             None
         );
+    }
+
+    #[test]
+    fn outer_super_raw_target_spelling_checks_the_complete_descriptor() {
+        use crate::source_proof::source_method_target_is_spellable;
+        let owner = JvmBytes::from_unicode("p/𐐀Base");
+        let name = JvmBytes::from_unicode("𐐀combine");
+        assert!(source_method_target_is_spellable(
+            &JvmBytes::from_unicode("p/_"),
+            &name,
+            &JvmBytes::from_unicode("(II)I"),
+        ));
+        for descriptor in ["(Lp/𐐀Token;)Lp/𐐀Token;", "([Lp/𐐀Token;)V", "(Lp/_;)Lp/_;"] {
+            assert!(source_method_target_is_spellable(
+                &owner,
+                &name,
+                &JvmBytes::from_unicode(descriptor),
+            ));
+        }
+        for descriptor in ["(Lp/a-b;)I", "(I)Lp/a-b;", "(I)Vextra", "(V)I"] {
+            assert!(!source_method_target_is_spellable(
+                &owner,
+                &name,
+                &JvmBytes::from_unicode(descriptor),
+            ));
+        }
+        assert!(!source_method_target_is_spellable(
+            &owner,
+            &name,
+            &JvmBytes(b"(L\xed\xa0;)I".to_vec()),
+        ));
     }
 
     #[test]
@@ -42208,13 +44461,13 @@ mod tests {
                     0,
                 )),
         );
-        let reads = [crate::report::ProvedCapturedOuterRead {
+        let reads = [crate::report::CapturedOuterReadInput {
             method: caller.clone(),
             read_bci: 1,
-            field_owner: "OuterSuperEffects$Member".to_string(),
-            field_name: "this$0".to_string(),
-            field_descriptor: "LOuterSuperEffects;".to_string(),
-            outer_internal_name: "OuterSuperEffects".to_string(),
+            field_owner: jarde_reader::model::JvmBytes::from_unicode("OuterSuperEffects$Member"),
+            field_name: jarde_reader::model::JvmBytes::from_unicode("this$0"),
+            field_descriptor: jarde_reader::model::JvmBytes::from_unicode("LOuterSuperEffects;"),
+            outer_internal_name: jarde_reader::model::JvmBytes::from_unicode("OuterSuperEffects"),
             outer_source_name: "OuterSuperEffects".to_string(),
             constructor: PhysicalMethodId {
                 owner: member_definition,
@@ -42223,7 +44476,7 @@ mod tests {
             },
             constructor_write_bci: 2,
         }];
-        let valid = crate::report::ProvedOuterSuperCall {
+        let valid = crate::report::OuterSuperCallInput {
             caller,
             call_bci: 14,
             capture_read_bci: 1,
@@ -42235,16 +44488,24 @@ mod tests {
             },
             bridge_invoke_bci: 3,
             outer_source_name: "OuterSuperEffects".to_string(),
-            target_owner: "EffectsBase".to_string(),
-            target_name: "combine".to_string(),
-            target_descriptor: "(II)I".to_string(),
+            target_owner: JvmBytes::from_unicode("EffectsBase"),
+            target_name: JvmBytes::from_unicode("combine"),
+            target_descriptor: JvmBytes::from_unicode("(II)I"),
         };
         let valid_calls = [valid.clone()];
-        let request =
-            crate::report::RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                .with_captured_outer_reads(&reads)
-                .with_outer_super_calls(&valid_calls)
-                .with_evidence(crate::evidence::RecoveryEvidenceRequest::all());
+        let request = crate::report::RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            crate::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_captured_outer_reads(&reads)
+        .with_outer_super_calls(&valid_calls)
+        .with_evidence(crate::evidence::RecoveryEvidenceRequest::all());
         let report = crate::report::recover(&request, &mut budget);
         assert!(report.produced(), "{:?}", report.stop());
         assert_eq!(report.quality, jarde_jvm::ir::Quality::Structured);
@@ -42282,9 +44543,17 @@ mod tests {
         });
         assert!(bridge_origin.is_some(), "bridge origin was not carried");
 
-        let request =
-            crate::report::RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                .with_captured_outer_reads(&reads);
+        let request = crate::report::RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            crate::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_captured_outer_reads(&reads);
         let ordinary = crate::report::recover(&request, &mut budget);
         assert!(ordinary.produced(), "{:?}", ordinary.stop());
         assert!(ordinary.text.contains("access$001("), "{}", ordinary.text);
@@ -42296,14 +44565,34 @@ mod tests {
 
         let mut stale_argument = valid.clone();
         stale_argument.argument_bcis[1] = 10;
+        let mut unspellable_owner = valid.clone();
+        unspellable_owner.target_owner = JvmBytes::from_unicode("p/a-b");
+        let mut unspellable_name = valid.clone();
+        unspellable_name.target_name = JvmBytes::from_unicode("a-b");
+        let mut malformed_name = valid.clone();
+        malformed_name.target_name = JvmBytes(vec![0xed, 0xa0]);
         let mut stale_bridge = valid;
         stale_bridge.bridge.name.0 = b"access$002".to_vec();
-        for invalid in [stale_argument, stale_bridge] {
+        for invalid in [
+            stale_argument,
+            stale_bridge,
+            unspellable_owner,
+            unspellable_name,
+            malformed_name,
+        ] {
             let invalid_calls = [invalid];
-            let request =
-                crate::report::RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                    .with_captured_outer_reads(&reads)
-                    .with_outer_super_calls(&invalid_calls);
+            let request = crate::report::RecoveryRequest::new(
+                analysis.ir(),
+                &facts,
+                crate::pass::JAVA_8,
+                jarde_reader::view::RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: jarde_reader::view::LayoutMode::Generic,
+                },
+            )
+            .with_captured_outer_reads(&reads)
+            .with_outer_super_calls(&invalid_calls);
             let report = crate::report::recover(&request, &mut budget);
             assert!(matches!(
                 report.stop(),
@@ -42413,22 +44702,32 @@ mod tests {
             .with_access_flags(0x0009)
             .with_declaring_class(crate::facts::DeclaringClass::new("nested/UseInner", 0x0031));
         let facts = crate::facts::RecoveryFacts::new(method);
-        let targets = [crate::report::ProvedMemberInnerTarget {
+        let targets = [crate::report::MemberInnerTargetInput {
             // This direct layer test exercises the already-proved handoff shape. The class-source
             // adapter separately proves and supplies the target's actual physical definition.
             definition,
-            owner: "nested/SimpleOuter$Inner".to_string(),
-            outer: "nested/SimpleOuter".to_string(),
+            owner: jarde_reader::model::JvmBytes::from_unicode("nested/SimpleOuter$Inner"),
+            outer: jarde_reader::model::JvmBytes::from_unicode("nested/SimpleOuter"),
             simple_name: "Inner".to_string(),
-            constructor_descriptor: "(Lnested/SimpleOuter;I)V".to_string(),
-            capture_field: "this$0".to_string(),
+            constructor_descriptor: jarde_reader::model::JvmBytes::from_unicode(
+                "(Lnested/SimpleOuter;I)V",
+            ),
+            capture_field: jarde_reader::model::JvmBytes::from_unicode("this$0"),
             generic_diamond: false,
             source_type_path: Vec::new(),
         }];
-        let request =
-            crate::report::RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                .with_member_inner_targets(&targets)
-                .with_evidence(crate::evidence::RecoveryEvidenceRequest::all());
+        let request = crate::report::RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            crate::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_member_inner_targets(&targets)
+        .with_evidence(crate::evidence::RecoveryEvidenceRequest::all());
         let report = crate::report::recover(&request, &mut budget);
 
         assert!(report.produced(), "{:?}", report.stop());
@@ -42565,9 +44864,17 @@ mod tests {
         .with_access_flags(0x0009)
         .with_declaring_class(crate::facts::DeclaringClass::new("Test", 0x0021));
         let facts = crate::facts::RecoveryFacts::new(method);
-        let request =
-            crate::report::RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                .with_evidence(crate::evidence::RecoveryEvidenceRequest::all());
+        let request = crate::report::RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            crate::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(crate::evidence::RecoveryEvidenceRequest::all());
         crate::report::recover(&request, &mut budget)
     }
 
@@ -42745,7 +45052,7 @@ mod tests {
     #[test]
     fn member_constructor_boolean_adaptation_uses_the_tail_descriptor_position() {
         let source_arguments = typed_arguments_with_offset(
-            "(Lnested/SimpleOuter;ZI)V",
+            b"(Lnested/SimpleOuter;ZI)V",
             vec![
                 Expr::direct(ExprKind::Integer(1), 12),
                 Expr::direct(ExprKind::Integer(7), 13),
@@ -42756,7 +45063,7 @@ mod tests {
         assert!(matches!(source_arguments[1].kind, ExprKind::Integer(7)));
 
         let wrong_arity = typed_arguments_with_offset(
-            "(Lnested/SimpleOuter;ZI)V",
+            b"(Lnested/SimpleOuter;ZI)V",
             vec![Expr::direct(ExprKind::Integer(1), 12)],
             1,
         );
@@ -43396,11 +45703,39 @@ mod tests {
 
     #[test]
     fn initializer_reference_widening_reuses_scalar_and_equal_rank_array_facts() {
-        let no_snapshot = [];
-        for (presented, required) in [
+        use crate::report::{ReferenceRelation, ReferenceRelationInput};
+
+        let presented = "java.util.ArrayList";
+        let required = "java.util.List";
+        let no_relations = [];
+        // This helper consumes caller-supplied use facts; the closed table alone is not a proof.
+        assert!(
+            !initializer_reference_widens(8, presented, required, 17, &no_relations),
+            "a platform table alone is not an initializer proof"
+        );
+        assert!(!initializer_reference_widens(
+            8,
+            "java.util.ArrayList[]",
+            "java.util.List[]",
+            17,
+            &no_relations
+        ));
+        let platform_proof = ReferenceRelationInput {
+            relation: ReferenceRelation::PlatformContract { java_release: 8 },
+            bci: 17,
+            source: presented.to_owned(),
+            target: required.to_owned(),
+        };
+        assert!(initializer_reference_widens(
+            8,
+            presented,
+            required,
+            17,
+            std::slice::from_ref(&platform_proof)
+        ));
+        for (source, target) in [
             ("java.lang.Integer", "java.lang.Number"),
             ("java.lang.String", "java.lang.CharSequence"),
-            ("java.util.ArrayList", "java.util.List"),
             ("java.lang.IllegalStateException", "java.lang.Throwable"),
             ("java.lang.Integer[]", "java.lang.Number[]"),
             ("java.lang.Integer[][]", "java.lang.Number[][]"),
@@ -43411,11 +45746,52 @@ mod tests {
                 "java.lang.Throwable[][]",
             ),
         ] {
-            assert!(
-                initializer_reference_widens(8, presented, required, 17, &no_snapshot),
-                "{presented} should be accepted for initializer component {required}"
-            );
+            let proof = ReferenceRelationInput {
+                relation: ReferenceRelation::PlatformContract { java_release: 8 },
+                bci: 17,
+                source: source.to_owned(),
+                target: target.to_owned(),
+            };
+            assert!(initializer_reference_widens(
+                8,
+                source,
+                target,
+                17,
+                std::slice::from_ref(&proof)
+            ));
         }
+        for relation in [
+            ReferenceRelation::Unknown,
+            ReferenceRelation::Missing,
+            ReferenceRelation::Ambiguous,
+            ReferenceRelation::Incompatible,
+            ReferenceRelation::PlatformContract { java_release: 9 },
+        ] {
+            let proof = ReferenceRelationInput {
+                relation,
+                bci: 17,
+                source: presented.to_owned(),
+                target: required.to_owned(),
+            };
+            assert!(!initializer_reference_widens(
+                8,
+                presented,
+                required,
+                17,
+                std::slice::from_ref(&proof)
+            ));
+        }
+        let wrong_bci = ReferenceRelationInput {
+            bci: 18,
+            ..platform_proof
+        };
+        assert!(!initializer_reference_widens(
+            8,
+            presented,
+            required,
+            17,
+            &[wrong_bci]
+        ));
 
         for (release, presented, required) in [
             (8, "java.lang.Number", "java.lang.Integer"),
@@ -43429,7 +45805,7 @@ mod tests {
             (9, "java.lang.Integer[]", "java.lang.Number[]"),
         ] {
             assert!(
-                !initializer_reference_widens(release, presented, required, 17, &no_snapshot),
+                !initializer_reference_widens(release, presented, required, 17, &no_relations),
                 "release {release}: {presented} must not widen to {required}"
             );
         }
@@ -43441,13 +45817,14 @@ mod tests {
             "int[][]",
             "java.lang.Object[]",
             17,
-            &no_snapshot
+            &no_relations
         ));
     }
 
     #[test]
     fn initializer_snapshot_widening_requires_the_exact_store_and_full_type_pair() {
-        let proof = crate::report::ProvedSnapshotHierarchyWidening {
+        let proof = crate::report::ReferenceRelationInput {
+            relation: crate::report::ReferenceRelation::SelectedHeaders,
             bci: 23,
             source: "example.Child[]".to_string(),
             target: "example.Parent[]".to_string(),
@@ -43521,7 +45898,7 @@ mod tests {
                 15,
             )
             .expect("the factory and interface-call owner state the same spellable type");
-            let ExprKind::Cast { ty, value } = cast.kind else {
+            let ExprKind::Cast { ty, value, .. } = cast.kind else {
                 panic!("the direct poly expression receives the existing Cast node")
             };
             assert_eq!(ty, target_type);
@@ -43696,6 +46073,76 @@ mod tests {
         // A bare name is a name and not a descriptor: a class may be called `Lfoo`, so the forms
         // only a truncated descriptor could have are still read as the pool's own spelling.
         assert_eq!(spell_reference("Lfoo").as_deref(), Some("Lfoo"));
+    }
+
+    #[test]
+    fn reference_spelling_checks_the_same_source_grammar_for_owners_and_descriptors() {
+        for (internal, expected) in [
+            ("p/𐐀Box", "p.𐐀Box"),
+            ("€/x\u{0301}", "€.x\u{0301}"),
+            ("_/Lfoo", "_.Lfoo"),
+            ("p/Outer$1", "p.Outer$1"),
+        ] {
+            assert_eq!(spell_reference(internal).as_deref(), Some(expected));
+            assert_eq!(
+                spell_reference(&format!("L{internal};")).as_deref(),
+                Some(expected)
+            );
+            assert_eq!(
+                spell_reference(&format!("[[L{internal};")).as_deref(),
+                Some(format!("{expected}[][]").as_str())
+            );
+        }
+        for internal in [
+            "p/a-b",
+            "class/Box",
+            "p/9Box",
+            "p/x²",
+            "p/a\u{200b}b",
+            "p/�",
+        ] {
+            assert_eq!(spell_reference(internal), None, "{internal}");
+            assert_eq!(spell_reference(&format!("L{internal};")), None);
+            assert_eq!(spell_reference(&format!("[L{internal};")), None);
+            let evidence = field::Evidence {
+                bci: 0,
+                access: FieldAccess::Read,
+                is_static: true,
+                owner: JvmBytes::from_unicode(internal),
+                name: JvmBytes::from_unicode("value"),
+                descriptor: JvmBytes::from_unicode("I"),
+            };
+            assert_eq!(evidence.spelled_owner(), None);
+        }
+    }
+
+    #[test]
+    fn frame_reference_spelling_decodes_raw_mutf8_before_writing_a_type() {
+        let named = |name: Vec<u8>| {
+            Value::Ref(RefType::Named {
+                name,
+                loader: Box::new(jarde_reader::view::LoaderId("app".to_owned())),
+            })
+        };
+        for (raw, expected) in [
+            ("p/𐐀Box", "p.𐐀Box"),
+            ("Lp/𐐀Box;", "p.𐐀Box"),
+            ("[[Lp/𐐀Box;", "p.𐐀Box[][]"),
+            ("[I", "int[]"),
+        ] {
+            assert_eq!(
+                value_type(&named(JvmBytes::from_unicode(raw).0)),
+                Ok(Some(Type::Reference(expected.to_owned())))
+            );
+        }
+        for raw in [
+            b"Lp/\xed\xa0\x81;".as_slice(),
+            b"Lp/\xf0\x90\x90\x80;",
+            b"Lp/\xef\xbf\xbd;",
+            b"Lp/\\uD801;",
+        ] {
+            assert!(value_type(&named(raw.to_vec())).is_err(), "{raw:?}");
+        }
     }
 
     #[test]
@@ -44397,8 +46844,17 @@ mod tests {
             );
         }
         let facts = crate::facts::RecoveryFacts::new(method_facts);
-        let request = crate::report::RecoveryRequest::new(ir, &facts, crate::pass::JAVA_8)
-            .with_evidence(crate::evidence::RecoveryEvidenceRequest::all());
+        let request = crate::report::RecoveryRequest::new(
+            ir,
+            &facts,
+            crate::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(crate::evidence::RecoveryEvidenceRequest::all());
         let report = crate::report::recover(&request, &mut budget);
         (
             candidate,
@@ -44441,6 +46897,7 @@ mod tests {
         parameter_types: &'a BTreeMap<u16, Type>,
         sites: &'a crate::init::Sites,
         fields: &'a field::Plan,
+        array_initializers: &'a ArrayInitializers,
         field_copies: &'a FieldCopies,
         prologues: &'a crate::init::Prologues,
         enums: &'a crate::enumswitch::Plan,
@@ -44466,6 +46923,9 @@ mod tests {
             &[],
             code,
             sites,
+            8,
+            &[],
+            None,
             setup_budget,
         )
         .expect("the fixture declaration plan completes");
@@ -44498,6 +46958,7 @@ mod tests {
             pool,
             bootstrap,
             profile: crate::pass::JAVA_8,
+            runtime_release: 8,
             parameters,
             has_receiver: false,
             parameter_types,
@@ -44511,10 +46972,11 @@ mod tests {
             typed_functional_target: None,
             interface_super_calls: &[],
             reference_overload_calls: &[],
-            snapshot_hierarchy_widenings: &[],
+            reference_relations: &[],
+            declared_types: None,
             captured_outer_reads: &[],
             outer_super_calls: &[],
-            nested_class_members: &[],
+            source_names: crate::names::SourceClassNames::default(),
             pool_spelled_members: false,
             declaring_class,
             direct_super_class,
@@ -44524,6 +46986,7 @@ mod tests {
             sites,
             prologues,
             fields,
+            array_initializers,
             enums,
             allow_array_constructor_method_references: false,
             compounds: CompoundAssignments::default(),
@@ -44535,7 +46998,6 @@ mod tests {
             postfix: PostfixUpdates::default(),
             snapshot_quote: BTreeSet::new(),
             snapshots_rendered: BTreeSet::new(),
-            array_initializers: ArrayInitializers::default(),
             local_assignments,
             assignment_presentations: BTreeMap::new(),
             field_chain_refused: BTreeSet::new(),
@@ -44555,6 +47017,7 @@ mod tests {
             accessors: Vec::new(),
             deferred: Vec::new(),
             binding_plans: BTreeMap::new(),
+            copy_inputs: BTreeSet::new(),
             forward_conditional_carries: BTreeMap::new(),
             guarded_return_exits: BTreeMap::new(),
             binding_rejections: BTreeMap::new(),
@@ -44687,8 +47150,8 @@ mod tests {
                 let owner = if local_parameter { "ExceptionOnlyLocal" } else { "ExceptionOnlyFinally" };
                 let declaring = crate::facts::DeclaringClass::new(owner, 0x0021);
                 let fields = field::plan(
-                    ssa, operations, &|_| None, Some(&declaring), method_name,
-                    descriptor, class_fields, &[], &mut setup,
+                    ssa, operations, &|_| None, Some(&declaring), method.raw_name().0.as_slice(),
+                    method.raw_descriptor().0.as_slice(), class_fields, &[], None, &mut setup,
                 ).expect("the actual fixture field accesses are proved");
                 let field_copies = FieldCopies::default();
                 let prologues = crate::init::Prologues::none();
@@ -44748,6 +47211,7 @@ mod tests {
                             &parameter_types,
                             &sites,
                             &fields,
+                            &arrays,
                             &field_copies,
                             &prologues,
                             &enums,
@@ -44810,7 +47274,7 @@ mod tests {
                     assert!(matches!(
                         &stop,
                         StopReason::Budget {
-                            dimension: CountedBudgetDimension::IrItems,
+                            dimension: jarde_reader::budget::BudgetDimension::IrItems,
                             at: Some(at),
                             ..
                         } if *at == expected_at
@@ -44866,7 +47330,7 @@ mod tests {
                 assert!(matches!(
                     builder.region(region, &path),
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::IrItems,
+                        dimension: jarde_reader::budget::BudgetDimension::IrItems,
                         at: Some(_),
                         ..
                     })
@@ -45048,6 +47512,7 @@ mod tests {
                         &parameter_types,
                         &sites,
                         &fields,
+                        &arrays,
                         &field_copies,
                         &prologues,
                         &enums,
@@ -45085,23 +47550,12 @@ mod tests {
                         }
                         _ => unreachable!(),
                     }
-                    builder.bind_value(plan).unwrap();
+                    let engaged = builder.bind_value(plan).unwrap();
                     assert!(
                         !builder.forward_conditional_carries.contains_key(&value),
                         "failure case {failure}"
                     );
                     assert!(!builder.bindings.contains_key(&value));
-                    assert!(builder.binding_refused.contains(&value));
-                    assert!(builder.deferred.contains(&(value, 3)));
-                    assert!(
-                        builder
-                            .stmts
-                            .iter()
-                            .any(|statement| matches!(&statement.kind,
-                        StmtKind::Fallback { reason, .. } if value_level_refusal(reason)
-                            && reason.contains("has 3 consumers"))),
-                        "failure case {failure}"
-                    );
                     assert!(
                         !builder
                             .stmts
@@ -45109,6 +47563,55 @@ mod tests {
                             .any(|statement| matches!(&statement.kind,
                         StmtKind::Declare { name, .. } if name == "savedCarry"))
                     );
+                    match failure {
+                        // Cases 0 and 1 fail before any statement lands, on a plan whose value a
+                        // forward conditional carry admitted. The carry's own proof is what put
+                        // the value on the save list, so the failure keeps the carry's primary
+                        // reason through `refuse_carry_binding` — the same refusal channel a
+                        // committed plan's failure takes in case 2 — instead of the traceless
+                        // withdrawal, which stays the non-carry plan's shape alone.
+                        // (2026-11-08: this replaces the two-state gate's traceless pre-push
+                        // withdrawal for carry plans, flipped by the arbitration against
+                        // tests/structured_list_generic_bodies.rs::
+                        // failed_carry_receiver_assignment_keeps_the_primary_and_quotes_the_whole_method
+                        // — the whole-method quote that contract asserts is exactly this
+                        // channel's output, so the pre-push and post-push carry failures are
+                        // symmetric through it. A non-carry plan still abandons itself
+                        // tracelessly, keeping a dead consumer chain's baseline per-instruction
+                        // refusals.) Case 0's pre-inserted mark is the mark this channel
+                        // re-inserts.
+                        0 | 1 => {
+                            assert!(engaged, "failure case {failure}");
+                            assert!(builder.binding_refused.contains(&value));
+                            assert!(builder.deferred.contains(&(value, 3)));
+                            assert!(
+                                builder
+                                    .stmts
+                                    .iter()
+                                    .any(|statement| matches!(&statement.kind,
+                                StmtKind::Fallback { reason, .. } if value_level_refusal(reason)
+                                    && reason.contains("has 3 consumers"))),
+                                "failure case {failure}"
+                            );
+                        }
+                        // Case 2 fails after the `Declare` was pushed: the run is committed to
+                        // the text it wrote, so the half-commit protection marks the value
+                        // refused and quotes the whole-plan refusal beside it.
+                        _ => {
+                            assert!(engaged, "failure case {failure}");
+                            assert!(builder.binding_refused.contains(&value));
+                            assert!(builder.deferred.contains(&(value, 3)));
+                            assert!(
+                                builder
+                                    .stmts
+                                    .iter()
+                                    .any(|statement| matches!(&statement.kind,
+                                StmtKind::Fallback { reason, .. } if value_level_refusal(reason)
+                                    && reason.contains("has 3 consumers"))),
+                                "failure case {failure}"
+                            );
+                        }
+                    }
                 }
                 for cancellation in [false, true] {
                     let mut budget = compound_test_budget(1 << 25);
@@ -45129,6 +47632,7 @@ mod tests {
                         &parameter_types,
                         &sites,
                         &fields,
+                        &arrays,
                         &field_copies,
                         &prologues,
                         &enums,
@@ -45170,7 +47674,7 @@ mod tests {
                         assert!(matches!(
                             stop,
                             StopReason::Budget {
-                                dimension: CountedBudgetDimension::IrItems,
+                                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                                 at: None,
                                 ..
                             }
@@ -45233,10 +47737,11 @@ mod tests {
     fn assert_compound_budget_stop(stop: &StopReason, limit: u64, owned: &BTreeSet<u32>) {
         match stop {
             StopReason::Budget {
-                dimension: jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 written: 0,
                 limit: actual_limit,
                 at: Some(at),
+                ..
             } => {
                 assert_eq!(*actual_limit, limit);
                 assert!(
@@ -45382,6 +47887,7 @@ mod tests {
                     &parameter_types,
                     &sites,
                     &fields,
+                    &arrays,
                     &field_copies,
                     &prologues,
                     &enums,
@@ -45435,6 +47941,7 @@ mod tests {
                     &parameter_types,
                     &sites,
                     &fields,
+                    &arrays,
                     &field_copies,
                     &prologues,
                     &enums,
@@ -45486,6 +47993,7 @@ mod tests {
                     &parameter_types,
                     &sites,
                     &fields,
+                    &arrays,
                     &field_copies,
                     &prologues,
                     &enums,
@@ -45555,6 +48063,7 @@ mod tests {
                     &parameter_types,
                     &sites,
                     &fields,
+                    &arrays,
                     &field_copies,
                     &prologues,
                     &enums,
@@ -45616,6 +48125,7 @@ mod tests {
                     &parameter_types,
                     &sites,
                     &fields,
+                    &arrays,
                     &field_copies,
                     &prologues,
                     &enums,
@@ -45755,7 +48265,7 @@ mod tests {
                                             arm, canonical, ssa, operations, &mut edge_stopped,
                                         ),
                                         Err(StopReason::Budget {
-                                            dimension: CountedBudgetDimension::IrEdges,
+                                            dimension: jarde_reader::budget::BudgetDimension::IrEdges,
                                             at: Some(at),
                                             ..
                                         }) if at == bci
@@ -45772,7 +48282,7 @@ mod tests {
                                             arm, canonical, ssa, operations, &mut origin_stopped,
                                         ),
                                         Err(StopReason::Budget {
-                                            dimension: CountedBudgetDimension::IrItems,
+                                            dimension: jarde_reader::budget::BudgetDimension::IrItems,
                                             at: Some(at),
                                             ..
                                         }) if at == bci
@@ -46457,9 +48967,9 @@ mod tests {
             assert_eq!(
                 proof.consumer,
                 ShortCircuitConsumer::Field(
-                    "MixedBooleanField".into(),
-                    "result".into(),
-                    "Z".into()
+                    JvmBytes::from_unicode("MixedBooleanField"),
+                    JvmBytes::from_unicode("result"),
+                    JvmBytes::from_unicode("Z")
                 )
             );
             assert_eq!(
@@ -46799,7 +49309,7 @@ mod tests {
         assert!(matches!(
             proof.consumer,
             ShortCircuitConsumer::InstanceField(ref owner, ref name, ref descriptor, _)
-                if owner == "MixedShortCircuitField$Box" && name == "result" && descriptor == "Z"
+                if owner.0.as_slice() == b"MixedShortCircuitField$Box" && name.0.as_slice() == b"result" && descriptor.0.as_slice() == b"Z"
         ));
         assert_eq!(
             report.quality,
@@ -46879,7 +49389,7 @@ mod tests {
         assert!(matches!(
             proof.consumer,
             ShortCircuitConsumer::InstanceField(ref owner, ref name, ref descriptor, _)
-                if owner == "MixedInstanceControls$BaseBox" && name == "result" && descriptor == "Z"
+                if owner.0.as_slice() == b"MixedInstanceControls$BaseBox" && name.0.as_slice() == b"result" && descriptor.0.as_slice() == b"Z"
         ));
         assert_eq!(report.quality, jarde_jvm::ir::Quality::Fallback);
         let field = report
@@ -46977,7 +49487,11 @@ mod tests {
         assert_eq!(proof.consumer_bci, 19);
         assert_eq!(
             proof.consumer,
-            ShortCircuitConsumer::Field("ChainOrField".into(), "result".into(), "Z".into())
+            ShortCircuitConsumer::Field(
+                JvmBytes::from_unicode("ChainOrField"),
+                JvmBytes::from_unicode("result"),
+                JvmBytes::from_unicode("Z")
+            )
         );
         assert_eq!(
             report.quality,
@@ -47049,9 +49563,9 @@ mod tests {
         assert_eq!(
             proof.consumer,
             ShortCircuitConsumer::Field(
-                "AnonymousSuperDispatch".to_string(),
-                "capturedVisibleBeforeBaseReturns".to_string(),
-                "Z".to_string(),
+                JvmBytes::from_unicode("AnonymousSuperDispatch"),
+                JvmBytes::from_unicode("capturedVisibleBeforeBaseReturns"),
+                JvmBytes::from_unicode("Z")
             )
         );
         assert!(report.text.contains("capturedVisibleBeforeBaseReturns ="));
@@ -47288,9 +49802,9 @@ mod tests {
         assert_eq!(
             proof.consumer,
             ShortCircuitConsumer::Field(
-                "SharedTrueShortCircuit".to_string(),
-                "result".to_string(),
-                "Z".to_string(),
+                JvmBytes::from_unicode("SharedTrueShortCircuit"),
+                JvmBytes::from_unicode("result"),
+                JvmBytes::from_unicode("Z")
             )
         );
         assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
@@ -47545,6 +50059,7 @@ mod tests {
             ExprKind::Cast {
                 ty: Type::Reference("java.lang.Object".to_owned()),
                 value: Box::new(null.clone()),
+                source_type_name: None,
             },
             OriginSet::new(Origin::direct(2)),
         );
@@ -48052,10 +50567,10 @@ mod tests {
         let member_inner_targets = [];
         let interface_super_calls = [];
         let reference_overload_calls = [];
-        let snapshot_hierarchy_widenings = [];
+        let reference_relations = [];
         let captured_outer_reads = [];
         let outer_super_calls = [];
-        let nested_class_members = Vec::<String>::new();
+
         let prologues = crate::init::Prologues::none();
         let enums = crate::enumswitch::Plan::empty();
 
@@ -48068,6 +50583,7 @@ mod tests {
                 pool: ir.constant_pool(),
                 bootstrap: ir.bootstrap_methods(),
                 profile: crate::pass::JAVA_8.clone(),
+                runtime_release: 8,
                 parameters: parameter_count,
                 has_receiver,
                 parameter_types: &parameter_types,
@@ -48083,10 +50599,11 @@ mod tests {
                 typed_functional_target: None,
                 interface_super_calls: &interface_super_calls,
                 reference_overload_calls: &reference_overload_calls,
-                snapshot_hierarchy_widenings: &snapshot_hierarchy_widenings,
+                reference_relations: &reference_relations,
+                declared_types: None,
                 captured_outer_reads: &captured_outer_reads,
                 outer_super_calls: &outer_super_calls,
-                nested_class_members: &nested_class_members,
+                source_names: crate::names::SourceClassNames::default(),
                 pool_spelled_members: false,
                 physical_method: Some(declaration.identity()),
                 declaring_class: Some(&declaring_class),
@@ -48099,7 +50616,7 @@ mod tests {
                 sites: &sites,
                 prologues: &prologues,
                 fields: &fields,
-                array_initializers,
+                array_initializers: &array_initializers,
                 enums: &enums,
                 allow_array_constructor_method_references: false,
             },
@@ -48557,6 +51074,7 @@ mod tests {
                     &parameter_types,
                     &sites,
                     &fields,
+                    &arrays,
                     &field_copies,
                     &prologues,
                     &enums,
@@ -48874,7 +51392,7 @@ mod tests {
             assert!(matches!(
                 literal_boolean_fixture_attempt(&context, variable, accesses, &mut stopped),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     ..
                 })
             ));

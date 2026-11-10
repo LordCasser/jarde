@@ -309,45 +309,27 @@ fn constant(
 
 /// One `CONSTANT_Class` name that has a proved Java source spelling.
 ///
-/// Ordinary Class entries carry internal names; array Class entries carry field descriptors. The
-/// reader keeps the pool name as Modified UTF-8 bytes. Decode that encoding before validating the
-/// source spelling: a supplementary Java identifier is a surrogate pair in the pool, not standard
-/// UTF-8. Malformed sequences become U+FFFD in `lossy` and are rejected here rather than published
-/// as a plausible Java path. The current type-name policy is the existing bounded ASCII identifier
-/// grammar applied to every `/` and `$` segment (change `recover-nested-class-literal-values`):
-/// a `$` no longer vetoes, so the nested binary names javac writes admit here, and what the pool
-/// name spells as in recovered text stays the presentation layer's decision. Valid Unicode names
-/// remain a known recovery boundary until Java 8's identifier tables are represented here.
+/// Ordinary entries carry internal names; array entries carry field descriptors. Keep their
+/// Modified UTF-8 bytes through the reader's descriptor parsing and decode only the object leaf
+/// for the source-name gate. Nested literal names retain the existing segment policy below.
 fn class_literal_type(name: &jarde_reader::model::JvmBytes) -> Option<String> {
-    let raw = lossy(name);
-    if raw.contains('\u{fffd}') {
-        return None;
-    }
-    if let Some(array_descriptor) = raw.strip_prefix('[') {
-        let element_descriptor = array_descriptor.trim_start_matches('[');
-        if let Some(internal_name) = element_descriptor
-            .strip_prefix('L')
-            .and_then(|element| element.strip_suffix(';'))
-        {
-            if !source_internal_name(internal_name) {
+    if name.0.first() == Some(&b'[') {
+        let facts = descriptor_facts(&name.0, DescriptorKind::Field).ok()?;
+        let component = facts.single()?;
+        if let Some(object) = component.object_name() {
+            if !source_internal_name(&object.to_unicode()?) {
                 return None;
             }
-        } else if !matches!(
-            element_descriptor,
-            "Z" | "B" | "C" | "S" | "I" | "J" | "F" | "D"
-        ) {
-            return None;
         }
-        let (ty, end) = crate::lambda::parse_type(raw.as_bytes(), 0)?;
-        return match ty {
-            Type::Reference(spelling) if end == raw.len() => Some(spelling),
+        return match crate::lambda::type_of_component(component)? {
+            Type::Reference(spelling) => Some(spelling),
             _ => None,
         };
     }
-    if !source_internal_name(&raw) {
+    if !source_internal_name(&name.to_unicode()?) {
         return None;
     }
-    crate::build::spell_reference(&raw)
+    crate::names::source_class_name(name)
 }
 
 /// Whether every component of one internal class name is a source identifier this layer writes.
@@ -363,7 +345,10 @@ fn class_literal_type(name: &jarde_reader::model::JvmBytes) -> Option<String> {
 /// `Outer$1` and the local `Outer$1Local`, whose digit-leading tails fail the identifier's start
 /// rule without a dedicated check.
 fn source_internal_name(name: &str) -> bool {
-    !name.is_empty() && name.split(['/', '$']).all(crate::names::is_java_identifier)
+    !name.is_empty()
+        && name
+            .split(['/', '$'])
+            .all(|part| part == "_" || crate::names::is_java_identifier(part))
 }
 
 /// The arithmetic one opcode performs, when this subset has that operator.
@@ -501,12 +486,11 @@ fn array_creation(
             let CpEntryKind::Class { name, .. } = &entry.kind else {
                 return Operation::Other;
             };
-            let name = lossy(name);
             // A `CONSTANT_Class` entry names an array with a descriptor and a class with an
             // internal name (JVMS 4.4.1). An array descriptor is the component of the one new
             // dimension this instruction allocates; a class name is the ordinary rank-one case.
-            if name.starts_with('[') {
-                let Ok(facts) = descriptor_facts(name.as_bytes(), DescriptorKind::Field) else {
+            if name.0.first() == Some(&b'[') {
+                let Ok(facts) = descriptor_facts(&name.0, DescriptorKind::Field) else {
                     return Operation::Other;
                 };
                 let Some(component) = facts.single() else {
@@ -528,7 +512,7 @@ fn array_creation(
                     _ => Operation::Other,
                 }
             } else {
-                match crate::build::spell_reference(&name) {
+                match crate::names::source_class_name(name) {
                     Some(element) => Operation::NewArray {
                         element: Type::Reference(element),
                         dimensions: 1,
@@ -551,8 +535,7 @@ fn array_creation(
             let CpEntryKind::Class { name, .. } = &entry.kind else {
                 return Operation::Other;
             };
-            let descriptor = lossy(name);
-            let Ok(facts) = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Field) else {
+            let Ok(facts) = descriptor_facts(&name.0, DescriptorKind::Field) else {
                 return Operation::Other;
             };
             let Some(component) = facts.single() else {
@@ -708,11 +691,11 @@ fn invoke(opcode: u8, instruction: &InstructionFact, pool: &[CpEntryFacts]) -> O
             name,
             descriptor,
             ..
-        }) => Operation::Invoke(CallTarget::new(
+        }) => Operation::Invoke(CallTarget::from_raw(
             kind,
-            lossy(owner),
-            lossy(name),
-            lossy(descriptor),
+            owner.clone(),
+            name.clone(),
+            descriptor.clone(),
             false,
         )),
         Ok(CpEntryKind::InterfaceMethodRef {
@@ -720,11 +703,11 @@ fn invoke(opcode: u8, instruction: &InstructionFact, pool: &[CpEntryFacts]) -> O
             name,
             descriptor,
             ..
-        }) => Operation::Invoke(CallTarget::new(
+        }) => Operation::Invoke(CallTarget::from_raw(
             kind,
-            lossy(owner),
-            lossy(name),
-            lossy(descriptor),
+            owner.clone(),
+            name.clone(),
+            descriptor.clone(),
             true,
         )),
         // `invokedynamic` names a bootstrap method, not a member this layer can write a call for.
@@ -754,11 +737,11 @@ fn invokedynamic(instruction: &InstructionFact, pool: &[CpEntryFacts]) -> Operat
             name,
             descriptor,
             ..
-        }) => Operation::InvokeDynamic(DynamicSite::new(
+        }) => Operation::InvokeDynamic(DynamicSite::from_raw(
             index,
             *bootstrap_method_attr_index,
-            lossy(name),
-            lossy(descriptor),
+            name.clone(),
+            descriptor.clone(),
         )),
         // `invokedynamic` names a dynamic call site and nothing else: a different pool entry behind
         // the opcode is a class this layer cannot state an operation for.
@@ -780,7 +763,7 @@ fn allocate(
         return Operation::Other;
     };
     match cp_entry(pool, index).map(|entry| &entry.kind) {
-        Ok(CpEntryKind::Class { name, .. }) => Operation::Allocate { ty: lossy(name) },
+        Ok(CpEntryKind::Class { name, .. }) => Operation::Allocate { ty: name.clone() },
         // A `new` whose class this run cannot name is an instruction whose target is unknown, and
         // this layer never invents the symbol an instruction refers to.
         _ => Operation::Other,
@@ -812,9 +795,9 @@ fn field(
         }) => Operation::Field {
             access,
             is_static,
-            owner: lossy(owner),
-            name: lossy(name),
-            descriptor: lossy(descriptor),
+            owner: owner.clone(),
+            name: name.clone(),
+            descriptor: descriptor.clone(),
         },
         _ => Operation::Other,
     }
@@ -830,7 +813,7 @@ fn check_cast(
         return Operation::Other;
     };
     match cp_entry(pool, index).map(|entry| &entry.kind) {
-        Ok(CpEntryKind::Class { name, .. }) => Operation::CheckCast { ty: lossy(name) },
+        Ok(CpEntryKind::Class { name, .. }) => Operation::CheckCast { ty: name.clone() },
         _ => Operation::Other,
     }
 }
@@ -844,7 +827,7 @@ fn instance_of(
         return Operation::Other;
     };
     match cp_entry(pool, index).map(|entry| &entry.kind) {
-        Ok(CpEntryKind::Class { name, .. }) => Operation::InstanceOf { ty: lossy(name) },
+        Ok(CpEntryKind::Class { name, .. }) => Operation::InstanceOf { ty: name.clone() },
         _ => Operation::Other,
     }
 }
@@ -1050,6 +1033,71 @@ mod tests {
     }
 
     #[test]
+    fn cast_and_type_test_keep_raw_class_identity_before_source_spelling() {
+        let names = [
+            JvmBytes::from_unicode("p/𐐀Value"),
+            JvmBytes::from_unicode("[[Lp/𐐀Value;"),
+            JvmBytes::from_unicode("p/😀"),
+            JvmBytes(vec![b'p', b'/', 0xed, 0xa0, 0x80]),
+            JvmBytes(vec![b'p', b'/', 0xed, 0xa0, 0x81]),
+        ];
+        for name in &names {
+            for opcode in [0xc0, 0xc1] {
+                let operations = decoded_with_pool(&[0x01, opcode, 0, 11, 0x57, 0xb1], |pool| {
+                    let CpEntryKind::Class { name: target, .. } = &mut pool[10].kind else {
+                        panic!("fixture pool #11 is a class");
+                    };
+                    *target = name.clone();
+                });
+                let ty = match at(&operations, 1) {
+                    Operation::CheckCast { ty } | Operation::InstanceOf { ty } => ty,
+                    other => panic!("type operand must retain the pool fact: {other:?}"),
+                };
+                assert_eq!(&ty, name);
+            }
+        }
+        for opcode in [0xc0, 0xc1] {
+            let operations = decoded_with_pool(&[0x01, opcode, 0, 11, 0x57, 0xb1], |pool| {
+                pool[10].kind = CpEntryKind::Integer { value: 0 };
+            });
+            assert_eq!(at(&operations, 1), Operation::Other);
+        }
+    }
+
+    #[test]
+    fn allocation_keeps_raw_class_identity_before_source_spelling() {
+        let names = [
+            JvmBytes::from_unicode("p/𐐀Outer$𐐀Inner"),
+            JvmBytes::from_unicode("p/😀"),
+            JvmBytes(vec![b'p', b'/', 0xed, 0xa0, 0x80]),
+            JvmBytes(vec![b'p', b'/', 0xed, 0xa0, 0x81]),
+        ];
+        let mut retained = Vec::new();
+        for (index, name) in names.iter().enumerate() {
+            let operations = decoded_with_pool(&[0xbb, 0, 11, 0x57, 0xb1], |pool| {
+                let CpEntryKind::Class { name: target, .. } = &mut pool[10].kind else {
+                    panic!("fixture pool #11 is a class");
+                };
+                *target = name.clone();
+            });
+            let Operation::Allocate { ty } = at(&operations, 0) else {
+                panic!("new retains the class operand even when no Java spelling exists");
+            };
+            assert_eq!(&ty, name);
+            assert_eq!(crate::names::source_class_name(&ty).is_some(), index == 0);
+            retained.push(ty);
+        }
+        assert_ne!(
+            retained[2], retained[3],
+            "malformed names cannot collapse into one display identity"
+        );
+        let wrong_kind = decoded_with_pool(&[0xbb, 0, 11, 0x57, 0xb1], |pool| {
+            pool[10].kind = CpEntryKind::Integer { value: 0 };
+        });
+        assert_eq!(at(&wrong_kind, 0), Operation::Other);
+    }
+
+    #[test]
     fn ldc_and_ldc_w_admit_class_pool_entries_with_their_pool_index() {
         let ldc = decoded(&[0x12, 11, 0x57, 0xb1]);
         let ldc_w = decoded(&[0x13, 0, 11, 0x57, 0xb1]);
@@ -1138,6 +1186,77 @@ mod tests {
         assert_eq!(at(&float_on_ldc2_w, 0), Operation::Other);
     }
 
+    fn raw_field_pair(component: usize) -> (Operations, Operations) {
+        let read = |unit| {
+            decoded_with_pool(&[0xb2, 0, 11, 0x57, 0xb1], |pool| {
+                let raw = JvmBytes(vec![0xed, 0xa0, unit]);
+                pool[10].kind = CpEntryKind::FieldRef {
+                    class_index: 0,
+                    name_and_type_index: 0,
+                    owner: if component == 0 {
+                        raw.clone()
+                    } else {
+                        JvmBytes::from_unicode("p/Owner")
+                    },
+                    name: if component == 1 {
+                        raw.clone()
+                    } else {
+                        JvmBytes::from_unicode("value")
+                    },
+                    descriptor: if component == 2 {
+                        JvmBytes([b"Lp/".as_slice(), &raw.0, b";"].concat())
+                    } else {
+                        JvmBytes::from_unicode("I")
+                    },
+                };
+            })
+        };
+        (read(0x81), read(0x82))
+    }
+
+    #[test]
+    fn raw_field_owners_do_not_merge_when_display_collides() {
+        let (left, right) = raw_field_pair(0);
+        assert_ne!(at(&left, 0), at(&right, 0), "field owner identity is raw");
+    }
+
+    #[test]
+    fn raw_field_names_do_not_merge_when_display_collides() {
+        let (left, right) = raw_field_pair(1);
+        assert_ne!(at(&left, 0), at(&right, 0), "field name identity is raw");
+    }
+
+    #[test]
+    fn raw_field_descriptors_do_not_merge_when_display_collides() {
+        let (left, right) = raw_field_pair(2);
+        assert_ne!(
+            at(&left, 0),
+            at(&right, 0),
+            "field descriptor identity is raw"
+        );
+    }
+
+    #[test]
+    fn raw_dynamic_site_names_do_not_merge_when_display_collides() {
+        let read = |name| {
+            decoded_with_pool(&[0xba, 0, 11, 0, 0, 0x57, 0xb1], |pool| {
+                pool[10].kind = CpEntryKind::InvokeDynamic {
+                    bootstrap_method_attr_index: 0,
+                    name_and_type_index: 0,
+                    name: JvmBytes(name),
+                    descriptor: JvmBytes::from_unicode("()Ljava/lang/Runnable;"),
+                };
+            })
+        };
+        let left = read(vec![0xed, 0xa0, 0x81]);
+        let right = read(vec![0xed, 0xa0, 0x82]);
+        assert_ne!(
+            at(&left, 0),
+            at(&right, 0),
+            "different raw SAM names remain different sites"
+        );
+    }
+
     #[test]
     fn ldc_does_not_admit_method_type_or_method_handle_pool_entries() {
         let method_type = decoded_with_pool(&[0x12, 11, 0x57, 0xb1], |pool| {
@@ -1184,6 +1303,34 @@ mod tests {
 
         let invalid_java_identifier = jarde_reader::model::JvmBytes(b"invalid-name".to_vec());
         assert_eq!(class_literal_type(&invalid_java_identifier), None);
+    }
+
+    #[test]
+    fn class_literal_arrays_keep_raw_mutf8_until_the_component_is_read() {
+        for (name, expected) in [
+            ("[[Lp/𐐀Type;", "p.𐐀Type[][]"),
+            ("[Lp/_;", "p._[]"),
+            ("p/_", "p._"),
+            ("[[I", "int[][]"),
+        ] {
+            assert_eq!(
+                class_literal_type(&JvmBytes::from_unicode(name)).as_deref(),
+                Some(expected)
+            );
+        }
+        for raw in [
+            b"[Lp/\xed\xa0\x81;".as_slice(),
+            b"[Lp/\xf0\x90\x90\x80;",
+            b"[Lp/\xef\xbf\xbd;",
+            b"[Lp/Outer$1;",
+            b"[Lp/Outer$$Inner;",
+            b"[Lp/class;",
+            b"[Lp/Type;tail",
+            b"[V",
+            b"[",
+        ] {
+            assert_eq!(class_literal_type(&JvmBytes(raw.to_vec())), None, "{raw:?}");
+        }
     }
 
     #[test]
@@ -1543,6 +1690,69 @@ mod tests {
         assert_eq!(at(&zero, 1), Operation::Other);
         let too_many = decoded(&[0x06, 0x07, 0x08, 0xc5, 0x00, 0x09, 0x03, 0xb1]);
         assert_eq!(at(&too_many, 3), Operation::Other);
+    }
+
+    #[test]
+    fn array_creations_read_raw_object_leaves_and_preserve_dimension_limits() {
+        let with_name = |code: &[u8], name: JvmBytes| {
+            decoded_with_pool(code, |pool| {
+                let CpEntryKind::Class { name: stored, .. } = &mut pool[10].kind else {
+                    panic!("fixture pool entry 11 is a class");
+                };
+                *stored = name;
+            })
+        };
+        for (name, code, bci, allocated, total) in [
+            ("p/𐐀Type", &[0x06, 0xbd, 0, 11, 0xb1][..], 1, 1, 1),
+            ("[Lp/𐐀Type;", &[0x06, 0xbd, 0, 11, 0xb1][..], 1, 1, 2),
+            (
+                "[[Lp/𐐀Type;",
+                &[0x06, 0x07, 0xc5, 0, 11, 2, 0xb1][..],
+                2,
+                2,
+                2,
+            ),
+        ] {
+            assert_eq!(
+                at(&with_name(code, JvmBytes::from_unicode(name)), bci),
+                Operation::NewArray {
+                    element: Type::Reference("p.𐐀Type".to_owned()),
+                    dimensions: allocated,
+                    total_dimensions: total,
+                }
+            );
+        }
+        for count in [0, 3] {
+            let op = with_name(
+                &[0x06, 0x07, 0xc5, 0, 11, count, 0xb1],
+                JvmBytes::from_unicode("[[Lp/𐐀Type;"),
+            );
+            assert_eq!(at(&op, 2), Operation::Other);
+        }
+        for rank in [254, 255] {
+            let raw = [vec![b'['; rank], b"I".to_vec()].concat();
+            let op = with_name(&[0x06, 0xbd, 0, 11, 0xb1], JvmBytes(raw));
+            let expected = if rank == 254 {
+                Operation::NewArray {
+                    element: Type::Int,
+                    dimensions: 1,
+                    total_dimensions: 255,
+                }
+            } else {
+                Operation::Other
+            };
+            assert_eq!(at(&op, 1), expected);
+        }
+        for raw in [
+            b"[Lp/\xed\xa0\x81;".as_slice(),
+            b"[Lp/\xf0\x90\x90\x80;",
+            b"[Lp/a-b;",
+            b"[Iextra",
+            b"[V",
+        ] {
+            let op = with_name(&[0x06, 0xbd, 0, 11, 0xb1], JvmBytes(raw.to_vec()));
+            assert_eq!(at(&op, 1), Operation::Other, "{raw:?}");
+        }
     }
 
     #[test]

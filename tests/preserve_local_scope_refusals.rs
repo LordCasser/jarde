@@ -208,6 +208,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// One class-source presentation of one committed sample, under the entry point the CLI calls.
 fn class_source_of(snapshot: &ArtifactSnapshot, class: &str, release: u16) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -317,6 +318,118 @@ fn origin_of(run: &RecoveryReport, offset: usize) -> u32 {
     segment.origin().primary().bci()
 }
 
+/// The nested handler is now presented as a complete method body. Its method identity comes from
+/// the existing closure record; the statement and handler origins still have to agree with the
+/// classfile sites that record names.
+fn assert_nested_handler_presented(report: &ClassSourceReport, leg: &str) {
+    let run = run_of(report, NESTED.member);
+    let text = run.text.as_str();
+    assert_eq!(
+        run.content,
+        RecoveryContent::ContainsStatements,
+        "{leg}/{}: the nested handler is now presented:\n{text}",
+        NESTED.member
+    );
+    assert_eq!(
+        run.representation,
+        Representation::Java,
+        "{leg}/{}:\n{text}",
+        NESTED.member
+    );
+    assert!(run.fallbacks.is_empty(), "{leg}/{}:\n{text}", NESTED.member);
+    assert!(
+        !member(report, NESTED.member).text.contains("@bytecode")
+            && member(report, NESTED.member).markers.is_empty(),
+        "{leg}/{}: no marker remains in the presented method:\n{text}",
+        NESTED.member
+    );
+
+    let declaration = at(text, "int local1;");
+    let initial = at(text, "local1 = 0;");
+    let outer_try = at(text, "try {");
+    let inner_try = text[outer_try + "try {".len()..]
+        .find("try {")
+        .map(|offset| outer_try + "try {".len() + offset)
+        .unwrap_or_else(|| panic!("{leg}: the inner try is presented:\n{text}"));
+    let division = at(text, "local1 = 10 / arg0;");
+    let inner_catch = at(text, "catch (java.lang.ArithmeticException local2)");
+    let inner_handler = at(text, "local1 = -1;");
+    let outer_catch = at(text, "catch (java.lang.RuntimeException local2)");
+    let outer_handler = at(text, "local1 = -2;");
+    let returned = at(text, "return local1;");
+    assert!(
+        declaration < initial
+            && initial < outer_try
+            && outer_try < inner_try
+            && inner_try < division
+            && division < inner_catch
+            && inner_catch < inner_handler
+            && inner_handler < outer_catch
+            && outer_catch < outer_handler
+            && outer_handler < returned,
+        "{leg}/{}: declaration, nested handlers and return keep bytecode order:\n{text}",
+        NESTED.member
+    );
+
+    // NESTED's saved slice identifies the declaration, both handler entries, transfer and final
+    // consumer. The presented source map must still point those expressions/clauses at the same
+    // method-local bytecode origins.
+    assert_eq!(
+        origin_of(run, declaration),
+        NESTED.slice[0].1,
+        "{leg}/{}: local declaration origin:\n{text}",
+        NESTED.member
+    );
+    // Catch headers currently share their enclosing try's structural segment. Its derived
+    // anchors must retain the handler entry; it does not claim a separate primary span.
+    assert!(
+        run.source_map
+            .covering(inner_catch)
+            .expect("inner catch is mapped")
+            .mentions(NESTED.slice[1].1)
+            .is_some(),
+        "{leg}: inner handler entry remains in the structural origin"
+    );
+    assert_eq!(
+        origin_of(run, division),
+        6,
+        "{leg}/{}: protected division/store origin:\n{text}",
+        NESTED.member
+    );
+    assert_eq!(
+        origin_of(run, inner_handler),
+        12,
+        "{leg}/{}: inner handler assignment origin:\n{text}",
+        NESTED.member
+    );
+    assert!(
+        run.source_map
+            .covering(outer_catch)
+            .expect("outer catch is mapped")
+            .mentions(NESTED.slice[3].1)
+            .is_some(),
+        "{leg}: outer handler entry remains in the structural origin"
+    );
+    assert_eq!(
+        origin_of(run, outer_handler),
+        19,
+        "{leg}/{}: outer handler assignment origin:\n{text}",
+        NESTED.member
+    );
+    assert_eq!(
+        origin_of(run, returned),
+        21,
+        "{leg}/{}: return instruction origin:\n{text}",
+        NESTED.member
+    );
+    assert_eq!(
+        origin_of(run, returned + "return ".len()),
+        NESTED.slice[4].1,
+        "{leg}/{}: return consumer origin:\n{text}",
+        NESTED.member
+    );
+}
+
 /// The five member texts of one class, by member name.
 fn texts_of(report: &ClassSourceReport) -> Vec<(String, String)> {
     report
@@ -349,7 +462,7 @@ fn the_refused_slices_keep_the_instructions_their_closure_covers() {
             "{leg}: the render states its own header before anything is counted:\n{}",
             report.text
         );
-        for closure in [&SAVED, &COMPUTED, &NESTED] {
+        for closure in [&SAVED, &COMPUTED] {
             let run = run_of(&report, closure.member);
             let text = run.text.as_str();
             assert_eq!(
@@ -437,6 +550,7 @@ fn the_refused_slices_keep_the_instructions_their_closure_covers() {
                 closure.member
             );
         }
+        assert_nested_handler_presented(&report, leg);
     }
 
     // The escape control: the same closure, with the sentence that states the binding's own
@@ -595,12 +709,13 @@ fn the_boundary_keeps_the_independent_members_and_quotes_only_the_dependent_slic
 
         // The class text carries both answers: the refused members keep their sentences and the
         // independent members their statements, in one presentation.
-        for sentence in [CROSSES_FALLBACK, CROSSES_PROTECTED] {
+        for sentence in [CROSSES_FALLBACK] {
             assert!(
                 report.text.contains(sentence),
                 "{leg}: the class text keeps the refusal `{sentence}`"
             );
         }
+        assert_nested_handler_presented(&report, leg);
         assert!(
             report.text.contains("return local1;") && report.text.contains("local1 = -1;"),
             "{leg}: the class text keeps the independent members' statements:\n{}",
@@ -647,6 +762,7 @@ fn member_states(
 /// One class-source request for one committed sample.
 fn class_request(snapshot: &ArtifactSnapshot, class: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -716,7 +832,7 @@ fn the_scope_planning_and_validation_stops_commit_no_partial_body() {
         assert!(!produced, "{name}: the last stop commits no text");
         match outcome {
             RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 at: Some(at),
                 ..
             }) => assert_eq!(
@@ -864,7 +980,7 @@ fn the_scope_planning_and_validation_stops_commit_no_partial_body() {
             };
             if report.text.is_empty() {
                 if let RecoveryOutcome::Stopped(StopReason::Budget {
-                    dimension: CountedBudgetDimension::OutputBytes,
+                    dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
                     ..
                 }) = &report.outcome
                 {
@@ -1301,7 +1417,8 @@ fn the_legal_shapes_answer_what_the_original_and_jadx_answer() {
         let refused = temp.path().join("refused");
         std::fs::create_dir_all(&refused).expect("create the refusal directory");
         let report = class_source_of(&open(REFUSALS_V8), "ScopeRefusals", 8);
-        assert!(report.text.contains(CROSSES_FALLBACK) && report.text.contains(CROSSES_PROTECTED));
+        assert!(report.text.contains(CROSSES_FALLBACK));
+        assert_nested_handler_presented(&report, leg.label);
         std::fs::write(refused.join("ScopeRefusals.java"), stripped(&report.text))
             .expect("write the refused text");
         let result = leg

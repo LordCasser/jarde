@@ -263,18 +263,29 @@ fn run(name: &str, descriptor: &str, evidence: RecoveryEvidenceRequest) -> Run {
         )),
     )
     .with_debug_locals(reader_debug_locals(ir.code()));
-    let request = RecoveryRequest::new(ir, &facts, JAVA_8)
-        .with_evidence(evidence)
-        .with_subject(subject);
+    let request = RecoveryRequest::new(
+        ir,
+        &facts,
+        JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
+    )
+    .with_evidence(evidence)
+    .with_subject(subject);
     let report = recover(&request, &mut budget);
     if report.produced() {
-        let binding = report.artifact.binding().expect("public result is bound");
-        assert_eq!(binding.method(), &method);
-        assert_eq!(binding.member_ordinal(), Some(ordinal));
         assert_eq!(
-            binding.environment(),
-            &analysis.report().environment_identity
+            report.input_origin,
+            jarde_java::report::RecoveryInputOrigin::CallerSupplied
         );
+        assert!(
+            report.artifact.binding().is_none(),
+            "caller subject metadata is not a verified read binding"
+        );
+        assert_eq!(analysis.ir().declaration().unwrap().identity(), &method);
     }
 
     Run {

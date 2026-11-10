@@ -28,6 +28,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 
 fn request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("ThrowProbe"),
         },
@@ -443,6 +444,7 @@ fn recovered_throw_probe_matches_original_runtime() {
 
 fn boundary_request(snapshot: &ArtifactSnapshot, class_name: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },

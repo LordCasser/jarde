@@ -189,6 +189,7 @@ fn recover_all(
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             budget,
@@ -235,30 +236,28 @@ fn a_value_the_slot_no_longer_holds_is_not_returned_through_the_slot_name() {
         "slot 0 holds the incremented value at BCI 4, so a return of the slot's name states the \
          opposite of the bytecode — `post(7)` answers 7 and the written method would answer 8:\n{text}"
     );
-    // And the read it refused is not dropped silently: the quote names the load's own BCI next to
-    // the reader's, which is the whole effect the statement it could not write would have carried.
+    // The read this slice once refused is now recovered through the value it actually read: the
+    // return binds the load's own pre-increment value, so the presented method answers 7 for
+    // `post(7)` exactly as the bytecode does, and no quote is needed because nothing is refused.
+    // (P3-R1's original answer quoted BCIs 0 and 4; the recovery paths this slice grew since then
+    // prove the binding instead, and the `bump`/`doubleIt` controls below still keep
+    // `return arg0;` because their reload really does read the slot.)
+    assert!(
+        text.contains("int saved0 = arg0;") && text.contains("return saved0;"),
+        "the return carries the load's own value under its bound name:\n{text}"
+    );
     let quoted = quoted_bcis(text);
     assert!(
-        quoted.contains(&0) && quoted.contains(&4),
-        "the quote states the load at BCI 0 and the `ireturn` at BCI 4: {quoted:?}\n{text}"
+        quoted.is_empty(),
+        "no read is refused, so no quote is stated: {quoted:?}\n{text}"
     );
-    assert!(
-        text.contains("BCI 0") && text.contains("BCI 4"),
-        "the reason states both bytecode indexes in words as well:\n{text}"
-    );
-    // The answer says of itself that it is not claiming Java for the whole body: part of it is
-    // quoted bytecode, which is what a refused read is. Before the fix this run claimed Java text
-    // with full structure and wrote the opposite program.
-    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
-    assert_eq!(report.quality, Quality::Fallback, "{report:?}");
+    // The answer says of itself that it now claims the whole body as Java, with the recovery's own
+    // proof planes — and `return arg0;` stays forbidden by the assertion above either way.
+    assert_eq!(report.representation, Representation::Java, "{report:?}");
+    assert_eq!(report.quality, Quality::Structured, "{report:?}");
     assert!(
         report.produced(),
-        "a degraded body is still an answer: {report:?}"
-    );
-    assert_ne!(
-        report.syntax_status,
-        SyntaxStatus::Checked,
-        "the artifact is not claimed to be Java: {report:?}"
+        "a recovered body is still an answer: {report:?}"
     );
 }
 
@@ -270,21 +269,19 @@ fn a_value_the_slot_no_longer_holds_is_not_returned_through_the_slot_name() {
 /// degraded presentation is not a degraded read, and `quality` is where the degradation is stated:
 /// the coverage plane is not the place to move it to `Partial` (A12/A13/A16).
 #[test]
-fn a_mixed_artifacts_quotes_are_mapped_whole_and_its_scan_stays_complete() {
-    let engine = Engine::new();
+fn a_once_mixed_artifact_now_recovers_whole_with_a_complete_scan_and_origin_map() {
+    let engine = &Engine::new();
     let fixture = fixture(&engine);
     let mut budget = Budget::new(limits());
+    // `post` (and `cast` below it) are the two members this sample once answered with quoted
+    // bytecode; both now recover as structured Java, so this test pins the planes the file has
+    // always separated: the scan stays complete while the presentation states what it proved.
     let recovered = recover_all(&engine, &fixture, b"post", b"(I)I", &mut budget);
     let report = recovered.recovery();
     let text = &report.text;
 
-    // The artifact is the degraded shape this case is about, and it says so.
-    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
-    assert_eq!(report.quality, Quality::Fallback, "{report:?}");
-
-    // The complete scan and the degraded presentation are two planes, and neither moves the other:
-    // the body was decoded to its end (nothing was skipped), and the presentation *of it* is the
-    // weaker one. `Partial` is a statement about what was scanned, and nothing here was not scanned.
+    assert_eq!(report.representation, Representation::Java, "{report:?}");
+    assert_eq!(report.quality, Quality::Structured, "{report:?}");
     let analysis = recovered.analysis();
     assert_eq!(
         analysis.coverage.artifact_structural.state,
@@ -297,61 +294,29 @@ fn a_mixed_artifacts_quotes_are_mapped_whole_and_its_scan_stays_complete() {
         analysis.coverage.artifact_structural
     );
 
-    // Every bytecode a quote names is an anchor of that quote: the text states which instructions
-    // the quote accounts for, and the map answers for each of them — the same list, instruction for
-    // instruction.
+    // The recovered statement's own origins: every statement's text is anchored by the bytecode
+    // it presents, and the map answers for the return's value through its derived origin — the
+    // same record a structured region always carries.
     let quoted = quoted_bcis(text);
-    assert!(!quoted.is_empty(), "{text}");
-    for bci in &quoted {
-        assert!(
-            !report.source_map.of_bci(*bci).is_empty(),
-            "the quote that names BCI {bci} is the node the map answers with:\n{text}"
-        );
-    }
-    let mut anchored: Vec<u32> = report
-        .source_map
-        .segments()
-        .iter()
-        .filter(|segment| segment.text(text).trim_start().starts_with("// @bytecode"))
-        .flat_map(|segment| {
-            std::iter::once(segment.origin().primary()).chain(segment.origin().derived().iter())
-        })
-        .map(|anchor| anchor.bci())
-        .collect();
-    anchored.sort_unstable();
-    anchored.dedup();
-    let mut named = quoted.clone();
-    named.sort_unstable();
-    named.dedup();
-    assert_eq!(
-        anchored, named,
-        "the quotes' own anchors are exactly the bytecodes the quotes name:\n{text}"
+    assert!(
+        quoted.is_empty(),
+        "nothing is refused, so the artifact states no quote: {quoted:?}\n{text}"
     );
-
-    // And the run's record of itself: every region is either presented as Java or quoted, and a
-    // quoted region states the code it fell back for — which the run's diagnostics state too.
-    let mut presented = 0usize;
-    for region in &report.regions {
-        if region.structured {
-            presented += 1;
-            continue;
-        }
-        let code = region.code.expect("a fallback region states its code");
-        assert!(region.message.is_some(), "{region:?}");
+    for bci in [0, 1, 4] {
         assert!(
-            report
-                .diagnostics
-                .iter()
-                .any(|diagnostic| diagnostic.code == code),
-            "the fallback is stated in the run's diagnostics: {code} not in {:?}",
-            report
-                .diagnostics
-                .iter()
-                .map(|diagnostic| diagnostic.code.as_str())
-                .collect::<Vec<_>>()
+            !report.source_map.of_bci(bci).is_empty(),
+            "the map answers for BCI {bci}:\n{text}"
         );
     }
-    assert!(presented > 0, "the mixed artifact is part Java:\n{text}");
+
+    // And the run's record of itself: the one region is presented as Java and its evidence is
+    // complete — the planes the file has always separated are both at their strong end here.
+    assert_eq!(report.regions.len(), 1, "{report:?}");
+    assert!(
+        report.regions.iter().all(|region| region.structured),
+        "the region is presented as Java: {report:?}"
+    );
+    assert!(report.fallbacks.is_empty(), "{report:?}");
 }
 
 #[test]

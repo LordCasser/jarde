@@ -158,6 +158,7 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut Budget::new(limits()),
@@ -914,11 +915,8 @@ fn a_literal_operand_is_a_truth_test() {
 
 #[test]
 fn a_store_without_boolean_evidence_into_a_boolean_variable_is_refused() {
-    // The store side of the same rule, in both directions of "the run knows the variable holds a
-    // boolean": a local its own first write declared `boolean`, and a parameter the member's
-    // descriptor declares `Z`. `local1 = 2;` beside `boolean local1 = …;` is text the variable's own
-    // type rejects, exactly like the `int` spelling of a boolean return — so the region is refused
-    // and the refusal names the variable and the BCI.
+    // The store side of the same rule: planning sees incompatible boolean and int writes to one
+    // local, so it refuses the whole local before publishing a declaration or return.
     let engine = Engine::new();
     let bytes = hand_class();
     let fixture = fixture(&engine, &bytes);
@@ -926,31 +924,30 @@ fn a_store_without_boolean_evidence_into_a_boolean_variable_is_refused() {
     let report = recover(&engine, &fixture, b"overwrite", b"(Z)Z");
     assert_refused(&report, "overwrite", 3);
     assert!(
-        report.text.contains("boolean local1 = arg0;"),
-        "the declaration this run wrote is what makes the later store's context boolean:\n{}",
+        !report.text.contains("boolean local1")
+            && !report.text.contains("return local1;")
+            && !report.text.contains("local1 = 2;"),
+        "the conflicting local is not partially published:\n{}",
         report.text
     );
     assert!(
-        report.text.contains("return local1;"),
-        "and the refusal is the store alone — the member's own boolean use is still written:\n{}",
-        report.text
-    );
-    assert!(
-        !report.text.contains("local1 = 2;"),
-        "the unproven store may not be published:\n{}",
-        report.text
-    );
-    assert!(
-        report.text.contains("`local1`") && report.text.contains("holds a `boolean`"),
-        "the refusal names the variable whose type it could not satisfy:\n{}",
+        report
+            .text
+            .contains("local 1 is treated as one source variable")
+            && report.text.contains("first write at BCI 1")
+            && report.text.contains("written at BCI 3 (`int`)")
+            && report.text.contains("selected type `boolean`"),
+        "the conflict identifies both incompatible writes and the selected type:\n{}",
         report.text
     );
 
     let report = recover(&engine, &fixture, b"paramOverwrite", b"(Z)Z");
     assert_refused(&report, "paramOverwrite", 1);
     assert!(
-        report.text.contains("`arg0`"),
-        "a store into a `Z` parameter is refused the same way:\n{}",
+        report.text.contains("local 0")
+            && report.text.contains("selected type `boolean`")
+            && report.text.contains("BCI 1 (`int`)"),
+        "a store into a `Z` parameter is rejected by the complete write plan:\n{}",
         report.text
     );
     assert!(

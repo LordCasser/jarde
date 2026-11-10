@@ -2,6 +2,10 @@
 
 本页保留能力维度和阶段边界，开头基线复核日期为 2026-09-20。后续语法交付与未完成范围见 [71 单元账本](../openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md) 和 [handoff](../handoff.md)，不能把历史快照视为最新覆盖结论。
 
+2026-10-28 局部修正：Java 8 普通枚举在已证明的常量初始化前缀之后，可投影一次“调用本类静态 `()I` 方法 → 写入本类包可见 `static int` 字段 → 返回”。目标成员来自实际 Code 引用，偏移由指令边界推导；赋值证明与最终装配均不再依赖 `LOW/HIGH`、`2/5`、`totalUnits/sumUnits` 或 BCI 34/37/40。该规则不覆盖任意初始化后缀，额外调用、额外写入、异常处理边继续保留原始呈现。
+
+[公共 Engine 变形回归](../src/enum_constants.rs)中的 `static_suffix_uses_structure_across_names_values_and_prefix_lengths` 覆盖改名、宽整数、三个常量及组合变化，均检查有/无 debug 的完整重编译、返回值和调用次数。这四组同源变体检验这条规则的不变量，不是独立语料，不提供全项目“识别 vs 恢复”比例，也不改变其它语法项的覆盖状态。
+
 当前复核边界（2026-09-20，`8586356`）：P0–P5、分层、四项 benchmark 后续交付、易用性三阶段与停止传播修正均已按当时范围归档。独立复核发现的 R1/P1（名称选择丢失搜索停止）与 R2/P2（类视图顶层漏汇总 body 停止）已在 `8586356` 关闭：未完成的名称搜索返回独立的 `Incomplete` 选择（保留候选/coverage/诊断/用量，不执行分析，CLI exit 4），类视图的顶层 execution 在库内汇总所请求方法体的停止。反例、正向对照与变异证据见 [修正验证](../openspec/changes/archive/2026-09-20-preserve-task-operation-stops/verification.md) 与 [完成复核](../openspec/completion-review.md)。
 
 已交付的定向 container 访问、显式 prefix root、driver 声明类事实交接和内容分类保持有效；生产 verifier、自动编译和普遍语义等价证明仍未实现。

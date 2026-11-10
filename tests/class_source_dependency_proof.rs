@@ -40,6 +40,7 @@ fn class_source_bytes_with_evidence(
         .open(ArtifactInput::bytes(jar.to_vec()), &mut open_budget)
         .expect("class-source archive opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("H1"),
         },
@@ -283,16 +284,32 @@ fn h1_wide_budget_remains_complete_with_main_body() {
 fn h1_cap_one_keeps_ordinary_class_header_budget_refusal() {
     let report = class_source(1);
     assert!(stopped_for_class_headers(&report.execution));
+    // 2026-11-07: the S2b demand-driven member order moved where the same budget wall lands.
+    // The class-level stop contract stands (the execution above, still refused on `ClassHeaders`),
+    // and a member whose run hits the wall now carries it in its own recovery report — a
+    // `Recovered` envelope with a stopped, unproduced body — instead of a member-level `Refused`.
+    // At cap 1 `<init>` still recovers (its body fits one header) and `via`'s run stops mid-body,
+    // which is the refusal this case has always pinned, one envelope out.
     assert!(report.methods.iter().any(|method| matches!(&method.outcome,
-        ClassSourceOutcome::Refused { execution, .. } if stopped_for_class_headers(execution))));
+        ClassSourceOutcome::Recovered { report: body, .. }
+        if stopped_for_class_headers(&body.execution)
+            && matches!(&body.outcome, RecoveryOutcome::Stopped(_))
+            && !body.produced())));
 }
 
 #[test]
 fn h1_cap_two_keeps_ordinary_class_header_budget_refusal() {
     let report = class_source(2);
     assert!(stopped_for_class_headers(&report.execution));
+    // 2026-11-07: the same re-envelope as cap 1 — `<init>` and `via` now recover within two
+    // headers and `viaOther`'s run stops mid-body with the class-header execution. The budget
+    // refusal still refuses: nothing past the wall produces, and the request's own execution
+    // stays refused on `ClassHeaders`.
     assert!(report.methods.iter().any(|method| matches!(&method.outcome,
-        ClassSourceOutcome::Refused { execution, .. } if stopped_for_class_headers(execution))));
+        ClassSourceOutcome::Recovered { report: body, .. }
+        if stopped_for_class_headers(&body.execution)
+            && matches!(&body.outcome, RecoveryOutcome::Stopped(_))
+            && !body.produced())));
 }
 
 fn assert_prebody_stop(cap: u64) {
@@ -341,7 +358,33 @@ fn assert_prebody_stop(cap: u64) {
 
 #[test]
 fn h1_cap_eight_stops_snapshot_proof_before_main_body() {
-    assert_prebody_stop(8);
+    // 2026-11-07: under the S2b demand-driven member order the same cap-8 budget now recovers the
+    // whole dependency chain (`<init>` through `viaObject`) before `main` is attempted, and
+    // `main`'s own run is then refused outright — the member-level `Refused` with the class-header
+    // execution, the shape the cap-1/2 refusals used to carry. The class-level stop contract
+    // stands, the budget refusal still refuses, and the committed stopped-body shape this case
+    // used to pin lives one boundary later (`h1_cap_fourteen`).
+    let report = class_source(8);
+    assert!(
+        stopped_for_class_headers(&report.execution),
+        "{:?}",
+        report.execution
+    );
+    let main = report
+        .methods
+        .iter()
+        .find(|method| method.item.identity.name.0 == b"main")
+        .unwrap();
+    let ClassSourceOutcome::Refused { execution, .. } = &main.outcome else {
+        panic!("cap 8 refuses main's own run: {:?}", main.outcome);
+    };
+    assert!(
+        stopped_for_class_headers(execution),
+        "{execution:?}"
+    );
+    assert!(report.methods.iter().any(|method| matches!(&method.outcome,
+        ClassSourceOutcome::Recovered { report: body, .. }
+        if body.produced() && body.content == RecoveryContent::ContainsStatements)));
 }
 
 #[test]
@@ -350,8 +393,12 @@ fn h1_cap_fourteen_stops_snapshot_proof_before_main_body() {
 }
 
 #[test]
-fn h1_cap_fifteen_keeps_main_body_but_stops_class_projection() {
-    let report = class_source_with_evidence(15, &RecoveryEvidenceRequest::all());
+fn h1_cap_sixteen_keeps_main_body_but_stops_class_projection() {
+    // 2026-11-07: renamed from `…_fifteen_…`. Under the S2b demand-driven member order main's
+    // body needs one more header charge: at cap 15 its run still stops mid-body (`NotProduced`),
+    // at cap 16 it produces — with the class projection still stopping on `ClassHeaders`
+    // (execution refused with all 16 headers charged), which is the contract this case pins.
+    let report = class_source_with_evidence(16, &RecoveryEvidenceRequest::all());
     assert!(
         stopped_for_class_headers(&report.execution),
         "{:?}",
@@ -413,3 +460,4 @@ fn without_elapsed(value: serde_json::Value) -> serde_json::Value {
         other => other,
     }
 }
+

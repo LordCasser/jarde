@@ -64,16 +64,16 @@ use crate::stop::{StopReason, charge, check, poll};
 
 /// One produced artifact: the text, and what the emission that wrote it did.
 ///
-/// # The artifact holds no segment table (change `add-demand-driven-core-results`, D3)
-///
-/// The committing pass never owns a `Vec<Segment>`: the spans it anchored are **counted**, and the
-/// table of the ones the request selected is materialized afterwards from the same formatter and the
-/// same AST ([`emit_source_map`]). That is what makes the map an optional evidence category like the
-/// others — paid for out of the same remaining allowance, stoppable inside, and never the price of
-/// delivering the text.
+/// Ordinary method recovery counts spans without retaining them. A class projection that consumes
+/// exact origins explicitly retains a private index while committing the text, without retaining
+/// the AST. Public SourceMap evidence is still independently replayed, ranged, charged and stopped
+/// afterwards. Its selection cannot determine the projection's necessary proof.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub(crate) struct Emitted {
     pub(crate) text: String,
+    /// Same-write origins retained only for an explicitly requested class projection.
+    pub(crate) projection_origins: Vec<Segment>,
+    pub(crate) has_own_origin: bool,
     /// How many spans this emission anchored, whether or not the request selected the table that
     /// holds them: the figure is the *emission's* own work, and the report states it in one summary
     /// whatever the selection was (change `add-demand-driven-core-results`, D1). A count is not a
@@ -101,7 +101,7 @@ pub(crate) struct Emitted {
 /// Commit and replay both ask here, so the two writings of one body cannot drift.
 fn refuses_void_body(facts: &RecoveryFacts) -> bool {
     matches!(
-        crate::lambda::parse_method(facts.method().descriptor()),
+        crate::lambda::parse_method_bytes(&facts.method().raw_descriptor().0),
         Some((_, None))
     )
 }
@@ -125,14 +125,23 @@ pub(crate) fn emit(
     member: Option<&PhysicalMethodId>,
     budget: &mut Budget,
 ) -> Result<Emitted, StopReason> {
-    let (current_class, nested_class_members): (Option<&str>, &[String]) = match declaration {
-        Some(declaration) => (
-            declaration.declaring_class.as_deref(),
-            &declaration.nested_class_members,
-        ),
-        None => (None, &[]),
-    };
-    let mut emitter = Emitter::commit(budget, member, current_class, nested_class_members);
+    emit_for_projection(stmts, facts, declaration, member, &[], budget)
+}
+
+/// Commit the same text, retaining necessary origins when a class projection consumes them.
+pub(crate) fn emit_for_projection(
+    stmts: &[Stmt],
+    facts: &RecoveryFacts,
+    declaration: Option<&Declaration>,
+    member: Option<&PhysicalMethodId>,
+    projection_needles: &[String],
+    budget: &mut Budget,
+) -> Result<Emitted, StopReason> {
+    let source_names = declaration
+        .map(Declaration::source_names)
+        .unwrap_or_default();
+    let mut emitter = Emitter::commit(budget, member, source_names);
+    emitter.projection_needles = projection_needles;
     let void_member = refuses_void_body(facts);
     match emitter
         .envelope(facts, declaration)
@@ -156,11 +165,10 @@ pub(crate) fn emit(
 pub(crate) fn emit_class_initializer_value(
     value: &Expr,
     member: &PhysicalMethodId,
-    current_class: Option<&str>,
-    nested_class_members: &[String],
+    source_names: crate::names::SourceClassNames<'_>,
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
-    let mut emitter = Emitter::commit(budget, Some(member), current_class, nested_class_members);
+    let mut emitter = Emitter::commit(budget, Some(member), source_names);
     let at = Some(value.origin.primary().bci());
     match emitter.put(" = ", at).and_then(|()| emitter.expr(value)) {
         Ok(()) => Ok(emitter.finish().text),
@@ -178,11 +186,10 @@ pub(crate) fn emit_class_initializer_value(
 pub(crate) fn emit_class_enum_constructor_statements(
     statements: &[Stmt],
     member: &PhysicalMethodId,
-    current_class: Option<&str>,
-    nested_class_members: &[String],
+    source_names: crate::names::SourceClassNames<'_>,
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
-    let mut emitter = Emitter::commit(budget, Some(member), current_class, nested_class_members);
+    let mut emitter = Emitter::commit(budget, Some(member), source_names);
     match emitter.stmts(statements, 2) {
         Ok(()) => Ok(emitter.finish().text),
         Err(Halt::Stop(stop)) => Err(stop),
@@ -196,12 +203,11 @@ pub(crate) fn emit_class_enum_constructor_statements(
 pub(crate) fn emit_class_source_statements(
     statements: &[Stmt],
     member: &PhysicalMethodId,
-    current_class: Option<&str>,
-    nested_class_members: &[String],
+    source_names: crate::names::SourceClassNames<'_>,
     indentation: usize,
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
-    let mut emitter = Emitter::commit(budget, Some(member), current_class, nested_class_members);
+    let mut emitter = Emitter::commit(budget, Some(member), source_names);
     // A `<clinit>`'s statements are re-emitted under the same return suppression the committed
     // artifact applied ([`Emitter::body`] sets the flag from the declaration form there, and a
     // statement-only re-emission holds no declaration): Java has no spelling for a `return`
@@ -221,8 +227,7 @@ pub(crate) fn emit_class_source_statements(
 pub(crate) fn replay_class_source_statement_segments(
     statements: &[Stmt],
     member: &PhysicalMethodId,
-    current_class: Option<&str>,
-    nested_class_members: &[String],
+    source_names: crate::names::SourceClassNames<'_>,
     indentation: usize,
     artifact: &str,
     budget: &mut Budget,
@@ -231,8 +236,7 @@ pub(crate) fn replay_class_source_statement_segments(
     let mut emitter = Emitter::replay(
         budget,
         Some(member),
-        current_class,
-        nested_class_members,
+        source_names,
         artifact,
         SegmentPublication::Whole,
         &mut phase,
@@ -246,7 +250,7 @@ pub(crate) fn replay_class_source_statement_segments(
             code: crate::stop::SOURCE_MAP_MISMATCH_CODE,
             at: None,
         }),
-        Some(Halt::PhaseStopped) => Err(phase.reason(budget)),
+        Some(Halt::PhaseStopped) => Err(phase.reason()),
         Some(Halt::Gate(stop)) | Some(Halt::Stop(stop)) => Err(stop),
     }
 }
@@ -254,8 +258,7 @@ pub(crate) fn replay_class_source_statement_segments(
 pub(crate) fn emit_class_source_anonymous_return(
     statements: &[Stmt],
     member: &PhysicalMethodId,
-    current_class: Option<&str>,
-    nested_class_members: &[String],
+    source_names: crate::names::SourceClassNames<'_>,
     indentation: usize,
     allocation_bci: u32,
     allocation_type: &str,
@@ -265,7 +268,7 @@ pub(crate) fn emit_class_source_anonymous_return(
     closing_indent: &str,
     budget: &mut Budget,
 ) -> Result<(String, bool, Option<(usize, usize)>), StopReason> {
-    let mut emitter = Emitter::commit(budget, Some(member), current_class, nested_class_members);
+    let mut emitter = Emitter::commit(budget, Some(member), source_names);
     // A `<clinit>`'s statements are re-emitted under the same return suppression the committed
     // artifact applied ([`emit_class_source_statements`] sets the same flag from the same fact):
     // Java has no spelling for a `return` inside an initializer block (JLS §8.7), and the
@@ -331,18 +334,13 @@ pub(crate) fn emit_source_map(
     phase: &mut EvidencePhase,
     budget: &mut Budget,
 ) -> Result<(SourceMap, Materialized), StopReason> {
-    let (current_class, nested_class_members): (Option<&str>, &[String]) = match declaration {
-        Some(declaration) => (
-            declaration.declaring_class.as_deref(),
-            &declaration.nested_class_members,
-        ),
-        None => (None, &[]),
-    };
+    let source_names = declaration
+        .map(Declaration::source_names)
+        .unwrap_or_default();
     let mut emitter = Emitter::replay(
         budget,
         member,
-        current_class,
-        nested_class_members,
+        source_names,
         &artifact.text,
         publication,
         phase,
@@ -434,19 +432,17 @@ struct Emitter<'a> {
     text: String,
     /// What a replay writes through, when this emitter is one.
     replay: Option<Replay<'a>>,
+    projection_needles: &'a [String],
+    projection_hits: u64,
+    has_own_origin: bool,
+    projection_origins: Vec<Segment>,
     /// How many spans this emission anchored, selected or not.
     anchored: u64,
     written: u64,
-    limit: u64,
     /// The member body every anchor of this emission belongs to, when the payload stated one.
     member: Option<&'a PhysicalMethodId>,
-    /// The class this body belongs to, in the source spelling (`p.Outer`), when the run stated
-    /// one. It is the class a nested type reference is spelled against
-    /// ([`Self::put_type`]): `V1$Op` is `Op` in `V1`'s own text and `Other.Inner` everywhere else.
-    current_class: Option<String>,
-    /// The member classes that class's own `InnerClasses` attribute states, in the source
-    /// spelling — the evidence a `$` name must have before it is spelled as nesting at all.
-    nested_class_members: Vec<String>,
+    /// The same-read raw class/InnerClasses context; commit and replay borrow one decision.
+    source_names: crate::names::SourceClassNames<'a>,
     /// How many statements of the body have been written as Java so far: the fact
     /// [`Emitted::statements`] publishes once every write succeeded.
     statements: usize,
@@ -491,20 +487,20 @@ impl<'a> Emitter<'a> {
     fn commit(
         budget: &'a mut Budget,
         member: Option<&'a PhysicalMethodId>,
-        current_class: Option<&str>,
-        nested_class_members: &[String],
+        source_names: crate::names::SourceClassNames<'a>,
     ) -> Self {
-        let limit = budget.limits().output_bytes;
         Self {
             budget,
             text: String::new(),
             replay: None,
+            projection_needles: &[],
+            projection_hits: 0,
+            has_own_origin: false,
+            projection_origins: Vec::new(),
             anchored: 0,
             written: 0,
-            limit,
             member,
-            current_class: current_class.map(|class| class.replace('/', ".")),
-            nested_class_members: nested_class_members.to_vec(),
+            source_names,
             statements: 0,
             initializer: false,
             anonymous_override: None,
@@ -517,13 +513,11 @@ impl<'a> Emitter<'a> {
     fn replay(
         budget: &'a mut Budget,
         member: Option<&'a PhysicalMethodId>,
-        current_class: Option<&str>,
-        nested_class_members: &[String],
+        source_names: crate::names::SourceClassNames<'a>,
         artifact: &'a str,
         publication: SegmentPublication,
         phase: &'a mut EvidencePhase,
     ) -> Self {
-        let limit = budget.limits().output_bytes;
         Self {
             budget,
             text: String::new(),
@@ -533,12 +527,14 @@ impl<'a> Emitter<'a> {
                 segments: Vec::new(),
                 phase,
             }),
+            projection_needles: &[],
+            projection_hits: 0,
+            has_own_origin: false,
+            projection_origins: Vec::new(),
             anchored: 0,
             written: 0,
-            limit,
             member,
-            current_class: current_class.map(|class| class.replace('/', ".")),
-            nested_class_members: nested_class_members.to_vec(),
+            source_names,
             statements: 0,
             initializer: false,
             anonymous_override: None,
@@ -568,8 +564,8 @@ impl<'a> Emitter<'a> {
         if let Some(declaration) = declaration {
             let class = declaration
                 .declaring_class
-                .as_deref()
-                .map(|class| comment_text(&class.replace('/', ".")));
+                .as_ref()
+                .map(|class| comment_text(&class.name().replace('/', ".")));
             let line = match class {
                 Some(class) => format!(
                     "// @declaration {} of `{class}`, member flags {:#06x}\n",
@@ -610,13 +606,30 @@ impl<'a> Emitter<'a> {
         write: impl FnOnce(&mut Self) -> Result<(), Halt>,
     ) -> Result<(), Halt> {
         let start = self.written;
+        let projection_hits = self.projection_hits;
         write(self)?;
         let end = self.written;
         if end > start {
             let origin = origin.in_body(self.member);
             self.anchored += 1;
+            self.has_own_origin |=
+                self.member.is_some() && origin.primary().method() == self.member;
+            if self.projection_hits != projection_hits {
+                // This is necessary proof work, charged before retention, outside optional evidence.
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::IrItems,
+                    2u64.saturating_add(origin.derived().len() as u64),
+                    Some(origin.primary().bci()),
+                )?;
+                self.projection_origins.push(Segment::new(
+                    usize::try_from(start).unwrap_or(usize::MAX),
+                    usize::try_from(end).unwrap_or(usize::MAX),
+                    origin.clone(),
+                ));
+            }
             let Some(replay) = self.replay.as_mut() else {
-                // The committing pass records no span: the table is the replay's product.
+                // Public evidence is still only the replay's product.
                 return Ok(());
             };
             // The replay's own work is charged to the phase that pays for this category: one
@@ -1471,13 +1484,20 @@ impl<'a> Emitter<'a> {
                 }
                 Ok(())
             }
-            ExprKind::Cast { ty, value } => {
+            ExprKind::Cast {
+                ty,
+                value,
+                source_type_name,
+            } => {
                 // The conversion the build decided, written where the value is. The printer writes
                 // nothing else here: the type is the node's own, and the operand position is the
                 // cast's own (JLS 15.16 — a cast applies to a unary expression), so a looser operand
                 // keeps its group (`(int) (a + b)` and never `(int) a + b`).
                 emitter.put("(", at)?;
-                emitter.put_type(ty.spell(), at)?;
+                emitter.put_type(
+                    source_type_name.as_deref().unwrap_or_else(|| ty.spell()),
+                    at,
+                )?;
                 emitter.put(") ", at)?;
                 emitter.operand(value, UNARY)
             }
@@ -1609,18 +1629,41 @@ impl<'a> Emitter<'a> {
         {
             let stop = match stop {
                 StopReason::Budget {
-                    dimension: CountedBudgetDimension::OutputBytes,
+                    dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
+                    consumed,
+                    requested,
+                    limit,
                     ..
                 } => StopReason::Budget {
-                    dimension: CountedBudgetDimension::OutputBytes,
+                    dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
+                    consumed,
+                    requested,
                     written: self.written,
-                    limit: self.limit,
+                    limit,
                     at,
                 },
                 stop => stop,
             };
             self.discard();
             return Err(Halt::Stop(stop));
+        }
+        if !self.projection_needles.is_empty() {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                self.projection_needles.iter().fold(0u64, |cost, needle| {
+                    cost.saturating_add(bytes)
+                        .saturating_add(needle.len() as u64)
+                }),
+                at,
+            )?;
+            if self
+                .projection_needles
+                .iter()
+                .any(|needle| text.contains(needle))
+            {
+                self.projection_hits = self.projection_hits.saturating_add(1);
+            }
         }
         self.written += bytes;
         self.text.push_str(text);
@@ -1629,17 +1672,13 @@ impl<'a> Emitter<'a> {
 
     /// Writes one type name a **reference** states, the way Java source spells it in this body.
     ///
-    /// This is the single point a type name reaches the text of a recovered body: every position
-    /// the subset writes — a declaration's type, a parameter, a cast, an `instanceof`, a `new`,
-    /// a class literal, a static call's or field's qualifier — goes through here, and nowhere
-    /// else in this emitter spells a type. The nested-name rule itself is
-    /// [`crate::names::nested_reference_spelling`]'s: this method only supplies the one class the
-    /// body belongs to and writes what comes back, so a name with no `$` (a platform name, a
-    /// package-level simple name, a name another rule already dotted) is written exactly as it
-    /// arrived, and the synthetic families the presentation keeps verbatim (`C1$1`) keep their
-    /// pool spelling in the text as they do everywhere else. A `$` name the class's own
-    /// `InnerClasses` rows do not state is a **top-level** name that merely carries `$`
-    /// (`Named$Top` is one class, not `Named`'s member), and it keeps the pool spelling too.
+    /// Raw binary type references in declarations, casts, array creation, class literals and
+    /// qualifiers share this path. Already-proved source types keep their projection's spelling.
+    /// [`crate::names::nested_member_reference_spelling`] consumes the declaring class's raw name
+    /// and complete same-read rows; only physically stated outer/inner boundaries become dots.
+    /// A missing row preserves the binary spelling, including genuine `$` characters. Own-family
+    /// names stay physical until the existing class projection commits; contradictory rows stop
+    /// this emission instead of publishing a guessed path.
     ///
     /// Names that are not type references — a member name, a local's name, the annotation
     /// comments of the envelope — never go through here; `put` writes them as they are.
@@ -1647,12 +1686,11 @@ impl<'a> Emitter<'a> {
         if !name.contains('$') {
             return self.put(name, at);
         }
-        let current = self.current_class.clone();
-        let spelled = crate::names::nested_member_reference_spelling(
-            name,
-            current.as_deref(),
-            Some(&self.nested_class_members),
-        );
+        let spelled = crate::names::nested_member_reference_spelling(name, self.source_names)
+            .ok_or(Halt::Stop(StopReason::Interrupted {
+                code: "jre_source_type_path_unproved",
+                at,
+            }))?;
         self.put(spelled.as_ref(), at)
     }
 
@@ -1668,6 +1706,8 @@ impl<'a> Emitter<'a> {
     fn finish(self) -> Emitted {
         Emitted {
             text: self.text,
+            projection_origins: self.projection_origins,
+            has_own_origin: self.has_own_origin,
             segments: self.anchored,
             written: self.written,
             statements: self.statements,
@@ -1882,6 +1922,20 @@ pub fn escape_string(value: &str) -> String {
     escaped
 }
 
+/// A validated JVM string literal, including valid unpaired UTF-16 surrogates.
+/// Reuse the same delimiter/control table as scalar strings and char literals.
+pub(crate) fn jvm_string_literal(value: &jarde_reader::model::JvmString) -> String {
+    if let Ok(text) = value.to_unicode() {
+        return format!("\"{}\"", escape_string(&text));
+    }
+    let mut literal = String::from("\"");
+    for unit in value.utf16() {
+        escape_unit(*unit, '"', &mut literal);
+    }
+    literal.push('"');
+    literal
+}
+
 /// Whether one UTF-16 code unit is escaped in a string literal rather than written as itself: the
 /// delimiter, the backslash, the line terminators (LF, CR, U+2028, U+2029) and the controls
 /// U+0000–U+001F and U+007F.
@@ -2034,6 +2088,70 @@ mod tests {
     }
 
     #[test]
+    fn projection_origin_retention_stops_before_artifact_and_does_not_retain_unrelated_nodes() {
+        let stmts = vec![Stmt::new(
+            StmtKind::Return {
+                value: Some(Expr::new(
+                    ExprKind::Path("p.Box.VALUE".to_owned()),
+                    OriginSet::new(Origin::direct(7)),
+                )),
+            },
+            OriginSet::new(Origin::direct(8)),
+        )];
+        let facts = RecoveryFacts::new(MethodFacts::new("value", "()I", 0).with_access_flags(8));
+        let mut generous = budget_with(1 << 20);
+        let mut limits = generous.limits().clone();
+        limits.analysis_steps = 1 << 20;
+        generous = Budget::new(limits.clone());
+        let matched = emit_for_projection(
+            &stmts,
+            &facts,
+            None,
+            None,
+            &["Box".to_owned()],
+            &mut generous,
+        )
+        .unwrap();
+        assert!(!matched.projection_origins.is_empty());
+        let unrelated = emit_for_projection(
+            &stmts,
+            &facts,
+            None,
+            None,
+            &["Other".to_owned()],
+            &mut Budget::new(limits.clone()),
+        )
+        .unwrap();
+        assert!(unrelated.projection_origins.is_empty());
+        assert_eq!(matched.text, unrelated.text);
+        limits.ir_items = 0;
+        assert!(matches!(
+            emit_for_projection(
+                &stmts,
+                &facts,
+                None,
+                None,
+                &["Box".to_owned()],
+                &mut Budget::new(limits.clone())
+            ),
+            Err(StopReason::Budget { .. })
+        ));
+        let token = CancellationToken::new();
+        token.cancel();
+        assert!(matches!(
+            emit_for_projection(
+                &stmts,
+                &facts,
+                None,
+                None,
+                &["Box".to_owned()],
+                &mut Budget::with_cancellation_token(limits, token)
+            ),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
+
+    #[test]
     fn output_admission_preserves_cancellation_after_initial_poll() {
         for cancel_at in [2, 3] {
             let token = CancellationToken::new();
@@ -2042,7 +2160,8 @@ mod tests {
             let observer = checkpoint_observer(token.clone(), cancel_at);
             assert!(!token.is_cancelled());
             attach_checkpoint_observer(&mut budget, observer.clone());
-            let mut emitter = Emitter::commit(&mut budget, None, None, &[]);
+            let mut emitter =
+                Emitter::commit(&mut budget, None, crate::names::SourceClassNames::default());
 
             let result = emitter.put("candidate", Some(17));
 
@@ -2067,7 +2186,8 @@ mod tests {
             let token = CancellationToken::new();
             let mut budget =
                 Budget::with_cancellation_token(budget_with(128).limits().clone(), token.clone());
-            let mut emitter = Emitter::commit(&mut budget, None, None, &[]);
+            let mut emitter =
+                Emitter::commit(&mut budget, None, crate::names::SourceClassNames::default());
             emitter.put("first", Some(11)).unwrap();
             let observer = checkpoint_observer(token.clone(), cancel_at);
             assert!(!token.is_cancelled());
@@ -2091,7 +2211,7 @@ mod tests {
             );
             assert_eq!(emitter.written, 5);
             assert_eq!(emitter.budget.usage().output_bytes, 5);
-            assert_eq!(emitter.limit, 128);
+            assert_eq!(emitter.budget.limits().output_bytes, 128);
         }
     }
 
@@ -2116,10 +2236,154 @@ mod tests {
     fn declaration(form: DeclarationForm) -> Declaration {
         Declaration {
             form,
-            declaring_class: Some("Test".to_string()),
-            nested_class_members: Vec::new(),
+            declaring_class: Some(crate::facts::DeclaringClass::new("Test", 0x20)),
             interface: Some(false),
             member_flags: 0,
+        }
+    }
+
+    #[test]
+    fn body_type_commit_and_replay_share_complete_raw_member_boundaries() {
+        use jarde_reader::classfile::ResolvedInnerClass;
+        use jarde_reader::model::JvmBytes;
+        let rows: Arc<[ResolvedInnerClass]> = [
+            ("p/𐐀Family$Top$Level", "p/𐐀Family$Top", "Level"),
+            (
+                "p/𐐀Family$Top$Level$𐐀Node$Part",
+                "p/𐐀Family$Top$Level",
+                "𐐀Node$Part",
+            ),
+        ]
+        .into_iter()
+        .map(|(class, outer, inner)| ResolvedInnerClass {
+            class: JvmBytes::from_unicode(class).0,
+            outer_class: Some(JvmBytes::from_unicode(outer).0),
+            inner_name: Some(JvmBytes::from_unicode(inner)),
+            access_flags: 9,
+        })
+        .collect::<Vec<_>>()
+        .into();
+        let mut declaration = declaration(DeclarationForm::StaticMethod);
+        declaration.declaring_class = Some(
+            crate::facts::DeclaringClass::new("p/Client", 0x20).with_inner_classes(rows.clone()),
+        );
+        assert!(Arc::ptr_eq(
+            declaration
+                .declaring_class
+                .as_ref()
+                .unwrap()
+                .inner_classes(),
+            &rows
+        ));
+        let statements = vec![Stmt::new(
+            StmtKind::Return {
+                value: Some(Expr::direct(
+                    ExprKind::ClassLiteral {
+                        ty: "p.𐐀Family$Top$Level$𐐀Node$Part[][]".to_owned(),
+                    },
+                    7,
+                )),
+            },
+            OriginSet::new(Origin::direct(8)),
+        )];
+        let facts = RecoveryFacts::new(
+            MethodFacts::new("ref", "()Ljava/lang/Class;", 0).with_access_flags(8),
+        );
+        let (emitted, map) = artifact(
+            &statements,
+            &facts,
+            Some(&declaration),
+            None,
+            SegmentPublication::Whole,
+            &mut budget_with(1 << 20),
+        );
+        let expected = "p.𐐀Family$Top.Level.𐐀Node$Part[][].class";
+        assert!(emitted.text.contains(expected), "{}", emitted.text);
+        assert!(
+            map.of_bci(7)
+                .iter()
+                .any(|segment| segment.text(&emitted.text) == expected)
+        );
+        for segment in map.segments() {
+            assert!(emitted.text.is_char_boundary(segment.start()));
+            assert!(emitted.text.is_char_boundary(segment.end()));
+        }
+    }
+
+    #[test]
+    fn contradictory_body_type_rows_refuse_commit_and_replay_without_a_partial_artifact() {
+        use jarde_reader::classfile::ResolvedInnerClass;
+        use jarde_reader::model::JvmBytes;
+        let row = ResolvedInnerClass {
+            class: b"p/Outer$Node$Part".to_vec(),
+            outer_class: Some(b"p/Outer".to_vec()),
+            inner_name: Some(JvmBytes(b"Node$Part".to_vec())),
+            access_flags: 9,
+        };
+        let mut declaration = declaration(DeclarationForm::StaticMethod);
+        declaration.declaring_class = Some(
+            crate::facts::DeclaringClass::new("p/Client", 0x20)
+                .with_inner_classes(vec![row.clone()].into()),
+        );
+        let statements = vec![Stmt::new(
+            StmtKind::Return {
+                value: Some(Expr::direct(
+                    ExprKind::ClassLiteral {
+                        ty: "p.Outer$Node$Part".to_owned(),
+                    },
+                    7,
+                )),
+            },
+            OriginSet::new(Origin::direct(8)),
+        )];
+        let facts = RecoveryFacts::new(
+            MethodFacts::new("ref", "()Ljava/lang/Class;", 0).with_access_flags(8),
+        );
+        let emitted = emit(
+            &statements,
+            &facts,
+            Some(&declaration),
+            None,
+            &mut budget_with(1 << 20),
+        )
+        .unwrap();
+        let saved_text = emitted.text.clone();
+        let mut changed_name = row.clone();
+        changed_name.inner_name = Some(JvmBytes(b"Another".to_vec()));
+        for rows in [vec![row.clone(), row.clone()], vec![changed_name]] {
+            declaration.declaring_class = Some(
+                crate::facts::DeclaringClass::new("p/Client", 0x20).with_inner_classes(rows.into()),
+            );
+            assert!(matches!(
+                emit(
+                    &statements,
+                    &facts,
+                    Some(&declaration),
+                    None,
+                    &mut budget_with(1 << 20)
+                ),
+                Err(StopReason::Interrupted {
+                    code: "jre_source_type_path_unproved",
+                    at: Some(7)
+                })
+            ));
+            assert!(matches!(
+                emit_source_map(
+                    &statements,
+                    &facts,
+                    Some(&declaration),
+                    None,
+                    SegmentPublication::Whole,
+                    &emitted,
+                    &mut EvidencePhase::new(),
+                    &mut budget_with(1 << 20)
+                ),
+                Err(StopReason::Interrupted {
+                    code: "jre_source_type_path_unproved",
+                    at: Some(7)
+                })
+            ));
+            assert_eq!(emitted.text, saved_text);
         }
     }
 
@@ -2146,9 +2410,14 @@ mod tests {
         };
         let statements = body();
         let mut commit_budget = budget_with(1 << 20);
-        let text =
-            emit_class_source_statements(&statements, &member, None, &[], 1, &mut commit_budget)
-                .unwrap();
+        let text = emit_class_source_statements(
+            &statements,
+            &member,
+            crate::names::SourceClassNames::default(),
+            1,
+            &mut commit_budget,
+        )
+        .unwrap();
         let mut limits = budget_with(1 << 20).limits().clone();
         limits.ir_items = 0;
         let mut replay_budget = Budget::new(limits);
@@ -2156,14 +2425,13 @@ mod tests {
             replay_class_source_statement_segments(
                 &statements,
                 &member,
-                None,
-                &[],
+                crate::names::SourceClassNames::default(),
                 1,
                 &text,
                 &mut replay_budget,
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 ..
             })
         ));
@@ -2176,8 +2444,7 @@ mod tests {
             replay_class_source_statement_segments(
                 &statements,
                 &member,
-                None,
-                &[],
+                crate::names::SourceClassNames::default(),
                 1,
                 &text,
                 &mut cancelled_budget,
@@ -2763,7 +3030,8 @@ mod tests {
         // observed: the buffer itself holds nothing after a refusal, so no consumer that ever gets
         // hold of an emitter can read a half-written node out of it.
         let mut budget = budget_with(32);
-        let mut emitter = Emitter::commit(&mut budget, None, None, &[]);
+        let mut emitter =
+            Emitter::commit(&mut budget, None, crate::names::SourceClassNames::default());
         emitter
             .put("// a first line\n", None)
             .expect("within the bound");
@@ -2816,7 +3084,10 @@ mod tests {
                 limit,
                 ..
             } => {
-                assert_eq!(dimension, CountedBudgetDimension::OutputBytes);
+                assert_eq!(
+                    dimension,
+                    jarde_reader::budget::BudgetDimension::OutputBytes
+                );
                 assert_eq!(limit, exact - 1);
                 assert!(written < exact, "the stop never claims more than the bound");
             }
@@ -2845,7 +3116,7 @@ mod tests {
             matches!(
                 stop,
                 StopReason::Budget {
-                    dimension: CountedBudgetDimension::OutputBytes,
+                    dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
                     ..
                 }
             ),
@@ -4389,6 +4660,7 @@ mod tests {
             ExprKind::Cast {
                 ty: Type::Long,
                 value: Box::new(local_at("arg0", 2)),
+                source_type_name: None,
             },
             3,
         );
@@ -4422,5 +4694,25 @@ mod tests {
                 .text
                 .contains("arg0 << arg1 < arg2 == arg3 & arg4;")
         );
+    }
+
+    #[test]
+    fn a_cast_uses_its_proved_generic_source_spelling_without_changing_its_anchor() {
+        let cast = Expr::direct(
+            ExprKind::Cast {
+                ty: Type::Reference("java.util.List".to_owned()),
+                value: Box::new(local_at("arg0", 2)),
+                source_type_name: Some("List<String>".to_owned()),
+            },
+            7,
+        );
+        let (emitted, map) = emitted_value(cast);
+        assert!(emitted.text.contains("(List<String>) arg0;"));
+        assert!(
+            map.text_of_bci(&emitted.text, 7)
+                .iter()
+                .any(|span| span.contains("List<String>"))
+        );
+        assert_eq!(map.text_of_bci(&emitted.text, 2), vec!["arg0"]);
     }
 }

@@ -544,7 +544,6 @@ impl Budget {
         if self.usage.add(dimension, requested).is_none() {
             return Err(self.exceeded(dimension, requested));
         }
-        self.usage.elapsed_millis = self.elapsed_millis();
         Ok(())
     }
 
@@ -568,7 +567,6 @@ impl Budget {
             target.ledger.check_nested_depth(target.owner, depth)?;
         }
         self.usage.nested_depth = self.usage.nested_depth.max(depth);
-        self.usage.elapsed_millis = self.elapsed_millis();
         Ok(())
     }
 
@@ -597,7 +595,6 @@ impl Budget {
                 .observe_dependency_depth(target.owner, depth)?;
         }
         self.usage.dependency_depth = self.usage.dependency_depth.max(depth);
-        self.usage.elapsed_millis = self.elapsed_millis();
         Ok(())
     }
 

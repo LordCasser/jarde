@@ -58,7 +58,7 @@ fn loop3_presented_constructor_store() -> (
     let site = sites
         .site_producing(ssa, value)
         .expect("the stored value has one exact construction site");
-    assert_eq!(site.class, "java/io/File");
+    assert_eq!(site.class.0, b"java/io/File");
     let paths = region_paths(&context.regions);
     let path = paths
         .paths
@@ -152,7 +152,7 @@ fn loop3_constructor_store_proof_propagates_budget_and_precancellation() {
             &mut stopped,
         ),
         Err(StopReason::Budget {
-            dimension: CountedBudgetDimension::AnalysisSteps,
+            dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
             ..
         })
     ));

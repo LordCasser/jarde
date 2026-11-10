@@ -49,6 +49,7 @@ fn source(bytes: &[u8], class: &str) -> ClassSourceReport {
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
         .expect("standalone Java 8 class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -159,6 +160,7 @@ fn budget_and_pre_cancellation_publish_no_partial_nested_expression() {
         .open(ArtifactInput::bytes(NESTED.to_vec()), &mut budget())
         .expect("fixture opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("NestedArrayInitializer"),
         },

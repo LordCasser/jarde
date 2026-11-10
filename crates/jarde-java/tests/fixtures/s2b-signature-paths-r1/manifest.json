@@ -1,0 +1,83 @@
+{
+  "schema": "s2b-signature-paths-fixture-v1",
+  "purpose": "real classfile inputs for declared generic Signature parser and hierarchy path unit/integration tests; no target execution",
+  "source_dev_v2_target_jar": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2b-declared-generics-v1/dev-v2-inputs/inputs/custom-javac23-debug/target.jar",
+    "bytes": 15618,
+    "sha256": "01bee527119a7f66eb6a6bb12c89f004755bdd491f5743f180866d78aa8c3c19"
+  },
+  "source_header_closure_jar": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2b-declared-generics-v1/dev-v2-inputs/headers/java8-generic-header-closure.jar",
+    "bytes": 14530,
+    "sha256": "a2f06c07e772556534facfbcc206fa251a510a630cf11579658590fb33a68c75"
+  },
+  "source_rt_jar_sha256": "b27515a608ee447566b688e2bbb2257b1f0d8eceb96c307b87eb28d90a6630f4",
+  "classes": [
+    {
+      "path": "custom/CustomChild.class",
+      "bytes": 2027,
+      "sha256": "589298b72a636565e22685aac8230240af16ecddb72e9340c95cf6363ee2fd4c"
+    },
+    {
+      "path": "custom/Mid.class",
+      "bytes": 356,
+      "sha256": "41f92fe9ca0c3e213ba9c2b881be3e1b4de88baeb8cd862e0a48a0b80990fb65"
+    },
+    {
+      "path": "custom/Parent.class",
+      "bytes": 709,
+      "sha256": "b2fc29d88e84abb892d63c5a6d0f26caec558f1547a3f10da132c486f4f33b48"
+    },
+    {
+      "path": "platform/java/io/Serializable.class",
+      "bytes": 113,
+      "sha256": "6a40a9c1ec3dd837efe4fade53b17532a6becc1dc909ed2a242b66b1be7f23e1"
+    },
+    {
+      "path": "platform/java/lang/Cloneable.class",
+      "bytes": 109,
+      "sha256": "65eb7012e2ee5a363e3c272d9f2f3792060cd68d77e8d1ec6977f65bd845223b"
+    },
+    {
+      "path": "platform/java/lang/Iterable.class",
+      "bytes": 1011,
+      "sha256": "5381f89ff7b7a674dfd726d62afe47ac3d5d72037567a18cb397d18b23d36980"
+    },
+    {
+      "path": "platform/java/lang/Object.class",
+      "bytes": 1497,
+      "sha256": "91e9554ea0fac57b7ca9595ab777fe2578af2e5b111e8c240e1793f1a3686292"
+    },
+    {
+      "path": "platform/java/util/AbstractCollection.class",
+      "bytes": 4098,
+      "sha256": "814fda78b15f5f151e909988e17aae905f42d75722ff7baad1273af63e09a3c0"
+    },
+    {
+      "path": "platform/java/util/AbstractList.class",
+      "bytes": 3910,
+      "sha256": "e44205b9dc8c5899dfc62c6a0267d4c670907065d0bea0eb04a6da3319719b77"
+    },
+    {
+      "path": "platform/java/util/ArrayList.class",
+      "bytes": 11282,
+      "sha256": "0976edaa24bd7790c9778c846ef4c4cdfe396242cb1e298cd190454083366199"
+    },
+    {
+      "path": "platform/java/util/Collection.class",
+      "bytes": 1892,
+      "sha256": "ca1ddb2f24e559e7b173c90fd6c4aba85a1c41acb207b55d60eb012a5835e37e"
+    },
+    {
+      "path": "platform/java/util/List.class",
+      "bytes": 2599,
+      "sha256": "f8f2e38f42e61f8ab59245a71306c0c40c880fbca9196555566e05bf9f4795b2"
+    },
+    {
+      "path": "platform/java/util/RandomAccess.class",
+      "bytes": 115,
+      "sha256": "d2f9725776864354ff635fb4822115b933d1047fff50adedd9667fdd0d3a51bd"
+    }
+  ],
+  "identity": "Tests parse each class through reader::class_member_facts/class_constant_pool and bind ReferenceClassHeader to a StandaloneRoot snapshot id plus content digest/length. Loader identity is supplied separately (app vs bootstrap)."
+}

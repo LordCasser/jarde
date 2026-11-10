@@ -111,14 +111,14 @@
           "class_headers": 1,
           "code_bytes": 10,
           "dependency_depth": 0,
-          "entry_bytes": 0,
+          "entry_bytes": 114,
           "input_bytes": 0,
           "ir_edges": 14,
           "ir_items": 205,
           "method_bodies": 1,
           "nested_depth": 0,
           "normalization_clones": 2,
-          "output_bytes": 114,
+          "output_bytes": 0,
           "read_bytes": 114,
           "result_items": 0
         },
@@ -194,8 +194,25 @@
           "content": [
             "dac91477a63e8c8e43acbf4e56916bab8a7415f862314f47eb5e904ef1adc019"
           ],
-          "domain_loaders": [
-            "app"
+          "domains": [
+            {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "standalone_class",
+                  "snapshot": "dac91477a63e8c8e43acbf4e56916bab8a7415f862314f47eb5e904ef1adc019"
+                }
+              ],
+              "runtime_transformation": "none"
+            }
           ],
           "providers": [],
           "runtime": {
@@ -245,14 +262,14 @@
             "class_headers": 1,
             "code_bytes": 10,
             "dependency_depth": 0,
-            "entry_bytes": 0,
+            "entry_bytes": 114,
             "input_bytes": 0,
             "ir_edges": 14,
             "ir_items": 205,
             "method_bodies": 1,
             "nested_depth": 0,
             "normalization_clones": 2,
-            "output_bytes": 114,
+            "output_bytes": 0,
             "read_bytes": 114,
             "result_items": 0
           }

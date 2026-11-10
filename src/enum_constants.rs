@@ -9,461 +9,49 @@ use crate::class_source::{
     ClassSourceDeclaration, ClassSourceField, ClassSourceMethod, ClassSourceOutcome,
 };
 use crate::{Budget, CountedBudgetDimension, Result};
-use jarde_java::type_of_component;
-use jarde_jvm::method_ir::MethodIr;
-use jarde_reader::classfile::{
-    ClassFacts, CpEntryKind, DescriptorKind, ImmediateValue, InstructionFact, InstructionOperands,
-    MemberHeader, cp_entry, descriptor_facts,
+use jarde_reader::classfile::MemberHeader;
+#[cfg(test)]
+use jarde_reader::model::ExecutionReport;
+
+// Java owns the existing same-run enum Code facts and their pure capture/API proof stage.
+#[cfg(test)]
+use jarde_java::source_proof::enum_instruction;
+pub(crate) use jarde_java::source_proof::{
+    EnumCodeInstruction, EnumCodeReference, EnumMethodCodeCandidate, ProvedEnumUserConstructorTail,
+    capture_method_code, may_capture_group_code,
 };
-use jarde_reader::model::{ExecutionReport, PhysicalMethodId};
+#[cfg(test)]
+use jarde_java::source_proof::{
+    ProvedEnumIntArgument, ProvedEnumSourceArgument, parse_arbitrary_ctor_descriptor,
+};
+#[cfg(test)]
+use jarde_reader::classfile::CpEntryKind;
 
-const ACC_PUBLIC: u16 = 0x0001;
-const ACC_PRIVATE: u16 = 0x0002;
-const ACC_STATIC: u16 = 0x0008;
-const ACC_FINAL: u16 = 0x0010;
+use jarde_java::source_proof::unique_method;
+#[cfg(test)]
+use jarde_java::source_proof::{
+    EnumCodeUse, EnumIntUserParameter, EnumSourceArgument, InitializerConstructorCall,
+    InitializerPrefixInput, ProvedEnumStringArgument, STRING_CTOR_DESCRIPTOR,
+    STRING_VARARGS_CTOR_DESCRIPTOR, array_descriptor, narrowed_int_user_text, object_descriptor,
+    prove_initializer_prefix, prove_string_source_argument, prove_values_factory,
+    value_of_descriptor, values_descriptor,
+};
+pub(crate) use jarde_java::source_proof::{EnumUserParameter, ProvedEnumUserArgument};
+
+pub(crate) use jarde_java::source_proof::{
+    CTOR_DESCRIPTOR, DELEGATING_CTOR_DESCRIPTOR, ProvedEnumConstructorBody,
+    ProvedEnumConstructorDelegationEdge,
+};
+
+pub(crate) use jarde_java::source_proof::{
+    ProvedEnumConstant, ProvedEnumMapSuffix, ProvedEnumStaticAssignment,
+    ProvedOrdinaryEnumConstantGroup,
+};
+
+#[cfg(test)]
 const ACC_ENUM: u16 = 0x4000;
-const ACC_SYNTHETIC: u16 = 0x1000;
+#[cfg(test)]
 const ACC_ABSTRACT: u16 = 0x0400;
-const ACC_NATIVE: u16 = 0x0100;
-const ACC_INTERFACE: u16 = 0x0200;
-const ACC_VARARGS: u16 = 0x0080;
-
-const ENUM_SUPER: &[u8] = b"java/lang/Enum";
-const CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;II)V";
-const DELEGATING_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I)V";
-const STRING_VARARGS_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I[Ljava/lang/String;)V";
-const STRING_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;ILjava/lang/String;)V";
-pub(crate) const ENUM_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I)V";
-const MAX_ENUM_STRING_VARARGS_ELEMENTS: usize = 64;
-/// The most user arguments one arbitrary enum constructor tail may carry. The bound keeps the
-/// per-argument proof budget bounded; wider tails stay per-field until evidence asks for them.
-const MAX_ENUM_USER_ARGUMENTS: usize = 3;
-/// The shared `(Ljava/lang/String;I` prefix every enum constructor descriptor starts with.
-pub(crate) const ENUM_CTOR_DESCRIPTOR_PREFIX: &[u8] = b"(Ljava/lang/String;I";
-const VALUES_DESCRIPTOR_PREFIX: &[u8] = b"()[L";
-const VALUE_OF_DESCRIPTOR_PREFIX: &[u8] = b"(Ljava/lang/String;)L";
-const ENUM_VALUE_OF_DESCRIPTOR: &[u8] = b"(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;";
-
-/// A resolved constant-pool value needed by the fixed enum bytecode patterns.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum EnumCodeReference {
-    Integer(i32),
-    String(Vec<u8>),
-    Class(Vec<u8>),
-    Field {
-        owner: Vec<u8>,
-        name: Vec<u8>,
-        descriptor: Vec<u8>,
-    },
-    Method {
-        owner: Vec<u8>,
-        name: Vec<u8>,
-        descriptor: Vec<u8>,
-        interface: bool,
-    },
-    Other,
-}
-
-/// One instruction from the selected run's decoded `Code`, with just the typed operands used by
-/// the proof. The opcode, local and immediate remain bytecode facts; `reference` is resolved from
-/// the same run's pool rather than from source text.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct EnumCodeInstruction {
-    pub(crate) bci: u32,
-    pub(crate) width: u32,
-    pub(crate) opcode: u8,
-    pub(crate) immediate: Option<ImmediateValue>,
-    pub(crate) local: Option<u16>,
-    pub(crate) increment: Option<i32>,
-    pub(crate) interface_count: Option<u8>,
-    pub(crate) reference: Option<EnumCodeReference>,
-    /// Target derived from this instruction's Code operand; accepted proofs match it to a BCI.
-    pub(crate) branch_target_bci: Option<u32>,
-}
-
-/// A direct or bootstrap-mediated symbolic member reference used by one physical method.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct EnumCodeUse {
-    pub(crate) bci: u32,
-    pub(crate) reference: EnumCodeReference,
-}
-
-/// The candidate body of one physically indexed method, carried from its one class-source run.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct EnumMethodCodeCandidate {
-    pub(crate) table_index: u64,
-    pub(crate) member: Option<PhysicalMethodId>,
-    pub(crate) complete: bool,
-    pub(crate) exception_handler_count: u32,
-    pub(crate) instructions: Vec<EnumCodeInstruction>,
-    pub(crate) member_uses: Vec<EnumCodeUse>,
-}
-
-/// The exact members that a successful class-level proof may later project.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProvedEnumConstant {
-    pub(crate) field_index: u64,
-    pub(crate) name: String,
-    pub(crate) ordinal: i32,
-    pub(crate) source_argument: Option<ProvedEnumSourceArgument>,
-    pub(crate) constructor_bci: u32,
-    pub(crate) field_write_bci: u32,
-}
-
-/// A source argument tail proved from the enum initializer's same-run Code facts.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum ProvedEnumSourceArgument {
-    Int(ProvedEnumIntArgument),
-    String(ProvedEnumStringArgument),
-    StringVarargs(Vec<ProvedEnumStringLiteral>),
-    /// The full user argument tail of one arbitrary constructor call, in parameter order.
-    User(Vec<ProvedEnumUserArgument>),
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum ProvedEnumStringArgument {
-    Literal(ProvedEnumStringLiteral),
-    Ternary {
-        condition: ProvedEnumIntCondition,
-        when_true: ProvedEnumStringLiteral,
-        when_false: ProvedEnumStringLiteral,
-        branch_bci: u32,
-        join_bci: u32,
-    },
-}
-
-impl ProvedEnumStringArgument {
-    fn source_text(&self) -> String {
-        let literal = |value: &ProvedEnumStringLiteral| {
-            format!("\"{}\"", jarde_java::escape_string(&value.value))
-        };
-        match self {
-            Self::Literal(value) => literal(value),
-            Self::Ternary {
-                condition,
-                when_true,
-                when_false,
-                ..
-            } => format!(
-                "{}() ? {} : {}",
-                condition.source_name,
-                literal(when_true),
-                literal(when_false)
-            ),
-        }
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProvedEnumStringLiteral {
-    pub(crate) value: String,
-    pub(crate) bci: u32,
-}
-
-/// One classified user parameter of an arbitrary enum constructor tail: the shapes this slice
-/// proves past the four fixed descriptors. `J`/`F`/`D` literals and array parameters stay outside
-/// it and keep the per-field presentation.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum EnumUserParameter {
-    /// A primitive int-family parameter: the constant step expects one int literal, and the
-    /// presentation narrows it by this parameter type.
-    IntLiteral(EnumIntUserParameter),
-    /// A `Ljava/lang/String;` parameter: the constant step expects one String literal.
-    StringLiteral,
-    /// Any other `L…;` object parameter: the constant step expects one static field reference or
-    /// `aconst_null`.
-    Object { descriptor: Vec<u8> },
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum EnumIntUserParameter {
-    Byte,
-    Char,
-    Short,
-    Int,
-    Boolean,
-}
-
-impl EnumUserParameter {
-    /// The physical parameter descriptor this parameter contributes to the constructor.
-    fn descriptor(&self) -> &[u8] {
-        match self {
-            Self::IntLiteral(EnumIntUserParameter::Byte) => b"B",
-            Self::IntLiteral(EnumIntUserParameter::Char) => b"C",
-            Self::IntLiteral(EnumIntUserParameter::Short) => b"S",
-            Self::IntLiteral(EnumIntUserParameter::Int) => b"I",
-            Self::IntLiteral(EnumIntUserParameter::Boolean) => b"Z",
-            Self::StringLiteral => b"Ljava/lang/String;",
-            Self::Object { descriptor } => descriptor,
-        }
-    }
-
-    /// Parse one parameter descriptor from the front of a constructor descriptor tail.
-    pub(crate) fn parse(descriptor: &[u8]) -> Option<(Self, &[u8])> {
-        match descriptor.first()? {
-            b'B' => Some((
-                Self::IntLiteral(EnumIntUserParameter::Byte),
-                &descriptor[1..],
-            )),
-            b'C' => Some((
-                Self::IntLiteral(EnumIntUserParameter::Char),
-                &descriptor[1..],
-            )),
-            b'S' => Some((
-                Self::IntLiteral(EnumIntUserParameter::Short),
-                &descriptor[1..],
-            )),
-            b'I' => Some((
-                Self::IntLiteral(EnumIntUserParameter::Int),
-                &descriptor[1..],
-            )),
-            b'Z' => Some((
-                Self::IntLiteral(EnumIntUserParameter::Boolean),
-                &descriptor[1..],
-            )),
-            b'L' => {
-                if let Some(rest) = descriptor.strip_prefix(b"Ljava/lang/String;") {
-                    return Some((Self::StringLiteral, rest));
-                }
-                let end = descriptor.iter().position(|byte| *byte == b';')?;
-                let name = &descriptor[1..end];
-                if name.is_empty() {
-                    return None;
-                }
-                let name = std::str::from_utf8(name).ok()?;
-                if name
-                    .split('/')
-                    .any(|segment| !jarde_java::is_java_identifier(segment))
-                {
-                    return None;
-                }
-                Some((
-                    Self::Object {
-                        descriptor: descriptor[..=end].to_vec(),
-                    },
-                    &descriptor[end + 1..],
-                ))
-            }
-            // `J`/`F`/`D` literal parameters and array parameters are not this slice's grammar.
-            _ => None,
-        }
-    }
-
-    /// The Java type text the folded constructor declaration spells for this parameter, through
-    /// the repository's one descriptor → source-name channel.
-    fn source_type_text(&self) -> Option<String> {
-        match self {
-            Self::IntLiteral(EnumIntUserParameter::Byte) => Some("byte".to_owned()),
-            Self::IntLiteral(EnumIntUserParameter::Char) => Some("char".to_owned()),
-            Self::IntLiteral(EnumIntUserParameter::Short) => Some("short".to_owned()),
-            Self::IntLiteral(EnumIntUserParameter::Int) => Some("int".to_owned()),
-            Self::IntLiteral(EnumIntUserParameter::Boolean) => Some("boolean".to_owned()),
-            Self::StringLiteral => Some("java.lang.String".to_owned()),
-            Self::Object { descriptor } => {
-                let facts = descriptor_facts(descriptor, DescriptorKind::Field).ok()?;
-                let spelled = type_of_component(facts.single()?)?.spell().to_owned();
-                spelled
-                    .split('.')
-                    .all(jarde_java::is_java_identifier)
-                    .then_some(spelled)
-            }
-        }
-    }
-}
-
-/// Parse an arbitrary enum constructor descriptor: the shared `(Ljava/lang/String;I` prefix plus
-/// one to three user parameters of the admitted shapes, then `)V`. The no-user-argument shape is
-/// its own fixed descriptor and is never produced here.
-pub(crate) fn parse_arbitrary_ctor_descriptor(descriptor: &[u8]) -> Option<Vec<EnumUserParameter>> {
-    let tail = descriptor.strip_prefix(ENUM_CTOR_DESCRIPTOR_PREFIX)?;
-    let tail = tail.strip_suffix(b")V")?;
-    if tail.is_empty() {
-        return None;
-    }
-    let mut parameters = Vec::new();
-    let mut rest = tail;
-    while !rest.is_empty() {
-        if parameters.len() == MAX_ENUM_USER_ARGUMENTS {
-            return None;
-        }
-        let (parameter, remainder) = EnumUserParameter::parse(rest)?;
-        parameters.push(parameter);
-        rest = remainder;
-    }
-    Some(parameters)
-}
-
-/// What the constant step expects at one user argument position, derived from the parameter.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum EnumUserArgumentExpectation {
-    IntLiteral(EnumIntUserParameter),
-    StringLiteral,
-    StaticFieldOrNull,
-}
-
-impl EnumUserArgumentExpectation {
-    pub(crate) fn of_parameter(parameter: &EnumUserParameter) -> Self {
-        match parameter {
-            EnumUserParameter::IntLiteral(kind) => Self::IntLiteral(*kind),
-            EnumUserParameter::StringLiteral => Self::StringLiteral,
-            EnumUserParameter::Object { .. } => Self::StaticFieldOrNull,
-        }
-    }
-}
-
-/// One proved user argument of an arbitrary enum constructor tail, carried with the presentation
-/// its parameter descriptor determines. Static field nodes keep the raw symbolic reference's
-/// Java spelling from the repository's descriptor-name path and are never resolved across classes.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum ProvedEnumUserArgument {
-    /// One int-family literal, narrowed by the parameter descriptor (`(byte) 1`, `'x'`, `true`).
-    IntLiteral { text: String, bci: u32 },
-    /// One String literal (the parameter is `Ljava/lang/String;`).
-    StringLiteral(ProvedEnumStringLiteral),
-    /// One static field reference spelled `Owner.name`.
-    StaticField {
-        source_owner: String,
-        source_name: String,
-        bci: u32,
-    },
-    /// `aconst_null` at an object parameter.
-    Null { bci: u32 },
-}
-
-impl ProvedEnumUserArgument {
-    fn source_text(&self) -> String {
-        match self {
-            Self::IntLiteral { text, .. } => text.clone(),
-            Self::StringLiteral(value) => {
-                format!("\"{}\"", jarde_java::escape_string(&value.value))
-            }
-            Self::StaticField {
-                source_owner,
-                source_name,
-                ..
-            } => format!("{source_owner}.{source_name}"),
-            Self::Null { .. } => "null".to_owned(),
-        }
-    }
-}
-
-/// The joined `", "` spelling of one constant's proved user arguments: the one channel both the
-/// ordinary constant list and the constant-body presentation read.
-pub(crate) fn user_arguments_source_text(arguments: &[ProvedEnumUserArgument]) -> String {
-    arguments
-        .iter()
-        .map(|argument| argument.source_text())
-        .collect::<Vec<_>>()
-        .join(", ")
-}
-
-impl ProvedEnumSourceArgument {
-    pub(crate) fn source_text(&self) -> String {
-        match self {
-            Self::Int(argument) => argument.source_text(),
-            Self::String(argument) => argument.source_text(),
-            Self::StringVarargs(values) => values
-                .iter()
-                .map(|value| format!("\"{}\"", jarde_java::escape_string(&value.value)))
-                .collect::<Vec<_>>()
-                .join(", "),
-            Self::User(arguments) => user_arguments_source_text(arguments),
-        }
-    }
-}
-
-/// A closed source expression proven from the enum initializer's same-run Code facts.
-///
-/// Every leaf and operator retains its initializer BCI. Static field nodes keep both the raw
-/// symbolic reference and the Java spelling derived from the repository's descriptor-name path;
-/// they are never replaced with a value looked up from another class.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum ProvedEnumIntArgument {
-    Literal {
-        value: i32,
-        bci: u32,
-    },
-    StaticField {
-        owner: Vec<u8>,
-        name: Vec<u8>,
-        descriptor: Vec<u8>,
-        source_owner: String,
-        source_name: String,
-        bci: u32,
-    },
-    Add {
-        left: Box<ProvedEnumIntArgument>,
-        right: Box<ProvedEnumIntArgument>,
-        bci: u32,
-    },
-    Ternary {
-        condition: ProvedEnumIntCondition,
-        when_true: Box<ProvedEnumIntArgument>,
-        when_false: Box<ProvedEnumIntArgument>,
-        branch_bci: u32,
-        join_bci: u32,
-    },
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProvedEnumIntCondition {
-    pub(crate) owner: Vec<u8>,
-    pub(crate) name: Vec<u8>,
-    pub(crate) descriptor: Vec<u8>,
-    pub(crate) source_name: String,
-    pub(crate) bci: u32,
-}
-
-impl ProvedEnumIntArgument {
-    pub(crate) fn source_text(&self) -> String {
-        match self {
-            Self::Literal { value, .. } => value.to_string(),
-            Self::StaticField {
-                source_owner,
-                source_name,
-                ..
-            } => format!("{source_owner}.{source_name}"),
-            Self::Add { left, right, .. } => {
-                format!("{} + {}", left.source_text(), right.source_text())
-            }
-            Self::Ternary {
-                condition,
-                when_true,
-                when_false,
-                ..
-            } => format!(
-                "{}() ? {} : {}",
-                condition.source_name,
-                when_true.source_text(),
-                when_false.source_text()
-            ),
-        }
-    }
-}
-
-/// A private handoff from task 2.1 to the class-source projection stages.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProvedOrdinaryEnumConstantGroup {
-    pub(crate) constants: Vec<ProvedEnumConstant>,
-    pub(crate) backing_field_index: u64,
-    pub(crate) constructor_method_index: u64,
-    pub(crate) delegating_constructor_method_index: Option<u64>,
-    pub(crate) constructor_body: Option<Box<ProvedEnumConstructorBody>>,
-    pub(crate) constructor_field_index: Option<u64>,
-    /// The proved presentation tail of one arbitrary single constructor, present exactly when the
-    /// physical descriptor came through `parse_arbitrary_ctor_descriptor` instead of one of the
-    /// four fixed shapes.
-    pub(crate) constructor_user_tail: Option<ProvedEnumUserConstructorTail>,
-    pub(crate) constructor_signature_present: bool,
-    pub(crate) initializer_method_index: u64,
-    pub(crate) values_method_index: u64,
-    pub(crate) value_of_method_index: u64,
-    pub(crate) values_factory_method_index: u64,
-    /// The first BCI after the complete constants and `$VALUES` setup prefix.
-    pub(crate) initializer_prefix_end_bci: u32,
-    /// Number of same-run structured initializer statements in the prefix.
-    pub(crate) initializer_prefix_statement_count: usize,
-}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) enum ProvedEnumConstantGroup {
@@ -507,132 +95,23 @@ pub(crate) enum ClassSourceEnumConstantProof {
     Stopped { reason: String },
 }
 
-/// Terminal effects proven from the same-run Code and constructor AST, kept private for 2.3.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProvedEnumConstructorBody {
-    method_index: usize,
-    field_index: usize,
-    enum_super_call_bci: u32,
-    helper_call_bci: u32,
-    field_write_bci: u32,
-    return_bci: u32,
-    helper_owner: Vec<u8>,
-    pub(crate) candidate: jarde_java::report::ClassEnumConstructorCandidates,
-}
-
-/// The source presentation of one arbitrary enum constructor tail: every user parameter with the
-/// Java type text its descriptor spells and the own instance field the proved body stores it
-/// into, in argument order.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProvedEnumUserConstructorTail {
-    pub(crate) parameters: Vec<ProvedEnumUserConstructorParameter>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProvedEnumUserConstructorParameter {
-    /// The Java type text the folded constructor declaration spells for this parameter.
-    pub(crate) type_text: String,
-    /// The own instance field the constructor body stores this parameter into.
-    pub(crate) field_name: String,
-}
-
-pub(crate) fn may_capture_group_code(class: &ClassFacts, member_table_complete: bool) -> bool {
-    if !member_table_complete
-        || class.major_version != 52
-        || class.minor_version != 0
-        || class.access_flags & ACC_ENUM == 0
-        || class.access_flags & ACC_INTERFACE != 0
-        || class
-            .super_class
-            .as_ref()
-            .map(|name| name.raw().0.as_slice())
-            != Some(ENUM_SUPER)
-    {
-        return false;
-    }
-
-    true
-}
-
 pub(crate) fn has_only_terminal_initializer_return(
     group: &ProvedOrdinaryEnumConstantGroup,
     code_candidates: &[EnumMethodCodeCandidate],
     initializer_candidates: &[jarde_java::report::ClassInitializerCandidates],
     methods: &[ClassSourceMethod],
 ) -> bool {
-    if group.initializer_prefix_statement_count != group.constants.len().saturating_add(1) {
-        return false;
-    }
-    let Ok(constructor_index) = usize::try_from(group.constructor_method_index) else {
-        return false;
-    };
-    let Some(constructor) = methods.get(constructor_index) else {
-        return false;
-    };
-    if group.constructor_user_tail.is_none()
-        && group.constructor_signature_present
-        && constructor.enum_constructor_source_tail
-            == crate::class_source::EnumConstructorSourceTail::Unrecognized
-    {
-        return false;
-    }
-    let Ok(initializer_index) = usize::try_from(group.initializer_method_index) else {
-        return false;
-    };
-    let Some(method) = methods.get(initializer_index) else {
-        return false;
-    };
-    let matching_code: Vec<_> = code_candidates
-        .iter()
-        .filter(|candidate| candidate.table_index == group.initializer_method_index)
-        .collect();
-    let [code] = matching_code.as_slice() else {
-        return false;
-    };
-    let suffix = code
-        .instructions
-        .iter()
-        .filter(|instruction| instruction.bci >= group.initializer_prefix_end_bci)
-        .collect::<Vec<_>>();
-    if code.member.as_ref() != Some(&method.item.identity)
-        || !code.complete
-        || code.exception_handler_count != 0
-        || !matches!(suffix.as_slice(), [instruction] if {
-            instruction.bci == group.initializer_prefix_end_bci
-                && instruction.width == 1
-                && instruction.opcode == 0xb1
-                && instruction.reference.is_none()
-                && instruction.immediate.is_none()
-                && instruction.local.is_none()
-        })
-    {
-        return false;
-    }
-    let matching_initializers: Vec<_> = initializer_candidates
-        .iter()
-        .filter(|candidate| candidate.member.as_ref() == Some(&method.item.identity))
-        .collect();
-    let [initializer] = matching_initializers.as_slice() else {
-        return false;
-    };
-    // The raw complete Code/BCI certificate owns the enum compiler-prefix shape. The structured
-    // sidecar can fail to classify javac's interleaved new/dup/getstatic sequence, so it only
-    // contributes the same-run identity and handler status here; the raw suffix above proves the
-    // exact terminal return boundary.
-    !initializer.has_exception_handlers
-}
-
-/// One exact user assignment that may follow the proved compiler-owned enum prefix.
-///
-/// The value and target are taken from the same prepared `<clinit>` run. The class-source adapter
-/// only asks the existing expression emitter to spell the RHS after this complete suffix has been
-/// checked against Code, field headers, and the initializer statement sidecar.
-#[derive(Clone, Debug)]
-pub(crate) struct ProvedEnumStaticAssignment {
-    pub(crate) field_index: u64,
-    pub(crate) field_name: String,
-    pub(crate) value: jarde_java::ast::Expr,
-    pub(crate) initializer_member: PhysicalMethodId,
+    jarde_java::source_proof::has_only_terminal_initializer_return(
+        group,
+        code_candidates,
+        initializer_candidates,
+        |index| {
+            methods
+                .get(index)
+                .map(|method| method.enum_constructor_source_tail)
+        },
+        |index| methods.get(index).map(|method| &method.item.identity),
+    )
 }
 
 pub(crate) struct EnumStaticAssignmentInput<'a> {
@@ -647,17 +126,11 @@ pub(crate) struct EnumStaticAssignmentInput<'a> {
     pub(crate) budget: &'a mut Budget,
 }
 
-/// Prove the one static assignment suffix frozen by the Measure/Counted fixtures.
-///
-/// The fixed source constants and BCI shape deliberately keep this first slice narrow. A different
-/// user suffix remains in the original `<clinit>` presentation, along with every physical enum
-/// member; it is never trimmed from emitted text.
+/// Supply the same-run facts for Java's own-static-int-call assignment proof.
+/// Other suffix operations keep the original `<clinit>` and physical enum members.
 pub(crate) fn prove_static_assignment_suffix(
     input: EnumStaticAssignmentInput<'_>,
 ) -> Result<Option<ProvedEnumStaticAssignment>> {
-    use jarde_java::ast::{AssignOp, ExprKind, Type};
-    use jarde_java::report::{ClassInitializerStatementKind, ClassInitializerStep};
-
     let EnumStaticAssignmentInput {
         group,
         owner,
@@ -669,328 +142,50 @@ pub(crate) fn prove_static_assignment_suffix(
         initializer_candidates,
         budget,
     } = input;
-    if owner.is_empty()
-        || group.initializer_prefix_statement_count != 3
-        || group.initializer_prefix_end_bci != 34
-        || group.constants.len() != 2
-        || group.constants[0].name != "LOW"
-        || group.constants[0]
-            .source_argument
-            .as_ref()
-            .is_none_or(|argument| argument.source_text() != "2")
-        || group.constants[1].name != "HIGH"
-        || group.constants[1]
-            .source_argument
-            .as_ref()
-            .is_none_or(|argument| argument.source_text() != "5")
-    {
-        return Ok(None);
-    }
-
-    // Every scan below is charged before inspecting the corresponding vector. In particular,
-    // the method and field uniqueness checks do not turn a large physical table into free work.
-    let table_work = field_headers
-        .len()
-        .saturating_add(source_fields.len())
-        .saturating_add(method_headers.len())
-        .saturating_add(source_methods.len())
-        .saturating_add(code_candidates.len())
-        .saturating_add(initializer_candidates.len());
-    budget.charge(
-        CountedBudgetDimension::IrItems,
-        u64::try_from(table_work).unwrap_or(u64::MAX),
-    )?;
-    budget.poll()?;
-
-    if field_headers.len() != source_fields.len() || method_headers.len() != source_methods.len() {
-        return Ok(None);
-    }
-    let mut total_units = None;
-    for (index, header) in field_headers.iter().enumerate() {
-        budget.poll()?;
-        if header.name.raw().0 == b"totalUnits" {
-            if total_units.is_some() {
-                return Ok(None);
-            }
-            total_units = Some(index);
-        }
-    }
-    let Some(field_index) = total_units else {
-        return Ok(None);
-    };
-    let Some(field_header) = field_headers.get(field_index) else {
-        return Ok(None);
-    };
-    let Some(source_field) = source_fields.get(field_index) else {
-        return Ok(None);
-    };
-    let field_index_u64 = u64::try_from(field_index).unwrap_or(u64::MAX);
-    if field_header.descriptor.raw().0 != b"I"
-        || field_header.access_flags != ACC_STATIC
-        || field_header
-            .attributes
-            .iter()
-            .any(|attribute| attribute.name.raw().0 == b"ConstantValue")
-        || source_field.item.index != field_index_u64
-        || source_field.item.name.raw().0 != b"totalUnits"
-        || source_field.item.descriptor.raw().0 != b"I"
-        || source_field.item.access_flags != ACC_STATIC
-        || source_field.declaration.is_none()
-        || !source_field.markers.is_empty()
-    {
-        return Ok(None);
-    }
-
-    let Ok(initializer_index) = usize::try_from(group.initializer_method_index) else {
-        return Ok(None);
-    };
-    let (Some(initializer_header), Some(initializer_method)) = (
-        method_headers.get(initializer_index),
-        source_methods.get(initializer_index),
-    ) else {
-        return Ok(None);
-    };
-    if initializer_header.name.raw().0 != b"<clinit>"
-        || initializer_header.descriptor.raw().0 != b"()V"
-        || initializer_header.access_flags != ACC_STATIC
-        || initializer_method.item.index != group.initializer_method_index
-        || initializer_method.item.identity.name.0 != b"<clinit>"
-        || initializer_method.item.identity.descriptor.0 != b"()V"
-        || source_field.item.identity.owner != initializer_method.item.identity.owner
-    {
-        return Ok(None);
-    }
-    let mut matching_code = None;
-    for candidate in code_candidates {
-        budget.poll()?;
-        if candidate.table_index == group.initializer_method_index
-            && matching_code.replace(candidate).is_some()
-        {
-            return Ok(None);
-        }
-    }
-    let Some(code) = matching_code else {
-        return Ok(None);
-    };
-    if code.member.as_ref() != Some(&initializer_method.item.identity)
-        || !code.complete
-        || code.exception_handler_count != 0
-    {
-        return Ok(None);
-    }
-
-    let mut method_matches = Vec::new();
-    for (index, header) in method_headers.iter().enumerate() {
-        budget.poll()?;
-        if header.name.raw().0 == b"sumUnits" && header.descriptor.raw().0 == b"()I" {
-            method_matches.push(index);
-        }
-    }
-    let [sum_units_index] = method_matches.as_slice() else {
-        return Ok(None);
-    };
-    let Some(sum_units_header) = method_headers.get(*sum_units_index) else {
-        return Ok(None);
-    };
-    let Some(sum_units_method) = source_methods.get(*sum_units_index) else {
-        return Ok(None);
-    };
-    if sum_units_header.access_flags & ACC_STATIC == 0
-        || sum_units_header.access_flags & (ACC_ABSTRACT | ACC_NATIVE) != 0
-        || !sum_units_header
-            .attributes
-            .iter()
-            .any(|attribute| attribute.name.raw().0 == b"Code")
-        || sum_units_method.item.index != u64::try_from(*sum_units_index).unwrap_or(u64::MAX)
-        || sum_units_method.item.identity.owner != initializer_method.item.identity.owner
-        || sum_units_method.item.identity.name.0 != b"sumUnits"
-        || sum_units_method.item.identity.descriptor.0 != b"()I"
-        || sum_units_method.declaration.is_none()
-    {
-        return Ok(None);
-    }
-
-    let owner_string = match std::str::from_utf8(owner) {
-        Ok(owner) => owner,
-        Err(_) => return Ok(None),
-    };
-    let code_scan_work = code
-        .instructions
-        .len()
-        .saturating_add(code.member_uses.len());
-    budget.charge(
-        CountedBudgetDimension::IrItems,
-        u64::try_from(code_scan_work).unwrap_or(u64::MAX),
-    )?;
-    let mut suffix = Vec::new();
-    for instruction in &code.instructions {
-        budget.poll()?;
-        if instruction.bci >= group.initializer_prefix_end_bci {
-            suffix.push(instruction);
-        }
-    }
-    let call_reference = EnumCodeReference::Method {
-        owner: owner.to_vec(),
-        name: b"sumUnits".to_vec(),
-        descriptor: b"()I".to_vec(),
-        interface: false,
-    };
-    let field_reference = EnumCodeReference::Field {
-        owner: owner.to_vec(),
-        name: b"totalUnits".to_vec(),
-        descriptor: b"I".to_vec(),
-    };
-    if !matches!(
-        suffix.as_slice(),
-        [call, store, ret]
-            if call.bci == 34
-                && call.width == 3
-                && call.opcode == 0xb8
-                && call.reference.as_ref() == Some(&call_reference)
-                && call.immediate.is_none()
-                && call.local.is_none()
-                && store.bci == 37
-                && store.width == 3
-                && store.opcode == 0xb3
-                && store.reference.as_ref() == Some(&field_reference)
-                && store.immediate.is_none()
-                && store.local.is_none()
-                && ret.bci == 40
-                && ret.width == 1
-                && ret.opcode == 0xb1
-                && ret.reference.is_none()
-                && ret.immediate.is_none()
-                && ret.local.is_none()
-    ) {
-        return Ok(None);
-    }
-    if code
-        .instructions
-        .iter()
-        .rev()
-        .find(|instruction| instruction.bci < 34)
-        .is_none_or(|instruction| instruction.bci.checked_add(instruction.width) != Some(34))
-    {
-        return Ok(None);
-    }
-    let mut suffix_uses = Vec::new();
-    for use_fact in &code.member_uses {
-        budget.poll()?;
-        if use_fact.bci >= group.initializer_prefix_end_bci {
-            suffix_uses.push(use_fact);
-        }
-    }
-    if !matches!(
-        suffix_uses.as_slice(),
-        [call, store]
-            if call.bci == 34 && call.reference == call_reference
-                && store.bci == 37 && store.reference == field_reference
-    ) {
-        return Ok(None);
-    }
-
-    let mut matching_initializers = Vec::new();
-    for candidate in initializer_candidates {
-        budget.poll()?;
-        if candidate.member.as_ref() == Some(&initializer_method.item.identity) {
-            matching_initializers.push(candidate);
-        }
-    }
-    let [initializer] = matching_initializers.as_slice() else {
-        return Ok(None);
-    };
-    if initializer.has_exception_handlers || initializer.steps.len() != 5 {
-        return Ok(None);
-    }
-    let (
-        ClassInitializerStep::FieldWrite(first),
-        ClassInitializerStep::FieldWrite(second),
-        ClassInitializerStep::FieldWrite(third),
-        ClassInitializerStep::FieldWrite(write),
-        ClassInitializerStep::Other {
-            order: 4,
-            bci: 40,
-            kind: ClassInitializerStatementKind::Return,
+    jarde_java::source_proof::prove_static_assignment_suffix(
+        group,
+        owner,
+        field_headers,
+        method_headers,
+        source_fields.len(),
+        source_methods.len(),
+        code_candidates,
+        initializer_candidates,
+        |index, header| {
+            source_fields.get(index).map(|field| {
+                (
+                    &field.item.identity.owner,
+                    field.item.index == u64::try_from(index).unwrap_or(u64::MAX)
+                        && field.item.name.raw() == header.name.raw()
+                        && field.item.descriptor.raw() == header.descriptor.raw()
+                        && field.item.access_flags == header.access_flags,
+                    field.declaration.is_some(),
+                    field.markers.is_empty(),
+                )
+            })
         },
-    ) = (
-        &initializer.steps[0],
-        &initializer.steps[1],
-        &initializer.steps[2],
-        &initializer.steps[3],
-        &initializer.steps[4],
+        |index| {
+            source_methods.get(index).map(|method| {
+                (
+                    method.item.index,
+                    &method.item.identity,
+                    method.declaration.is_some(),
+                    match &method.outcome {
+                        ClassSourceOutcome::Recovered { report, analysis } => {
+                            Some((report.as_ref(), &analysis.execution))
+                        }
+                        _ => None,
+                    },
+                )
+            })
+        },
+        budget,
     )
-    else {
-        return Ok(None);
-    };
-    if first.order != 0
-        || second.order != 1
-        || third.order != 2
-        || write.order != 3
-        || write.bci != 37
-        || write.owner != owner_string
-        || write.name != "totalUnits"
-        || write.spelled_name != "totalUnits"
-        || write.descriptor != "I"
-        || !write.is_static
-        || write.op != AssignOp::Assign
-        || write.source.primary().bci() != 37
-        || write.value.origin.primary().bci() != 34
-        // This FieldWrite AST may carry a type-path receiver for a static `putstatic`. The exact
-        // Code suffix below proves the receiver is not a runtime value: there is no instruction
-        // before the store that could evaluate one, and the Fieldref owner is this class.
-        || write.source.primary().method().is_some_and(|method| {
-            method != &initializer_method.item.identity
-        })
-        || write.value.origin.primary().method().is_some_and(|method| {
-            method != &initializer_method.item.identity
-        })
-        || !write.source.derived().iter().all(|origin| {
-            (34..=40).contains(&origin.bci())
-                && origin.method() == Some(&initializer_method.item.identity)
-        })
-        || !write.value.origin.derived().iter().all(|origin| {
-            (34..=40).contains(&origin.bci())
-                && origin.method() == Some(&initializer_method.item.identity)
-        })
-        || !write
-            .field_reads
-            .as_deref()
-            .is_some_and(|field_reads| field_reads.is_empty())
-        || write.value.presented != Some(Type::Int)
-        || !matches!(
-            &write.value.kind,
-            ExprKind::Call {
-                receiver: None,
-                name,
-                args,
-            } if name == "sumUnits" && args.is_empty()
-        )
-    {
-        return Ok(None);
-    }
-
-    Ok(Some(ProvedEnumStaticAssignment {
-        field_index: field_index_u64,
-        field_name: "totalUnits".to_owned(),
-        value: write.value.clone(),
-        initializer_member: initializer_method.item.identity.clone(),
-    }))
-}
-
-/// The single javac array loop admitted after a complete ordinary enum prefix.
-/// The statements are selected from the same `<clinit>` recovery, never parsed from fallback text.
-pub(crate) struct ProvedEnumMapSuffix {
-    pub(crate) field_index: u64,
-    pub(crate) initializer_member: PhysicalMethodId,
-    pub(crate) statements: Vec<jarde_java::ast::Stmt>,
 }
 
 pub(crate) fn prove_map_initializer_suffix(
     input: EnumStaticAssignmentInput<'_>,
 ) -> Result<Option<ProvedEnumMapSuffix>> {
-    use jarde_java::ast::{AssignOp, BinaryOp, Expr, ExprKind, StmtKind, Type};
-    use jarde_java::report::{ClassInitializerStatementKind as Kind, ClassInitializerStep as Step};
-
     let EnumStaticAssignmentInput {
         group,
         owner,
@@ -1002,735 +197,44 @@ pub(crate) fn prove_map_initializer_suffix(
         initializer_candidates,
         budget,
     } = input;
-    if group.constants.len() != 2
-        || group.initializer_prefix_statement_count != 3
-        || field_headers.len() != 4
-        || field_headers.len() != source_fields.len()
-        || method_headers.len() != source_methods.len()
-    {
-        return Ok(None);
-    }
-    let work = field_headers
-        .len()
-        .saturating_add(method_headers.len())
-        .saturating_add(code_candidates.len())
-        .saturating_add(initializer_candidates.len());
-    budget.charge(
-        CountedBudgetDimension::IrItems,
-        u64::try_from(work).unwrap_or(u64::MAX),
-    )?;
-    budget.poll()?;
-    let Some(initializer_index) = usize::try_from(group.initializer_method_index).ok() else {
-        return Ok(None);
-    };
-    let (Some(header), Some(method)) = (
-        method_headers.get(initializer_index),
-        source_methods.get(initializer_index),
-    ) else {
-        return Ok(None);
-    };
-    if header.name.raw().0 != b"<clinit>"
-        || header.descriptor.raw().0 != b"()V"
-        || header.access_flags != ACC_STATIC
-        || method.item.index != group.initializer_method_index
-    {
-        return Ok(None);
-    }
-    let crate::class_source::ClassSourceOutcome::Recovered { report, analysis } = &method.outcome
-    else {
-        return Ok(None);
-    };
-    if !report.produced()
-        || !matches!(report.execution, ExecutionReport::Complete { .. })
-        || !matches!(analysis.execution, ExecutionReport::Complete { .. })
-        || report.quality != jarde_jvm::ir::Quality::Structured
-        || !report.fallbacks.is_empty()
-    {
-        return Ok(None);
-    }
-    let codes: Vec<_> = code_candidates
-        .iter()
-        .filter(|candidate| candidate.table_index == group.initializer_method_index)
-        .collect();
-    let [code] = codes.as_slice() else {
-        return Ok(None);
-    };
-    if code.member.as_ref() != Some(&method.item.identity)
-        || !code.complete
-        || code.exception_handler_count != 0
-    {
-        return Ok(None);
-    }
-    budget.charge(
-        CountedBudgetDimension::IrItems,
-        u64::try_from(
-            code.instructions
-                .len()
-                .saturating_add(code.member_uses.len()),
-        )
-        .unwrap_or(u64::MAX),
-    )?;
-    budget.poll()?;
-    let suffix: Vec<_> = code
-        .instructions
-        .iter()
-        .filter(|instruction| instruction.bci >= group.initializer_prefix_end_bci)
-        .collect();
-    let Ok(suffix): std::result::Result<&[&EnumCodeInstruction; 27], _> =
-        suffix.as_slice().try_into()
-    else {
-        return Ok(None);
-    };
-    if suffix[0].bci != group.initializer_prefix_end_bci
-        || !suffix
-            .windows(2)
-            .all(|pair| pair[0].bci.checked_add(pair[0].width) == Some(pair[1].bci))
-    {
-        return Ok(None);
-    }
-    let Some(EnumCodeReference::Field {
-        owner: field_owner,
-        name: field_name,
-        descriptor,
-    }) = &suffix[3].reference
-    else {
-        return Ok(None);
-    };
-    if field_owner != owner
-        || descriptor != b"Ljava/util/Map;"
-        || suffix[3].opcode != 0xb3
-        || suffix[18].reference != suffix[3].reference
-    {
-        return Ok(None);
-    }
-    let matching_fields: Vec<_> = field_headers
-        .iter()
-        .enumerate()
-        .filter(|(_, field)| {
-            field.name.raw().0 == *field_name && field.descriptor.raw().0 == *descriptor
-        })
-        .collect();
-    let [(field_index, field)] = matching_fields.as_slice() else {
-        return Ok(None);
-    };
-    let source_field = &source_fields[*field_index];
-    let Ok(field_name_text) = std::str::from_utf8(field_name) else {
-        return Ok(None);
-    };
-    if field.access_flags != (ACC_PUBLIC | ACC_STATIC | ACC_FINAL)
-        || field
-            .attributes
-            .iter()
-            .any(|attribute| attribute.name.raw().0 == b"ConstantValue")
-        || source_field.item.index != u64::try_from(*field_index).unwrap_or(u64::MAX)
-        || source_field.item.identity.owner != method.item.identity.owner
-        || source_field
-            .declaration
-            .as_deref()
-            .and_then(|declaration| declaration.strip_prefix("public static final java.util.Map "))
-            != Some(field_name_text)
-        || source_field
-            .markers
-            .iter()
-            .any(|marker| !marker.contains("field_generic_source_unproved"))
-        || !source_field.annotations.refusals.is_empty()
-        || !source_field.type_annotations.refusals.is_empty()
-    {
-        return Ok(None);
-    }
-    let expected_references = [
-        (
-            2,
-            EnumCodeReference::Method {
-                owner: b"java/util/HashMap".to_vec(),
-                name: b"<init>".to_vec(),
-                descriptor: b"()V".to_vec(),
-                interface: false,
-            },
-        ),
-        (3, suffix[3].reference.clone().unwrap()),
-        (
-            4,
-            EnumCodeReference::Method {
-                owner: owner.to_vec(),
-                name: b"values".to_vec(),
-                descriptor: values_descriptor(owner),
-                interface: false,
-            },
-        ),
-        (18, suffix[3].reference.clone().unwrap()),
-        (
-            20,
-            EnumCodeReference::Method {
-                owner: owner.to_vec(),
-                name: b"name".to_vec(),
-                descriptor: b"()Ljava/lang/String;".to_vec(),
-                interface: false,
-            },
-        ),
-        (
-            22,
-            EnumCodeReference::Method {
-                owner: b"java/util/Map".to_vec(),
-                name: b"put".to_vec(),
-                descriptor: b"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".to_vec(),
-                interface: true,
-            },
-        ),
-    ];
-    let hash_map_reference = EnumCodeReference::Class(b"java/util/HashMap".to_vec());
-    let opcodes = [
-        0xbb, 0x59, 0xb7, 0xb3, 0xb8, 0x4b, 0x2a, 0xbe, 0x3c, 0x03, 0x3d, 0x1c, 0x1b, 0xa2, 0x2a,
-        0x1c, 0x32, 0x4e, 0xb2, 0x2d, 0xb6, 0x2d, 0xb9, 0x57, 0x84, 0xa7, 0xb1,
-    ];
-    for (index, instruction) in suffix.iter().enumerate() {
-        budget.poll()?;
-        if instruction.opcode != opcodes[index]
-            || instruction.reference.as_ref()
-                != (if index == 0 {
-                    Some(&hash_map_reference)
-                } else {
-                    expected_references
-                        .iter()
-                        .find(|(position, _)| *position == index)
-                        .map(|(_, reference)| reference)
-                })
-            || instruction.immediate != (index == 9).then_some(ImmediateValue::Int(0))
-            || instruction.local
-                != (match index {
-                    5 | 6 | 14 => Some(0),
-                    8 | 12 => Some(1),
-                    10 | 11 | 15 | 24 => Some(2),
-                    17 | 19 | 21 => Some(3),
-                    _ => None,
-                })
-            || instruction.increment != (index == 24).then_some(1)
-            || instruction.interface_count != (index == 22).then_some(3)
-            || instruction.branch_target_bci
-                != (match index {
-                    13 => Some(suffix[26].bci),
-                    25 => Some(suffix[11].bci),
-                    _ => None,
-                })
-        {
-            return Ok(None);
-        }
-    }
-    if suffix[0].width != 3
-        || suffix[2].width != 3
-        || suffix[3].width != 3
-        || suffix[4].width != 3
-        || suffix[13].width != 3
-        || suffix[18].width != 3
-        || suffix[20].width != 3
-        || suffix[22].width != 5
-        || suffix[24].width != 3
-        || suffix[25].width != 3
-        || suffix.iter().enumerate().any(|(index, instruction)| {
-            !matches!(index, 0 | 2 | 3 | 4 | 13 | 18 | 20 | 22 | 24 | 25) && instruction.width != 1
-        })
-        || suffix[9].opcode != 0x03
-        || suffix[16].opcode != 0x32
-    {
-        return Ok(None);
-    }
-    let suffix_uses: Vec<_> = code
-        .member_uses
-        .iter()
-        .filter(|use_site| use_site.bci >= group.initializer_prefix_end_bci)
-        .collect();
-    if suffix_uses.len() != expected_references.len()
-        || suffix_uses
-            .iter()
-            .zip(expected_references.iter())
-            .any(|(actual, (index, reference))| {
-                actual.bci != suffix[*index].bci || &actual.reference != reference
+    jarde_java::source_proof::prove_map_initializer_suffix(
+        group,
+        owner,
+        field_headers,
+        method_headers,
+        source_fields.len(),
+        source_methods.len(),
+        code_candidates,
+        initializer_candidates,
+        |index| {
+            source_fields.get(index).map(|field| {
+                (
+                    field.item.index,
+                    &field.item.identity.owner,
+                    field.declaration.as_deref(),
+                    field.markers.as_slice(),
+                    field.annotations.refusals.is_empty(),
+                    field.type_annotations.refusals.is_empty(),
+                )
             })
-    {
-        return Ok(None);
-    }
-    let candidates: Vec<_> = initializer_candidates
-        .iter()
-        .filter(|candidate| candidate.member.as_ref() == Some(&method.item.identity))
-        .collect();
-    let [candidate] = candidates.as_slice() else {
-        return Ok(None);
-    };
-    let steps = &candidate.steps;
-    let statements = &candidate.statements;
-    if candidate.has_exception_handlers || statements.len() != steps.len() {
-        return Ok(None);
-    }
-    for (position, (step, statement)) in steps.iter().zip(statements).enumerate() {
-        budget.poll()?;
-        let (order, bci) = match step {
-            Step::FieldWrite(write) => (write.order, write.bci),
-            Step::Other { order, bci, .. } => (*order, *bci),
-        };
-        if order != position || bci != statement.origin.primary().bci() {
-            return Ok(None);
-        }
-    }
-    // The instruction match above proves the suffix is the single javac array loop: one fixed
-    // start, contiguous instructions, exact opcodes and locals, and the one-element increment.
-    // One same-run recovery presents those instructions in one of two shapes, and both are
-    // admitted here: the explicit index loop, or the enhanced for whose own origins fold the same
-    // traversal. Both declare the array local first, then carry the same four field writes and
-    // the same loop tail; only the positions of the declarations differ.
-    enum SuffixPresentation {
-        IndexLoop,
-        EnhancedFor,
-    }
-    let (presentation, writes, loop_statement) = match steps.len() {
-        // Three leading declarations: the array local plus the explicit counter and limit.
-        11 => (SuffixPresentation::IndexLoop, 3..7, 9_usize),
-        // The enhanced for folds the counter and limit into the loop node's own origins.
-        8 => (SuffixPresentation::EnhancedFor, 1..5, 6_usize),
-        _ => return Ok(None),
-    };
-    if !steps[..writes.start].iter().all(|step| {
-        matches!(
-            step,
-            Step::Other {
-                kind: Kind::Declaration,
-                ..
-            }
-        )
-    }) || !steps[writes.clone()]
-        .iter()
-        .all(|step| matches!(step, Step::FieldWrite(_)))
-    {
-        return Ok(None);
-    }
-    for (offset, expected_bci) in [
-        group.constants[0].field_write_bci,
-        group.constants[1].field_write_bci,
-        group.initializer_prefix_end_bci - 3,
-        suffix[3].bci,
-    ]
-    .into_iter()
-    .enumerate()
-    {
-        let Step::FieldWrite(write) = &steps[writes.start + offset] else {
-            return Ok(None);
-        };
-        if write.bci != expected_bci {
-            return Ok(None);
-        }
-    }
-    let Step::FieldWrite(map_write) = &steps[writes.end - 1] else {
-        return Ok(None);
-    };
-    if map_write.bci != suffix[3].bci
-        || map_write.owner.as_bytes() != owner
-        || map_write.name != field_name_text
-        || !map_write.is_static
-        || map_write.op != AssignOp::Assign
-        || !matches!(&map_write.value.kind, ExprKind::New { ty, qualifier: None, member_name: None, diamond: false, args } if ty == "java.util.HashMap" && args.is_empty())
-    {
-        return Ok(None);
-    }
-    if !matches!(&steps[loop_statement], Step::Other { kind: Kind::Loop, bci, .. } if *bci == suffix[13].bci)
-        || !matches!(
-            &steps[steps.len() - 1],
-            Step::Other { bci, kind: Kind::Return, .. } if *bci == suffix[26].bci
-        )
-    {
-        return Ok(None);
-    }
-    let Ok(owner_text) = std::str::from_utf8(owner) else {
-        return Ok(None);
-    };
-    let source_owner = owner_text.replace('/', ".");
-    let is_local = |expression: &Expr, expected: &str| matches!(&expression.kind, ExprKind::Local(name) if name == expected);
-    // The loop body carries exactly one effect in both presentations: the proved map write keyed
-    // by each element's own name, anchored at the proved interface call.
-    let is_map_put = |statement: &jarde_java::ast::Stmt| matches!(&statement.kind, StmtKind::Expr(expression) if matches!(&expression.kind, ExprKind::Call { receiver: Some(receiver), name, args } if name == "put" && matches!(&receiver.kind, ExprKind::Field { receiver: owner_expr, name } if matches!(&owner_expr.kind, ExprKind::Path(path) if path == &source_owner) && name == field_name_text) && matches!(args.as_slice(), [first, second] if matches!(&first.kind, ExprKind::Cast { ty: Type::Reference(ty), value } if ty == "java.lang.Object" && matches!(&value.kind, ExprKind::Call { receiver: Some(receiver), name, args } if is_local(receiver, "local3") && name == "name" && args.is_empty())) && matches!(&second.kind, ExprKind::Cast { ty: Type::Reference(ty), value } if ty == "java.lang.Object" && is_local(value, "local3")))) && expression.origin.primary().bci() == suffix[22].bci);
-    if !matches!(&statements[0].kind, StmtKind::Declare { ty: Type::Reference(ty), name, value: None, .. } if ty == &format!("{source_owner}[]") && name == "local0")
-    {
-        return Ok(None);
-    }
-    let mut selected = statements[..writes.start].to_vec();
-    selected.extend_from_slice(&statements[writes.end - 1..=loop_statement]);
-    let StmtKind::FieldAssign { receiver, name, .. } = &mut selected[writes.start].kind else {
-        unreachable!()
-    };
-    if name != field_name_text {
-        return Ok(None);
-    }
-    *receiver = None;
-    match presentation {
-        SuffixPresentation::IndexLoop => {
-            if !steps[0..3]
-                .iter()
-                .zip([suffix[5].bci, suffix[8].bci, suffix[10].bci])
-                .any(|(step, bci)| {
-                    !matches!(step, Step::Other { bci: actual, .. } if *actual == bci)
-                })
-                || !matches!(&steps[7], Step::Other { kind: Kind::LocalAssignment, bci, .. } if *bci == suffix[5].bci)
-                || !matches!(&steps[8], Step::Other { kind: Kind::LocalAssignment, bci, .. } if *bci == suffix[8].bci)
-                || !matches!(&statements[1].kind, StmtKind::Declare { ty: Type::Int, name, value: None, .. } if name == "local1")
-                || !matches!(&statements[2].kind, StmtKind::Declare { ty: Type::Int, name, value: None, .. } if name == "local2")
-                || !matches!(&statements[7].kind, StmtKind::Assign { name, value } if name == "local0" && matches!(&value.kind, ExprKind::Call { receiver: None, name, args } if name == "values" && args.is_empty()) && value.origin.primary().bci() == suffix[4].bci)
-                || !matches!(&statements[8].kind, StmtKind::Assign { name, value } if name == "local1" && matches!(&value.kind, ExprKind::ArrayLength { array } if is_local(array, "local0")) && value.origin.primary().bci() == suffix[7].bci)
-            {
-                return Ok(None);
-            }
-            let StmtKind::For {
-                label: None,
-                init,
-                cond,
-                update,
-                body,
-            } = &statements[loop_statement].kind
-            else {
-                return Ok(None);
-            };
-            if !matches!(&init.kind, StmtKind::Assign { name, value } if name == "local2" && matches!(&value.kind, ExprKind::Integer(0)))
-                || !matches!(&cond.kind, ExprKind::Binary { op: BinaryOp::Less, left, right } if is_local(left, "local2") && is_local(right, "local1"))
-                || !matches!(&update.kind, StmtKind::Assign { name, value } if name == "local2" && matches!(&value.kind, ExprKind::Binary { op: BinaryOp::Add, left, right } if is_local(left, "local2") && matches!(&right.kind, ExprKind::Integer(1))))
-                || body.len() != 2
-                || body[0].origin.primary().bci() != suffix[17].bci
-                || !is_map_put(&body[1])
-            {
-                return Ok(None);
-            }
-            let StmtKind::Declare {
-                ty: Type::Reference(local_type),
-                name,
-                value: Some(value),
-                ..
-            } = &body[0].kind
-            else {
-                return Ok(None);
-            };
-            if local_type != "Object"
-                || name != "local3"
-                || !matches!(&value.kind, ExprKind::Index { array, index } if is_local(array, "local0") && is_local(index, "local2") && value.origin.primary().bci() == suffix[16].bci)
-            {
-                return Ok(None);
-            }
-            let StmtKind::For { body, .. } = &mut selected
-                .last_mut()
-                .expect("the selected statements end with the loop")
-                .kind
-            else {
-                unreachable!()
-            };
-            let StmtKind::Declare { ty, .. } = &mut body[0].kind else {
-                unreachable!()
-            };
-            // The recovered element declaration states the erasure type; this proof's own fact —
-            // values() returns the owner array — states the element type it projects.
-            *ty = Type::Reference(source_owner.clone());
-        }
-        SuffixPresentation::EnhancedFor => {
-            if !matches!(&steps[0], Step::Other { bci, .. } if *bci == suffix[5].bci)
-                || !matches!(&steps[5], Step::Other { kind: Kind::LocalAssignment, bci, .. } if *bci == suffix[5].bci)
-                || !matches!(&statements[5].kind, StmtKind::Assign { name, value } if name == "local0" && matches!(&value.kind, ExprKind::Call { receiver: None, name, args } if name == "values" && args.is_empty()) && value.origin.primary().bci() == suffix[4].bci)
-            {
-                return Ok(None);
-            }
-            let StmtKind::ForEach {
-                label: None,
-                ty: Type::Reference(local_type),
-                name,
-                iterable,
-                body,
-            } = &statements[loop_statement].kind
-            else {
-                return Ok(None);
-            };
-            // The node's own origins fold the proved traversal: they must carry the element read
-            // the variable is bound to and the one-element increment the instruction match
-            // proved, so the presented enhanced for is that index loop and nothing else.
-            let loop_origins = statements[loop_statement].origin.bcis();
-            if (local_type != "Object" && local_type != &source_owner)
-                || name != "local3"
-                || !is_local(iterable, "local0")
-                || iterable.origin.primary().bci() != suffix[6].bci
-                || !loop_origins.contains(&suffix[16].bci)
-                || !loop_origins.contains(&suffix[24].bci)
-                || body.len() != 1
-                || !is_map_put(&body[0])
-            {
-                return Ok(None);
-            }
-            let StmtKind::ForEach { ty, .. } = &mut selected
-                .last_mut()
-                .expect("the selected statements end with the loop")
-                .kind
-            else {
-                unreachable!()
-            };
-            // The recovered variable states the erasure type whenever the element-type proof did
-            // not reach the presentation; the same proved element type replaces either spelling.
-            *ty = Type::Reference(source_owner.clone());
-        }
-    }
-    Ok(Some(ProvedEnumMapSuffix {
-        field_index: u64::try_from(*field_index).unwrap_or(u64::MAX),
-        initializer_member: method.item.identity.clone(),
-        statements: selected,
-    }))
-}
-
-/// Copy a candidate body's bounded structural facts from the same method run.
-///
-/// Candidate names only select which full bodies need to be retained. Every enum method still
-/// contributes its same-run symbolic uses when the prepared class passes the cheap Java 8,
-/// two-constant eligibility gate, so the class-level proof can reject references to members it will
-/// project away.
-pub(crate) fn capture_method_code(
-    table_index: u64,
-    requested_member: &PhysicalMethodId,
-    ir: &MethodIr,
-    budget: &mut Budget,
-) -> Result<Option<EnumMethodCodeCandidate>> {
-    let keep_body = is_enum_candidate_name(&requested_member.name.0);
-    let code = ir.code();
-    let member = ir
-        .declaration()
-        .map(|declaration| declaration.identity().clone());
-    let Some(code) = code else {
-        return Ok(Some(EnumMethodCodeCandidate {
-            table_index,
-            member,
-            complete: false,
-            exception_handler_count: 0,
-            instructions: Vec::new(),
-            member_uses: Vec::new(),
-        }));
-    };
-
-    let work = u64::try_from(code.instructions.len())
-        .unwrap_or(u64::MAX)
-        .saturating_add(u64::from(code.exception_handler_count))
-        .saturating_add(1);
-    budget.charge(CountedBudgetDimension::IrItems, work)?;
-    let mut instructions = Vec::with_capacity(if keep_body {
-        code.instructions.len()
-    } else {
-        0
-    });
-    let mut member_uses = Vec::new();
-    for (index, instruction) in code.instructions.iter().enumerate() {
-        budget.poll()?;
-        let operands = code.operands().get(index);
-        let branch_target_bci = operands
-            .and_then(|operands| operands.branch_offset)
-            .and_then(|offset| i64::from(instruction.bci).checked_add(i64::from(offset)))
-            .and_then(|target| u32::try_from(target).ok());
-        let structured =
-            enum_instruction(instruction, operands, ir.constant_pool(), branch_target_bci);
-        if let Some(reference) = structured.reference.as_ref().filter(|reference| {
-            matches!(
-                reference,
-                EnumCodeReference::Field { .. } | EnumCodeReference::Method { .. }
-            )
-        }) {
-            member_uses.push(EnumCodeUse {
-                bci: instruction.bci,
-                reference: reference.clone(),
-            });
-        }
-        if instruction.opcode == 0xba {
-            member_uses.extend(bootstrap_member_uses(
-                instruction.bci,
-                operands,
-                ir.constant_pool(),
-                ir.bootstrap_methods(),
-                budget,
-            )?);
-        }
-        if keep_body {
-            instructions.push(structured);
-        }
-    }
-    let complete = code.stopped_at.is_none()
-        && matches!(code.execution, ExecutionReport::Complete { .. })
-        && code.exception_handler_count as usize == code.exception_handlers.len()
-        && code.instructions.len() == code.operands().len();
-    Ok(Some(EnumMethodCodeCandidate {
-        table_index,
-        member,
-        complete,
-        exception_handler_count: code.exception_handler_count,
-        instructions,
-        member_uses,
-    }))
-}
-
-fn is_enum_candidate_name(name: &[u8]) -> bool {
-    matches!(
-        name,
-        b"<clinit>" | b"<init>" | b"values" | b"valueOf" | b"$values"
+        },
+        |index| {
+            source_methods.get(index).map(|method| {
+                (
+                    method.item.index,
+                    &method.item.identity,
+                    method.declaration.is_some(),
+                    match &method.outcome {
+                        ClassSourceOutcome::Recovered { report, analysis } => {
+                            Some((report.as_ref(), &analysis.execution))
+                        }
+                        _ => None,
+                    },
+                )
+            })
+        },
+        budget,
     )
-}
-
-fn enum_instruction(
-    instruction: &InstructionFact,
-    operands: Option<&InstructionOperands>,
-    pool: &[jarde_reader::classfile::CpEntryFacts],
-    branch_target_bci: Option<u32>,
-) -> EnumCodeInstruction {
-    let opcode = operands.map_or(instruction.opcode, |operands| operands.effective_opcode);
-    let pool_index = operands
-        .and_then(|operands| operands.constant_pool_index)
-        .or(instruction.constant_pool_index);
-    let reference = pool_index.map(|index| {
-        let Ok(entry) = cp_entry(pool, index) else {
-            return EnumCodeReference::Other;
-        };
-        match &entry.kind {
-            CpEntryKind::Integer { value } => EnumCodeReference::Integer(*value),
-            CpEntryKind::String { value, .. } => EnumCodeReference::String(value.0.clone()),
-            CpEntryKind::Class { name, .. } => EnumCodeReference::Class(name.0.clone()),
-            CpEntryKind::FieldRef {
-                owner,
-                name,
-                descriptor,
-                ..
-            } => EnumCodeReference::Field {
-                owner: owner.0.clone(),
-                name: name.0.clone(),
-                descriptor: descriptor.0.clone(),
-            },
-            CpEntryKind::MethodRef {
-                owner,
-                name,
-                descriptor,
-                ..
-            } => EnumCodeReference::Method {
-                owner: owner.0.clone(),
-                name: name.0.clone(),
-                descriptor: descriptor.0.clone(),
-                interface: false,
-            },
-            CpEntryKind::InterfaceMethodRef {
-                owner,
-                name,
-                descriptor,
-                ..
-            } => EnumCodeReference::Method {
-                owner: owner.0.clone(),
-                name: name.0.clone(),
-                descriptor: descriptor.0.clone(),
-                interface: true,
-            },
-            CpEntryKind::MethodHandle {
-                reference_index, ..
-            } => cp_member_reference(pool, *reference_index).unwrap_or(EnumCodeReference::Other),
-            _ => EnumCodeReference::Other,
-        }
-    });
-    EnumCodeInstruction {
-        bci: instruction.bci,
-        width: instruction.width,
-        opcode,
-        immediate: operands.and_then(|operands| operands.immediate),
-        local: operands
-            .and_then(|operands| operands.local)
-            .map(|local| local.index),
-        increment: operands.and_then(|operands| operands.increment),
-        interface_count: operands.and_then(|operands| operands.interface_count),
-        reference,
-        branch_target_bci,
-    }
-}
-
-fn cp_member_reference(
-    pool: &[jarde_reader::classfile::CpEntryFacts],
-    index: u16,
-) -> Option<EnumCodeReference> {
-    let entry = cp_entry(pool, index).ok()?;
-    match &entry.kind {
-        CpEntryKind::FieldRef {
-            owner,
-            name,
-            descriptor,
-            ..
-        } => Some(EnumCodeReference::Field {
-            owner: owner.0.clone(),
-            name: name.0.clone(),
-            descriptor: descriptor.0.clone(),
-        }),
-        CpEntryKind::MethodRef {
-            owner,
-            name,
-            descriptor,
-            ..
-        } => Some(EnumCodeReference::Method {
-            owner: owner.0.clone(),
-            name: name.0.clone(),
-            descriptor: descriptor.0.clone(),
-            interface: false,
-        }),
-        CpEntryKind::InterfaceMethodRef {
-            owner,
-            name,
-            descriptor,
-            ..
-        } => Some(EnumCodeReference::Method {
-            owner: owner.0.clone(),
-            name: name.0.clone(),
-            descriptor: descriptor.0.clone(),
-            interface: true,
-        }),
-        _ => None,
-    }
-}
-
-fn bootstrap_member_uses(
-    bci: u32,
-    operands: Option<&InstructionOperands>,
-    pool: &[jarde_reader::classfile::CpEntryFacts],
-    bootstraps: &[jarde_reader::classfile::BootstrapMethodFacts],
-    budget: &mut Budget,
-) -> Result<Vec<EnumCodeUse>> {
-    let Some(dynamic_index) = operands.and_then(|operands| operands.constant_pool_index) else {
-        return Ok(Vec::new());
-    };
-    let Ok(dynamic) = cp_entry(pool, dynamic_index) else {
-        return Ok(Vec::new());
-    };
-    let bootstrap_index = match &dynamic.kind {
-        CpEntryKind::InvokeDynamic {
-            bootstrap_method_attr_index,
-            ..
-        } => *bootstrap_method_attr_index,
-        _ => return Ok(Vec::new()),
-    };
-    let Some(bootstrap) = bootstraps.get(usize::from(bootstrap_index)) else {
-        return Ok(Vec::new());
-    };
-    let linked_count = u64::try_from(bootstrap.arguments.len())
-        .unwrap_or(u64::MAX)
-        .saturating_add(1);
-    budget.charge(CountedBudgetDimension::IrItems, linked_count)?;
-    let mut uses = Vec::new();
-    for index in std::iter::once(bootstrap.method_ref).chain(bootstrap.arguments.iter().copied()) {
-        budget.poll()?;
-        if let Some(reference) = cp_reference_or_handle(pool, index) {
-            uses.push(EnumCodeUse { bci, reference });
-        }
-    }
-    Ok(uses)
-}
-
-/// Resolve either one direct member reference or one MethodHandle layer. Malformed handle chains
-/// are rejected instead of followed recursively.
-fn cp_reference_or_handle(
-    pool: &[jarde_reader::classfile::CpEntryFacts],
-    index: u16,
-) -> Option<EnumCodeReference> {
-    let entry = cp_entry(pool, index).ok()?;
-    match &entry.kind {
-        CpEntryKind::MethodHandle {
-            reference_index, ..
-        } => cp_member_reference(pool, *reference_index),
-        _ => cp_member_reference(pool, index),
-    }
 }
 
 /// Prove the complete two-constant Java 8 enum pattern from one class read and its same-run
@@ -1754,197 +258,106 @@ pub(crate) fn prove_group(
     budget: &mut Budget,
 ) -> Result<ClassSourceEnumConstantProof> {
     let class = &declaration.item.declaration;
-    if class.access_flags & ACC_ENUM == 0 {
-        return Ok(ClassSourceEnumConstantProof::NotApplicable);
-    }
-    let refuse = |reason: &str| ClassSourceEnumConstantProof::Refused {
-        reason: reason.to_owned(),
-    };
-    if class_version != (52, 0)
-        || class.access_flags & (ACC_INTERFACE | ACC_ABSTRACT) != 0
-        || class
+    let result = jarde_java::source_proof::prove_ordinary_enum_group(
+        class_version,
+        class.access_flags,
+        class.this_class.raw().0.as_slice(),
+        class
             .super_class
             .as_ref()
-            .map(|name| name.raw().0.as_slice())
-            != Some(ENUM_SUPER)
-    {
-        return Ok(refuse(
-            "the class is not a concrete Java 8 enum extending java/lang/Enum",
-        ));
-    }
-    let owner = class.this_class.raw().0.as_slice();
-    if owner.is_empty()
-        || declaration.item.definition
-            != source_fields
-                .first()
-                .map(|field| field.item.identity.owner.clone())
-                .unwrap_or_else(|| declaration.item.definition.clone())
-    {
-        return Ok(refuse(
-            "the class-source declaration and physical member owner disagree",
-        ));
-    }
-
-    if !fields_complete
-        || !methods_complete
-        || u64::try_from(field_headers.len()).unwrap_or(u64::MAX) != field_count
-        || source_fields.len() != field_headers.len()
-        || u64::try_from(method_headers.len()).unwrap_or(u64::MAX) != method_count
-        || source_methods.len() != method_headers.len()
-    {
-        return Ok(refuse("the physical field or method table is incomplete"));
-    }
-    let work = u64::try_from(field_headers.len())
-        .unwrap_or(u64::MAX)
-        .saturating_add(u64::try_from(method_headers.len()).unwrap_or(u64::MAX));
-    budget.charge(CountedBudgetDimension::IrItems, work)?;
-
-    for (index, (header, source)) in field_headers.iter().zip(source_fields).enumerate() {
-        if source.item.index != u64::try_from(index).unwrap_or(u64::MAX)
-            || source.item.name.raw() != header.name.raw()
-            || source.item.descriptor.raw() != header.descriptor.raw()
-            || source.item.access_flags != header.access_flags
-            || source.item.identity.owner != declaration.item.definition
-        {
-            return Ok(refuse(
-                "a published field does not match its physical table record",
-            ));
-        }
-    }
-    for (index, (header, source)) in method_headers.iter().zip(source_methods).enumerate() {
-        if source.item.index != u64::try_from(index).unwrap_or(u64::MAX)
-            || source.item.name.raw() != header.name.raw()
-            || source.item.descriptor.raw() != header.descriptor.raw()
-            || source.item.access_flags != header.access_flags
-            || source.item.identity.owner != declaration.item.definition
-        {
-            return Ok(refuse(
-                "a published method does not match its physical table record",
-            ));
-        }
-    }
-
-    let enum_fields: Vec<_> = field_headers
-        .iter()
-        .enumerate()
-        .filter(|(_, field)| field.access_flags & ACC_ENUM != 0)
-        .collect();
-    let enum_descriptor = object_descriptor(owner);
-    let mut constants = Vec::with_capacity(enum_fields.len());
-    let mut constant_names = std::collections::BTreeSet::new();
-    for (ordinal_index, (index, header)) in enum_fields.iter().copied().enumerate() {
-        let Ok(ordinal) = i32::try_from(ordinal_index) else {
-            return Ok(refuse(
-                "the enum constant ordinal exceeds the supported integer range",
-            ));
-        };
-        let expected_flags = ACC_PUBLIC | ACC_STATIC | ACC_FINAL | ACC_ENUM;
-        if header.access_flags != expected_flags
-            || header.descriptor.raw().0 != enum_descriptor
-            || !header.attributes.is_empty()
-        {
-            return Ok(refuse(
-                "an enum constant field has non-standard flags, descriptor, or attributes",
-            ));
-        }
-        let Some(name) = String::from_utf16(header.name.utf16()).ok() else {
-            return Ok(refuse("an enum constant field name is not valid Java text"));
-        };
-        if !jarde_java::is_java_identifier(&name) || !constant_names.insert(name.clone()) {
-            return Ok(refuse(
-                "enum constant field names are not unique Java identifiers",
-            ));
-        }
-        if source_fields[index].declaration.is_none() {
-            return Ok(refuse(
-                "an enum constant field has no faithful physical declaration",
-            ));
-        }
-        constants.push((index, name, ordinal));
-    }
-
-    let values_field_candidates: Vec<_> = field_headers
-        .iter()
-        .enumerate()
-        .filter(|(_, field)| field.name.raw().0 == b"$VALUES")
-        .collect();
-    let [(backing_field_index, backing_field)] = values_field_candidates.as_slice() else {
-        return Ok(refuse(
-            "the `$VALUES` physical field is absent or ambiguous",
-        ));
-    };
-    if backing_field.descriptor.raw().0 != array_descriptor(owner)
-        || backing_field.access_flags != (ACC_PRIVATE | ACC_STATIC | ACC_FINAL | ACC_SYNTHETIC)
-        || !backing_field.attributes.is_empty()
-    {
-        return Ok(refuse("the `$VALUES` field has a non-standard declaration"));
-    }
-
-    let clinit_index = match unique_method(method_headers, b"<clinit>", b"()V") {
-        Ok(index) => index,
-        Err(reason) => return Ok(refuse(&reason)),
-    };
-    let constructor_count = method_headers
-        .iter()
-        .filter(|method| method.name.raw().0 == b"<init>")
-        .count();
-    let (
-        constructor_index,
-        delegating_constructor_index,
-        delegation_edge,
-        constructor_body,
-        user_constructor_parameters,
-    ) = match constructor_count {
-        1 => {
-            let descriptor = method_headers
-                .iter()
-                .find(|method| method.name.raw().0 == b"<init>")
-                .map(|method| method.descriptor.raw().0.as_slice())
-                .unwrap_or(&[]);
-            let user_parameters = if descriptor == CTOR_DESCRIPTOR
-                || descriptor == DELEGATING_CTOR_DESCRIPTOR
-                || descriptor == STRING_CTOR_DESCRIPTOR
-                || descriptor == STRING_VARARGS_CTOR_DESCRIPTOR
+            .map(|name| name.raw().0.as_slice()),
+        field_headers,
+        method_headers,
+        initializer_candidates,
+        constructor_candidates,
+        |budget| {
+            let refuse = |reason: &str| Err(reason.to_owned());
+            if declaration.item.definition
+                != source_fields
+                    .first()
+                    .map(|field| field.item.identity.owner.clone())
+                    .unwrap_or_else(|| declaration.item.definition.clone())
             {
-                None
-            } else {
-                match parse_arbitrary_ctor_descriptor(descriptor) {
-                    Some(parameters) => Some(parameters),
-                    None => {
-                        return Ok(refuse("the enum has an unsupported constructor descriptor"));
-                    }
+                return Ok(refuse(
+                    "the class-source declaration and physical member owner disagree",
+                ));
+            }
+
+            if !fields_complete
+                || !methods_complete
+                || u64::try_from(field_headers.len()).unwrap_or(u64::MAX) != field_count
+                || source_fields.len() != field_headers.len()
+                || u64::try_from(method_headers.len()).unwrap_or(u64::MAX) != method_count
+                || source_methods.len() != method_headers.len()
+            {
+                return Ok(refuse("the physical field or method table is incomplete"));
+            }
+            let work = u64::try_from(field_headers.len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(u64::try_from(method_headers.len()).unwrap_or(u64::MAX));
+            budget.charge(CountedBudgetDimension::IrItems, work)?;
+
+            for (index, (header, source)) in field_headers.iter().zip(source_fields).enumerate() {
+                if source.item.index != u64::try_from(index).unwrap_or(u64::MAX)
+                    || source.item.name.raw() != header.name.raw()
+                    || source.item.descriptor.raw() != header.descriptor.raw()
+                    || source.item.access_flags != header.access_flags
+                    || source.item.identity.owner != declaration.item.definition
+                {
+                    return Ok(refuse(
+                        "a published field does not match its physical table record",
+                    ));
                 }
-            };
-            let constructor_index = match unique_method(method_headers, b"<init>", descriptor) {
-                Ok(index) => index,
-                Err(reason) => return Ok(refuse(&reason)),
-            };
-            (constructor_index, None, None, None, user_parameters)
-        }
-        2 => {
-            let edge = match prove_constructor_delegation_edge(
+            }
+            for (index, (header, source)) in method_headers.iter().zip(source_methods).enumerate() {
+                if source.item.index != u64::try_from(index).unwrap_or(u64::MAX)
+                    || source.item.name.raw() != header.name.raw()
+                    || source.item.descriptor.raw() != header.descriptor.raw()
+                    || source.item.access_flags != header.access_flags
+                    || source.item.identity.owner != declaration.item.definition
+                {
+                    return Ok(refuse(
+                        "a published method does not match its physical table record",
+                    ));
+                }
+            }
+
+            Ok(Ok(()))
+        },
+        |index| method_code(index, method_headers, source_methods, code_candidates),
+        |index| {
+            source_fields
+                .get(index)
+                .is_some_and(|source| source.declaration.is_some())
+        },
+        |index| {
+            let source = &source_methods[index];
+            (
+                source.enum_constructor_source_tail,
+                source.enum_constructor_signature_erasure_refused,
+                source.markers.len(),
+            )
+        },
+        |index| &source_methods[index].item.identity,
+        |constants, backing_name, budget| {
+            prove_constructor_delegation_edge(
                 DelegationEdgeInput {
-                    owner,
-                    constants: &constants,
-                    backing_name: backing_field.name.raw().0.as_slice(),
+                    owner: class.this_class.raw().0.as_slice(),
+                    constants,
+                    backing_name,
                     field_headers,
                     method_headers,
                     source_methods,
                     code_candidates,
                 },
                 budget,
-            )? {
-                Ok(edge) => edge,
-                Err(reason) => {
-                    return Ok(refuse(&format!(
-                        "enum constructor delegation edge refused: {reason}"
-                    )));
-                }
-            };
-            let body = match prove_terminal_constructor_body(
+            )
+        },
+        |method_index, budget| {
+            prove_terminal_constructor_body(
                 TerminalConstructorBodyInput {
-                    owner,
-                    method_index: edge.terminal_method_index,
+                    owner: class.this_class.raw().0.as_slice(),
+                    method_index,
                     field_headers,
                     source_fields,
                     method_headers,
@@ -1953,581 +366,17 @@ pub(crate) fn prove_group(
                     constructor_candidates,
                 },
                 budget,
-            )? {
-                Ok(body) => body,
-                Err(reason) => {
-                    return Ok(refuse(&format!(
-                        "terminal constructor body refused: {reason}"
-                    )));
-                }
-            };
-            (
-                edge.terminal_method_index,
-                Some(edge.delegating_method_index),
-                Some(edge),
-                Some(Box::new(body)),
-                None,
             )
+        },
+        budget,
+    )?;
+    Ok(match result {
+        Ok(None) => ClassSourceEnumConstantProof::NotApplicable,
+        Ok(Some(group)) => {
+            ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(group))
         }
-        _ => {
-            return Ok(refuse(
-                "the enum has additional constructor bodies outside this proof",
-            ));
-        }
-    };
-    let values_descriptor = values_descriptor(owner);
-    let values_index = match unique_method(method_headers, b"values", &values_descriptor) {
-        Ok(index) => index,
-        Err(reason) => return Ok(refuse(&reason)),
-    };
-    let value_of_descriptor = value_of_descriptor(owner);
-    let value_of_index = match unique_method(method_headers, b"valueOf", &value_of_descriptor) {
-        Ok(index) => index,
-        Err(reason) => return Ok(refuse(&reason)),
-    };
-    let factory_descriptor = values_descriptor.clone();
-    let factory_index = match unique_method(method_headers, b"$values", &factory_descriptor) {
-        Ok(index) => index,
-        Err(reason) => return Ok(refuse(&reason)),
-    };
-
-    let clinit = match method_code(
-        clinit_index,
-        method_headers,
-        source_methods,
-        code_candidates,
-    ) {
-        Ok(code) => code,
-        Err(reason) => return Ok(refuse(&reason)),
-    };
-    let constructor = match method_code(
-        constructor_index,
-        method_headers,
-        source_methods,
-        code_candidates,
-    ) {
-        Ok(code) => code,
-        Err(reason) => return Ok(refuse(&reason)),
-    };
-    let values = match method_code(
-        values_index,
-        method_headers,
-        source_methods,
-        code_candidates,
-    ) {
-        Ok(code) => code,
-        Err(reason) => return Ok(refuse(&reason)),
-    };
-    let value_of = match method_code(
-        value_of_index,
-        method_headers,
-        source_methods,
-        code_candidates,
-    ) {
-        Ok(code) => code,
-        Err(reason) => return Ok(refuse(&reason)),
-    };
-    let factory = match method_code(
-        factory_index,
-        method_headers,
-        source_methods,
-        code_candidates,
-    ) {
-        Ok(code) => code,
-        Err(reason) => return Ok(refuse(&reason)),
-    };
-
-    let constructor_flags_valid =
-        if method_headers[constructor_index].descriptor.raw().0 == STRING_VARARGS_CTOR_DESCRIPTOR {
-            exact_method_flags(
-                &method_headers[constructor_index],
-                ACC_PRIVATE | ACC_VARARGS,
-            )
-        } else {
-            exact_method_flags(&method_headers[constructor_index], ACC_PRIVATE)
-        };
-    if !exact_method_flags(&method_headers[clinit_index], ACC_STATIC)
-        || !constructor_flags_valid
-        || !exact_method_flags(&method_headers[values_index], ACC_PUBLIC | ACC_STATIC)
-        || !exact_method_flags(&method_headers[value_of_index], ACC_PUBLIC | ACC_STATIC)
-        || !exact_method_flags(
-            &method_headers[factory_index],
-            ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC,
-        )
-    {
-        return Ok(refuse(
-            "a standard enum method has non-standard access flags",
-        ));
-    }
-    if !allowed_method_attributes(&method_headers[clinit_index], &[b"Code"])
-        || !allowed_method_attributes(
-            &method_headers[constructor_index],
-            &[b"Code", b"MethodParameters", b"Signature"],
-        )
-        || !allowed_method_attributes(&method_headers[values_index], &[b"Code"])
-        || !allowed_method_attributes(
-            &method_headers[value_of_index],
-            &[b"Code", b"MethodParameters"],
-        )
-        || !allowed_method_attributes(&method_headers[factory_index], &[b"Code"])
-    {
-        return Ok(refuse(
-            "a standard enum method declares extra or duplicate attributes",
-        ));
-    }
-    if let Some(index) = delegating_constructor_index
-        && !allowed_method_attributes(
-            &method_headers[index],
-            &[b"Code", b"MethodParameters", b"Signature"],
-        )
-    {
-        return Ok(refuse(
-            "the delegating constructor declares extra or duplicate attributes",
-        ));
-    }
-    // The methods that disappear or become implicit must be the only physical bodies that name
-    // the enum constants, backing array, or the generated API/helper methods. Otherwise the
-    // source projection would remove a reference that contributes to the class's behavior. The
-    // census includes direct member operands and MethodHandles reached through invokedynamic's
-    // bootstrap method and arguments, all from these same prepared member runs.
-    let mut projected_methods = vec![
-        clinit_index,
-        constructor_index,
-        values_index,
-        value_of_index,
-        factory_index,
-    ];
-    if let Some(index) = delegating_constructor_index {
-        projected_methods.push(index);
-    }
-    if matches!(
-        method_headers[constructor_index]
-            .descriptor
-            .raw()
-            .0
-            .as_slice(),
-        STRING_CTOR_DESCRIPTOR | STRING_VARARGS_CTOR_DESCRIPTOR
-    ) && !enum_constructor_signature_matches(
-        &method_headers[constructor_index],
-        &source_methods[constructor_index],
-        &method_headers[constructor_index].descriptor.raw().0,
-    ) {
-        return Ok(refuse(
-            "the String constructor lacks the exact source Signature and access evidence",
-        ));
-    }
-    let projected_constructor_descriptors: Vec<Vec<u8>> = if delegating_constructor_index.is_some()
-    {
-        vec![
-            DELEGATING_CTOR_DESCRIPTOR.to_vec(),
-            CTOR_DESCRIPTOR.to_vec(),
-        ]
-    } else if method_headers[constructor_index].descriptor.raw().0 == DELEGATING_CTOR_DESCRIPTOR {
-        vec![DELEGATING_CTOR_DESCRIPTOR.to_vec()]
-    } else if method_headers[constructor_index].descriptor.raw().0 == STRING_VARARGS_CTOR_DESCRIPTOR
-    {
-        vec![STRING_VARARGS_CTOR_DESCRIPTOR.to_vec()]
-    } else if method_headers[constructor_index].descriptor.raw().0 == STRING_CTOR_DESCRIPTOR {
-        vec![STRING_CTOR_DESCRIPTOR.to_vec()]
-    } else if user_constructor_parameters.is_some() {
-        // The use census must keep treating this physical descriptor as a projected constructor.
-        vec![
-            method_headers[constructor_index]
-                .descriptor
-                .raw()
-                .0
-                .to_vec(),
-        ]
-    } else {
-        vec![CTOR_DESCRIPTOR.to_vec()]
-    };
-    for (index, header) in method_headers.iter().enumerate() {
-        if !single_code_attribute(header) {
-            return Ok(refuse(
-                "every physical enum method must have exactly one complete Code body for the use census",
-            ));
-        }
-        let candidate = match method_code(index, method_headers, source_methods, code_candidates) {
-            Ok(candidate) => candidate,
-            Err(reason) => return Ok(refuse(&reason)),
-        };
-        if !candidate.complete {
-            return Ok(refuse(
-                "a physical enum method body is partial or its exception table is incomplete",
-            ));
-        }
-        if projected_methods.contains(&index) && candidate.exception_handler_count != 0 {
-            return Ok(refuse(
-                "a generated enum member has an exception table outside the proven pattern",
-            ));
-        }
-        if !projected_methods.contains(&index)
-            && candidate.member_uses.iter().any(|use_site| {
-                refers_to_projected_enum_member(
-                    &use_site.reference,
-                    owner,
-                    backing_field.name.raw().0.as_slice(),
-                    &projected_constructor_descriptors,
-                )
-            })
-        {
-            return Ok(refuse(
-                "a non-projected physical method references an enum constant or generated enum member",
-            ));
-        }
-    }
-
-    let mut constructor_user_tail = None;
-    let expected_ctor_field = if let Some(body) = &constructor_body {
-        Some(body.field_index)
-    } else if let Some(parameters) = &user_constructor_parameters {
-        match prove_arbitrary_user_constructor(
-            constructor,
-            owner,
-            parameters,
-            field_headers,
-            source_fields,
-            budget,
-        )? {
-            Ok((tail, _super_call_bci)) => {
-                constructor_user_tail = Some(tail);
-                None
-            }
-            Err(reason) => return Ok(refuse(&reason)),
-        }
-    } else if method_headers[constructor_index].descriptor.raw().0 == DELEGATING_CTOR_DESCRIPTOR {
-        if !prove_implicit_enum_constructor(
-            constructor,
-            &method_headers[constructor_index],
-            &source_methods[constructor_index],
-            constructor_candidates,
-            budget,
-        )? {
-            return Ok(refuse(
-                "the implicit enum constructor has extra effects or an incomplete same-run proof",
-            ));
-        }
-        None
-    } else if method_headers[constructor_index].descriptor.raw().0 == STRING_VARARGS_CTOR_DESCRIPTOR
-    {
-        match prove_string_varargs_constructor(constructor, owner, field_headers, budget)? {
-            Ok((field_index, _)) => Some(field_index),
-            Err(reason) => return Ok(refuse(&reason)),
-        }
-    } else if method_headers[constructor_index].descriptor.raw().0 == STRING_CTOR_DESCRIPTOR {
-        match prove_string_constructor(constructor, owner, field_headers, budget)? {
-            Ok((field_index, _)) => Some(field_index),
-            Err(reason) => return Ok(refuse(&reason)),
-        }
-    } else {
-        match prove_constructor(constructor, owner, field_headers) {
-            Ok((field_index, _)) => Some(field_index),
-            Err(reason) => return Ok(refuse(&reason)),
-        }
-    };
-    if expected_ctor_field.is_some_and(|index| source_fields[index].declaration.is_none()) {
-        return Ok(refuse(
-            "the constructor's source field is not faithfully declared",
-        ));
-    }
-    if !prove_values(values, owner, backing_field.name.raw().0.as_slice()) {
-        return Ok(refuse(
-            "values() does not clone the unique `$VALUES` array exactly",
-        ));
-    }
-    if !prove_value_of(value_of, owner) {
-        return Ok(refuse(
-            "valueOf(String) does not preserve the standard Enum.valueOf behavior",
-        ));
-    }
-    if !prove_values_factory(factory, owner, &constants, field_headers) {
-        return Ok(refuse(
-            "$values() does not build the proved constants in field-table order",
-        ));
-    }
-
-    let constant_specs: Vec<_> = constants
-        .iter()
-        .map(|(_, name, ordinal)| (name.as_bytes().to_vec(), *ordinal))
-        .collect();
-    let constructor_calls = if delegation_edge.is_some() {
-        vec![
-            InitializerConstructorCall {
-                descriptor: DELEGATING_CTOR_DESCRIPTOR.to_vec(),
-                source_argument: EnumSourceArgument::None,
-            },
-            InitializerConstructorCall {
-                descriptor: CTOR_DESCRIPTOR.to_vec(),
-                source_argument: EnumSourceArgument::Exact(1),
-            },
-        ]
-    } else if method_headers[constructor_index].descriptor.raw().0 == DELEGATING_CTOR_DESCRIPTOR {
-        vec![
-            InitializerConstructorCall {
-                descriptor: DELEGATING_CTOR_DESCRIPTOR.to_vec(),
-                source_argument: EnumSourceArgument::None,
-            };
-            constants.len()
-        ]
-    } else if method_headers[constructor_index].descriptor.raw().0 == STRING_VARARGS_CTOR_DESCRIPTOR
-    {
-        vec![
-            InitializerConstructorCall {
-                descriptor: STRING_VARARGS_CTOR_DESCRIPTOR.to_vec(),
-                source_argument: EnumSourceArgument::StringVarargs,
-            };
-            constants.len()
-        ]
-    } else if method_headers[constructor_index].descriptor.raw().0 == STRING_CTOR_DESCRIPTOR {
-        vec![
-            InitializerConstructorCall {
-                descriptor: STRING_CTOR_DESCRIPTOR.to_vec(),
-                source_argument: EnumSourceArgument::SingleString,
-            };
-            constants.len()
-        ]
-    } else if let Some(parameters) = &user_constructor_parameters {
-        vec![
-            InitializerConstructorCall {
-                descriptor: method_headers[constructor_index]
-                    .descriptor
-                    .raw()
-                    .0
-                    .to_vec(),
-                source_argument: EnumSourceArgument::UserArguments(
-                    parameters
-                        .iter()
-                        .map(EnumUserArgumentExpectation::of_parameter)
-                        .collect(),
-                ),
-            };
-            constants.len()
-        ]
-    } else {
-        vec![
-            InitializerConstructorCall {
-                descriptor: CTOR_DESCRIPTOR.to_vec(),
-                source_argument: EnumSourceArgument::AnyIntExpression,
-            };
-            constants.len()
-        ]
-    };
-    let prefix = if let Some(edge) = &delegation_edge {
-        edge.initializer_prefix.clone()
-    } else {
-        if matches!(
-            method_headers[constructor_index]
-                .descriptor
-                .raw()
-                .0
-                .as_slice(),
-            STRING_CTOR_DESCRIPTOR | STRING_VARARGS_CTOR_DESCRIPTOR
-        ) || user_constructor_parameters.is_some()
-        {
-            // This slice inspects the complete raw initializer stream and copies string literals.
-            // Charge it here without changing the pre-existing int/no-arg proof budget behavior.
-            let mut literal_bytes = 0_u64;
-            for instruction in &clinit.instructions {
-                budget.charge(CountedBudgetDimension::IrItems, 3)?;
-                budget.poll()?;
-                if let Some(EnumCodeReference::String(value)) = &instruction.reference {
-                    literal_bytes = literal_bytes
-                        .saturating_add(u64::try_from(value.len()).unwrap_or(u64::MAX));
-                }
-            }
-            budget.charge(CountedBudgetDimension::AnalysisSteps, literal_bytes)?;
-        }
-        match prove_initializer_prefix(InitializerPrefixInput {
-            code: clinit,
-            owner,
-            constants: &constant_specs,
-            constructor_calls: &constructor_calls,
-            enum_descriptor: &enum_descriptor,
-            fields: field_headers,
-            methods: method_headers,
-            backing_name: backing_field.name.raw().0.as_slice(),
-        }) {
-            Ok(result) => result,
-            Err(reason) => return Ok(refuse(&reason)),
-        }
-    };
-    if clinit.member_uses.iter().any(|use_site| {
-        refers_to_projected_enum_member(
-            &use_site.reference,
-            owner,
-            backing_field.name.raw().0.as_slice(),
-            &projected_constructor_descriptors,
-        ) && !expected_initializer_use(
-            use_site,
-            owner,
-            backing_field.name.raw().0.as_slice(),
-            prefix.backing_store_bci,
-            prefix.factory_call_bci,
-            &prefix.constructor_bcis,
-            &constructor_calls,
-        )
-    }) {
-        return Ok(refuse(
-            "the `<clinit>` body uses a hidden enum member outside the proved constant prefix",
-        ));
-    }
-    let selected_clinit_identity = &source_methods[clinit_index].item.identity;
-    let matching_initializer_candidates: Vec<_> = initializer_candidates
-        .iter()
-        .filter(|candidate| candidate.member.as_ref() == Some(selected_clinit_identity))
-        .collect();
-    let [initializer_candidate] = matching_initializer_candidates.as_slice() else {
-        return Ok(refuse(
-            "the same-run `<clinit>` structured statement sidecar is absent or ambiguous",
-        ));
-    };
-    if initializer_candidate.has_exception_handlers {
-        return Ok(refuse(
-            "the `<clinit>` initializer sidecar includes an exception table",
-        ));
-    }
-    let expected_write_bcis: Vec<u32> = prefix
-        .constant_bcis
-        .iter()
-        .copied()
-        .chain(std::iter::once(prefix.backing_store_bci))
-        .collect();
-    // `prove_initializer_prefix` above consumed every raw Code instruction, operand/reference,
-    // BCI, constructor call and field write in order. Do not make the AST sidecar a second owner
-    // of this prefix: its enum-new fallback intentionally cannot represent getstatic interleaved
-    // between javac's `new`/`dup` and constructor call. Keep sidecar identity and handler checks
-    // as provenance and reject any unproved Code suffix separately.
-
-    let source_arguments = prefix.source_arguments;
-    let proved_constants = constants
-        .into_iter()
-        .zip(source_arguments)
-        .zip(prefix.constructor_bcis)
-        .zip(prefix.constant_bcis)
-        .map(
-            |(
-                (((field_index, name, ordinal), source_argument), constructor_bci),
-                field_write_bci,
-            )| {
-                ProvedEnumConstant {
-                    field_index: u64::try_from(field_index).unwrap_or(u64::MAX),
-                    name,
-                    ordinal,
-                    source_argument,
-                    constructor_bci,
-                    field_write_bci,
-                }
-            },
-        )
-        .collect();
-    Ok(ClassSourceEnumConstantProof::Proved(
-        ProvedEnumConstantGroup::Ordinary(ProvedOrdinaryEnumConstantGroup {
-            constants: proved_constants,
-            backing_field_index: u64::try_from(*backing_field_index).unwrap_or(u64::MAX),
-            constructor_method_index: u64::try_from(constructor_index).unwrap_or(u64::MAX),
-            delegating_constructor_method_index: delegating_constructor_index
-                .map(|index| u64::try_from(index).unwrap_or(u64::MAX)),
-            constructor_body,
-            constructor_field_index: expected_ctor_field
-                .map(|index| u64::try_from(index).unwrap_or(u64::MAX)),
-            constructor_user_tail,
-            constructor_signature_present: method_headers[constructor_index]
-                .attributes
-                .iter()
-                .any(|attribute| attribute.name.raw().0 == b"Signature"),
-            initializer_method_index: u64::try_from(clinit_index).unwrap_or(u64::MAX),
-            values_method_index: u64::try_from(values_index).unwrap_or(u64::MAX),
-            value_of_method_index: u64::try_from(value_of_index).unwrap_or(u64::MAX),
-            values_factory_method_index: u64::try_from(factory_index).unwrap_or(u64::MAX),
-            initializer_prefix_end_bci: prefix.prefix_end_bci,
-            initializer_prefix_statement_count: expected_write_bcis.len(),
-        }),
-    ))
-}
-
-fn object_descriptor(owner: &[u8]) -> Vec<u8> {
-    let mut descriptor = Vec::with_capacity(owner.len() + 2);
-    descriptor.push(b'L');
-    descriptor.extend_from_slice(owner);
-    descriptor.push(b';');
-    descriptor
-}
-
-fn array_descriptor(owner: &[u8]) -> Vec<u8> {
-    let mut descriptor = Vec::with_capacity(owner.len() + 3);
-    descriptor.push(b'[');
-    descriptor.extend_from_slice(&object_descriptor(owner));
-    descriptor
-}
-
-fn values_descriptor(owner: &[u8]) -> Vec<u8> {
-    let mut descriptor = Vec::from(VALUES_DESCRIPTOR_PREFIX);
-    descriptor.extend_from_slice(owner);
-    descriptor.push(b';');
-    descriptor
-}
-
-fn value_of_descriptor(owner: &[u8]) -> Vec<u8> {
-    let mut descriptor = Vec::from(VALUE_OF_DESCRIPTOR_PREFIX);
-    descriptor.extend_from_slice(owner);
-    descriptor.push(b';');
-    descriptor
-}
-
-fn unique_method(
-    headers: &[MemberHeader],
-    name: &[u8],
-    descriptor: &[u8],
-) -> std::result::Result<usize, String> {
-    let matching: Vec<_> = headers
-        .iter()
-        .enumerate()
-        .filter(|(_, method)| {
-            method.name.raw().0 == name && method.descriptor.raw().0 == descriptor
-        })
-        .map(|(index, _)| index)
-        .collect();
-    match matching.as_slice() {
-        [index] => Ok(*index),
-        [] => Err(format!(
-            "the physical method {}{} is absent",
-            String::from_utf8_lossy(name),
-            String::from_utf8_lossy(descriptor)
-        )),
-        _ => Err(format!(
-            "the physical method {}{} is ambiguous",
-            String::from_utf8_lossy(name),
-            String::from_utf8_lossy(descriptor)
-        )),
-    }
-}
-
-fn exact_method_flags(method: &MemberHeader, flags: u16) -> bool {
-    method.access_flags == flags
-}
-
-fn allowed_method_attributes(method: &MemberHeader, allowed: &[&[u8]]) -> bool {
-    method.attributes.iter().all(|attribute| {
-        allowed
-            .iter()
-            .any(|name| attribute.name.raw().0.as_slice() == *name)
-    }) && allowed.iter().all(|name| {
-        method
-            .attributes
-            .iter()
-            .filter(|attribute| attribute.name.raw().0.as_slice() == *name)
-            .count()
-            <= 1
+        Err(reason) => ClassSourceEnumConstantProof::Refused { reason },
     })
-}
-
-fn single_code_attribute(method: &MemberHeader) -> bool {
-    method
-        .attributes
-        .iter()
-        .filter(|attribute| attribute.name.raw().0 == b"Code")
-        .count()
-        == 1
 }
 
 fn method_code<'a>(
@@ -2563,563 +412,6 @@ fn method_code<'a>(
         ));
     }
     Ok(candidate)
-}
-
-fn refers_to_projected_enum_member(
-    reference: &EnumCodeReference,
-    owner: &[u8],
-    backing_name: &[u8],
-    constructor_descriptors: &[Vec<u8>],
-) -> bool {
-    match reference {
-        EnumCodeReference::Field {
-            owner: target_owner,
-            name,
-            descriptor,
-        } if target_owner == owner => {
-            name.as_slice() == backing_name
-                && descriptor.as_slice() == array_descriptor(owner).as_slice()
-        }
-        EnumCodeReference::Method {
-            owner: target_owner,
-            name,
-            descriptor,
-            ..
-        } if target_owner == owner => {
-            (name.as_slice() == b"<init>"
-                && constructor_descriptors
-                    .iter()
-                    .any(|constructor| constructor.as_slice() == descriptor.as_slice()))
-                || (name.as_slice() == b"<clinit>" && descriptor.as_slice() == b"()V")
-                || (name.as_slice() == b"$values"
-                    && descriptor.as_slice() == values_descriptor(owner).as_slice())
-        }
-        _ => false,
-    }
-}
-
-fn expected_initializer_use(
-    use_site: &EnumCodeUse,
-    owner: &[u8],
-    backing_name: &[u8],
-    backing_store_bci: u32,
-    factory_call_bci: u32,
-    constructor_bcis: &[u32],
-    constructor_calls: &[InitializerConstructorCall],
-) -> bool {
-    match &use_site.reference {
-        EnumCodeReference::Field {
-            owner: target_owner,
-            name,
-            descriptor,
-        } => {
-            use_site.bci == backing_store_bci
-                && target_owner == owner
-                && name.as_slice() == backing_name
-                && descriptor.as_slice() == array_descriptor(owner).as_slice()
-        }
-        EnumCodeReference::Method {
-            owner: target_owner,
-            name,
-            descriptor,
-            ..
-        } => {
-            (use_site.bci == factory_call_bci
-                && target_owner == owner
-                && name.as_slice() == b"$values"
-                && descriptor.as_slice() == values_descriptor(owner).as_slice())
-                || (constructor_bcis.contains(&use_site.bci)
-                    && target_owner == owner
-                    && name.as_slice() == b"<init>"
-                    && constructor_bcis
-                        .iter()
-                        .zip(constructor_calls)
-                        .any(|(bci, constructor)| {
-                            *bci == use_site.bci
-                                && constructor.descriptor.as_slice() == descriptor.as_slice()
-                        }))
-        }
-        _ => false,
-    }
-}
-
-fn prove_string_constructor(
-    code: &EnumMethodCodeCandidate,
-    owner: &[u8],
-    fields: &[MemberHeader],
-    budget: &mut Budget,
-) -> Result<std::result::Result<(usize, u32), String>> {
-    let instructions = &code.instructions;
-    let refused = |reason: &str| Err(reason.to_owned());
-    if !code.complete
-        || code.exception_handler_count != 0
-        || instructions.len() != 8
-        || !instructions_are_contiguous(instructions, budget)?
-    {
-        return Ok(refused(
-            "the scalar String constructor Code is incomplete, noncanonical, or has handlers",
-        ));
-    }
-    let local = |instruction: &EnumCodeInstruction, opcode: u8, slot: u16| {
-        instruction.opcode == opcode
-            && instruction.width == 1
-            && instruction.immediate.is_none()
-            && instruction.local == Some(slot)
-            && instruction.reference.is_none()
-    };
-    if !local(&instructions[0], 0x2a, 0)
-        || !local(&instructions[1], 0x2b, 1)
-        || !local(&instructions[2], 0x1c, 2)
-        || !method_reference(
-            &instructions[3],
-            0xb7,
-            ENUM_SUPER,
-            b"<init>",
-            ENUM_CTOR_DESCRIPTOR,
-            false,
-        )
-        || instructions[3].width != 3
-        || instructions[3].immediate.is_some()
-        || instructions[3].local.is_some()
-        || !local(&instructions[4], 0x2a, 0)
-        || !local(&instructions[5], 0x2d, 3)
-        || instructions[6].opcode != 0xb5
-        || instructions[6].width != 3
-        || instructions[6].immediate.is_some()
-        || instructions[6].local.is_some()
-        || instructions[7].opcode != 0xb1
-        || instructions[7].width != 1
-        || instructions[7].immediate.is_some()
-        || instructions[7].local.is_some()
-        || instructions[7].reference.is_some()
-    {
-        return Ok(refused(
-            "the scalar String constructor has effects beyond Enum initialization and one field store",
-        ));
-    }
-    let Some(EnumCodeReference::Field {
-        owner: field_owner,
-        name,
-        descriptor,
-    }) = &instructions[6].reference
-    else {
-        return Ok(refused("the scalar String field store lacks its Fieldref"));
-    };
-    if field_owner != owner || descriptor != b"Ljava/lang/String;" {
-        return Ok(refused(
-            "the scalar String constructor stores a different field type or owner",
-        ));
-    }
-    let matching: Vec<_> = fields
-        .iter()
-        .enumerate()
-        .filter(|(_, field)| {
-            field.descriptor.raw().0 == b"Ljava/lang/String;"
-                && field.access_flags & (ACC_STATIC | ACC_ENUM) == 0
-        })
-        .map(|(index, _)| index)
-        .collect();
-    let [field_index] = matching.as_slice() else {
-        return Ok(refused(
-            "the enum does not have exactly one String instance field",
-        ));
-    };
-    if fields[*field_index].name.raw().0 != *name {
-        return Ok(refused(
-            "the scalar String constructor stores a field other than the unique target",
-        ));
-    }
-    Ok(Ok((*field_index, instructions[3].bci)))
-}
-
-fn prove_string_varargs_constructor(
-    code: &EnumMethodCodeCandidate,
-    owner: &[u8],
-    fields: &[MemberHeader],
-    budget: &mut Budget,
-) -> Result<std::result::Result<(usize, u32), String>> {
-    let instructions = &code.instructions;
-    let refused = |reason: &str| Err(reason.to_owned());
-    if !code.complete || code.exception_handler_count != 0 {
-        return Ok(refused(
-            "the String... constructor Code is incomplete or has handlers",
-        ));
-    }
-    if instructions.len() != 8 || !instructions_are_contiguous(instructions, budget)? {
-        return Ok(refused(
-            "the String... constructor is not one complete eight-instruction body",
-        ));
-    }
-    let canonical_local = |instruction: &EnumCodeInstruction, opcode: u8, slot: u16| {
-        instruction.opcode == opcode
-            && instruction.width == 1
-            && instruction.immediate.is_none()
-            && instruction.local == Some(slot)
-            && instruction.reference.is_none()
-    };
-    if !canonical_local(&instructions[0], 0x2a, 0)
-        || !canonical_local(&instructions[1], 0x2b, 1)
-        || !canonical_local(&instructions[2], 0x1c, 2)
-        || !method_reference(
-            &instructions[3],
-            0xb7,
-            ENUM_SUPER,
-            b"<init>",
-            ENUM_CTOR_DESCRIPTOR,
-            false,
-        )
-        || instructions[3].width != 3
-        || !canonical_local(&instructions[4], 0x2a, 0)
-        || !canonical_local(&instructions[5], 0x2d, 3)
-        || instructions[6].opcode != 0xb5
-        || instructions[6].width != 3
-        || instructions[6].immediate.is_some()
-        || instructions[6].local.is_some()
-        || instructions[7].opcode != 0xb1
-        || instructions[7].width != 1
-        || instructions[7].immediate.is_some()
-        || instructions[7].local.is_some()
-        || instructions[7].reference.is_some()
-    {
-        return Ok(refused(
-            "the String... constructor has effects beyond Enum initialization and one String[] field store",
-        ));
-    }
-    let Some(EnumCodeReference::Field {
-        owner: field_owner,
-        name,
-        descriptor,
-    }) = &instructions[6].reference
-    else {
-        return Ok(refused(
-            "the String... field store has no complete Fieldref",
-        ));
-    };
-    if field_owner != owner || descriptor != b"[Ljava/lang/String;" {
-        return Ok(refused(
-            "the String... constructor stores a different field type or owner",
-        ));
-    }
-    let matching_fields: Vec<_> = fields
-        .iter()
-        .enumerate()
-        .filter(|(_, field)| {
-            field.descriptor.raw().0 == b"[Ljava/lang/String;"
-                && field.access_flags & (ACC_STATIC | ACC_ENUM) == 0
-        })
-        .map(|(index, _)| index)
-        .collect();
-    let [field_index] = matching_fields.as_slice() else {
-        return Ok(refused(
-            "the enum does not have exactly one String[] instance field",
-        ));
-    };
-    if fields[*field_index].name.raw().0 != *name {
-        return Ok(refused(
-            "the String... constructor stores a String[] field other than the unique target",
-        ));
-    }
-    Ok(Ok((*field_index, instructions[3].bci)))
-}
-
-/// Prove the complete user body of one arbitrary enum constructor from its raw same-run Code:
-/// the exact `Enum` super call, then exactly one `this`-slot store per user parameter into its
-/// own distinct instance field of the parameter's descriptor, then a bare return. Every other
-/// effect refuses the constructor and with it the fold.
-pub(crate) fn prove_arbitrary_user_constructor(
-    code: &EnumMethodCodeCandidate,
-    owner: &[u8],
-    parameters: &[EnumUserParameter],
-    fields: &[MemberHeader],
-    source_fields: &[ClassSourceField],
-    budget: &mut Budget,
-) -> Result<std::result::Result<(ProvedEnumUserConstructorTail, u32), String>> {
-    let refused = |reason: &str| Ok(Err(reason.to_owned()));
-    let instructions = &code.instructions;
-    let expected_len = 4 + parameters.len() * 3 + 1;
-    if !code.complete
-        || code.exception_handler_count != 0
-        || instructions.len() != expected_len
-        || !instructions_are_contiguous(instructions, budget)?
-    {
-        return refused(
-            "the arbitrary constructor Code is incomplete, noncanonical, or has handlers",
-        );
-    }
-    budget.charge(
-        CountedBudgetDimension::IrItems,
-        u64::try_from(instructions.len())
-            .unwrap_or(u64::MAX)
-            .saturating_add(u64::try_from(code.member_uses.len()).unwrap_or(u64::MAX)),
-    )?;
-    let pure_local = |instruction: &EnumCodeInstruction, kind: u8, slot: u16| {
-        local_load(instruction, kind, slot)
-            && instruction.immediate.is_none()
-            && instruction.reference.is_none()
-    };
-    if !pure_local(&instructions[0], b'a', 0)
-        || !pure_local(&instructions[1], b'a', 1)
-        || !pure_local(&instructions[2], b'i', 2)
-        || !method_reference(
-            &instructions[3],
-            0xb7,
-            ENUM_SUPER,
-            b"<init>",
-            ENUM_CTOR_DESCRIPTOR,
-            false,
-        )
-        || instructions[3].width != 3
-        || instructions[3].immediate.is_some()
-        || instructions[3].local.is_some()
-    {
-        return refused("the arbitrary constructor has effects before the exact Enum super call");
-    }
-    let mut stored_fields = std::collections::BTreeSet::new();
-    let mut tail_parameters = Vec::with_capacity(parameters.len());
-    for (index, parameter) in parameters.iter().enumerate() {
-        budget.poll()?;
-        let base = 4 + index * 3;
-        let Ok(slot) = u16::try_from(3 + index) else {
-            return refused("the arbitrary constructor parameter slot overflows");
-        };
-        let load_kind = match parameter {
-            EnumUserParameter::IntLiteral(_) => b'i',
-            EnumUserParameter::StringLiteral | EnumUserParameter::Object { .. } => b'a',
-        };
-        if !pure_local(&instructions[base], b'a', 0)
-            || !pure_local(&instructions[base + 1], load_kind, slot)
-            || instructions[base + 2].opcode != 0xb5
-            || instructions[base + 2].width != 3
-            || instructions[base + 2].immediate.is_some()
-            || instructions[base + 2].local.is_some()
-        {
-            return refused(
-                "the arbitrary constructor body is not one this-slot store per user parameter",
-            );
-        }
-        let Some(EnumCodeReference::Field {
-            owner: field_owner,
-            name,
-            descriptor,
-        }) = &instructions[base + 2].reference
-        else {
-            return refused("the arbitrary constructor's parameter store has no resolved Fieldref");
-        };
-        if field_owner != owner || descriptor.as_slice() != parameter.descriptor() {
-            return refused(
-                "the arbitrary constructor stores a parameter into a differently typed field",
-            );
-        }
-        let Ok(field_name) = String::from_utf8(name.clone()) else {
-            return refused("the arbitrary constructor's field target is not valid Java text");
-        };
-        let matching: Vec<_> = fields
-            .iter()
-            .enumerate()
-            .filter(|(_, field)| {
-                field.name.raw().0 == name.as_slice()
-                    && field.descriptor.raw().0 == parameter.descriptor()
-                    && field.access_flags & (ACC_STATIC | ACC_ENUM) == 0
-            })
-            .map(|(index, _)| index)
-            .collect();
-        let [field_index] = matching.as_slice() else {
-            return refused(
-                "the arbitrary constructor's parameter store target is absent or ambiguous",
-            );
-        };
-        if !stored_fields.insert(*field_index) {
-            return refused("two arbitrary constructor parameters store into one field");
-        }
-        if source_fields
-            .get(*field_index)
-            .is_none_or(|source| source.declaration.is_none())
-        {
-            return refused(
-                "the arbitrary constructor's parameter field is not faithfully declared",
-            );
-        }
-        let Some(type_text) = parameter.source_type_text() else {
-            return refused(
-                "the arbitrary constructor's parameter type has no readable Java spelling",
-            );
-        };
-        tail_parameters.push(ProvedEnumUserConstructorParameter {
-            type_text,
-            field_name,
-        });
-    }
-    let last = &instructions[expected_len - 1];
-    if last.opcode != 0xb1
-        || last.width != 1
-        || last.immediate.is_some()
-        || last.local.is_some()
-        || last.reference.is_some()
-    {
-        return refused("the arbitrary constructor does not end in a bare return");
-    }
-    Ok(Ok((
-        ProvedEnumUserConstructorTail {
-            parameters: tail_parameters,
-        },
-        instructions[3].bci,
-    )))
-}
-
-fn prove_constructor(
-    code: &EnumMethodCodeCandidate,
-    owner: &[u8],
-    fields: &[MemberHeader],
-) -> std::result::Result<(usize, u32), String> {
-    let instructions = &code.instructions;
-    if instructions.len() != 8
-        || !local_load(&instructions[0], b'a', 0)
-        || !local_load(&instructions[1], b'a', 1)
-        || !local_load(&instructions[2], b'i', 2)
-        || !method_reference(
-            &instructions[3],
-            0xb7,
-            ENUM_SUPER,
-            b"<init>",
-            ENUM_CTOR_DESCRIPTOR,
-            false,
-        )
-        || !local_load(&instructions[4], b'a', 0)
-        || !local_load(&instructions[5], b'i', 3)
-        || instructions[6].opcode != 0xb5
-        || instructions[7].opcode != 0xb1
-    {
-        return Err("the enum constructor has effects beyond the implicit Enum call and one int field store".to_owned());
-    }
-    let Some(EnumCodeReference::Field {
-        owner: field_owner,
-        name,
-        descriptor,
-    }) = &instructions[6].reference
-    else {
-        return Err("the enum constructor field store has no complete Fieldref".to_owned());
-    };
-    if field_owner != owner || descriptor != b"I" {
-        return Err("the enum constructor stores a field other than its own int field".to_owned());
-    }
-    let matching: Vec<_> = fields
-        .iter()
-        .enumerate()
-        .filter(|(_, field)| {
-            field.name.raw().0 == *name
-                && field.descriptor.raw().0 == *descriptor
-                && field.access_flags & ACC_STATIC == 0
-                && field.access_flags & ACC_ENUM == 0
-        })
-        .map(|(index, _)| index)
-        .collect();
-    let [field_index] = matching.as_slice() else {
-        return Err("the enum constructor's int field target is absent or ambiguous".to_owned());
-    };
-    Ok((*field_index, instructions[3].bci))
-}
-
-fn decode_ascii_enum_string(raw: &[u8]) -> Option<String> {
-    if raw.is_empty() {
-        return Some(String::new());
-    }
-    if raw.iter().any(|byte| !(1..=0x7f).contains(byte)) {
-        return None;
-    }
-    String::from_utf8(raw.to_vec()).ok()
-}
-
-fn prove_implicit_enum_constructor(
-    code: &EnumMethodCodeCandidate,
-    header: &MemberHeader,
-    source: &ClassSourceMethod,
-    candidates: &[jarde_java::report::ClassEnumConstructorCandidates],
-    budget: &mut Budget,
-) -> Result<bool> {
-    use jarde_java::report::ClassEnumConstructorStepKind as Step;
-    if header.name.raw().0 != b"<init>"
-        || header.descriptor.raw().0 != DELEGATING_CTOR_DESCRIPTOR
-        || !exact_method_flags(header, ACC_PRIVATE)
-        || !single_code_attribute(header)
-        || !allowed_method_attributes(header, &[b"Code", b"MethodParameters", b"Signature"])
-        || !code.complete
-        || code.exception_handler_count != 0
-        || code.instructions.len() != 5
-        || !instructions_are_contiguous(&code.instructions, budget)?
-        || !local_load(&code.instructions[0], b'a', 0)
-        || !local_load(&code.instructions[1], b'a', 1)
-        || !local_load(&code.instructions[2], b'i', 2)
-        || !method_reference(
-            &code.instructions[3],
-            0xb7,
-            ENUM_SUPER,
-            b"<init>",
-            ENUM_CTOR_DESCRIPTOR,
-            false,
-        )
-        || code.instructions[4].opcode != 0xb1
-        || code.member_uses.len() != 1
-        || !matches!(
-            &code.member_uses[0].reference,
-            EnumCodeReference::Method { owner, name, descriptor, interface: false }
-                if owner == ENUM_SUPER && name == b"<init>" && descriptor == DELEGATING_CTOR_DESCRIPTOR
-        )
-    {
-        return Ok(false);
-    }
-    let matching: Vec<_> = candidates
-        .iter()
-        .filter(|candidate| candidate.member.as_ref() == Some(&source.item.identity))
-        .collect();
-    let [candidate] = matching.as_slice() else {
-        return Ok(false);
-    };
-    if !candidate.complete
-        || candidate.has_exception_handlers
-        || !matches!(candidate.steps.len(), 1 | 2)
-    {
-        return Ok(false);
-    }
-    let step = &candidate.steps[0];
-    if step.order != 0 || step.bci != code.instructions[3].bci {
-        return Ok(false);
-    }
-    if candidate.steps.len() == 2
-        && !matches!(&candidate.steps[1].kind, Step::Return { value: None })
-    {
-        return Ok(false);
-    }
-    if candidate.steps.len() == 2
-        && (candidate.steps[1].order != 1 || candidate.steps[1].bci != code.instructions[4].bci)
-    {
-        return Ok(false);
-    }
-    let Step::ConstructorCall {
-        target: jarde_java::ast::ConstructorTarget::Super,
-        args,
-    } = &step.kind
-    else {
-        return Ok(false);
-    };
-    let valid = args.len() == 2
-        && matches!(args[0].kind, jarde_java::ast::ExprKind::Local(_))
-        && matches!(args[1].kind, jarde_java::ast::ExprKind::Local(_))
-        && args[0].origin.primary().bci() == code.instructions[1].bci
-        && args[1].origin.primary().bci() == code.instructions[2].bci;
-    Ok(valid)
-}
-
-/// The constructor edge proved from the exact class-source member candidates. This is deliberately
-/// not a class-level `Proved` result: the terminal constructor's user effects and Signature are the
-/// next proof step, and the current two-constructor path remains refused until that work is done.
-#[derive(Clone, Debug, Eq, PartialEq)]
-struct ProvedEnumConstructorDelegationEdge {
-    delegating_method_index: usize,
-    terminal_method_index: usize,
-    constant_constructor_bcis: [u32; 2],
-    constant_constructor_descriptors: [Vec<u8>; 2],
-    constant_source_arguments: [Option<i32>; 2],
-    initializer_prefix: InitializerPrefixProof,
 }
 
 /// The physical and same-run facts needed to prove one bounded constructor edge.
@@ -3160,220 +452,16 @@ fn prove_constructor_delegation_edge(
         source_methods,
         code_candidates,
     } = input;
-    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
-    let table_work = u64::try_from(field_headers.len())
-        .unwrap_or(u64::MAX)
-        // The shared initializer prefix resolves both constant stores and then checks each
-        // physical field index; the extra factor also covers the two validated tuple lookups.
-        .saturating_mul(5)
-        .saturating_add(
-            u64::try_from(method_headers.len())
-                .unwrap_or(u64::MAX)
-                // Constructor/clinit uniqueness plus both constructor and factory uniqueness
-                // checks in the shared prefix, including constant-index header lookups.
-                .saturating_mul(8),
-        )
-        .saturating_add(
-            u64::try_from(code_candidates.len())
-                .unwrap_or(u64::MAX)
-                .saturating_mul(3),
-        );
-    budget.charge(CountedBudgetDimension::IrItems, table_work)?;
-    budget.poll()?;
-
-    let constructors: Vec<_> = method_headers
-        .iter()
-        .enumerate()
-        .filter(|(_, method)| method.name.raw().0 == b"<init>")
-        .map(|(index, _)| index)
-        .collect();
-    if constructors.len() != 2 {
-        return refuse("the physical method table does not contain exactly two constructors");
-    }
-    let delegating_index =
-        match unique_method(method_headers, b"<init>", DELEGATING_CTOR_DESCRIPTOR) {
-            Ok(index) => index,
-            Err(reason) => return Ok(Err(reason)),
-        };
-    let terminal_index = match unique_method(method_headers, b"<init>", CTOR_DESCRIPTOR) {
-        Ok(index) => index,
-        Err(reason) => return Ok(Err(reason)),
-    };
-    if delegating_index == terminal_index
-        || !constructors.contains(&delegating_index)
-        || !constructors.contains(&terminal_index)
-    {
-        return refuse("the two constructors do not have the exact distinct physical descriptors");
-    }
-    let clinit_index = match unique_method(method_headers, b"<clinit>", b"()V") {
-        Ok(index) => index,
-        Err(reason) => return Ok(Err(reason)),
-    };
-    for index in [delegating_index, terminal_index] {
-        if !exact_method_flags(&method_headers[index], ACC_PRIVATE)
-            || !single_code_attribute(&method_headers[index])
-        {
-            return refuse("a physical enum constructor has non-standard flags or Code attributes");
-        }
-    }
-    if !exact_method_flags(&method_headers[clinit_index], ACC_STATIC)
-        || !single_code_attribute(&method_headers[clinit_index])
-    {
-        return refuse("the physical enum initializer has non-standard flags or Code attributes");
-    }
-
-    let delegating = match method_code(
-        delegating_index,
-        method_headers,
-        source_methods,
-        code_candidates,
-    ) {
-        Ok(candidate) => candidate,
-        Err(reason) => return Ok(Err(reason)),
-    };
-    let terminal = match method_code(
-        terminal_index,
-        method_headers,
-        source_methods,
-        code_candidates,
-    ) {
-        Ok(candidate) => candidate,
-        Err(reason) => return Ok(Err(reason)),
-    };
-    let initializer = match method_code(
-        clinit_index,
-        method_headers,
-        source_methods,
-        code_candidates,
-    ) {
-        Ok(candidate) => candidate,
-        Err(reason) => return Ok(Err(reason)),
-    };
-    if !delegating.complete || !terminal.complete || !initializer.complete {
-        return refuse("a constructor or initializer Code candidate is partial");
-    }
-    if delegating.exception_handler_count != 0 || initializer.exception_handler_count != 0 {
-        return refuse("a constructor or initializer Code candidate has exception handlers");
-    }
-    let instruction_work = u64::try_from(delegating.instructions.len())
-        .unwrap_or(u64::MAX)
-        .saturating_mul(2)
-        .saturating_add(
-            u64::try_from(initializer.instructions.len())
-                .unwrap_or(u64::MAX)
-                .saturating_mul(3),
-        );
-    budget.charge(CountedBudgetDimension::IrItems, instruction_work)?;
-
-    if delegating.instructions.len() != 6
-        || !instructions_are_contiguous(&delegating.instructions, budget)?
-        || !local_load(&delegating.instructions[0], b'a', 0)
-        || !local_load(&delegating.instructions[1], b'a', 1)
-        || !local_load(&delegating.instructions[2], b'i', 2)
-        || !int_constant(&delegating.instructions[3], 0)
-        || delegating.instructions[3].local.is_some()
-        || !method_reference(
-            &delegating.instructions[4],
-            0xb7,
-            owner,
-            b"<init>",
-            CTOR_DESCRIPTOR,
-            false,
-        )
-        || delegating.instructions[5].opcode != 0xb1
-        || delegating.instructions[5].reference.is_some()
-        || delegating.instructions[5].immediate.is_some()
-        || delegating.instructions[5].local.is_some()
-        || delegating.member_uses.as_slice()
-            != [EnumCodeUse {
-                bci: delegating.instructions[4].bci,
-                reference: EnumCodeReference::Method {
-                    owner: owner.to_vec(),
-                    name: b"<init>".to_vec(),
-                    descriptor: CTOR_DESCRIPTOR.to_vec(),
-                    interface: false,
-                },
-            }]
-    {
-        return refuse(
-            "the no-source-argument constructor does not only forward entry this/name/ordinal and literal 0 to the unique terminal constructor",
-        );
-    }
-
-    if constants.len() != 2 {
-        return refuse("the caller did not supply two already-proved enum constants");
-    }
-    for (ordinal, (field_index, name, expected_ordinal)) in constants.iter().enumerate() {
-        budget.poll()?;
-        let Some(field) = field_headers.get(*field_index) else {
-            return refuse("a proved enum constant field index is absent from the physical table");
-        };
-        if field.access_flags & ACC_ENUM == 0
-            || field.name.raw().0 != name.as_bytes()
-            || *expected_ordinal != i32::try_from(ordinal).unwrap_or(i32::MAX)
-        {
-            return refuse(
-                "the proved enum constant tuple disagrees with its physical field record",
-            );
-        }
-    }
-
-    let instructions = &initializer.instructions;
-    if !instructions_are_contiguous(instructions, budget)? {
-        return refuse(
-            "the enum initializer Code contains a branch or a discontinuous instruction stream",
-        );
-    }
-    for instruction in instructions {
-        budget.poll()?;
-        if is_branch_opcode(instruction.opcode) {
-            return refuse(
-                "the enum initializer Code contains a branch or a discontinuous instruction stream",
-            );
-        }
-    }
-    let constructor_calls = [
-        InitializerConstructorCall {
-            descriptor: DELEGATING_CTOR_DESCRIPTOR.to_vec(),
-            source_argument: EnumSourceArgument::None,
-        },
-        InitializerConstructorCall {
-            descriptor: CTOR_DESCRIPTOR.to_vec(),
-            source_argument: EnumSourceArgument::Exact(1),
-        },
-    ];
-    let initializer_constants: Vec<_> = constants
-        .iter()
-        .map(|(_, name, ordinal)| (name.as_bytes().to_vec(), *ordinal))
-        .collect();
-    let prefix = match prove_initializer_prefix(InitializerPrefixInput {
-        code: initializer,
+    jarde_java::source_proof::prove_constructor_delegation_edge(
         owner,
-        constants: &initializer_constants,
-        constructor_calls: &constructor_calls,
-        enum_descriptor: &object_descriptor(owner),
-        fields: field_headers,
-        methods: method_headers,
+        constants,
         backing_name,
-    }) {
-        Ok(prefix) => prefix,
-        Err(reason) => return Ok(Err(reason)),
-    };
-    let [first_constructor_bci, second_constructor_bci] = prefix.constructor_bcis.as_slice() else {
-        return refuse("the shared initializer proof did not return two constructor call sites");
-    };
-
-    Ok(Ok(ProvedEnumConstructorDelegationEdge {
-        delegating_method_index: delegating_index,
-        terminal_method_index: terminal_index,
-        constant_constructor_bcis: [*first_constructor_bci, *second_constructor_bci],
-        constant_constructor_descriptors: [
-            DELEGATING_CTOR_DESCRIPTOR.to_vec(),
-            CTOR_DESCRIPTOR.to_vec(),
-        ],
-        constant_source_arguments: [None, Some(1)],
-        initializer_prefix: prefix,
-    }))
+        field_headers,
+        method_headers,
+        code_candidates.len(),
+        |index| method_code(index, method_headers, source_methods, code_candidates),
+        budget,
+    )
 }
 
 /// Prove the terminal constructor's complete, ordered user body from same-run AST and Code facts.
@@ -3383,9 +471,6 @@ fn prove_terminal_constructor_body(
     input: TerminalConstructorBodyInput<'_>,
     budget: &mut Budget,
 ) -> Result<std::result::Result<ProvedEnumConstructorBody, String>> {
-    use jarde_java::ast::{AssignOp, ConstructorTarget, ExprKind};
-    use jarde_java::report::ClassEnumConstructorStepKind as StepKind;
-
     let TerminalConstructorBodyInput {
         owner,
         method_index,
@@ -3421,22 +506,17 @@ fn prove_terminal_constructor_body(
         || source.item.descriptor.raw().0 != CTOR_DESCRIPTOR
         || header.name.raw().0 != b"<init>"
         || header.descriptor.raw().0 != CTOR_DESCRIPTOR
-        || !exact_method_flags(header, ACC_PRIVATE)
-        || !single_code_attribute(header)
-        || !allowed_method_attributes(header, &[b"Code", b"MethodParameters", b"Signature"])
-        || header
-            .attributes
-            .iter()
-            .filter(|attribute| attribute.name.raw().0 == b"Signature")
-            .count()
-            != 1
-        || !enum_constructor_signature_matches(header, source, CTOR_DESCRIPTOR)
-        || !matches!(
-            &source.outcome,
-            ClassSourceOutcome::Recovered { report, analysis }
-                if report.quality == jarde_jvm::ir::Quality::Structured
-                    && report.content == jarde_java::report::RecoveryContent::ContainsStatements
-                    && matches!(analysis.execution, ExecutionReport::Complete { .. })
+        || !jarde_java::source_proof::terminal_enum_constructor_source_applicable(
+            header,
+            source.enum_constructor_source_tail,
+            source.enum_constructor_signature_erasure_refused,
+            source.markers.len(),
+            match &source.outcome {
+                ClassSourceOutcome::Recovered { report, analysis } => {
+                    Some((report.as_ref(), &analysis.execution))
+                }
+                _ => None,
+            },
         )
     {
         return refuse(
@@ -3469,277 +549,31 @@ fn prove_terminal_constructor_body(
     let [code] = matching_code.as_slice() else {
         return refuse("the terminal constructor Code candidate is absent or ambiguous");
     };
-    if code.member.as_ref() != Some(&source.item.identity)
-        || !code.complete
-        || code.exception_handler_count != 0
-        || code.instructions.len() != 10
-        || !instructions_are_contiguous(&code.instructions, budget)?
-    {
+    if code.member.as_ref() != Some(&source.item.identity) {
         return refuse("the terminal constructor Code stream is partial, handled, or not exact");
     }
-    budget.charge(
-        CountedBudgetDimension::IrItems,
-        u64::try_from(code.instructions.len())
-            .unwrap_or(u64::MAX)
-            .saturating_add(u64::try_from(code.member_uses.len()).unwrap_or(u64::MAX)),
-    )?;
-
-    let instructions = &code.instructions;
-    let load = |index: usize, kind, slot| {
-        instructions.get(index).is_some_and(|instruction| {
-            local_load(instruction, kind, slot)
-                && instruction.immediate.is_none()
-                && instruction.reference.is_none()
-        })
-    };
-    if instructions
-        .iter()
-        .map(|instruction| instruction.bci)
-        .collect::<Vec<_>>()
-        != [0, 1, 2, 3, 6, 7, 10, 11, 12, 15]
-        || !load(0, b'a', 0)
-        || !load(1, b'a', 1)
-        || !load(2, b'i', 2)
-        || !method_reference(
-            &instructions[3],
-            0xb7,
-            ENUM_SUPER,
-            b"<init>",
-            ENUM_CTOR_DESCRIPTOR,
-            false,
-        )
-        || instructions[3].width != 3
-        || !load(4, b'i', 3)
-        || instructions[5].opcode != 0xb8
-        || instructions[5].width != 3
-        || !load(6, b'a', 0)
-        || !load(7, b'i', 3)
-        || instructions[8].opcode != 0xb5
-        || instructions[8].width != 3
-        || instructions[9].opcode != 0xb1
-        || instructions[9].width != 1
-        || instructions[9].reference.is_some()
-        || instructions[9].immediate.is_some()
-        || instructions[9].local.is_some()
-    {
-        return refuse(
-            "the terminal Code does not contain only the Enum prefix, slot-3 helper/save, and terminal return",
-        );
-    }
-    let Some(EnumCodeReference::Method {
-        owner: helper_owner,
-        name: helper_name,
-        descriptor: helper_descriptor,
-        interface: false,
-    }) = instructions[5].reference.as_ref()
-    else {
-        return refuse("the terminal helper call is not a resolved class Methodref");
-    };
-    let Some(helper_name_text) = std::str::from_utf8(helper_name).ok() else {
-        return refuse("the terminal helper name is not valid Java text");
-    };
-    if helper_owner.is_empty()
-        || helper_owner == owner
-        || !jarde_java::is_java_identifier(helper_name_text)
-        || helper_descriptor != b"(I)V"
-    {
-        return refuse("the terminal helper target is not one external static (I)V Methodref");
-    }
-    let Some(EnumCodeReference::Field {
-        owner: field_owner,
-        name: field_name,
-        descriptor: field_descriptor,
-    }) = instructions[8].reference.as_ref()
-    else {
-        return refuse("the terminal field write has no resolved Fieldref");
-    };
-    let Some(field_name_text) = std::str::from_utf8(field_name).ok() else {
-        return refuse("the terminal field name is not valid Java text");
-    };
-    if field_owner != owner
-        || field_descriptor != b"I"
-        || !jarde_java::is_java_identifier(field_name_text)
-    {
-        return refuse("the terminal field write does not target this enum's int field");
-    }
-    let field_matches: Vec<_> = field_headers
-        .iter()
-        .enumerate()
-        .filter(|(_, field)| field.name.raw().0 == *field_name && field.descriptor.raw().0 == b"I")
-        .map(|(index, _)| index)
-        .collect();
-    let [field_index] = field_matches.as_slice() else {
-        return refuse("the terminal Fieldref does not resolve to one physical int field");
-    };
-    let Some(field_header) = field_headers.get(*field_index) else {
-        return refuse("the terminal field index is outside the physical field table");
-    };
-    let Some(source_field) = source_fields.get(*field_index) else {
-        return refuse("the terminal field has no class-source record");
-    };
-    if source_field.item.index != u64::try_from(*field_index).unwrap_or(u64::MAX)
-        || source_field.item.name.raw().0 != *field_name
-        || source_field.item.descriptor.raw().0 != b"I"
-        || source_field.declaration.is_none()
-        || !source_field.markers.is_empty()
-        || !source_field.annotations.refusals.is_empty()
-        || !source_field.type_annotations.refusals.is_empty()
-        || field_header.access_flags != (ACC_PRIVATE | ACC_FINAL)
-        || !field_header.attributes.is_empty()
-    {
-        return refuse(
-            "the terminal Fieldref is not one faithful private final instance int field",
-        );
-    }
-
-    let expected_uses = [
-        EnumCodeUse {
-            bci: 3,
-            reference: EnumCodeReference::Method {
-                owner: ENUM_SUPER.to_vec(),
-                name: b"<init>".to_vec(),
-                descriptor: ENUM_CTOR_DESCRIPTOR.to_vec(),
-                interface: false,
-            },
-        },
-        EnumCodeUse {
-            bci: 7,
-            reference: EnumCodeReference::Method {
-                owner: helper_owner.clone(),
-                name: helper_name.clone(),
-                descriptor: b"(I)V".to_vec(),
-                interface: false,
-            },
-        },
-        EnumCodeUse {
-            bci: 12,
-            reference: EnumCodeReference::Field {
-                owner: field_owner.clone(),
-                name: field_name.clone(),
-                descriptor: b"I".to_vec(),
-            },
-        },
-    ];
-    if code.member_uses.as_slice() != expected_uses {
-        return refuse("the terminal method has an extra or differently bound member reference");
-    }
-
-    let matching_ast: Vec<_> = constructor_candidates
-        .iter()
-        .filter(|candidate| candidate.member.as_ref() == Some(&source.item.identity))
-        .collect();
-    let [candidate] = matching_ast.as_slice() else {
-        return refuse("the same-run terminal constructor AST candidate is absent or ambiguous");
-    };
-    if !candidate.complete || candidate.has_exception_handlers || candidate.steps.len() != 4 {
-        return refuse(
-            "the terminal constructor AST candidate is partial or contains extra statements",
-        );
-    }
-    budget.charge(
-        CountedBudgetDimension::IrItems,
-        u64::try_from(candidate.steps.len())
-            .unwrap_or(u64::MAX)
-            .saturating_add(7),
-    )?;
-    for (order, (step, bci)) in candidate.steps.iter().zip([3, 7, 12, 15]).enumerate() {
-        budget.poll()?;
-        if step.order != order || step.bci != bci || step.source.primary().bci() != bci {
-            return refuse("the terminal AST statements do not match Code BCI order");
-        }
-    }
-    let [super_step, helper_step, field_step, return_step] = candidate.steps.as_slice() else {
-        return refuse("the terminal constructor AST statement sequence is not exact");
-    };
-    let StepKind::ConstructorCall {
-        target: ConstructorTarget::Super,
-        args: super_args,
-    } = &super_step.kind
-    else {
-        return refuse("the terminal AST does not begin with the Enum super constructor");
-    };
-    if super_args.len() != 2 || !is_local_at(&super_args[0], 1) || !is_local_at(&super_args[1], 2) {
-        return refuse("the AST Enum call does not preserve entry name and ordinal loads");
-    }
-    let StepKind::Expression(helper_expression) = &helper_step.kind else {
-        return refuse("the terminal helper call is absent or not a standalone expression");
-    };
-    let helper_display = std::str::from_utf8(helper_owner)
-        .ok()
-        .map(|owner| owner.replace('/', "."));
-    let Some(helper_display) = helper_display else {
-        return refuse("the terminal helper owner cannot be spelled as a Java path");
-    };
-    if !helper_display
-        .split('.')
-        .all(jarde_java::is_java_identifier)
-    {
-        return refuse("the terminal helper owner is not a legal Java path");
-    }
-    let ExprKind::Call {
-        receiver: Some(receiver),
-        name,
-        args,
-    } = &helper_expression.kind
-    else {
-        return refuse("the terminal AST helper call is not a qualified static call");
-    };
-    if !matches!(&receiver.kind, ExprKind::Path(path) if path == &helper_display)
-        || name != helper_name_text
-        || args.len() != 1
-        || !matches!(args[0].kind, ExprKind::Local(_))
-        || helper_expression.origin.primary().bci() != 7
-        || args[0].origin.primary().bci() != 6
-    {
-        return refuse(
-            "the terminal AST helper does not match the same-BCI Methodref and slot-3 producer",
-        );
-    }
-    let StepKind::FieldWrite {
-        field: Some(ast_field),
-        spelled_name,
-        receiver: Some(ast_receiver),
-        op: AssignOp::Assign,
-        value,
-    } = &field_step.kind
-    else {
-        return refuse("the terminal AST field store is absent or has an unproved field claim");
-    };
-    if ast_field.bci != 12
-        || ast_field.owner != String::from_utf8_lossy(owner)
-        || ast_field.name.as_bytes() != *field_name
-        || ast_field.descriptor != "I"
-        || ast_field.is_static
-        || !jarde_java::is_java_identifier(spelled_name)
-        || field_name_text != spelled_name
-        || !is_local_at(ast_receiver, 10)
-        || !is_local_at(value, 11)
-        || ast_receiver.origin.primary().bci() != 10
-        || value.origin.primary().bci() != 11
-    {
-        return refuse(
-            "the terminal AST field store does not match its Fieldref and slot producers",
-        );
-    }
-    if !matches!(&return_step.kind, StepKind::Return { value: None }) {
-        return refuse("the terminal constructor does not end with a bare return");
-    }
-
-    Ok(Ok(ProvedEnumConstructorBody {
+    jarde_java::source_proof::prove_terminal_constructor_body(
+        owner,
         method_index,
-        field_index: *field_index,
-        enum_super_call_bci: 3,
-        helper_call_bci: 7,
-        field_write_bci: 12,
-        return_bci: 15,
-        helper_owner: helper_owner.clone(),
-        candidate: (*candidate).clone(),
-    }))
-}
-
-fn is_local_at(expression: &jarde_java::ast::Expr, slot_load_bci: u32) -> bool {
-    matches!(expression.kind, jarde_java::ast::ExprKind::Local(_))
-        && expression.origin.primary().bci() == slot_load_bci
+        field_headers,
+        code,
+        constructor_candidates,
+        &source.item.identity,
+        |index, name| {
+            source_fields.get(index).map(|source| {
+                (
+                    source.item.index == u64::try_from(index).unwrap_or(u64::MAX)
+                        && source.item.name.raw().0 == name
+                        && source.item.descriptor.raw().0 == b"I",
+                    source.declaration.is_some(),
+                    source.markers.is_empty(),
+                    source.annotations.refusals.is_empty(),
+                    source.type_annotations.refusals.is_empty(),
+                )
+            })
+        },
+        budget,
+    )
 }
 
 fn enum_constructor_signature_matches(
@@ -3747,1061 +581,13 @@ fn enum_constructor_signature_matches(
     source: &ClassSourceMethod,
     physical_descriptor: &[u8],
 ) -> bool {
-    let source_shape = match physical_descriptor {
-        DELEGATING_CTOR_DESCRIPTOR => {
-            source.enum_constructor_source_tail
-                == crate::class_source::EnumConstructorSourceTail::NoArg
-        }
-        CTOR_DESCRIPTOR => {
-            source.enum_constructor_source_tail
-                == crate::class_source::EnumConstructorSourceTail::Int
-        }
-        STRING_VARARGS_CTOR_DESCRIPTOR => {
-            source.enum_constructor_source_tail
-                == crate::class_source::EnumConstructorSourceTail::StringVarargs
-        }
-        STRING_CTOR_DESCRIPTOR => {
-            source.enum_constructor_source_tail
-                == crate::class_source::EnumConstructorSourceTail::SingleString
-        }
-        _ => false,
-    };
-    source_shape
-        && source.enum_constructor_signature_erasure_refused
-        && source.markers.len() == 1
-        && header
-            .attributes
-            .iter()
-            .filter(|attribute| attribute.name.raw().0 == b"Signature")
-            .count()
-            == 1
-        && allowed_method_attributes(header, &[b"Code", b"MethodParameters", b"Signature"])
-        && (physical_descriptor != STRING_VARARGS_CTOR_DESCRIPTOR
-            || header.access_flags == (ACC_PRIVATE | ACC_VARARGS))
-}
-
-fn instructions_are_contiguous(
-    instructions: &[EnumCodeInstruction],
-    budget: &mut Budget,
-) -> Result<bool> {
-    for pair in instructions.windows(2) {
-        budget.poll()?;
-        if !pair[0]
-            .bci
-            .checked_add(pair[0].width)
-            .is_some_and(|end| end == pair[1].bci)
-        {
-            return Ok(false);
-        }
-    }
-    Ok(true)
-}
-
-fn is_branch_opcode(opcode: u8) -> bool {
-    matches!(opcode, 0x99..=0xa9 | 0xaa..=0xab | 0xc6..=0xc9)
-}
-
-pub(crate) fn prove_values(
-    code: &EnumMethodCodeCandidate,
-    owner: &[u8],
-    backing_name: &[u8],
-) -> bool {
-    let array = array_descriptor(owner);
-    let instructions = &code.instructions;
-    instructions.len() == 4
-        && field_reference(&instructions[0], 0xb2, owner, backing_name, &array)
-        && method_reference(
-            &instructions[1],
-            0xb6,
-            &array,
-            b"clone",
-            b"()Ljava/lang/Object;",
-            false,
-        )
-        && class_reference(&instructions[2], 0xc0, &array)
-        && instructions[3].opcode == 0xb0
-}
-
-pub(crate) fn prove_value_of(code: &EnumMethodCodeCandidate, owner: &[u8]) -> bool {
-    let instructions = &code.instructions;
-    instructions.len() == 5
-        && class_constant(&instructions[0], owner)
-        && local_load(&instructions[1], b'a', 0)
-        && method_reference(
-            &instructions[2],
-            0xb8,
-            ENUM_SUPER,
-            b"valueOf",
-            ENUM_VALUE_OF_DESCRIPTOR,
-            false,
-        )
-        && class_reference(&instructions[3], 0xc0, owner)
-        && instructions[4].opcode == 0xb0
-}
-
-fn prove_values_factory(
-    code: &EnumMethodCodeCandidate,
-    owner: &[u8],
-    constants: &[(usize, String, i32)],
-    fields: &[MemberHeader],
-) -> bool {
-    let instructions = &code.instructions;
-    let expected_len = 3usize.saturating_add(constants.len().saturating_mul(4));
-    if instructions.len() != expected_len {
-        return false;
-    }
-    if !int_constant(
-        &instructions[0],
-        i32::try_from(constants.len()).unwrap_or(i32::MAX),
-    ) || !class_reference(&instructions[1], 0xbd, owner)
-    {
-        return false;
-    }
-    for (ordinal, (field_index, _, _)) in constants.iter().enumerate() {
-        let Ok(ordinal_i32) = i32::try_from(ordinal) else {
-            return false;
-        };
-        let Some(start) = ordinal
-            .checked_mul(4)
-            .and_then(|offset| offset.checked_add(2))
-        else {
-            return false;
-        };
-        if instructions[start].opcode != 0x59
-            || !int_constant(&instructions[start + 1], ordinal_i32)
-            || !field_reference(
-                &instructions[start + 2],
-                0xb2,
-                owner,
-                fields[*field_index].name.raw().0.as_slice(),
-                fields[*field_index].descriptor.raw().0.as_slice(),
-            )
-            || instructions[start + 3].opcode != 0x53
-        {
-            return false;
-        }
-    }
-    instructions[expected_len - 1].opcode == 0xb0
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-enum EnumSourceArgument {
-    AnyIntExpression,
-    Exact(i32),
-    SingleString,
-    StringVarargs,
-    /// One expectation per user parameter of an arbitrary constructor call, in parameter order.
-    UserArguments(Vec<EnumUserArgumentExpectation>),
-    None,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-struct InitializerConstructorCall {
-    descriptor: Vec<u8>,
-    source_argument: EnumSourceArgument,
-}
-
-struct InitializerPrefixInput<'a> {
-    code: &'a EnumMethodCodeCandidate,
-    owner: &'a [u8],
-    constants: &'a [(Vec<u8>, i32)],
-    constructor_calls: &'a [InitializerConstructorCall],
-    enum_descriptor: &'a [u8],
-    fields: &'a [MemberHeader],
-    methods: &'a [MemberHeader],
-    backing_name: &'a [u8],
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-struct InitializerPrefixProof {
-    constant_bcis: Vec<u32>,
-    backing_store_bci: u32,
-    constructor_bcis: Vec<u32>,
-    source_arguments: Vec<Option<ProvedEnumSourceArgument>>,
-    prefix_end_bci: u32,
-    factory_call_bci: u32,
-}
-
-fn prove_initializer_prefix(
-    input: InitializerPrefixInput<'_>,
-) -> std::result::Result<InitializerPrefixProof, String> {
-    let InitializerPrefixInput {
-        code,
-        owner,
-        constants,
-        constructor_calls,
-        enum_descriptor,
-        fields,
-        methods,
-        backing_name,
-    } = input;
-    if constructor_calls.len() != constants.len() {
-        return Err("the constructor proof does not match the ordered constant vector".to_owned());
-    }
-    for call in constructor_calls {
-        unique_method(methods, b"<init>", &call.descriptor)?;
-    }
-    let instructions = &code.instructions;
-    let mut cursor = 0_usize;
-    let mut constant_bcis = Vec::with_capacity(constants.len());
-    let mut constructor_bcis = Vec::with_capacity(constants.len());
-    let mut source_arguments = Vec::with_capacity(constants.len());
-    for (ordinal, (name, expected_ordinal)) in constants.iter().enumerate() {
-        let constructor_call_spec = &constructor_calls[ordinal];
-        let Some(allocation) = instructions.get(cursor) else {
-            return Err(format!("constant {ordinal} has no allocation instruction"));
-        };
-        let Some(duplicate) = instructions.get(cursor + 1) else {
-            return Err(format!(
-                "constant {ordinal} has no allocation copy instruction"
-            ));
-        };
-        if !class_reference(allocation, 0xbb, owner)
-            || duplicate.opcode != 0x59
-            || duplicate.reference.is_some()
-            || duplicate.immediate.is_some()
-            || duplicate.local.is_some()
-            || !string_constant(instructions.get(cursor + 2), name)
-            || !int_constant_at(instructions, cursor + 3, *expected_ordinal)
-        {
-            return Err(format!(
-                "constant {} does not start with its exact allocation, name, and ordinal prefix",
-                ordinal
-            ));
-        }
-        let (call_offset, source_argument) = match &constructor_call_spec.source_argument {
-            EnumSourceArgument::AnyIntExpression => {
-                let Some((argument_length, argument)) =
-                    prove_int_source_argument(instructions, cursor + 4, owner, methods)
-                else {
-                    return Err(format!(
-                        "constant {} has no supported int source argument expression: {:?}",
-                        ordinal,
-                        instructions.get(cursor + 4)
-                    ));
-                };
-                (
-                    4 + argument_length,
-                    Some(ProvedEnumSourceArgument::Int(argument)),
-                )
-            }
-            EnumSourceArgument::Exact(expected) => {
-                let Some(argument) = instructions.get(cursor + 4).and_then(proved_int_literal)
-                else {
-                    return Err(format!(
-                        "constant {} does not pass an int literal source argument",
-                        ordinal
-                    ));
-                };
-                if !matches!(&argument, ProvedEnumIntArgument::Literal { value, .. } if value == expected)
-                {
-                    return Err(format!(
-                        "constant {} does not pass its exact literal source argument",
-                        ordinal
-                    ));
-                }
-                (5, Some(ProvedEnumSourceArgument::Int(argument)))
-            }
-            EnumSourceArgument::SingleString => {
-                let Some((length, argument)) =
-                    prove_string_source_argument(instructions, cursor + 4, owner, methods)
-                else {
-                    return Err(format!(
-                        "constant {ordinal} has no closed scalar String argument"
-                    ));
-                };
-                (4 + length, Some(ProvedEnumSourceArgument::String(argument)))
-            }
-            EnumSourceArgument::StringVarargs => {
-                let Some(array_length) = instructions.get(cursor + 4).and_then(proved_int_literal)
-                else {
-                    return Err(format!("constant {ordinal} has no literal String[] length"));
-                };
-                let ProvedEnumIntArgument::Literal { value: count, .. } = array_length else {
-                    return Err(format!(
-                        "constant {ordinal} String[] length is not a literal"
-                    ));
-                };
-                let Ok(count) = usize::try_from(count) else {
-                    return Err(format!("constant {ordinal} String[] length is negative"));
-                };
-                if count > MAX_ENUM_STRING_VARARGS_ELEMENTS {
-                    return Err(format!(
-                        "constant {ordinal} exceeds the bounded String... element count"
-                    ));
-                }
-                let Some(array) = instructions.get(cursor + 5) else {
-                    return Err(format!("constant {ordinal} has no String[] allocation"));
-                };
-                if !class_reference(array, 0xbd, b"java/lang/String")
-                    || array.width != 3
-                    || array.immediate.is_some()
-                    || array.local.is_some()
-                {
-                    return Err(format!(
-                        "constant {ordinal} does not allocate a fresh String[]"
-                    ));
-                }
-                let mut values = Vec::with_capacity(count);
-                let mut offset = 6_usize;
-                for element_index in 0..count {
-                    let start = cursor + offset;
-                    let Some([duplicate, index, literal, store]) = instructions
-                        .get(start..start + 4)
-                        .and_then(|items| <&[EnumCodeInstruction; 4]>::try_from(items).ok())
-                    else {
-                        return Err(format!(
-                            "constant {ordinal} has an incomplete String[] element write"
-                        ));
-                    };
-                    if duplicate.opcode != 0x59
-                        || duplicate.width != 1
-                        || duplicate.immediate.is_some()
-                        || duplicate.local.is_some()
-                        || duplicate.reference.is_some()
-                        || !matches!(proved_int_literal(index), Some(ProvedEnumIntArgument::Literal { value, .. }) if value == element_index as i32)
-                        || !matches!(literal.opcode, 0x12 | 0x13)
-                        || literal.width != if literal.opcode == 0x12 { 2 } else { 3 }
-                        || literal.immediate.is_some()
-                        || literal.local.is_some()
-                        || !matches!(&literal.reference, Some(EnumCodeReference::String(_)))
-                        || store.opcode != 0x53
-                        || store.width != 1
-                        || store.immediate.is_some()
-                        || store.local.is_some()
-                        || store.reference.is_some()
-                    {
-                        return Err(format!(
-                            "constant {ordinal} String[] element {element_index} is not an ordered literal write"
-                        ));
-                    }
-                    let Some(EnumCodeReference::String(raw)) = &literal.reference else {
-                        unreachable!();
-                    };
-                    let value = decode_ascii_enum_string(raw.as_slice())
-                        .ok_or_else(|| format!("constant {ordinal} String[] element {element_index} is outside the ASCII literal slice"))?;
-                    values.push(ProvedEnumStringLiteral {
-                        value,
-                        bci: literal.bci,
-                    });
-                    offset += 4;
-                }
-                (
-                    offset,
-                    Some(ProvedEnumSourceArgument::StringVarargs(values)),
-                )
-            }
-            EnumSourceArgument::UserArguments(expectations) => {
-                let mut offset = 4_usize;
-                let mut arguments = Vec::with_capacity(expectations.len());
-                for (argument_index, expectation) in expectations.iter().enumerate() {
-                    let start = cursor + offset;
-                    let Some((length, argument)) =
-                        prove_user_source_argument(instructions, start, *expectation)
-                    else {
-                        return Err(format!(
-                            "constant {ordinal} argument {argument_index} does not match its constructor parameter"
-                        ));
-                    };
-                    arguments.push(argument);
-                    offset += length;
-                }
-                (offset, Some(ProvedEnumSourceArgument::User(arguments)))
-            }
-            EnumSourceArgument::None => (4, None),
-        };
-        let Some(constructor_call) = instructions.get(cursor + call_offset) else {
-            return Err(format!("constant {ordinal} has no constructor call"));
-        };
-        let Some(field_store) = instructions.get(cursor + call_offset + 1) else {
-            return Err(format!("constant {ordinal} has no field store"));
-        };
-        if !instruction_sequence_is_contiguous(
-            instructions
-                .get(cursor..=cursor + call_offset + 1)
-                .unwrap_or(&[]),
-        ) {
-            return Err(format!(
-                "constant {ordinal} initializer instructions are not contiguous through the constructor call and field write"
-            ));
-        }
-        if !method_reference(
-            constructor_call,
-            0xb7,
-            owner,
-            b"<init>",
-            &constructor_call_spec.descriptor,
-            false,
-        ) {
-            return Err(format!(
-                "constant {} calls a different constructor",
-                ordinal
-            ));
-        }
-        let (field_index, field_name, _) =
-            constants_by_code_field(Some(field_store), owner, enum_descriptor, fields).ok_or_else(
-                || {
-                    format!(
-                        "constant {} writes a different or ambiguous enum field",
-                        ordinal
-                    )
-                },
-            )?;
-        if field_name != *name {
-            return Err(format!(
-                "constant {} writes a field other than its named constant",
-                ordinal
-            ));
-        }
-        constant_bcis.push(field_store.bci);
-        constructor_bcis.push(constructor_call.bci);
-        source_arguments.push(source_argument);
-        cursor += call_offset + 2;
-        let expected_field = fields
-            .iter()
-            .enumerate()
-            .find(|(_, field)| field.name.raw().0 == *name && field.access_flags & ACC_ENUM != 0)
-            .map(|(index, _)| index)
-            .ok_or_else(|| "the constructor call's constant field is absent".to_owned())?;
-        if field_index != expected_field {
-            return Err("constant field order differs from the physical field table".to_owned());
-        }
-    }
-    let factory_call = instructions
-        .get(cursor)
-        .ok_or_else(|| "the `$values()` call is absent".to_owned())?;
-    if !method_reference(
-        factory_call,
-        0xb8,
-        owner,
-        b"$values",
-        &values_descriptor(owner),
-        false,
-    ) {
-        return Err("the constant prefix does not call the unique `$values()` factory".to_owned());
-    }
-    unique_method(methods, b"$values", &values_descriptor(owner))?;
-    cursor += 1;
-    if !field_reference(
-        instructions
-            .get(cursor)
-            .ok_or_else(|| "the `$VALUES` store is absent".to_owned())?,
-        0xb3,
-        owner,
-        backing_name,
-        &array_descriptor(owner),
-    ) {
-        return Err(
-            "the constant prefix does not store into the unique `$VALUES` field".to_owned(),
-        );
-    }
-    let backing_store_bci = instructions[cursor].bci;
-    let prefix_end = instructions[cursor]
-        .bci
-        .checked_add(instructions[cursor].width)
-        .ok_or_else(|| "the `$VALUES` prefix end BCI overflows".to_owned())?;
-    if instructions
-        .get(cursor + 1)
-        .is_some_and(|instruction| instruction.bci != prefix_end)
-    {
-        return Err(
-            "the `$VALUES` store width disagrees with the following instruction BCI".to_owned(),
-        );
-    }
-    if !instruction_sequence_is_contiguous(instructions.get(..=cursor).unwrap_or(&[])) {
-        return Err(
-            "the enum constant and `$VALUES` prefix is not one contiguous instruction sequence"
-                .to_owned(),
-        );
-    }
-    Ok(InitializerPrefixProof {
-        constant_bcis,
-        backing_store_bci,
-        constructor_bcis,
-        source_arguments,
-        prefix_end_bci: prefix_end,
-        factory_call_bci: factory_call.bci,
-    })
-}
-
-fn constants_by_code_field<'a>(
-    instruction: Option<&'a EnumCodeInstruction>,
-    owner: &[u8],
-    descriptor: &[u8],
-    fields: &'a [MemberHeader],
-) -> Option<(usize, &'a [u8], &'a [u8])> {
-    let instruction = instruction?;
-    if instruction.opcode != 0xb3 {
-        return None;
-    }
-    let Some(EnumCodeReference::Field {
-        owner: field_owner,
-        name,
-        descriptor: field_descriptor,
-    }) = &instruction.reference
-    else {
-        return None;
-    };
-    if field_owner != owner || field_descriptor != descriptor {
-        return None;
-    }
-    let matching: Vec<_> = fields
-        .iter()
-        .enumerate()
-        .filter(|(_, field)| {
-            field.name.raw().0 == *name
-                && field.descriptor.raw().0 == *field_descriptor
-                && field.access_flags & ACC_ENUM != 0
-        })
-        .map(|(index, field)| {
-            (
-                index,
-                field.name.raw().0.as_slice(),
-                field.descriptor.raw().0.as_slice(),
-            )
-        })
-        .collect();
-    match matching.as_slice() {
-        [field] => Some(*field),
-        _ => None,
-    }
-}
-
-pub(crate) fn local_load(instruction: &EnumCodeInstruction, kind: u8, slot: u16) -> bool {
-    match kind {
-        b'a' => {
-            (instruction.opcode == 0x19 && instruction.local == Some(slot))
-                || (instruction.opcode == 0x2a + u8::try_from(slot).unwrap_or(u8::MAX) && slot <= 3)
-        }
-        b'i' => {
-            (instruction.opcode == 0x15 && instruction.local == Some(slot))
-                || (instruction.opcode == 0x1a + u8::try_from(slot).unwrap_or(u8::MAX) && slot <= 3)
-        }
-        _ => false,
-    }
-}
-
-fn field_reference(
-    instruction: &EnumCodeInstruction,
-    opcode: u8,
-    owner: &[u8],
-    name: &[u8],
-    descriptor: &[u8],
-) -> bool {
-    instruction.opcode == opcode
-        && matches!(
-            &instruction.reference,
-            Some(EnumCodeReference::Field { owner: actual_owner, name: actual_name, descriptor: actual_descriptor })
-                if actual_owner == owner && actual_name == name && actual_descriptor == descriptor
-        )
-}
-
-fn method_reference(
-    instruction: &EnumCodeInstruction,
-    opcode: u8,
-    owner: &[u8],
-    name: &[u8],
-    descriptor: &[u8],
-    interface: bool,
-) -> bool {
-    instruction.opcode == opcode
-        && matches!(
-            &instruction.reference,
-            Some(EnumCodeReference::Method { owner: actual_owner, name: actual_name, descriptor: actual_descriptor, interface: actual_interface })
-                if actual_owner == owner && actual_name == name && actual_descriptor == descriptor && *actual_interface == interface
-        )
-}
-
-fn class_reference(instruction: &EnumCodeInstruction, opcode: u8, name: &[u8]) -> bool {
-    instruction.opcode == opcode
-        && matches!(&instruction.reference, Some(EnumCodeReference::Class(actual)) if actual == name)
-}
-
-fn class_constant(instruction: &EnumCodeInstruction, name: &[u8]) -> bool {
-    matches!(instruction.opcode, 0x12 | 0x13)
-        && matches!(&instruction.reference, Some(EnumCodeReference::Class(actual)) if actual == name)
-}
-
-fn string_constant(instruction: Option<&EnumCodeInstruction>, value: &[u8]) -> bool {
-    instruction.is_some_and(|instruction| {
-        matches!(instruction.opcode, 0x12 | 0x13)
-            && matches!(&instruction.reference, Some(EnumCodeReference::String(actual)) if actual == value)
-    })
-}
-
-pub(crate) fn int_constant_at(
-    instructions: &[EnumCodeInstruction],
-    index: usize,
-    value: i32,
-) -> bool {
-    instructions
-        .get(index)
-        .and_then(int_constant_value)
-        .is_some_and(|actual| actual == value)
-}
-
-fn int_constant(instruction: &EnumCodeInstruction, value: i32) -> bool {
-    int_constant_value(instruction).is_some_and(|actual| actual == value)
-}
-
-fn int_constant_value(instruction: &EnumCodeInstruction) -> Option<i32> {
-    match instruction.opcode {
-        0x02..=0x08 => Some(i32::from(instruction.opcode) - 0x03),
-        0x10 | 0x11 => match &instruction.immediate {
-            Some(ImmediateValue::Int(value)) => Some(*value),
-            _ => None,
-        },
-        0x12 | 0x13 => match &instruction.reference {
-            Some(EnumCodeReference::Integer(value)) => Some(*value),
-            _ => None,
-        },
-        _ => None,
-    }
-}
-
-/// Prove one closed source int expression from consecutive instructions at the initializer stack
-/// argument position. The only nonliteral grammar is one resolved `getstatic:I`, optionally
-/// followed by one int literal and `iadd`; operand order is retained exactly as executed.
-fn prove_int_source_argument(
-    instructions: &[EnumCodeInstruction],
-    start: usize,
-    owner: &[u8],
-    methods: &[MemberHeader],
-) -> Option<(usize, ProvedEnumIntArgument)> {
-    if let Some(ternary) = prove_int_ternary_argument(instructions, start, owner, methods) {
-        return Some(ternary);
-    }
-    let first = instructions.get(start)?;
-    if let Some(literal) = proved_int_literal(first) {
-        return Some((1, literal));
-    }
-    let field = proved_int_static_field(first)?;
-    let second = instructions.get(start.checked_add(1)?)?;
-    if let Some(literal) = proved_int_literal(second) {
-        let add = instructions.get(start.checked_add(2)?)?;
-        if add.opcode == 0x60
-            && add.width == 1
-            && add.immediate.is_none()
-            && add.local.is_none()
-            && add.reference.is_none()
-            && instruction_sequence_is_contiguous(instructions.get(start..=start + 2)?)
-        {
-            return Some((
-                3,
-                ProvedEnumIntArgument::Add {
-                    left: Box::new(field),
-                    right: Box::new(literal),
-                    bci: add.bci,
-                },
-            ));
-        }
-    }
-    Some((1, field))
-}
-
-/// Prove javac's closed `invokestatic; ifeq/ifne; literal; goto; literal; join` lowering.
-/// The condition is one same-class, no-argument boolean invocation, so spelling the call at the
-/// original constructor argument position preserves its single evaluation and effects.
-fn prove_int_ternary_argument(
-    instructions: &[EnumCodeInstruction],
-    start: usize,
-    owner: &[u8],
-    methods: &[MemberHeader],
-) -> Option<(usize, ProvedEnumIntArgument)> {
-    let [condition, branch, fallthrough_arm, jump, taken_arm, join] =
-        instructions.get(start..start.checked_add(6)?)?
-    else {
-        return None;
-    };
-    let condition_proof = proved_enum_condition(condition, owner, methods)?;
-    if !matches!(branch.opcode, 0x99 | 0x9a)
-        || branch.width != 3
-        || branch.immediate.is_some()
-        || branch.local.is_some()
-        || branch.reference.is_some()
-        || jump.opcode != 0xa7
-        || jump.width != 3
-        || jump.immediate.is_some()
-        || jump.local.is_some()
-        || jump.reference.is_some()
-        || !instruction_sequence_is_contiguous(&instructions[start..start + 5])
-        || join.bci != jump.branch_target_bci?
-    {
-        return None;
-    }
-    let fallthrough_value = proved_int_literal(fallthrough_arm)?;
-    let taken_value = proved_int_literal(taken_arm)?;
-    let (when_true, when_false, expected_target) = if branch.opcode == 0x99 {
-        (fallthrough_value, taken_value, taken_arm.bci)
-    } else {
-        (taken_value, fallthrough_value, taken_arm.bci)
-    };
-    if branch.branch_target_bci? != expected_target {
-        return None;
-    }
-    Some((
-        5,
-        ProvedEnumIntArgument::Ternary {
-            condition: condition_proof,
-            when_true: Box::new(when_true),
-            when_false: Box::new(when_false),
-            branch_bci: branch.bci,
-            join_bci: join.bci,
-        },
-    ))
-}
-
-fn proved_enum_condition(
-    instruction: &EnumCodeInstruction,
-    owner: &[u8],
-    methods: &[MemberHeader],
-) -> Option<ProvedEnumIntCondition> {
-    let EnumCodeReference::Method {
-        owner: condition_owner,
-        name,
-        descriptor,
-        interface: false,
-    } = instruction.reference.as_ref()?
-    else {
-        return None;
-    };
-    if instruction.opcode != 0xb8
-        || instruction.width != 3
-        || instruction.immediate.is_some()
-        || instruction.local.is_some()
-        || condition_owner != owner
-        || descriptor != b"()Z"
-    {
-        return None;
-    }
-    let source_name = String::from_utf8(name.clone()).ok()?;
-    if !jarde_java::is_java_identifier(&source_name) {
-        return None;
-    }
-    let method = methods.get(unique_method(methods, name, descriptor).ok()?)?;
-    if method.access_flags & ACC_STATIC == 0 {
-        return None;
-    }
-    Some(ProvedEnumIntCondition {
-        owner: condition_owner.clone(),
-        name: name.clone(),
-        descriptor: descriptor.clone(),
-        source_name,
-        bci: instruction.bci,
-    })
-}
-
-fn proved_string_literal(instruction: &EnumCodeInstruction) -> Option<ProvedEnumStringLiteral> {
-    if !matches!(instruction.opcode, 0x12 | 0x13)
-        || instruction.width != if instruction.opcode == 0x12 { 2 } else { 3 }
-        || instruction.immediate.is_some()
-        || instruction.local.is_some()
-    {
-        return None;
-    }
-    let Some(EnumCodeReference::String(raw)) = &instruction.reference else {
-        return None;
-    };
-    Some(ProvedEnumStringLiteral {
-        value: decode_ascii_enum_string(raw)?,
-        bci: instruction.bci,
-    })
-}
-
-fn prove_string_source_argument(
-    instructions: &[EnumCodeInstruction],
-    start: usize,
-    owner: &[u8],
-    methods: &[MemberHeader],
-) -> Option<(usize, ProvedEnumStringArgument)> {
-    if let Some(literal) = instructions.get(start).and_then(proved_string_literal) {
-        return Some((1, ProvedEnumStringArgument::Literal(literal)));
-    }
-    let [condition, branch, fallthrough_arm, jump, taken_arm, join] =
-        instructions.get(start..start.checked_add(6)?)?
-    else {
-        return None;
-    };
-    let condition = proved_enum_condition(condition, owner, methods)?;
-    if !matches!(branch.opcode, 0x99 | 0x9a)
-        || branch.width != 3
-        || branch.immediate.is_some()
-        || branch.local.is_some()
-        || branch.reference.is_some()
-        || jump.opcode != 0xa7
-        || jump.width != 3
-        || jump.immediate.is_some()
-        || jump.local.is_some()
-        || jump.reference.is_some()
-        || !instruction_sequence_is_contiguous(&instructions[start..start + 5])
-        || join.bci != jump.branch_target_bci?
-        || branch.branch_target_bci? != taken_arm.bci
-    {
-        return None;
-    }
-    let fallthrough = proved_string_literal(fallthrough_arm)?;
-    let taken = proved_string_literal(taken_arm)?;
-    let (when_true, when_false) = if branch.opcode == 0x99 {
-        (fallthrough, taken)
-    } else {
-        (taken, fallthrough)
-    };
-    Some((
-        5,
-        ProvedEnumStringArgument::Ternary {
-            condition,
-            when_true,
-            when_false,
-            branch_bci: branch.bci,
-            join_bci: join.bci,
-        },
-    ))
-}
-
-fn proved_int_literal(instruction: &EnumCodeInstruction) -> Option<ProvedEnumIntArgument> {
-    let value = int_constant_value(instruction)?;
-    let operands_match = match instruction.opcode {
-        0x02..=0x08 => {
-            instruction.width == 1
-                && matches!(instruction.immediate, Some(ImmediateValue::Int(actual)) if actual == value)
-                && instruction.local.is_none()
-                && instruction.reference.is_none()
-        }
-        0x10 => {
-            instruction.width == 2
-                && matches!(instruction.immediate, Some(ImmediateValue::Int(_)))
-                && instruction.local.is_none()
-                && instruction.reference.is_none()
-        }
-        0x11 => {
-            instruction.width == 3
-                && matches!(instruction.immediate, Some(ImmediateValue::Int(_)))
-                && instruction.local.is_none()
-                && instruction.reference.is_none()
-        }
-        0x12 => {
-            instruction.width == 2
-                && instruction.immediate.is_none()
-                && instruction.local.is_none()
-                && matches!(instruction.reference, Some(EnumCodeReference::Integer(_)))
-        }
-        0x13 => {
-            instruction.width == 3
-                && instruction.immediate.is_none()
-                && instruction.local.is_none()
-                && matches!(instruction.reference, Some(EnumCodeReference::Integer(_)))
-        }
-        _ => false,
-    };
-    operands_match.then_some(ProvedEnumIntArgument::Literal {
-        value,
-        bci: instruction.bci,
-    })
-}
-
-fn proved_int_static_field(instruction: &EnumCodeInstruction) -> Option<ProvedEnumIntArgument> {
-    if instruction.opcode != 0xb2
-        || instruction.width != 3
-        || instruction.immediate.is_some()
-        || instruction.local.is_some()
-    {
-        return None;
-    }
-    let Some(EnumCodeReference::Field {
-        owner,
-        name,
-        descriptor,
-    }) = &instruction.reference
-    else {
-        return None;
-    };
-    if owner.is_empty() || descriptor != b"I" {
-        return None;
-    }
-    let source_name = String::from_utf8(name.clone()).ok()?;
-    if !jarde_java::is_java_identifier(&source_name) {
-        return None;
-    }
-    let source_owner = spelled_static_field_owner(owner)?;
-    Some(ProvedEnumIntArgument::StaticField {
-        owner: owner.clone(),
-        name: name.clone(),
-        descriptor: descriptor.clone(),
-        source_owner,
-        source_name,
-        bci: instruction.bci,
-    })
-}
-
-/// The `Owner` half of one static field argument's `Owner.name` spelling, through the
-/// repository's one descriptor → source-name channel: the owner's full source name with only its
-/// final dot segment kept, the same spelling every field-style presentation writes.
-fn spelled_static_field_owner(owner: &[u8]) -> Option<String> {
-    let owner_facts = descriptor_facts(&object_descriptor(owner), DescriptorKind::Field).ok()?;
-    let full_source_owner = type_of_component(owner_facts.single()?)?.spell().to_owned();
-    if full_source_owner
-        .split('.')
-        .any(|segment| !jarde_java::is_java_identifier(segment))
-    {
-        return None;
-    }
-    Some(full_source_owner.rsplit('.').next()?.to_owned())
-}
-
-/// Prove one user argument of an arbitrary enum constructor call at the initializer stack
-/// position, expecting exactly the shape its parameter descriptor classifies. Every spelling is
-/// decided here; a shape outside the expectation refuses the argument and with it the fold.
-pub(crate) fn prove_user_source_argument(
-    instructions: &[EnumCodeInstruction],
-    start: usize,
-    expectation: EnumUserArgumentExpectation,
-) -> Option<(usize, ProvedEnumUserArgument)> {
-    let first = instructions.get(start)?;
-    match expectation {
-        EnumUserArgumentExpectation::IntLiteral(parameter) => {
-            let (value, bci) = proved_int_family_literal(first)?;
-            let text = narrowed_int_user_text(parameter, value)?;
-            Some((1, ProvedEnumUserArgument::IntLiteral { text, bci }))
-        }
-        EnumUserArgumentExpectation::StringLiteral => {
-            let literal = proved_string_literal(first)?;
-            Some((1, ProvedEnumUserArgument::StringLiteral(literal)))
-        }
-        EnumUserArgumentExpectation::StaticFieldOrNull => {
-            if let Some(argument) = proved_object_static_field(first) {
-                return Some((1, argument));
-            }
-            if first.opcode == 0x01
-                && first.width == 1
-                && first.immediate.is_none()
-                && first.local.is_none()
-                && first.reference.is_none()
-            {
-                return Some((1, ProvedEnumUserArgument::Null { bci: first.bci }));
-            }
-            None
-        }
-    }
-}
-
-/// Prove one int-family literal argument instruction: the iconst/bipush/sipush immediate shapes
-/// this slice shares with the plain-int path, plus the `ldc`/`ldc_w` Integer shape the proposal's
-/// grammar admits (the shared `proved_int_literal` keeps the plain-int path's own stricter shape,
-/// so the fixed descriptor behavior stays byte-identical).
-fn proved_int_family_literal(instruction: &EnumCodeInstruction) -> Option<(i32, u32)> {
-    let value = int_constant_value(instruction)?;
-    let operands_match = match instruction.opcode {
-        0x02..=0x08 => {
-            instruction.width == 1
-                && matches!(instruction.immediate, Some(ImmediateValue::Int(actual)) if actual == value)
-                && instruction.local.is_none()
-                && instruction.reference.is_none()
-        }
-        0x10 => {
-            instruction.width == 2
-                && matches!(instruction.immediate, Some(ImmediateValue::Int(actual)) if actual == value)
-                && instruction.local.is_none()
-                && instruction.reference.is_none()
-        }
-        0x11 => {
-            instruction.width == 3
-                && matches!(instruction.immediate, Some(ImmediateValue::Int(actual)) if actual == value)
-                && instruction.local.is_none()
-                && instruction.reference.is_none()
-        }
-        0x12 => {
-            instruction.width == 2
-                && instruction.local.is_none()
-                && matches!(instruction.reference, Some(EnumCodeReference::Integer(actual)) if actual == value)
-        }
-        0x13 => {
-            instruction.width == 3
-                && instruction.local.is_none()
-                && matches!(instruction.reference, Some(EnumCodeReference::Integer(actual)) if actual == value)
-        }
-        _ => false,
-    };
-    operands_match.then_some((value, instruction.bci))
-}
-
-/// Prove one `getstatic` object argument. The field reference is spelled `Owner.name` and never
-/// resolved across classes: the source spelling is exactly what the initializer executes, so the
-/// fold stays faithful whatever the target field holds.
-fn proved_object_static_field(instruction: &EnumCodeInstruction) -> Option<ProvedEnumUserArgument> {
-    if instruction.opcode != 0xb2
-        || instruction.width != 3
-        || instruction.immediate.is_some()
-        || instruction.local.is_some()
-    {
-        return None;
-    }
-    let Some(EnumCodeReference::Field {
-        owner,
-        name,
-        descriptor,
-    }) = &instruction.reference
-    else {
-        return None;
-    };
-    // A verifier-valid object argument carries a reference-typed value, so the field descriptor
-    // must be an object or an array of them.
-    if owner.is_empty() || !matches!(descriptor.first(), Some(b'L' | b'[')) {
-        return None;
-    }
-    let source_name = String::from_utf8(name.clone()).ok()?;
-    if !jarde_java::is_java_identifier(&source_name) {
-        return None;
-    }
-    let source_owner = spelled_static_field_owner(owner)?;
-    Some(ProvedEnumUserArgument::StaticField {
-        source_owner,
-        source_name,
-        bci: instruction.bci,
-    })
-}
-
-/// The presentation of one int-family literal, narrowed by its parameter descriptor: `B` and `S`
-/// carry an explicit cast, `I` spells the bare value, `Z` spells the bare boolean keywords, and
-/// `C` spells a char literal for the values a char literal denotes (the compile-and-fold-equivalent
-/// `(char) v` cast covers the rest).
-fn narrowed_int_user_text(parameter: EnumIntUserParameter, value: i32) -> Option<String> {
-    match parameter {
-        EnumIntUserParameter::Byte => Some(format!("(byte) {value}")),
-        EnumIntUserParameter::Short => Some(format!("(short) {value}")),
-        EnumIntUserParameter::Int => Some(value.to_string()),
-        EnumIntUserParameter::Boolean => match value {
-            0 => Some("false".to_owned()),
-            1 => Some("true".to_owned()),
-            _ => None,
-        },
-        EnumIntUserParameter::Char => match u32::try_from(value) {
-            Ok(value) if value <= u32::from(u16::MAX) => Some(char_user_text(value)),
-            // Outside the char range no char literal denotes this value; the cast is the exact
-            // source form javac constant-folds to it.
-            _ => Some(format!("(char) {value}")),
-        },
-    }
-}
-
-fn char_user_text(value: u32) -> String {
-    match char::from_u32(value) {
-        Some('\'') => "'\\''".to_owned(),
-        Some('\\') => "'\\\\'".to_owned(),
-        Some(character) if ('\u{20}'..='\u{7e}').contains(&character) => {
-            format!("'{character}'")
-        }
-        // Control and non-ASCII values have no single-line char literal this slice spells.
-        _ => format!("(char) {value}"),
-    }
-}
-
-fn instruction_sequence_is_contiguous(instructions: &[EnumCodeInstruction]) -> bool {
-    instructions.windows(2).all(|pair| {
-        pair[0]
-            .bci
-            .checked_add(pair[0].width)
-            .is_some_and(|next| next == pair[1].bci)
-    })
+    jarde_java::source_proof::enum_constructor_signature_matches(
+        header,
+        source.enum_constructor_source_tail,
+        source.enum_constructor_signature_erasure_refused,
+        source.markers.len(),
+        physical_descriptor,
+    )
 }
 
 #[cfg(test)]
@@ -7249,6 +3035,113 @@ public final class PackageArgsRunner {
     }
 
     #[test]
+    fn static_suffix_uses_structure_across_names_values_and_prefix_lengths() {
+        const SOURCE: &str = r#"enum Measure {
+  LOW(2), HIGH(5);
+  final int units;
+  static int calls;
+  static int totalUnits;
+  Measure(int units) { this.units = units; }
+  static { totalUnits = sumUnits(); }
+  static int sumUnits() { calls++; return LOW.units + HIGH.units; }
+}
+"#;
+        const RUNNER: &str = r#"class MeasureRunner {
+  public static void main(String[] args) {
+    System.out.println(Measure.calls + ":" + Measure.totalUnits + ":" + Measure.values().length);
+  }
+}
+"#;
+        for (case, source, runner, expected) in [
+            (
+                "renamed",
+                SOURCE
+                    .replace("LOW", "SMALL")
+                    .replace("HIGH", "LARGE")
+                    .replace("totalUnits", "aggregate")
+                    .replace("sumUnits", "compute"),
+                RUNNER.replace("totalUnits", "aggregate"),
+                "1:7:2\n",
+            ),
+            (
+                "wide-values",
+                SOURCE.replace("LOW(2), HIGH(5)", "LOW(127), HIGH(300)"),
+                RUNNER.to_owned(),
+                "1:427:2\n",
+            ),
+            (
+                "three-constants",
+                SOURCE.replace("LOW(2), HIGH(5)", "LOW(2), MID(3), HIGH(5)"),
+                RUNNER.to_owned(),
+                "1:7:3\n",
+            ),
+            (
+                "combined",
+                SOURCE
+                    .replace("LOW(2), HIGH(5)", "LOW(127), MID(3), HIGH(300)")
+                    .replace("LOW", "SMALL")
+                    .replace("HIGH", "LARGE")
+                    .replace("totalUnits", "aggregate")
+                    .replace("sumUnits", "compute"),
+                RUNNER.replace("totalUnits", "aggregate"),
+                "1:427:3\n",
+            ),
+        ] {
+            let field = if matches!(case, "renamed" | "combined") {
+                "aggregate"
+            } else {
+                "totalUnits"
+            };
+            let method = if matches!(case, "renamed" | "combined") {
+                "compute"
+            } else {
+                "sumUnits"
+            };
+            for debug in [true, false] {
+                let input = compile_java_class("Measure", &source, debug);
+                let report = enum_report(&input, "Measure", &mut test_budget());
+                assert!(
+                    report
+                        .text
+                        .contains(&format!("static {{\n        {field} = {method}();")),
+                    "{case}, debug={debug}, {:?}: {}",
+                    report.enum_constant_proof,
+                    report.text
+                );
+                if case != "renamed" {
+                    let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(
+                        group,
+                    )) = &report.enum_constant_proof
+                    else {
+                        panic!("{case}: ordinary enum proof missing")
+                    };
+                    assert_ne!(
+                        group.initializer_prefix_end_bci, 34,
+                        "{case}: prefix must move"
+                    );
+                }
+                let original = compile_and_run_sources(
+                    &format!("suffix-{case}-original-{debug}"),
+                    &[("Measure.java", &source), ("MeasureRunner.java", &runner)],
+                    debug,
+                    "MeasureRunner",
+                );
+                let recovered = compile_and_run_sources(
+                    &format!("suffix-{case}-recovered-{debug}"),
+                    &[
+                        ("Measure.java", &report.text),
+                        ("MeasureRunner.java", &runner),
+                    ],
+                    debug,
+                    "MeasureRunner",
+                );
+                assert_eq!(original, expected, "{case}, debug={debug}");
+                assert_eq!(recovered, original, "{case}, debug={debug}");
+            }
+        }
+    }
+
+    #[test]
     fn extra_calls_field_writes_and_exception_edges_keep_the_unprojected_initializer() {
         let cases = [
             (
@@ -7690,6 +3583,7 @@ public final class PackageArgsRunner {
             let method_only = crate::Engine::new()
                 .recover_method_with_evidence(
                     std::slice::from_ref(&snapshot),
+                    crate::SourceTarget::JAVA_8,
                     &crate::ir::MethodAnalysisRequest {
                         environment: request
                             .environment
@@ -7903,7 +3797,7 @@ public final class PackageArgsRunner {
         else {
             panic!("fixture field write carries its field@1 claim");
         };
-        field.name = "bad-name".to_owned();
+        field.name = crate::JvmBytes::from_unicode("bad-name");
         *spelled_name = "bad-name".to_owned();
         cases.push((
             "Fieldref, field header, and AST use an invalid Java field identifier",
@@ -7952,7 +3846,7 @@ public final class PackageArgsRunner {
         else {
             panic!("fixture field write carries its field@1 claim");
         };
-        field.name = "other".to_owned();
+        field.name = crate::JvmBytes::from_unicode("other");
         cases.push(("AST field claim differs from Fieldref", ast_wrong_field));
 
         let mut wrong_terminal_signature = baseline.clone();
@@ -8855,6 +4749,7 @@ public final class PackageArgsRunner {
 
     fn enum_request(snapshot: &crate::ArtifactSnapshot, name: &str) -> crate::ClassSourceRequest {
         crate::ClassSourceRequest {
+            source_target: crate::SourceTarget::JAVA_8,
             class: crate::ClassRef::Name {
                 class: crate::ClassNameQuery::internal(name),
             },
@@ -9953,5 +5848,220 @@ public class ArgsRefusals {
         ));
         assert!(limited.text.contains("public static final BudgetBytes A;"));
         assert!(!limited.text.contains("A((byte) 1"));
+    }
+
+    #[test]
+    fn arbitrary_body_shape_preserves_typed_budget_stops_and_local_refusals() {
+        let engine = crate::Engine::new();
+        let snapshot = engine
+            .open(
+                crate::ArtifactInput::bytes(
+                    include_bytes!("../tests/fixtures/s1-enum-constructor-stop/input.jar").to_vec(),
+                ),
+                &mut test_budget(),
+            )
+            .unwrap();
+        let mut request = enum_request(&snapshot, "demo/IntBody");
+        request.environment.policy = crate::EnvironmentPolicy::PlainJar;
+        let report = performed(
+            engine
+                .class_source(
+                    std::slice::from_ref(&snapshot),
+                    &request,
+                    &mut test_budget(),
+                )
+                .unwrap(),
+        );
+        assert!(report.projection_inputs.enum_projection.is_some());
+        let shape = &report.enum_constant_body_relations[0].group_shape;
+        assert!(shape.constructor_chain.is_ok());
+        assert!(shape.constructor_user_tail.is_some());
+        let facts = jarde_reader::classfile::class_facts(
+            include_bytes!("../tests/fixtures/s1-enum-constructor-stop/IntBody.class"),
+            &mut test_budget(),
+        )
+        .unwrap();
+        let environment = request
+            .environment
+            .build(std::slice::from_ref(&snapshot))
+            .unwrap();
+        let mut codes = Vec::new();
+        for method in &report.methods {
+            if matches!(method.outcome, ClassSourceOutcome::NoBody) {
+                continue;
+            }
+            let analysis = jarde_jvm::analyze_method_ir(
+                std::slice::from_ref(&snapshot),
+                &crate::ir::MethodAnalysisRequest {
+                    environment: environment.clone(),
+                    method: method.item.identity.clone(),
+                    stages: crate::AnalysisStage::ALL.to_vec(),
+                },
+                &mut test_budget(),
+            )
+            .unwrap();
+            codes.push(
+                capture_method_code(
+                    method.item.index,
+                    &method.item.identity,
+                    analysis.ir(),
+                    &mut test_budget(),
+                )
+                .unwrap()
+                .unwrap(),
+            );
+        }
+        let clinit = codes
+            .iter()
+            .find(|code| code.member.as_ref().unwrap().name.0 == b"<clinit>")
+            .unwrap();
+        let parameters = parse_arbitrary_ctor_descriptor(CTOR_DESCRIPTOR).unwrap();
+        let prove = |codes: &[EnumMethodCodeCandidate], budget: &mut Budget| {
+            jarde_java::source_proof::prove_enum_body_candidate_shape(
+                &facts.this_class.raw().0,
+                facts.access_flags,
+                &facts.fields,
+                &facts.methods,
+                codes,
+                clinit.member.as_ref().unwrap(),
+                clinit,
+                shape.constants.clone(),
+                shape.implicit_members.clone(),
+                CTOR_DESCRIPTOR,
+                &parameters,
+                shape.constructors.clone(),
+                true,
+                shape.abstract_methods.clone(),
+                shape.interface_methods.clone(),
+                |_| true,
+                budget,
+            )
+        };
+        let valid = prove(&codes, &mut test_budget()).unwrap().unwrap();
+        assert_eq!(valid, *shape);
+        let mut limits = test_budget().limits().clone();
+        limits.ir_items = 0;
+        let mut local = Budget::new(limits.clone());
+        let local_result = prove(&codes, &mut local);
+        // A local failed permit has no ledger latch. The proof must return the error itself.
+        assert!(local.poll().is_ok());
+        let entry = Budget::new(limits);
+        let ledger = crate::OperationLedger::new(&entry);
+        let mut shared = test_budget();
+        shared.with_ledger(ledger.clone(), crate::UsageOwner::Methods);
+        let shared_result = prove(&codes, &mut shared);
+        // Even the old shape's swallowed error cannot admit a later child read: its first charge polls this latch.
+        assert!(
+            shared
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                .is_err()
+        );
+        println!(
+            "BQ_SHAPE {}",
+            serde_json::json!({
+                "local_result": format!("{local_result:?}"), "shared_result": format!("{shared_result:?}"),
+                "local_usage": local.usage(), "ledger_usage": ledger.usage(), "shared_latched": shared.poll().is_err(),
+            })
+        );
+        for result in [local_result, shared_result] {
+            assert!(
+                matches!(
+                    result,
+                    Err(crate::Error::BudgetExceeded {
+                        dimension: crate::BudgetDimension::IrItems,
+                        ..
+                    })
+                ),
+                "typed stop became a local refusal: {result:?}"
+            );
+        }
+        let mut damaged = codes.clone();
+        damaged
+            .iter_mut()
+            .find(|code| code.member.as_ref().unwrap().descriptor.0 == CTOR_DESCRIPTOR)
+            .unwrap()
+            .complete = false;
+        let mut independent = test_budget();
+        let refused = prove(&damaged, &mut independent).unwrap().unwrap();
+        assert!(refused.constructor_chain.is_err());
+        assert!(independent.poll().is_ok());
+        assert!(
+            prove(&codes, &mut independent)
+                .unwrap()
+                .unwrap()
+                .constructor_chain
+                .is_ok()
+        );
+    }
+
+    #[cfg(feature = "test-support")]
+    #[test]
+    fn arbitrary_body_public_ir_budget_keeps_parent_prefix_and_records_actual_work() {
+        let engine = crate::Engine::new();
+        let snapshot = engine
+            .open(
+                crate::ArtifactInput::bytes(
+                    include_bytes!("../tests/fixtures/s1-enum-constructor-stop/input.jar").to_vec(),
+                ),
+                &mut test_budget(),
+            )
+            .unwrap();
+        let mut request = enum_request(&snapshot, "demo/IntBody");
+        request.environment.policy = crate::EnvironmentPolicy::PlainJar;
+        let wide = performed(
+            engine
+                .class_source(
+                    std::slice::from_ref(&snapshot),
+                    &request,
+                    &mut test_budget(),
+                )
+                .unwrap(),
+        );
+        assert!(wide.projection_inputs.enum_projection.is_some());
+        // Every root method is complete by this charged prefix; subsequent work is class-level proof and child demand.
+        let start = match &wide.methods.last().unwrap().outcome {
+            ClassSourceOutcome::Recovered { report, .. } => match &report.execution {
+                ExecutionReport::Complete { usage } => usage.ir_items,
+                _ => panic!("the initializer completes before class proof"),
+            },
+            _ => panic!("the fixture initializer recovers"),
+        };
+        for cap in start..start + 96 {
+            let mut limits = test_budget().limits().clone();
+            limits.ir_items = cap;
+            let mut budget = Budget::new(limits);
+            let before = jarde_reader::observation::snapshot();
+            let ir_before = jarde_jvm::observation::snapshot();
+            let report = performed(
+                engine
+                    .class_source(std::slice::from_ref(&snapshot), &request, &mut budget)
+                    .unwrap(),
+            );
+            let after = jarde_reader::observation::snapshot();
+            let ir_after = jarde_jvm::observation::snapshot();
+            assert!(matches!(
+                report.execution,
+                ExecutionReport::Partial {
+                    reason: crate::TerminationReason::BudgetExceeded {
+                        dimension: crate::BudgetDimension::IrItems
+                    },
+                    ..
+                }
+            ));
+            assert!(report.projection_inputs.enum_projection.is_none());
+            for (actual, expected) in report.methods.iter().zip(&wide.methods) {
+                assert_eq!(actual.item.identity, expected.item.identity);
+                assert_eq!(actual.text, expected.text);
+            }
+            println!(
+                "BQ_PUBLIC {}",
+                serde_json::json!({"cap":cap,"shared":false,"usage":budget.usage(),
+                    "actual_read_attempts":after.read_attempts-before.read_attempts,
+                    "actual_body_decodes":after.body_decode_attempts-before.body_decode_attempts,
+                    "jvm_before":ir_before,"jvm_after":ir_after,
+                    "execution":report.execution,
+                })
+            );
+        }
     }
 }

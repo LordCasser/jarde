@@ -97,6 +97,7 @@ fn report(
     evidence: Option<&RecoveryEvidenceRequest>,
 ) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -393,6 +394,7 @@ fn cancellation_does_not_publish_a_partial_condition_body() {
     let fixture = &FIXTURES[0];
     let snapshot = open(fixture.bytes);
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(fixture.class),
         },

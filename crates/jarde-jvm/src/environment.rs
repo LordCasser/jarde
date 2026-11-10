@@ -151,8 +151,9 @@ pub struct EnvironmentProblem {
 #[serde(deny_unknown_fields)]
 pub struct EnvironmentIdentity {
     pub runtime: RuntimeView,
-    pub domain_loaders: Vec<LoaderId>,
-    pub providers: Vec<ProviderId>,
+    /// Complete participating declarations in their original order, including rejected policies.
+    pub domains: Vec<LoadDomain>,
+    pub providers: Vec<HeaderProvider>,
     /// Snapshots the entry actually provided, in argument order.
     pub content: Vec<SnapshotId>,
 }
@@ -209,16 +210,8 @@ fn decide_environment(
     validate_providers(environment, &mut problems);
     let identity = EnvironmentIdentity {
         runtime: environment.runtime.clone(),
-        domain_loaders: environment
-            .domains
-            .iter()
-            .map(|domain| domain.loader.clone())
-            .collect(),
-        providers: environment
-            .providers
-            .iter()
-            .map(|provider| provider.id.clone())
-            .collect(),
+        domains: environment.domains.clone(),
+        providers: environment.providers.clone(),
         content: content
             .iter()
             .map(|snapshot| snapshot.id().clone())

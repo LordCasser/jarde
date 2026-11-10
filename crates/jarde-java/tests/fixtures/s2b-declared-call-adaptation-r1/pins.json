@@ -1,0 +1,58 @@
+{
+  "schema": "s2b-declared-call-adaptation-fixture-r1",
+  "javac": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+  "javac_args": [
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-g",
+    "-classpath",
+    "crates/jarde-java/tests/fixtures/s2b-bound-type-identities-r1/identity-a/classes"
+  ],
+  "javap_args": [
+    "-p",
+    "-s",
+    "-v",
+    "-c",
+    "flow.CallAdaptationControls"
+  ],
+  "runtime_execution": false,
+  "files": [
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-adaptation-r1/src/flow/CallAdaptationControls.java",
+      "size": 560,
+      "sha256": "56754615ff53d87577fe0bb93fe3ffbe764de3ba151b250d6c6f30176fe3dc60"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-adaptation-r1/classes/flow/CallAdaptationControls.class",
+      "size": 1372,
+      "sha256": "27416e2c55bd196c85809bc2fde026fca0459cd6ad9ed93ae179abcd6d5b3e05"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-adaptation-r1/failed-attempt-r1/CallAdaptationControls.java",
+      "size": 594,
+      "sha256": "99137997b1c9313f155db805e15fa92c132559b012f13e3741cfd73db4987c4f"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-adaptation-r1/javac-initial.log",
+      "size": 233,
+      "sha256": "8d49f4a09752daa4f4668d2bdcd6ee3a38e1fcc599e1137c862c78e20c4a6f6b"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-adaptation-r1/javac-r2.log",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-adaptation-r1/CallAdaptationControls.javap.txt",
+      "size": 6932,
+      "sha256": "49aac0e5a4fed1a67f1216db76fe8a25652e72de1359e1a63acbb86f7af4b99d"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-bound-type-identities-r1/identity-a/classes/identity/Foo.class",
+      "size": 349,
+      "sha256": "96d648ea785ae03101917c65039409cf125ad6228f6e1ddf8e873ee231111bec"
+    }
+  ]
+}

@@ -165,6 +165,7 @@ fn one_recovery_request_reads_one_body_and_presents_that_member() {
     let recovered = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut budget,
@@ -211,7 +212,7 @@ fn one_recovery_request_reads_one_body_and_presents_that_member() {
     );
     assert_eq!(report.representation, Representation::Java);
     assert_eq!(report.quality, Quality::Structured);
-    assert_eq!(report.profile.java_release, 8);
+    assert_eq!(report.source_target.java_release(), 8);
     assert_eq!(
         report
             .rules
@@ -261,6 +262,7 @@ fn a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_answer() {
     let recovered = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut budget,

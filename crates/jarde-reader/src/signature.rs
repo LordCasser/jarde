@@ -15,7 +15,7 @@ const MAX_SIGNATURE_DEPTH: usize = 128;
 const MAX_SIGNATURE_NODES: usize = 4096;
 
 /// A parsed class `Signature` attribute.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct ClassSignature {
     pub type_parameters: Vec<TypeParameter>,
     pub superclass: ClassType,
@@ -47,7 +47,7 @@ impl ClassSignature {
 }
 
 /// A parsed field `Signature` attribute.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct FieldSignature {
     pub ty: SignatureType,
 }
@@ -62,7 +62,7 @@ impl FieldSignature {
 }
 
 /// A parsed method `Signature` attribute. `None` is a `void` result.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct MethodSignature {
     pub type_parameters: Vec<TypeParameter>,
     pub parameters: Vec<SignatureType>,
@@ -90,7 +90,7 @@ impl MethodSignature {
 }
 
 /// A method or class type parameter and its declared bounds.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct TypeParameter {
     pub name: Vec<u8>,
     /// `None` encodes the empty class-bound slot (`T::Interface`).
@@ -99,7 +99,7 @@ pub struct TypeParameter {
 }
 
 /// A type in the generic Signature grammar.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub enum SignatureType {
     Base(u8),
     Array(Box<SignatureType>),
@@ -108,21 +108,21 @@ pub enum SignatureType {
 }
 
 /// A class type, retaining source-level nested segments and their own arguments.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct ClassType {
     pub segments: Vec<ClassTypeSegment>,
 }
 
 /// One outer or nested class segment. `binary_name` uses `/` for packages and `$` for the
 /// segment's binary nesting path, matching the class name emitted by the query xref consumer.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct ClassTypeSegment {
     pub binary_name: Vec<u8>,
     pub arguments: Vec<TypeArgument>,
 }
 
 /// One generic type argument, including all wildcard forms.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub enum TypeArgument {
     Any,
     Exact(SignatureType),
@@ -211,7 +211,7 @@ pub struct MethodSignatureErasureProof {
 }
 
 /// The first-bound erasure established for one class- or method-level type variable.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct TypeParameterErasure {
     pub name: Vec<u8>,
     pub descriptor: Vec<u8>,

@@ -151,6 +151,7 @@ fn recover_under(
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut Budget::new(limits),
@@ -824,20 +825,29 @@ fn a_deep_chain_under_a_short_output_bound_stops_without_an_artifact() {
         written,
         limit,
         at,
+        ..
     } = stop
     else {
         panic!("the stop is the bound the emitter charged against");
     };
-    assert_eq!(dimension, CountedBudgetDimension::OutputBytes);
+    assert_eq!(dimension, BudgetDimension::OutputBytes);
     assert_eq!(limit, bound);
     assert!(
         written > 0 && written < bound,
         "the run wrote {written} bytes before the refused charge"
     );
     let at = at.expect("the stop names the node it was writing");
-    assert!(
-        at > 0 && (at as usize) < 4 * DEEP_APPENDS,
-        "the stop landed inside the chain, not before it: BCI {at}"
+    // Re-recorded 2025: the stop now lands at BCI 8199 — `7 + 4 * DEEP_APPENDS`, the `toString`
+    // instruction the chain ends with — instead of inside the append loop. Attributed to the
+    // deliberate SsaSiteIndex billing change (a site is charged its ceil(log₂) comparison count
+    // instead of one charge per instruction): the same 12,288-byte bound is consumed a few
+    // charges later, so the emitter finishes every append's output and refuses the charge while
+    // writing the chain's final node. The published stop's semantics are unchanged: `written` is
+    // positive and below the bound (asserted above), no artifact and no segment table are
+    // produced (asserted below), and the run does not abort.
+    assert_eq!(
+        at as usize, 7 + 4 * DEEP_APPENDS,
+        "the stop names the chain's final `toString` node: BCI {at}"
     );
     assert_eq!(report.content, RecoveryContent::NotProduced);
     assert_eq!(report.text, "", "a stop hands out no artifact");

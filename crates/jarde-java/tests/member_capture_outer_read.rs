@@ -3,7 +3,7 @@
 //! proof unit. Only the latter may become a lexical qualified `this`.
 
 use jarde_java::{
-    DebugLocal, DeclaringClass, MethodFacts, ProvedCapturedOuterRead, RecoveryEvidenceRequest,
+    CapturedOuterReadInput, DebugLocal, DeclaringClass, MethodFacts, RecoveryEvidenceRequest,
     RecoveryFacts, RecoveryRequest, StopReason, pass::JAVA_8, recover,
 };
 use jarde_jvm::engine::analyze_method_ir;
@@ -57,9 +57,9 @@ fn physical(definition: &PhysicalDefinitionId, name: &str, descriptor: &str) -> 
 }
 
 fn run(
-    claim: Option<ProvedCapturedOuterRead>,
+    claim: Option<CapturedOuterReadInput>,
     all: bool,
-) -> (jarde_java::RecoveryReport, ProvedCapturedOuterRead) {
+) -> (jarde_java::RecoveryReport, CapturedOuterReadInput) {
     let mut budget = Budget::new(limits());
     let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CHILD.to_vec()), &mut budget)
         .expect("frozen child class opens");
@@ -74,13 +74,13 @@ fn run(
         variant: PhysicalVariant::Base,
     };
     let method = physical(&definition, "read", READ_DESCRIPTOR);
-    let proven = ProvedCapturedOuterRead {
+    let proven = CapturedOuterReadInput {
         method: method.clone(),
         read_bci: 8,
-        field_owner: OWNER.to_owned(),
-        field_name: "this$0".to_owned(),
-        field_descriptor: format!("L{OUTER};"),
-        outer_internal_name: OUTER.to_owned(),
+        field_owner: JvmBytes::from_unicode(OWNER),
+        field_name: jarde_reader::model::JvmBytes::from_unicode("this$0"),
+        field_descriptor: JvmBytes::from_unicode(&format!("L{OUTER};")),
+        outer_internal_name: JvmBytes::from_unicode(OUTER),
         outer_source_name: OUTER.to_owned(),
         constructor: physical(&definition, "<init>", "(LNamedMemberFamilyStage1;)V"),
         constructor_write_bci: 2,
@@ -129,8 +129,17 @@ fn run(
     )
     .with_debug_locals(vec![DebugLocal::named(1, "other")]);
     let claims = claim.into_iter().collect::<Vec<_>>();
-    let mut request =
-        RecoveryRequest::new(analysis.ir(), &facts, JAVA_8).with_captured_outer_reads(&claims);
+    let mut request = RecoveryRequest::new(
+        analysis.ir(),
+        &facts,
+        JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
+    )
+    .with_captured_outer_reads(&claims);
     if all {
         request = request.with_evidence(RecoveryEvidenceRequest::all());
     }
@@ -176,7 +185,7 @@ fn stale_method_bci_and_field_facts_refuse_without_publishing_source() {
     let mut wrong_bci = proof.clone();
     wrong_bci.read_bci = 1;
     let mut wrong_field = proof;
-    wrong_field.field_name = "state".to_owned();
+    wrong_field.field_name = JvmBytes::from_unicode("state");
     for claim in [wrong_method, wrong_bci, wrong_field] {
         let (report, _) = run(Some(claim), false);
         assert!(

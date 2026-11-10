@@ -521,7 +521,7 @@ fn the_first_declared_root_that_holds_the_name_wins() {
         1,
         "a root without a candidate is listed but never read"
     );
-    assert_eq!(report.environment_identity.providers, vec![provider.id]);
+    assert_eq!(report.environment_identity.providers, vec![provider]);
     assert_eq!(
         report.coverage.runtime_resolution.scanned,
         vec![search_range(0, 2)]
@@ -1066,6 +1066,37 @@ fn a_cancelled_lookup_is_cancelled_and_names_no_state() {
     assert_eq!(
         report.coverage.runtime_resolution.skipped,
         vec![search_range(0, 1)]
+    );
+}
+
+#[test]
+fn a_pre_cancelled_lookup_keeps_every_declared_search_position_unexamined() {
+    let first = open(zip_of(&[(b"p/S.class", &class_bytes(b"p/S", 52))]));
+    let second = open(zip_of(&[(b"p/T.class", &class_bytes(b"p/T", 52))]));
+    let caller = domain(
+        &loader("app"),
+        None,
+        DelegationPolicy::ParentFirst,
+        vec![snapshot_root(&first), snapshot_root(&second)],
+    );
+    let request = class_request(
+        environment(&first, caller.clone(), vec![caller], Vec::new()),
+        &loader("app"),
+        b"p/S",
+    );
+    let mut budget = Budget::new(limits());
+    budget.cancellation_token().cancel();
+    let report = resolve(&[first, second], &request, &mut budget);
+    assert!(matches!(
+        report.execution,
+        ExecutionReport::Cancelled { .. }
+    ));
+    assert!(report.state.is_none() && report.resolved.is_none());
+    assert_eq!(class_headers(&report), 0);
+    assert!(report.coverage.runtime_resolution.scanned.is_empty());
+    assert_eq!(
+        report.coverage.runtime_resolution.skipped,
+        vec![search_range(0, 2)]
     );
 }
 

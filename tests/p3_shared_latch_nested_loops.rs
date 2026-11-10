@@ -75,6 +75,7 @@ fn class_source(class: &[u8], name: &str) -> String {
         .open(ArtifactInput::bytes(class.to_vec()), &mut budget)
         .expect("the compiled Java 8 class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },

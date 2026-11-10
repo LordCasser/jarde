@@ -18,15 +18,22 @@
 //!
 //! The fixtures are this change's own `CF` (the three-store chain, the two-store chain, the saved
 //! form, the single-store and local-chain controls, the `|=`/`&=` receiver copies, the `String`
-//! `+=` receiver copy and the static control) and `NEG` (the four refusals: a second copy consumed
-//! by a local store, by the expression the stored value is part of, by an array store, and a
-//! receiver copy whose source is a call).
+//! `+=` receiver copy and the static control) and `NEG` (the four negatives: a second copy
+//! consumed by a local store, by the expression the stored value is part of, by an array store,
+//! and a receiver copy whose source is a call).
 //!
-//! The tests pin the presented texts, keep every refusal verbatim, and the ignored replay strips
-//! the presentations the way the patrols' own stripped sources were made (comment lines dropped),
-//! compiles each anchor with the installed `javac --release 8` and, when a real javac 8 is present,
-//! with that one too, runs both under `-Xverify:all` and compares every answer with the fixture's
-//! own class files.
+//! The four negatives used to refuse: writing a copy's value once per consumer would evaluate the
+//! source twice, and the refusals kept that second evaluation out of the text. The typed-split
+//! saved declarations now take the refusals' job over — the producer's value is saved once and
+//! every consumer reads the saved name, a constant leaf being a copy with no evaluation to repeat
+//! — so the four present as whole recoveries. This replaces the refusal contract on purpose, the
+//! way the reusedSlot expectations were replaced: the invariant the refusals guarded (no
+//! contradictory presentation) is kept by the mechanism instead of by refusing.
+//!
+//! The tests pin the presented texts, and the ignored replay strips the presentations the way the
+//! patrols' own stripped sources were made (comment lines dropped), compiles each class with the
+//! installed `javac --release 8` and, when a real javac 8 is present, with that one too, runs
+//! both under `-Xverify:all` and compares every answer with the fixture's own class files.
 
 use jarde::class_source::ClassSourceReport;
 use jarde::*;
@@ -161,23 +168,42 @@ const CF_ADD: &str = "        this.field = this.field + \"[\" + x + \"]\";";
 /// `CF.sAdd` — the control: the static `String` compound keeps the presentation it already had.
 const CF_SADD: &str = "        CF.sfield = new java.lang.StringBuilder().append(CF.sfield).append(\"[\").append(x).append(\"]\").toString();";
 
-/// The four refusals `NEG` keeps, verbatim.
-const NEG_REFUSALS: &[(&str, &str)] = &[
+/// The four former refusals, as the saved declarations they now present: the copy consumed by a
+/// local store, by the expression the store's value is part of, by an array store, and the
+/// receiver copy whose source is a call. Both compiler legs present the same texts.
+const NEG_RECOVERED: &[(&str, &[&str])] = &[
     (
         "mixed()I",
-        "// the copy at BCI 2 has no proved local assignment",
+        &[
+            "        NEG.sa = 7;",
+            "        int x = 7;",
+            "        return x;",
+        ],
     ),
     (
         "expr()I",
-        "// the copy at BCI 1 has no proved local assignment",
+        &[
+            "        NEG.sb = 5;",
+            "        NEG.sa = 5 + 1;",
+            "        return NEG.sb;",
+        ],
     ),
     (
         "arrayConsumer()I",
-        "// the copy at BCI 5 has no proved local assignment",
+        &[
+            "        int[] saved0 = NEG.arr;",
+            "        NEG.sa = 3;",
+            "        saved0[0] = 3;",
+            "        return NEG.arr[0];",
+        ],
     ),
     (
         "callReceiver()V",
-        "// the copy at BCI 3 has no proved local assignment",
+        &[
+            "        NEG saved0 = holder();",
+            "        saved0.ia = saved0.ia | 1;",
+            "        return;",
+        ],
     ),
 ];
 
@@ -215,6 +241,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// One class-source presentation over the snapshot's own root container.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -390,41 +417,46 @@ fn no_recovering_method_keeps_a_quote() {
 }
 
 // -------------------------------------------------------------------------------------------
-// The negatives keep their refusals.
+// The negatives recover as saved declarations.
 // -------------------------------------------------------------------------------------------
 
-/// The four refusals keep the text they had, and no refused method writes an assignment its own
-/// refusal does not cover.
+/// The four former refusals present as whole recoveries on both legs: the saved declaration
+/// carries each producer's single evaluation, so the copy family's refusal cannot return here.
 #[test]
-fn the_negatives_keep_their_refusals_on_both_legs() {
+fn the_negatives_recover_with_single_evaluation_saved_declarations_on_both_legs() {
     for leg in LEGS {
         let snapshot = open(&leg.fixture("NEG"));
         let report = presented(&snapshot, "NEG");
-        for (signature, refusal) in NEG_REFUSALS {
+        for (signature, lines) in NEG_RECOVERED {
             let body = method_body(&report.text, signature);
+            for line in *lines {
+                assert_eq!(
+                    body.matches(*line).count(),
+                    1,
+                    "`NEG.{signature}` on {} presents {line:?} other than once:\n{body}",
+                    leg.label
+                );
+            }
             assert!(
-                body.contains(refusal),
-                "`NEG.{signature}` on {} lost the refusal {refusal:?}:\n{body}",
+                !body.contains("@bytecode") && !body.contains("jarde_refused_body"),
+                "`NEG.{signature}` on {} is not a whole recovery:\n{body}",
                 leg.label
             );
             assert!(
-                report.text.contains(&format!(
-                    "not recovered: the recovery run for `{signature}` produced no statement"
+                !report.text.contains(&format!(
+                    "not recovered: the recovery run for `{signature}`"
                 )),
-                "`NEG.{signature}` on {} is not quoted whole:\n{}",
+                "`NEG.{signature}` on {} is quoted whole:\n{}",
                 leg.label,
                 report.text
             );
         }
-        // The refused bodies present no field assignment at all: a copy's value written as a
-        // statement would be the effect the refusal exists to keep out of the text.
-        for line in report.text.lines().filter(|line| !line.contains("//")) {
-            assert!(
-                !line.contains("NEG.sa =") && !line.contains("NEG.arr["),
-                "`NEG` on {} presented an assignment its own refusal does not cover: {line:?}",
-                leg.label
-            );
-        }
+        assert!(
+            !report.text.contains("has no proved local assignment"),
+            "`NEG` on {} still carries the copy family's refusal:\n{}",
+            leg.label,
+            report.text
+        );
     }
 }
 
@@ -515,30 +547,6 @@ fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
             let snapshot = open(&leg.fixture(class));
             let report = presented(&snapshot, class);
             let text = stripped(&report);
-            // `NEG` is the negatives' own class: every body it holds is quoted, so its stripped text
-            // is the *safe* form the soundness invariant asks for — a method whose body a reader
-            // cannot compile, never one that compiles and behaves differently. The refusal texts are
-            // pinned by the tests above; the replay's job for it is exactly that it does not compile.
-            if class == "NEG" {
-                let work = scratch(&format!("negative-{class}"));
-                fs::write(work.join(format!("{class}.java")), &text)
-                    .expect("the presentation is written");
-                let compiled = Command::new("/usr/bin/javac")
-                    .arg("--release")
-                    .arg("8")
-                    .arg("-nowarn")
-                    .arg("-d")
-                    .arg(&work)
-                    .arg(work.join(format!("{class}.java")))
-                    .output()
-                    .expect("the compiler runs");
-                assert!(
-                    !compiled.status.success(),
-                    "`{class}` on {} is quoted whole and its stripped text must not compile:\n{text}",
-                    leg.label
-                );
-                continue;
-            }
             assert!(
                 !text.contains("jarde_refused_body"),
                 "`{class}` on {} still holds a refused body marker:\n{text}",

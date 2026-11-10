@@ -44,8 +44,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
 use jarde_jvm::method_ir::{
-    CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Definition, MethodIr, PhiInput, Slot,
-    SsaBlock, SsaInstruction, SsaTable, Value, ValueId,
+    CanonicalBlockId, CanonicalCfg, CanonicalEdge, CanonicalEdgeKind, Definition, MethodIr,
+    PhiInput, Slot, SsaBlock, SsaInstruction, SsaTable, Value, ValueId,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{CpEntryFacts, ExceptionHandlerFact, MethodCodeFacts};
@@ -54,6 +54,19 @@ use crate::decode::Operations;
 use crate::facts::{CompareOp, ConstantValue, Operation};
 use crate::normal_flow::NormalFlowView;
 use crate::stop::{StopReason, charge, poll};
+
+use self::composition::{
+    RegionExceptionClause, SwitchArm, is_gateway_break_pair, run_single_block, run_transfer,
+};
+
+/// The composition facts a loop/branch decision reads (A4.1): the one owner of *how a subtree
+/// leaves*. The walk's composition sites consume it instead of matching the variants themselves.
+mod composition;
+
+/// The per-candidate consolidation of the facts a recovered tree states (A4.1). Its
+/// construction is production code the composition contracts consume; its reconciliation against
+/// the canonical CFG/SSA is the stage proof of the tests that pin it.
+mod summary;
 
 /// Why one region could only be kept as bytecode.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -839,6 +852,20 @@ impl CatchClause {
         &self.types
     }
 
+    /// This clause as the composition contract reads it ([`RegionExceptionClause`]).
+    ///
+    /// Before the clause is part of a published tree — a candidate the walk is still proving —
+    /// the same reading is what the proof consumes, so the facts a decided statement states and
+    /// the facts a candidate is checked for are one owner, not two spellings.
+    pub(crate) fn exception_clause(&self) -> RegionExceptionClause<'_> {
+        RegionExceptionClause {
+            types: self.types.clone(),
+            handler: self.handler.clone(),
+            parameter: self.parameter,
+            body: Some(&self.body),
+        }
+    }
+
     /// The block this clause's handler entry is.
     pub fn handler(&self) -> &CanonicalBlockId {
         &self.handler
@@ -1147,10 +1174,12 @@ impl Region {
             Self::Guard { .. } => true,
             // A `try` is presented when the protected range and every handler body are: a clause
             // whose body is a quote keeps its header and states the quote inside it, which is a
-            // weaker presentation and not a structured one.
-            Self::Try { body, catches, .. } => {
-                body.is_structured() && catches.iter().all(|clause| clause.body.is_structured())
-            }
+            // weaker presentation and not a structured one. Both the range and the clause bodies
+            // are the statement's composed children, read from their owner.
+            Self::Try { .. } => self
+                .composed_children()
+                .into_iter()
+                .all(Region::is_structured),
             Self::Fallback { .. } => false,
             Self::EntrySplitLoop { .. } => true,
             Self::LoopBreak { .. } => true,
@@ -1190,13 +1219,13 @@ impl Region {
                 .collect(),
             Self::Loop { body, .. } => body.iter().flat_map(Region::fallbacks).collect(),
             Self::Guard { .. } => Vec::new(),
-            Self::Try { body, catches, .. } => {
-                let mut reasons = body.fallbacks();
-                for clause in catches {
-                    reasons.extend(clause.body.fallbacks());
-                }
-                reasons
-            }
+            // A `try`'s quote may sit in its protected range or in any clause body: every one of them is
+            // a composed child, read from the owner of that fact.
+            Self::Try { .. } => self
+                .composed_children()
+                .into_iter()
+                .flat_map(Region::fallbacks)
+                .collect(),
             Self::Fallback { reason, .. } => vec![reason.clone()],
             Self::EntrySplitLoop { .. } => Vec::new(),
             Self::LoopBreak { .. } => Vec::new(),
@@ -1251,11 +1280,9 @@ fn protected_prefix_loop_shape(body: &[Region]) -> bool {
     if blocks.is_empty() {
         return false;
     }
-    match loop_region {
-        Region::Loop { .. } => true,
-        Region::Sequence { regions } => matches!(regions.as_slice(), [Region::Loop { .. }]),
-        _ => false,
-    }
+    // The loop may be stated directly or behind the single-child `Sequence` a loop-only body is
+    // kept in: [`Region::loop_leaf`] is the one reading of that fact.
+    loop_region.loop_leaf().is_some()
 }
 
 fn contains_guard_or_nested_try(region: &Region, budget: &mut Budget) -> Result<bool, StopReason> {
@@ -1765,22 +1792,22 @@ fn retry_transfer_paths(
 ) -> Result<Option<bool>, StopReason> {
     charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
     poll(budget, None)?;
+    // A proved loop transfer closes this path, and its own variant is what states the loop and the
+    // edge sense. A switch arm's break is not a transfer this finite retry body may contain: it
+    // names no loop, so the shape is refused rather than borrowing a destination.
+    if let Some(transfer) = region.transfer_leaf() {
+        let Some(loop_header) = transfer.kind.loop_header() else {
+            return Ok(None);
+        };
+        transfers.push((
+            transfer.source_bci,
+            loop_header.clone(),
+            transfer.kind.is_continue(),
+        ));
+        return Ok(Some(true));
+    }
     match region {
         Region::Straight { .. } => Ok(Some(false)),
-        Region::LoopBreak {
-            source_bci,
-            loop_header,
-        } => {
-            transfers.push((*source_bci, loop_header.clone(), false));
-            Ok(Some(true))
-        }
-        Region::LoopContinue {
-            source_bci,
-            loop_header,
-        } => {
-            transfers.push((*source_bci, loop_header.clone(), true));
-            Ok(Some(true))
-        }
         Region::Sequence { regions } => {
             let mut closed = false;
             for region in regions {
@@ -1812,21 +1839,32 @@ fn retry_transfer_paths(
             };
             Ok(Some(left && right))
         }
-        Region::Try { body, catches, .. } => {
-            let [catch] = catches.as_slice() else {
+        Region::Try { .. } => {
+            // A `try` in a finite retry body must bind exactly one clause, and it must be *this*
+            // retry's handler: a body holding a clause of another row would hand the retry's
+            // exception to a body the retry does not own. Both the clause count and the handler it
+            // reaches are the statement's own facts, read from their owner
+            // ([`Region::exception_clauses`]) rather than destructured here.
+            let clauses = region.exception_clauses();
+            let [clause] = clauses.as_slice() else {
                 return Ok(None);
             };
-            if catch.handler() != handler {
+            if &clause.handler != handler {
                 return Ok(None);
             }
             *handlers += 1;
-            let Some(body_closed) =
-                retry_transfer_paths(body, handler, transfers, handlers, budget)?
+            let Some(body) = region.protected_body() else {
+                return Ok(None);
+            };
+            let Some(catch_body) = clause.body else {
+                return Ok(None);
+            };
+            let Some(body_closed) = retry_transfer_paths(body, handler, transfers, handlers, budget)?
             else {
                 return Ok(None);
             };
             let Some(catch_closed) =
-                retry_transfer_paths(catch.body(), handler, transfers, handlers, budget)?
+                retry_transfer_paths(catch_body, handler, transfers, handlers, budget)?
             else {
                 return Ok(None);
             };
@@ -1952,10 +1990,9 @@ pub(crate) fn ordinary_try_list_scope(
             }
         }
     }
-    let Some(Region::Try {
+    let Some(try_region @ Region::Try {
         lead,
         body,
-        catches,
         transparent: None,
         ..
     }) = found
@@ -1968,18 +2005,28 @@ pub(crate) fn ordinary_try_list_scope(
     else {
         return Ok(None);
     };
-    if !protected_prefix_loop_shape(body_regions) || catches.len() != 1 {
+    // Exactly one clause, read from the owner of that reading. `transparent: None` above stays a
+    // separate condition: a re-raise handler is no clause the text writes, and this certificate
+    // owns only the named row's range.
+    let clauses = try_region.exception_clauses();
+    let [clause] = clauses.as_slice() else {
+        return Ok(None);
+    };
+    if !protected_prefix_loop_shape(body_regions) {
         return Ok(None);
     }
-    for nested in body_regions
-        .iter()
-        .chain(catches.iter().map(|clause| clause.body.as_ref()))
-    {
+    let Some(catch_body) = clause.body else {
+        return Ok(None);
+    };
+    // The scan walks the protected range's own members and then the clause body, in that order:
+    // the same subtrees, in the same sequence, that the certificate read before the clause had an
+    // owner — the range is one `Sequence` here, and scanning it as a whole would charge its child
+    // list an extra time.
+    for nested in body_regions.iter().chain(std::iter::once(catch_body)) {
         if contains_guard_or_nested_try(nested, budget)? {
             return Ok(None);
         }
     }
-    let clause = &catches[0];
     let crate::guard::CatchTypes::Named(types) = &clause.types else {
         return Ok(None);
     };
@@ -2016,12 +2063,8 @@ pub(crate) fn ordinary_try_list_scope(
     let Some(body_owners) = candidate_region_mentions(body_regions, budget, false, true)? else {
         return Ok(None);
     };
-    let Some(catch_owners) = candidate_region_mentions(
-        std::slice::from_ref(clause.body.as_ref()),
-        budget,
-        false,
-        true,
-    )?
+    let Some(catch_owners) =
+        candidate_region_mentions(std::slice::from_ref(&catch_body), budget, false, true)?
     else {
         return Ok(None);
     };
@@ -2233,6 +2276,16 @@ pub struct Recovered {
     pub claimed: BTreeSet<usize>,
     /// Every block of the canonical graph, live or not.
     pub blocks: usize,
+    /// The per-candidate facts this tree states, one entry per top-level candidate in method order
+    /// (A4.1). Derived once when the walk completes, on the tree the walk published, and read-only
+    /// afterwards: the composition contracts of the later increments consume it instead of
+    /// re-deriving a candidate's owned set, boundaries, transfers, terminals, clauses or effects
+    /// from the variants themselves. It is a *derived view* — [`Region::blocks`] stays the single
+    /// ownership rule and the walk's own checks stay the enforced ones.
+    ///
+    /// A whole-body refusal states no structure, so it derives none: [`quoted_whole`] leaves this
+    /// empty rather than inventing candidate facts for a quote.
+    pub(crate) summaries: Vec<summary::RegionSummary>,
 }
 
 impl Recovered {
@@ -3111,7 +3164,7 @@ pub(crate) fn recover(
     // Whether the method's descriptor states a `boolean` result — the fact the
     // two-terminal-return claim needs before it may commit ownership.
     return_is_boolean: bool,
-    profile: &crate::pass::RecoveryProfile,
+    profile: &crate::pass::SourceTarget,
     budget: &mut Budget,
 ) -> Result<Recovered, StopReason> {
     let live: Vec<CanonicalBlockId> = canonical
@@ -3460,10 +3513,12 @@ pub(crate) fn recover(
             reason: FallbackReason::UnaccountedInstructions { bcis: unaccounted },
         });
     }
+    let summaries = summary::summaries_of(&regions, ssa, operations, walker.budget)?;
     Ok(Recovered {
         regions,
         claimed: walker.visited,
         blocks: canonical.blocks().len(),
+        summaries,
     })
 }
 
@@ -4467,6 +4522,7 @@ fn quoted_whole(
         }],
         claimed: BTreeSet::new(),
         blocks: canonical.blocks().len(),
+        summaries: Vec::new(),
     }
 }
 
@@ -5113,6 +5169,19 @@ impl Frame {
                 .as_ref()
                 .is_some_and(|entries| entries.contains(&node))
     }
+
+    /// This frame's switch-arm scope, when the switch's fallthrough proof made it one.
+    ///
+    /// The three frame fields are one fact — *this arm's join belongs to a switch* — so the
+    /// question is asked here, in [`SwitchArm`]'s terms, rather than re-spelled at each site that
+    /// needs it. A join without that proof belongs to the enclosing structure.
+    fn switch_arm_scope(&self) -> Option<SwitchArm> {
+        SwitchArm::of(
+            self.switch_join,
+            self.switch_branch_bci,
+            self.switch_fallthrough_target.is_some(),
+        )
+    }
 }
 
 struct Walker<'a> {
@@ -5139,7 +5208,7 @@ struct Walker<'a> {
     handlers: &'a [ExceptionHandlerFact],
     /// The profile the run is presented under: `twr@1`'s output is Java 7 syntax, so a profile that
     /// presents the artifact as an older release does not admit it ([`crate::pass::Pass::admits`]).
-    profile: &'a crate::pass::RecoveryProfile,
+    profile: &'a crate::pass::SourceTarget,
     budget: &'a mut Budget,
     catch_joins: BTreeSet<(usize, usize)>,
     loop_catch_terminal_owners: Vec<LoopCatchTerminalOwner>,
@@ -5162,8 +5231,27 @@ struct Walker<'a> {
     depth: usize,
 }
 
+/// Everything a **tentative** walk can change, captured before the attempt and put back when the
+/// enclosing decision refuses it.
+///
+/// A trial is a child walk whose result the caller may reject: a branch arm whose shape turns out
+/// not to meet its join, a loop body whose owner set is not the one the certificate named, a
+/// prefixed retry whose handler does not close. While such a walk runs it claims blocks
+/// ([`Walker::visited`]), may record the reason it stopped short ([`Walker::unclosed_tail_at`]), and
+/// can displace the three facts a nested claim replaces: the fragmented-catch proof, the monitor
+/// body it walks inside, and — through [`Walker::region_at`] — the recursion depth.
+///
+/// **This is one type on purpose.** Restoring a hand-picked subset is what lets a refusal leave an
+/// owner behind: the field a site forgot keeps whatever the failed attempt made of it, and the next
+/// candidate — which may be a *sibling* that never saw the attempt — then reads a claim that was
+/// never published. So the snapshot is the whole mutable set, [`Walker::restore_trial_state`] is the
+/// only restore, and a field added to [`Walker`] later has one place to be added here.
+///
+/// The budget is deliberately *not* part of it: work already spent is not refunded. A refund would
+/// let a refused candidate scan the graph for free, so a trial's cost stays charged even when its
+/// result is thrown away ([`Walker::charged_trial_state`] is where that price is paid).
 #[derive(Clone)]
-struct LoopBodyTrialState {
+struct TrialState {
     visited: BTreeSet<usize>,
     unclosed_tail_at: Option<u32>,
     catch_joins: BTreeSet<(usize, usize)>,
@@ -5172,6 +5260,33 @@ struct LoopBodyTrialState {
     excluded_edge_nodes: BTreeSet<CanonicalBlockId>,
     own_monitor: Option<MonitorBody>,
     depth: usize,
+}
+
+impl TrialState {
+    /// The walker's present mutable state. A pure read: it charges nothing, so a site that already
+    /// paid for its own checkpoint ([`Walker::charged_trial_state`], and the two retry candidates
+    /// that bill their own item count) can take the snapshot without paying twice.
+    fn of(walker: &Walker<'_>) -> Self {
+        Self {
+            visited: walker.visited.clone(),
+            unclosed_tail_at: walker.unclosed_tail_at,
+            catch_joins: walker.catch_joins.clone(),
+            loop_catch_terminal_owners: walker.loop_catch_terminal_owners.clone(),
+            fragmented: walker.fragmented.clone(),
+            excluded_edge_nodes: walker.excluded_edge_nodes.clone(),
+            own_monitor: walker.own_monitor.clone(),
+            depth: walker.depth,
+        }
+    }
+
+    /// The blocks the trial had already claimed when it started.
+    ///
+    /// A caller that has to *compare* an attempt's claims against its starting point — rather than
+    /// put them back — reads this instead of restoring first, so the comparison and the restore
+    /// cannot disagree about where the trial began.
+    fn visited(&self) -> &BTreeSet<usize> {
+        &self.visited
+    }
 }
 
 /// The bound on the region walk's own recursion.
@@ -5581,10 +5696,20 @@ fn finally_body_supported(region: &Region, nested_catch: bool) -> bool {
             finally_body_supported(then_arm, nested_catch)
                 && finally_body_supported(else_arm, nested_catch)
         }
-        Region::Try { body, catches, .. } if nested_catch => {
-            catches.len() == 1
-                && finally_body_supported(body, false)
-                && finally_body_supported(catches[0].body(), false)
+        Region::Try { .. } if nested_catch => {
+            // One clause whose body is an ordinary run, and a protected range that is one too: the
+            // clause count and each body are the statement's own facts, read from their owner
+            // ([`Region::exception_clauses`] / [`Region::protected_body`]).
+            let clauses = region.exception_clauses();
+            let [clause] = clauses.as_slice() else {
+                return false;
+            };
+            region
+                .protected_body()
+                .is_some_and(|body| finally_body_supported(body, false))
+                && clause
+                    .body
+                    .is_some_and(|body| finally_body_supported(body, false))
         }
         _ => false,
     }
@@ -5618,7 +5743,13 @@ fn shared_join_body_supported(region: &Region, loop_allowed: bool) -> bool {
 }
 
 impl Walker<'_> {
-    fn loop_body_trial_state(&mut self, at: Option<u32>) -> Result<LoopBodyTrialState, StopReason> {
+    /// A trial's snapshot, **charged** for the state it copies.
+    ///
+    /// The three loop-body candidates read their checkpoint before the body walk and bill the
+    /// items the snapshot copies, which is what the three loop-body candidates have always
+    /// billed; the formula is unchanged, so this is the same *price*, not a new one. A site that
+    /// has already paid for its own checkpoint takes [`TrialState::of`] instead.
+    fn charged_trial_state(&mut self, at: Option<u32>) -> Result<TrialState, StopReason> {
         let owner_scan = u64::try_from(self.loop_catch_terminal_owners.len()).unwrap_or(u64::MAX);
         poll(self.budget, at)?;
         charge(
@@ -5660,27 +5791,74 @@ impl Walker<'_> {
             u64::try_from(units).unwrap_or(u64::MAX),
             at,
         )?;
-        Ok(LoopBodyTrialState {
-            visited: self.visited.clone(),
-            unclosed_tail_at: self.unclosed_tail_at,
-            catch_joins: self.catch_joins.clone(),
-            loop_catch_terminal_owners: self.loop_catch_terminal_owners.clone(),
-            fragmented: self.fragmented.clone(),
-            excluded_edge_nodes: self.excluded_edge_nodes.clone(),
-            own_monitor: self.own_monitor.clone(),
-            depth: self.depth,
-        })
+        Ok(TrialState::of(self))
     }
 
-    fn restore_loop_body_trial_state(&mut self, state: LoopBodyTrialState) {
-        self.visited = state.visited;
+    /// Put the walker back exactly where a trial found it, **including** the method-level refusal
+    /// marker.
+    ///
+    /// This is for a trial whose attempt must leave no trace at all: one that ran a *wider* proof
+    /// over an entry prefix that was already consumed (the prefixed retry), or that displaced a
+    /// monitor body or the loop-catch owners while it decided. Whatever it recorded — including a
+    /// `unclosed_tail_at` it set on the way — belongs to a candidate that is being withdrawn, not
+    /// to the method.
+    ///
+    /// It takes the snapshot by reference because one trial usually has several refusal exits (a
+    /// stop, a shape that did not close, an owner set that disagrees); each of them restores the
+    /// same starting point.
+    fn restore_trial_state(&mut self, state: &TrialState) {
+        self.visited = state.visited.clone();
         self.unclosed_tail_at = state.unclosed_tail_at;
-        self.catch_joins = state.catch_joins;
-        self.loop_catch_terminal_owners = state.loop_catch_terminal_owners;
-        self.fragmented = state.fragmented;
-        self.excluded_edge_nodes = state.excluded_edge_nodes;
-        self.own_monitor = state.own_monitor;
+        self.catch_joins = state.catch_joins.clone();
+        self.loop_catch_terminal_owners = state.loop_catch_terminal_owners.clone();
+        self.fragmented = state.fragmented.clone();
+        self.excluded_edge_nodes = state.excluded_edge_nodes.clone();
+        self.own_monitor = state.own_monitor.clone();
         self.depth = state.depth;
+    }
+
+    /// Put back the four facts a **shape** trial owns, and leave the rest of the walker alone.
+    ///
+    /// These trials decide one local shape — a branch arm, a `finally` body, a continuation — inside
+    /// a structure the walk has already committed to. What the attempt could change is the claims it
+    /// made, the refusal marker it set, the catch joins it registered and the fragmented proof it
+    /// displaced; the loop-catch owners, the monitor body and the recursion depth are not this
+    /// site's to touch, because no path through it assigns them.
+    ///
+    /// Restoring anything **more** here is not a harmless widening: putting back `depth` from a
+    /// stale snapshot discards the increments the enclosing frames made after the snapshot was taken,
+    /// and putting back `own_monitor`/`loop_catch_terminal_owners` likewise rewinds facts this trial
+    /// never owned. Measured: collapsing this scope into [`Self::restore_trial_state`] loses
+    /// `TestTryCatchFinally5`'s `finally` outright.
+    fn restore_shape_claims(&mut self, state: &TrialState) {
+        self.visited = state.visited.clone();
+        self.unclosed_tail_at = state.unclosed_tail_at;
+        self.catch_joins = state.catch_joins.clone();
+        self.fragmented = state.fragmented.clone();
+    }
+
+    /// Put back the claims and the refusal marker, and nothing else.
+    ///
+    /// One local continue arm is decided this way: its own walk may claim blocks and may record why
+    /// it stopped short, but it does not register catch joins or displace a fragmented proof — no
+    /// path through it assigns those — so restoring them would rewind facts the trial never owned.
+    fn restore_claims_and_tail(&mut self, state: &TrialState) {
+        self.visited = state.visited.clone();
+        self.unclosed_tail_at = state.unclosed_tail_at;
+    }
+
+    /// Put back only the **claims** a trial made, and keep everything else it changed.
+    ///
+    /// These trials decide one local shape inside a structure the walk has already committed to.
+    /// When the shape does not close, the blocks the attempt claimed go back, so the next reading of
+    /// the same region starts from the same claim set. The refusal marker is deliberately **not**
+    /// restored: it records that a reachable successor could not be owned *anywhere* on the way, and
+    /// [`recover`] refuses the whole method on it. Clearing it here would let an abandoned attempt
+    /// erase the evidence that the method still has a block this walk could not place — the one thing
+    /// that must never be optimistic, because the result is executable code that drops a reachable
+    /// block.
+    fn restore_claims(&mut self, state: &TrialState) {
+        self.visited = state.visited.clone();
     }
 
     /// Terminal bodies proved for this exact natural-loop header and its certified named rows.
@@ -5815,7 +5993,12 @@ impl Walker<'_> {
                 return Ok(gap(prefix, vec![current.clone()], reason, None));
             };
             if frame.stops_at_switch_boundary(node) {
-                if frame.switch_join == Some(node) && frame.switch_fallthrough_target.is_some() {
+                // A join no case entry names belongs to a switch only when that switch's
+                // fallthrough proof made this frame one of its arms.
+                if frame
+                    .switch_arm_scope()
+                    .is_some_and(|arm| arm.is_proved_arm_joining_at(node))
+                {
                     let leaf = match prefix.last() {
                         Some(source) => self.switch_break_transfer(source, &current, frame)?,
                         None => None,
@@ -5939,77 +6122,7 @@ impl Walker<'_> {
                     self.budget,
                 )?
             {
-                let recovered = match plan.shape() {
-                    crate::guard::Shape::Finally { .. } => self
-                        .finally_body(&current, &plan, frame)?
-                        .map(|body| (body, None)),
-                    crate::guard::Shape::LockGuardFinally { .. } => self
-                        .lock_guard_finally_body(&current, &plan, frame)?
-                        .map(|body| (body, None)),
-                    crate::guard::Shape::LoopFinally { .. } => self
-                        .loop_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::ConditionalFinally { .. } => self
-                        .conditional_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::NullableResourceFinally { .. } => self
-                        .nullable_resource_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::FlagConditionalFinally { .. } => self
-                        .flag_conditional_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::LocalNullConditionalFinally { .. } => self
-                        .local_null_conditional_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::SharedFinally { .. } => self
-                        .shared_finally_body(&current, &plan, frame)?
-                        .map(|body| (body, None)),
-                    crate::guard::Shape::EmptyCatchCallFinally { .. } => self
-                        .empty_catch_call_finally_body(&current, &plan, frame)?
-                        .map(|body| (body, None)),
-                    crate::guard::Shape::TwoCatchReturnFinally { .. } => self
-                        .two_catch_return_finally_body(&current, &plan, frame)?
-                        .map(|body| (body, None)),
-                    crate::guard::Shape::NestedCleanupFinally { .. } => self
-                        .nested_cleanup_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::SegmentedFinally { .. } => self
-                        .segmented_finally_body(&current, &plan, frame)?
-                        .map(|body| (body, None)),
-                    crate::guard::Shape::MultiReturnLoopFinally { .. } => self
-                        .multi_return_loop_finally_body(&current, &plan, frame)?
-                        .map(|body| (body, None)),
-                    crate::guard::Shape::ResourceGuardFinally { .. } => self
-                        .resource_guard_finally_body(&current, &plan, frame)?
-                        .map(|body| (body, None)),
-                    _ => None,
-                };
-                if let Some((body, finally_body)) = recovered {
-                    for block in plan.owned() {
-                        if let Some(index) = self.view.index_of(block) {
-                            self.visited.insert(index);
-                        }
-                    }
-                    let join = plan.join().cloned();
-                    return Ok(one(
-                        Region::Guard {
-                            prefix,
-                            plan,
-                            body: Some(Box::new(body)),
-                            finally_body: finally_body.map(Box::new),
-                        },
-                        join,
-                    ));
-                }
-                let reason = FallbackReason::Guard {
-                    pass: None,
-                    code: "jre_guard_finally_copy",
-                    at: current.bci(),
-                    message:
-                        "the shared catch-all finally has no complete bounded try and catch bodies"
-                            .into(),
-                };
-                return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+                return self.shared_finally_region(prefix, &current, frame, plan);
             }
             if frame.own_try != Some(node)
                 && (frame.own_finally.is_none() || frame.nested_finally_row.is_some())
@@ -6017,76 +6130,7 @@ impl Walker<'_> {
                 && let Some((body, lead, catches, join, tails, exit_bci, transparent, retry)) =
                     self.try_region(&current, node, frame, &prefix)?
             {
-                let loop_entry_prefix = retry
-                    .as_ref()
-                    .map(|proof| proof.entry_prefix.clone())
-                    .unwrap_or_default();
-                let try_prefix = if loop_entry_prefix.is_empty() {
-                    prefix
-                } else {
-                    Vec::new()
-                };
-                let try_region = Region::Try {
-                    prefix: try_prefix,
-                    lead,
-                    body,
-                    catches,
-                    transparent,
-                    normal_exit_bci: exit_bci.or_else(|| {
-                        self.fragmented.as_ref().and_then(|proof| {
-                            (proof.outer_start != proof.inner_start
-                                && current.bci() == proof.inner_start)
-                                .then_some(proof.inner_exit_bci)
-                        })
-                    }),
-                };
-                let mut run = if let Some(retry) = retry {
-                    let mut regions = if loop_entry_prefix.is_empty() {
-                        Vec::new()
-                    } else {
-                        vec![Region::Straight {
-                            blocks: loop_entry_prefix,
-                        }]
-                    };
-                    regions.push(Region::Loop {
-                        header: retry.header,
-                        tests: Vec::new(),
-                        test_operator: None,
-                        form: LoopForm::Endless,
-                        for_header: None,
-                        body: vec![try_region],
-                        exit: Some(retry.exit),
-                        gateway_origins: Vec::new(),
-                    });
-                    regions
-                } else {
-                    vec![try_region]
-                };
-                run.extend(tails);
-                if self.fragmented.as_ref().is_some_and(|proof| {
-                    proof.outer_start != proof.inner_start
-                        && current.bci() == proof.inner_start
-                        && frame.own_try.is_some()
-                }) && let Some(tail_start) = join.as_ref()
-                    && frame.boundary != self.view.index_of(tail_start)
-                {
-                    let mut next = Some(tail_start.clone());
-                    for _ in 0..self.canonical.blocks().len() {
-                        let Some(at) = next.as_ref() else { break };
-                        if frame.boundary == self.view.index_of(at) {
-                            break;
-                        }
-                        let previous = at.clone();
-                        let (tail, following) = self.region_at(&previous, frame)?;
-                        run.extend(tail);
-                        next = following;
-                        if next.as_ref() == Some(&previous) {
-                            break;
-                        }
-                    }
-                    return Ok((run, next));
-                }
-                return Ok((run, join));
+                return self.named_try_region(prefix, &current, frame, (body, lead, catches, join, tails, exit_bci, transparent, retry));
             }
             // A loop this walk enters from outside is a region of its own, and it *starts* one: the
             // run that led here ends before the loop, because the loop's test is written inside the
@@ -6180,89 +6224,12 @@ impl Walker<'_> {
                     | crate::guard::Shape::LocalNullConditionalFinally { .. }
                     | crate::guard::Shape::SegmentedNullLeadFinally { .. }))
             {
-                let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
-                    unreachable!("the structured finally verdict was just matched")
-                };
-                let recovered = match plan.shape() {
-                    crate::guard::Shape::LoopFinally { .. } => self
-                        .loop_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::NullableResourceFinally { .. } => self
-                        .nullable_resource_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::FlagConditionalFinally { .. } => self
-                        .flag_conditional_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::LocalNullConditionalFinally { .. } => self
-                        .local_null_conditional_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::SegmentedNullLeadFinally { .. } => self
-                        .segmented_null_lead_finally_regions(&current, &plan, frame)?
-                        .map(|(body, cleanup)| (body, Some(cleanup))),
-                    crate::guard::Shape::Finally {
-                        completion: crate::guard::FinallyCompletion::Void { .. },
-                        row_ordinal,
-                        ..
-                    } => self
-                        .bounded_shared_finally_body(
-                            &current,
-                            plan.body(),
-                            None,
-                            ((*row_ordinal, plan.body()), None),
-                            &plan,
-                            frame,
-                            None,
-                        )?
-                        .map(|body| (body, None)),
-                    _ => self
-                        .finally_body(&current, &plan, frame)?
-                        .map(|body| (body, None)),
-                };
-                if let Some((body, cleanup)) = recovered {
-                    let join = plan.join().cloned();
-                    for block in plan.owned() {
-                        if let Some(node) = self.view.index_of(block) {
-                            self.visited.insert(node);
-                        }
-                    }
-                    return Ok(one(
-                        Region::Guard {
-                            prefix,
-                            plan,
-                            body: Some(Box::new(body)),
-                            finally_body: cleanup.map(Box::new),
-                        },
-                        join,
-                    ));
-                }
-                let reason = FallbackReason::Guard {
-                    pass: None,
-                    code: "jre_guard_finally_copy",
-                    at: current.bci(),
-                    message: "the proved finally body has no complete bounded structure".into(),
-                };
-                return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+                return self.structured_finally_region(&mut guard_verdict, prefix, &current, frame);
             }
             if matches!(guard_verdict.as_ref(), Some(crate::guard::Verdict::Claimed(plan))
                 if matches!(plan.shape(), crate::guard::Shape::MonitorBranches { .. }))
             {
-                let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
-                    unreachable!("the multi-exit monitor verdict was just matched")
-                };
-                for block in plan.owned() {
-                    if let Some(node) = self.view.index_of(block) {
-                        self.visited.insert(node);
-                    }
-                }
-                return Ok(one(
-                    Region::Guard {
-                        prefix,
-                        plan,
-                        body: None,
-                        finally_body: None,
-                    },
-                    None,
-                ));
+                return self.monitor_branches_region(&mut guard_verdict, prefix);
             }
             // A monitor whose body holds a proved inner pair is a **structured** body: the walk
             // builds its region tree — the loop or branch around the inner block included — the
@@ -6272,34 +6239,7 @@ impl Walker<'_> {
             if matches!(guard_verdict.as_ref(), Some(crate::guard::Verdict::Claimed(plan))
                 if matches!(plan.shape(), crate::guard::Shape::Monitor { nested: Some(_), .. }))
             {
-                let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
-                    unreachable!("the nested monitor verdict was just matched")
-                };
-                if let Some(body) = self.monitor_nested_body(&plan, frame)? {
-                    for block in plan.owned() {
-                        if let Some(node) = self.view.index_of(block) {
-                            self.visited.insert(node);
-                        }
-                    }
-                    let join = plan.join().cloned();
-                    return Ok(one(
-                        Region::Guard {
-                            prefix,
-                            plan,
-                            body: Some(Box::new(body)),
-                            finally_body: None,
-                        },
-                        join,
-                    ));
-                }
-                let reason = FallbackReason::Guard {
-                    pass: None,
-                    code: "jre_guard_body",
-                    at: current.bci(),
-                    message: "the nested synchronized body has no complete bounded structure"
-                        .into(),
-                };
-                return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+                return self.monitor_nested_region(&mut guard_verdict, prefix, &current, frame);
             }
             if !self.visited.insert(node) {
                 // The block is already part of the recovered structure: the walk has re-entered one
@@ -6476,1190 +6416,7 @@ impl Walker<'_> {
                     current = next;
                 }
                 2 => {
-                    let branch = current.clone();
-                    let branch_bci = match self.terminal_bci(&branch) {
-                        Some(bci) => bci,
-                        None => {
-                            let reason = FallbackReason::MissingEvidence {
-                                block_bci: branch.bci(),
-                            };
-                            return Ok(gap(prefix, vec![branch], reason, None));
-                        }
-                    };
-                    let Some((op, target)) = self
-                        .operations
-                        .get(branch_bci)
-                        .and_then(Operation::comparison)
-                    else {
-                        let reason = FallbackReason::UnknownBranchSense {
-                            block_bci: branch.bci(),
-                            branch_bci,
-                        };
-                        return Ok(gap(prefix, vec![branch], reason, None));
-                    };
-                    let Some((fall_through, taken)) = self.split_arms(&successors, target) else {
-                        let reason = FallbackReason::UnrenderableOperand { bci: branch_bci };
-                        return Ok(gap(prefix, vec![branch], reason, None));
-                    };
-                    if let Some(region) =
-                        self.shared_tail_early_return(&prefix, &branch, branch_bci, frame)?
-                    {
-                        let next = frame
-                            .shared_tail
-                            .and_then(|tail| self.view.id_of(tail).cloned());
-                        return Ok(one(region, next));
-                    }
-                    if let Some((regions, next)) =
-                        self.short_circuit_value(&prefix, &branch, branch_bci, frame)?
-                    {
-                        return Ok((regions, next));
-                    }
-                    if let Some(region) =
-                        self.two_exit_return(&prefix, &branch, branch_bci, frame)?
-                    {
-                        return Ok(one(region, None));
-                    }
-                    let post_join = self
-                        .view
-                        .immediate_post_dominator(node)
-                        .filter(|join| *join != node)
-                        .filter(|join| {
-                            !frame.loop_targets.iter().any(|target| {
-                                frame.loop_targets.last().map(|current| current.header)
-                                    != Some(target.header)
-                                    && target.continue_target == *join
-                            })
-                        });
-                    // A branch inside a switch arm can finish either at the switch's local
-                    // join or at the enclosing loop's exit. The method-wide post-dominator is
-                    // then the loop exit, but it is not the join of this Java `if`.
-                    let then_node = self.view.index_of(&fall_through);
-                    let else_node = self.view.index_of(&taken);
-                    if !frame.loop_targets.is_empty() {
-                        charge(
-                            self.budget,
-                            CountedBudgetDimension::AnalysisSteps,
-                            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
-                            Some(branch_bci),
-                        )?;
-                    }
-                    let loop_bridge_join = frame.loop_targets.last().and_then(|target| {
-                        let boundary = frame.boundary?;
-                        let exit = self.view.id_of(target.break_target?)?;
-                        let blocks = self.view.loop_entered_at(target.header)?.blocks();
-                        let through_bridge = [then_node, else_node]
-                            .into_iter()
-                            .flatten()
-                            .any(|arm| self.loop_exit_bridge(node, arm, exit, blocks));
-                        let through_latch = [then_node, else_node]
-                            .into_iter()
-                            .flatten()
-                            .any(|arm| blocks.contains(&arm) && self.view.reaches(arm, boundary));
-                        (frame.switch_join.is_none() && through_bridge && through_latch).then(
-                            || {
-                                // A body that holds two loop-jump edges — one breaking out, one
-                                // keeping the loop — has no single graph join: the post-dominator
-                                // was an enclosing loop's continue target and the bridge proof is
-                                // what classified the arms. When a proved for-header owns an
-                                // update block apart from the header, the loop-side arm's
-                                // statements end there and the join is that block, so the walk
-                                // stops at the update instead of absorbing it. A loop whose
-                                // continue target *is* its header — a `while`/endless loop, where
-                                // the update is the body's own last statement — keeps the
-                                // boundary: the header is where the loop's arms regroup, and a
-                                // join placed on it would end the body walk early.
-                                if target.continue_target != target.header
-                                    && target.continue_target != boundary
-                                    && blocks.contains(&target.continue_target)
-                                {
-                                    target.continue_target
-                                } else {
-                                    boundary
-                                }
-                            },
-                        )
-                    });
-                    let fragmented_handler_join = self.fragmented.as_ref().and_then(|proof| {
-                        let boundary = frame.boundary?;
-                        let [a, b] = [then_node?, else_node?];
-                        (frame.own_try.is_some()
-                            && proof.exceptional_blocks.contains(&node)
-                            && proof.loop_header == frame.loop_targets.last()?.header
-                            && (self.view.reaches(a, boundary) != self.view.reaches(b, boundary))
-                            && self.view.reaches(a, self.view.index_of(&proof.update)?)
-                            && self.view.reaches(b, self.view.index_of(&proof.update)?))
-                        .then_some(boundary)
-                    });
-                    let nested_side_exit = if let Some(target) = frame.loop_targets.last() {
-                        if let (Some(parent_exit), Some(parent_loop)) = (
-                            target.break_target,
-                            self.view.loop_entered_at(target.header),
-                        ) {
-                            let parent_blocks = parent_loop.blocks().clone();
-                            if parent_blocks.contains(&node) {
-                                self.nested_loop_side_exit(
-                                    target.header,
-                                    &parent_blocks,
-                                    parent_exit,
-                                    frame,
-                                    Some(node),
-                                )?
-                            } else {
-                                None
-                            }
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    };
-                    let join_node = if let Some(proof) = &nested_side_exit {
-                        Some(proof.stay)
-                    } else if let Some(boundary) = fragmented_handler_join.or(loop_bridge_join) {
-                        Some(boundary)
-                    } else if post_join.is_some_and(|join| {
-                        frame
-                            .loop_targets
-                            .iter()
-                            .any(|target| target.break_target == Some(join))
-                    }) {
-                        frame.switch_join.or(post_join)
-                    } else {
-                        post_join
-                    };
-                    let shared_join = if join_node.is_none() {
-                        if self.return_is_boolean
-                            && frame.shared_tail.is_none()
-                            && frame.boundary.is_none()
-                            && frame.scope.is_none()
-                            && frame.case_entries.is_none()
-                            && frame.own_try.is_none()
-                            && frame.own_finally.is_none()
-                            && frame.loop_exit.is_none()
-                            && frame.switch_join.is_none()
-                            && frame.loop_targets.is_empty()
-                        {
-                            self.shared_forward_join(node, then_node, else_node, branch_bci)?
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    };
-                    let join_node = join_node.or(shared_join);
-                    let direct_continue_join = if join_node.is_none_or(|join| {
-                        frame
-                            .scope
-                            .as_ref()
-                            .is_some_and(|scope| !scope.contains(&join))
-                    }) {
-                        self.direct_continue_local_join(
-                            node, then_node, else_node, frame, branch_bci,
-                        )?
-                    } else {
-                        None
-                    };
-                    let join_node = direct_continue_join
-                        .as_ref()
-                        .map(|(boundary, _, _)| *boundary)
-                        .or(join_node);
-                    let join_node = self
-                        .loop_break_body_local_join(node, then_node, else_node, frame)
-                        .or(join_node);
-                    // A branch inside a loop body whose join none of the readings above states
-                    // still states its own edges: the second loop jump pulled the arms' meeting
-                    // point past an enclosing loop's continue target (the post-dominator was
-                    // filtered) and no exit bridge exists. One arm that is a single `goto` onto
-                    // *this* loop's own continue target is a `continue` edge, and the other arm
-                    // staying a block of the loop is the loop-side continuation: the continue
-                    // target is the join both arms route to — the same reading the one-jump body
-                    // takes from its post-dominator, stated here from the edge itself.
-                    let continue_target_join = join_node
-                        .is_none()
-                        .then(|| {
-                            frame.loop_targets.last().and_then(|target| {
-                                let blocks =
-                                    self.view.loop_entered_at(target.header)?.blocks().clone();
-                                [then_node, else_node]
-                                    .into_iter()
-                                    .flatten()
-                                    .find(|arm| {
-                                        self.loop_continue_bridge(
-                                            node,
-                                            *arm,
-                                            target.continue_target,
-                                            &blocks,
-                                        ) || frame.loop_targets[..frame.loop_targets.len() - 1]
-                                            .iter()
-                                            .any(|enclosing| {
-                                                [
-                                                    enclosing.break_target,
-                                                    Some(enclosing.continue_target),
-                                                ]
-                                                .into_iter()
-                                                .flatten()
-                                                .any(|destination| {
-                                                    // A bare transfer onto an *enclosing*
-                                                    // loop's break or continue destination —
-                                                    // a labeled `continue outer`/`break outer`
-                                                    // edge of this two-edge body, whose
-                                                    // destination leaves this loop entirely.
-                                                    !blocks.contains(&destination)
-                                                        && self.loop_break_transfer(
-                                                            node,
-                                                            *arm,
-                                                            destination,
-                                                            &blocks,
-                                                        )
-                                                })
-                                            })
-                                    })
-                                    .filter(|arm| {
-                                        // The sibling arm stays the loop's continuation: each of
-                                        // its routes ends at a destination this frame's loops own
-                                        // — this loop's continue target, or the break/continue
-                                        // destination of an enclosing one (the second jump of a
-                                        // two-edge body) — and none runs off the method, which is
-                                        // a `return`'s shape and not this dispatch's.
-                                        let welcome: BTreeSet<usize> = frame
-                                            .loop_targets
-                                            .iter()
-                                            .flat_map(|target| {
-                                                target
-                                                    .break_target
-                                                    .into_iter()
-                                                    .chain([target.continue_target])
-                                            })
-                                            .chain([target.continue_target])
-                                            .collect();
-                                        [then_node, else_node].into_iter().flatten().any(|other| {
-                                            other != *arm
-                                                && blocks.contains(&other)
-                                                && self.loop_side_routes(other, &welcome)
-                                        })
-                                    })
-                                    .map(|_| target.continue_target)
-                            })
-                        })
-                        .flatten();
-                    let join_node = join_node.or(continue_target_join);
-                    // An `if`/`else if` ladder whose one arm terminates the method has **no**
-                    // post-dominator: the returning arm never passes the block the other arms
-                    // regroup on, so none of the readings above states a join and both arm walks
-                    // would run on to the frame's own boundary. Inside a loop that boundary is the
-                    // header, and the block the arms really meet at — the loop's own latch — is
-                    // then claimed by whichever arm walks first while the second re-enters it
-                    // ([`FallbackReason::Loop`]); the completed tree owns that block twice and the
-                    // whole method is refused (`jre_region_ownership_overlap`). The join is a fact
-                    // of the graph all the same, and [`Self::ladder_join`] is the reading of it.
-                    let join_outside_scope = join_node.is_some_and(|join| {
-                        frame
-                            .scope
-                            .as_ref()
-                            .is_some_and(|scope| !scope.contains(&join))
-                    });
-                    let (ladder_join, continue_ladder_elected) = if join_node.is_none() {
-                        (
-                            self.ladder_join(node, then_node, else_node, frame, branch_bci, false)?,
-                            false,
-                        )
-                    } else if join_outside_scope {
-                        // A method-wide post-dominator cannot close an arm of a loop body. Replace
-                        // that outside candidate only when the narrow local route proof succeeds.
-                        let local =
-                            self.ladder_join(node, then_node, else_node, frame, branch_bci, true)?;
-                        (local, local.is_some())
-                    } else {
-                        (None, false)
-                    };
-                    let ladder_elected = ladder_join.is_some();
-                    let join_node = if continue_ladder_elected {
-                        ladder_join
-                    } else {
-                        join_node.or(ladder_join)
-                    };
-                    // The last two-edge reading: the graph's join already left the loop (the
-                    // breaking arm's route exits it), one successor is the proved exit transfer
-                    // of a loop this frame knows, and the other successor stays in the loop and
-                    // its continuation reaches a *nested* loop header before this loop's own
-                    // header. The in-loop successor is then where the body's statements continue
-                    // — the one-armed shape the existing join reading below writes when a
-                    // successor *is* the join — and electing it keeps the nested loop and the
-                    // code around it inside the body walk instead of dropping them after a join
-                    // no block of the loop holds.
-                    let in_loop_successor_join = (|| {
-                        let target = frame.loop_targets.last()?;
-                        let join_leaves_loop = join_node.is_none_or(|join| {
-                            frame
-                                .scope
-                                .as_ref()
-                                .is_some_and(|scope| !scope.contains(&join))
-                        });
-                        if !join_leaves_loop {
-                            return None;
-                        }
-                        let blocks = self.view.loop_entered_at(target.header)?.blocks().clone();
-                        [then_node, else_node]
-                            .into_iter()
-                            .flatten()
-                            .find(|stay| {
-                                blocks.contains(stay)
-                                    && self.nested_loop_ahead(*stay, target.header, &blocks)
-                            })
-                            .and_then(|stay| {
-                                [then_node, else_node]
-                                    .into_iter()
-                                    .flatten()
-                                    .find(|exit| {
-                                        *exit != stay
-                                            && frame.loop_targets.iter().any(|known| {
-                                                known.break_target.is_some_and(|destination| {
-                                                    self.loop_break_transfer(
-                                                        node,
-                                                        *exit,
-                                                        destination,
-                                                        &blocks,
-                                                    )
-                                                })
-                                            })
-                                    })
-                                    .map(|_| stay)
-                            })
-                    })();
-                    // This reading **overrides** a join the graph stated outside the loop: a
-                    // join no block of the body holds cannot close a statement inside it, while
-                    // the stay successor is a block the body walk continues at. The readings
-                    // that elected a join *inside* the loop (an exit bridge's boundary, a
-                    // continue target) return `None` above and keep their join.
-                    let proved_break_body_join = frame.loop_targets.last().and_then(|target| {
-                        target
-                            .break_body
-                            .as_ref()
-                            .filter(|proof| {
-                                proof.header == target.header
-                                    && proof.branch == node
-                                    && proof.exit == target.break_target.unwrap_or(usize::MAX)
-                            })
-                            .map(|proof| proof.stay)
-                    });
-                    let proved_break_body_boundary_join =
-                        frame.loop_targets.iter().rev().find_map(|target| {
-                            let proof = target.break_body.as_ref()?;
-                            let boundary = frame.boundary?;
-                            (proof.header == target.header
-                                && proof.exit == target.break_target.unwrap_or(usize::MAX)
-                                && proof.owners.contains(&node)
-                                && proof.owners.contains(&boundary)
-                                && (then_node == Some(boundary) || else_node == Some(boundary)))
-                            .then_some(boundary)
-                        });
-                    let join_node = proved_break_body_join
-                        .or(proved_break_body_boundary_join)
-                        .or(in_loop_successor_join)
-                        .or(join_node);
-                    // A successor that *is* the join is the whole arm: the branch arrives at the
-                    // place its structure ends at directly, so that arm holds no block of its own —
-                    // the block starting there belongs to whatever follows the `if` — and the other
-                    // successor's region is the one body the statement has. The builder writes no
-                    // `else` for an empty arm, which is exactly the one-armed `if` the bytecode
-                    // states. Nothing here is guessed from the addresses; the join is read in two
-                    // ways, and both are facts the graph states:
-                    //
-                    // * the branch's own **immediate post-dominator**, when one successor *is* it:
-                    //   the nearest block every path out of the branch passes through;
-                    // * the **forward join** of the two successors ([`Self::forward_join`]), when
-                    //   the post-dominator is further away because one arm leaves the method before
-                    //   the join — `javac` writes `if (a > 0 && b > 0) return 1; return 0;` as two
-                    //   forward branches onto one block, and that block is where both arms meet.
-                    //
-                    // A branch whose **two** successors are both the join states no arm at all and
-                    // keeps the refusal below.
-                    let forward_then = shared_join.is_none()
-                        && self.forward_join(node, then_node, else_node, frame);
-                    let forward_else = shared_join.is_none()
-                        && self.forward_join(node, else_node, then_node, frame);
-                    if std::env::var_os("JRE_JOIN_PROBE").is_some() {
-                        eprintln!(
-                            "P3JOIN branch={} ipdom={:?} then={:?} else={:?} ft={forward_then} fe={forward_else} frame_boundary={:?}",
-                            branch.bci(),
-                            join_node
-                                .and_then(|join| self.view.id_of(join).map(CanonicalBlockId::bci)),
-                            then_node
-                                .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
-                            else_node
-                                .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
-                            frame
-                                .boundary
-                                .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
-                        );
-                    }
-                    let proved_break_body_root = frame
-                        .loop_targets
-                        .last()
-                        .and_then(|target| target.break_body.as_ref())
-                        .is_some_and(|proof| proof.branch == node);
-                    if !proved_break_body_root
-                        && let Some(candidate_join) = join_node
-                        && let Some(proof) = self.compound_statement_condition(
-                            &branch,
-                            branch_bci,
-                            op,
-                            target,
-                            frame,
-                            candidate_join,
-                        )?
-                        && let Some(region) =
-                            self.compound_statement_region(&proof, &prefix, branch_bci, frame)?
-                    {
-                        let next = proof.join.clone();
-                        return Ok(one(region, Some(next)));
-                    }
-                    let one_armed = match join_node {
-                        Some(join_node)
-                            if (then_node == Some(join_node)) != (else_node == Some(join_node)) =>
-                        {
-                            Some(join_node)
-                        }
-                        // The post-dominator states no one-armed shape here: exactly one successor
-                        // being the forward join of the two does.
-                        _ if forward_then != forward_else => {
-                            if forward_then {
-                                then_node
-                            } else {
-                                else_node
-                            }
-                        }
-                        _ => None,
-                    };
-                    let join = one_armed
-                        .or(join_node)
-                        .and_then(|join| self.view.id_of(join).cloned());
-                    if let Some(join_node) = one_armed {
-                        let walk = if then_node == Some(join_node) {
-                            &taken
-                        } else {
-                            &fall_through
-                        };
-                        // The condition's arity is read *before* the arm is walked, so a branch the
-                        // builder would refuse claims no block on the way to being refused: an arm
-                        // walked and then dropped would leave the blocks it claimed out of the
-                        // uncovered-blocks statement as well as out of the text.
-                        if let Err(reason) = self.branch_arity_proved(&branch, branch_bci, op) {
-                            let next = self.unclaimed_join(join.as_ref());
-                            return Ok(gap(prefix, vec![branch], reason, next));
-                        }
-                        let mut arm_frame = frame.arm(Some(join_node), Some(branch_bci));
-                        if shared_join.is_some() && frame.shared_tail.is_none() {
-                            arm_frame.shared_tail = Some(join_node);
-                        }
-                        let arm_before = self.visited.clone();
-                        let side_trial_state = nested_side_exit.as_ref().map(|_| {
-                            (
-                                self.unclosed_tail_at,
-                                self.catch_joins.clone(),
-                                self.fragmented.clone(),
-                            )
-                        });
-                        let certified_break_body_arm =
-                            frame.loop_targets.last().and_then(|target| {
-                                let proof = target.break_body.as_ref()?;
-                                let walk_node = self.view.index_of(walk)?;
-                                (proof.header == target.header
-                                    && proof.exit == target.break_target.unwrap_or(usize::MAX)
-                                    && (proof.branch == node || proof.owners.contains(&node))
-                                    && proof.owners.contains(&walk_node))
-                                .then_some(proof)
-                            });
-                        let arm_walk = if let Some(proof) = certified_break_body_arm {
-                            poll(self.budget, Some(branch.bci()))?;
-                            charge(
-                                self.budget,
-                                CountedBudgetDimension::AnalysisSteps,
-                                u64::try_from(proof.owners.len().saturating_add(1))
-                                    .unwrap_or(u64::MAX),
-                                Some(branch.bci()),
-                            )?;
-                            self.loop_body_sequence(walk, &arm_frame, &proof.owners)
-                        } else {
-                            self.region_at(walk, &arm_frame)
-                        };
-                        let (mut arm_run, arm_next) = match arm_walk {
-                            Ok(result) => result,
-                            Err(stop) => {
-                                if let Some((unclosed, catch_joins, fragmented)) = side_trial_state
-                                {
-                                    self.visited = arm_before;
-                                    self.unclosed_tail_at = unclosed;
-                                    self.catch_joins = catch_joins;
-                                    self.fragmented = fragmented;
-                                }
-                                return Err(stop);
-                            }
-                        };
-                        if let Some(next) = arm_next.as_ref()
-                            && self.view.index_of(next) != Some(join_node)
-                        {
-                            let mut continued = if nested_side_exit.is_some() {
-                                match self.continue_prefixed_loop_arm(
-                                    &mut arm_run,
-                                    next,
-                                    walk,
-                                    &branch,
-                                    &arm_frame,
-                                    &arm_before,
-                                    nested_side_exit.as_ref(),
-                                ) {
-                                    Ok(value) => value,
-                                    Err(stop) => {
-                                        if let Some((unclosed, catch_joins, fragmented)) =
-                                            side_trial_state
-                                        {
-                                            self.visited = arm_before;
-                                            self.unclosed_tail_at = unclosed;
-                                            self.catch_joins = catch_joins;
-                                            self.fragmented = fragmented;
-                                        }
-                                        return Err(stop);
-                                    }
-                                }
-                            } else {
-                                let mut continued = self.continue_early_return_arm(
-                                    &mut arm_run,
-                                    next,
-                                    &arm_frame,
-                                    frame,
-                                )?;
-                                if !continued {
-                                    continued = self.continue_prefixed_loop_arm(
-                                        &mut arm_run,
-                                        next,
-                                        walk,
-                                        &branch,
-                                        &arm_frame,
-                                        &arm_before,
-                                        None,
-                                    )?;
-                                }
-                                continued
-                            };
-                            if !continued && nested_side_exit.is_some() {
-                                if let Some((unclosed, catch_joins, fragmented)) = side_trial_state
-                                {
-                                    self.visited = arm_before;
-                                    self.unclosed_tail_at = unclosed;
-                                    self.catch_joins = catch_joins;
-                                    self.fragmented = fragmented;
-                                }
-                                let reason = FallbackReason::ArmsDoNotMeet {
-                                    block_bci: branch.bci(),
-                                };
-                                return Ok(gap(prefix, vec![branch], reason, None));
-                            }
-                            if !continued {
-                                let empty_case_entries = BTreeSet::new();
-                                let case_entries = arm_frame
-                                    .case_entries
-                                    .as_ref()
-                                    .unwrap_or(&empty_case_entries);
-                                continued = self.continue_switch_arm(
-                                    &mut arm_run,
-                                    next,
-                                    walk,
-                                    &arm_frame,
-                                    case_entries,
-                                    true,
-                                )?;
-                            }
-                            if !continued {
-                                self.unclosed_tail_at.get_or_insert(branch.bci());
-                                let reason = FallbackReason::ArmsDoNotMeet {
-                                    block_bci: branch.bci(),
-                                };
-                                return Ok(gap(prefix, vec![branch], reason, None));
-                            }
-                        }
-                        let arm = sequence_region(arm_run);
-                        // A one-armed `if` normally has an empty arm because that edge is the
-                        // branch's join. Inside a loop, the join can instead be the exact exit of
-                        // an enclosing loop. In that case an empty arm drops a real exit edge and
-                        // can turn a terminating loop into an infinite one; retain the transfer as
-                        // the existing `LoopBreak` leaf.
-                        let switch_join_arm = if frame.switch_fallthrough_target.is_some()
-                            && frame.switch_join == Some(join_node)
-                        {
-                            match self.switch_break_branch(&branch, branch_bci, join_node, frame)? {
-                                Some(leaf) => Some(leaf),
-                                None => {
-                                    let switch_bci = frame.switch_branch_bci.unwrap_or(branch_bci);
-                                    self.unclosed_tail_at.get_or_insert(switch_bci);
-                                    return Ok(gap(
-                                        prefix,
-                                        vec![branch.clone()],
-                                        FallbackReason::SwitchShape {
-                                            block_bci: switch_bci,
-                                        },
-                                        join.clone(),
-                                    ));
-                                }
-                            }
-                        } else {
-                            None
-                        };
-                        let join_arm = switch_join_arm.unwrap_or_else(|| {
-                            frame
-                                .loop_targets
-                                .iter()
-                                .rev()
-                                .find(|target| target.break_target == Some(join_node))
-                                .and_then(|target| {
-                                    self.view.id_of(target.header).cloned().map(|loop_header| {
-                                        Region::LoopBreak {
-                                            source_bci: branch_bci,
-                                            loop_header,
-                                        }
-                                    })
-                                })
-                                .unwrap_or(Region::Straight { blocks: Vec::new() })
-                        });
-                        let empty = Box::new(join_arm);
-                        let (then_arm, else_arm) = if then_node == Some(join_node) {
-                            (empty, Box::new(arm))
-                        } else {
-                            (Box::new(arm), empty)
-                        };
-                        let run = vec![Region::If {
-                            prefix,
-                            branch,
-                            branch_bci,
-                            then_arm,
-                            else_arm,
-                            join: join.clone(),
-                        }];
-                        return Ok((run, join));
-                    }
-                    if let Some((boundary, continue_arm, expected_chain)) =
-                        direct_continue_join.as_ref()
-                    {
-                        let refusal_bci = branch.bci();
-                        let Some(boundary_id) = self.view.id_of(*boundary).cloned() else {
-                            let reason = FallbackReason::ArmsDoNotMeet {
-                                block_bci: refusal_bci,
-                            };
-                            return Ok(gap(prefix, vec![branch], reason, None));
-                        };
-                        let Some(target) = frame.loop_targets.last() else {
-                            unreachable!("the local continue proof requires its loop owner")
-                        };
-                        if let Err(reason) = self.branch_arity_proved(&branch, branch_bci, op) {
-                            return Ok(gap(prefix, vec![branch], reason, Some(boundary_id)));
-                        }
-                        let other = [then_node, else_node]
-                            .into_iter()
-                            .flatten()
-                            .find(|arm| *arm != *continue_arm)
-                            .expect("a two-way branch has the other arm");
-                        let other_id = self.view.id_of(other).cloned().expect("known arm id");
-                        let before_other = self.visited.clone();
-                        let before_unclosed_tail = self.unclosed_tail_at;
-                        let other_frame = frame.arm(Some(*boundary), Some(branch_bci));
-                        let (other_run, other_next) = match self.region_at(&other_id, &other_frame)
-                        {
-                            Ok(run) => run,
-                            Err(stop) => {
-                                self.visited = before_other;
-                                self.unclosed_tail_at = before_unclosed_tail;
-                                return Err(stop);
-                            }
-                        };
-                        let actual_chain = match other_run.as_slice() {
-                            [Region::Straight { blocks }] if other_next.is_none() => blocks,
-                            _ => {
-                                self.visited = before_other;
-                                self.unclosed_tail_at = before_unclosed_tail;
-                                let reason = FallbackReason::ArmsDoNotMeet {
-                                    block_bci: refusal_bci,
-                                };
-                                return Ok(gap(prefix, vec![branch], reason, Some(boundary_id)));
-                            }
-                        };
-                        if actual_chain != expected_chain {
-                            self.visited = before_other;
-                            self.unclosed_tail_at = before_unclosed_tail;
-                            let reason = FallbackReason::ArmsDoNotMeet {
-                                block_bci: refusal_bci,
-                            };
-                            return Ok(gap(prefix, vec![branch], reason, Some(boundary_id)));
-                        }
-                        let loop_header = self
-                            .view
-                            .id_of(target.header)
-                            .cloned()
-                            .expect("loop target is a canonical node");
-                        let leaf = Region::LoopContinue {
-                            source_bci: branch_bci,
-                            loop_header,
-                        };
-                        let (then_arm, else_arm) = if then_node == Some(*continue_arm) {
-                            (Box::new(leaf), Box::new(sequence_region(other_run)))
-                        } else {
-                            (Box::new(sequence_region(other_run)), Box::new(leaf))
-                        };
-                        return Ok((
-                            vec![Region::If {
-                                prefix,
-                                branch,
-                                branch_bci,
-                                then_arm,
-                                else_arm,
-                                join: Some(boundary_id.clone()),
-                            }],
-                            Some(boundary_id),
-                        ));
-                    }
-                    // Two successors that are both the join state no arm at all: nothing in the
-                    // graph says which of them an arm would be, so the branch keeps its refusal
-                    // rather than becoming an `if` with two empty arms. The same holds when both
-                    // successors are a forward join: the graph states a convergence, but not which
-                    // of the two arms arrives empty, so neither is written.
-                    if (join_node.is_some() && then_node == join_node && else_node == join_node)
-                        || (forward_then && forward_else)
-                    {
-                        let reason = FallbackReason::ArmsDoNotMeet {
-                            block_bci: branch.bci(),
-                        };
-                        let next = self.unclaimed_join(join.as_ref());
-                        return Ok(gap(prefix, vec![branch], reason, next));
-                    }
-                    let mut arm_frame = frame.arm(join_node, Some(branch_bci));
-                    if let Some(tail) = shared_join
-                        .or_else(|| continue_ladder_elected.then_some(join_node).flatten())
-                        .filter(|_| frame.shared_tail.is_none())
-                    {
-                        arm_frame.shared_tail = Some(tail);
-                    }
-                    let before_arms = self.visited.clone();
-                    let mut then_frame = arm_frame.clone();
-                    let mut else_frame = arm_frame.clone();
-                    let direct_arm = frame.boundary.is_none() && frame.if_arm.is_none();
-                    let second_level = frame.if_arm.is_some_and(|(_, _, outer)| outer.is_none())
-                        && frame.boundary.is_some();
-                    if (direct_arm || second_level)
-                        && frame.scope.is_none()
-                        && frame.loop_targets.is_empty()
-                        && frame.own_try.is_none()
-                        && frame.own_finally.is_none()
-                        && frame.case_entries.is_none()
-                    {
-                        let outer = if second_level { frame.boundary } else { None };
-                        if let Some(entry) = then_node {
-                            then_frame.if_arm = Some((node, entry, outer));
-                        }
-                        if let Some(entry) = else_node {
-                            else_frame.if_arm = Some((node, entry, outer));
-                        }
-                    }
-                    let (mut then_run, mut then_next) =
-                        self.region_at(&fall_through, &then_frame)?;
-                    let (mut else_run, mut else_next) = self.region_at(&taken, &else_frame)?;
-                    // Test5's non-returning arm reaches an ordinary do-while header
-                    // after its list-allocation block. The generic arm walk stops at
-                    // that header, so finish this certified arm within the bounded
-                    // two-segment finally scope before comparing the arms.
-                    if frame.multi_return_finally_rows.is_some() {
-                        self.continue_multi_return_loop_arm(
-                            &mut then_run,
-                            &mut then_next,
-                            &then_frame,
-                        )?;
-                        self.continue_multi_return_loop_arm(
-                            &mut else_run,
-                            &mut else_next,
-                            &else_frame,
-                        )?;
-                    }
-                    let then_loop = self.continue_effectful_loop_arm(
-                        &mut then_run,
-                        &mut then_next,
-                        &then_frame,
-                    )?;
-                    let else_loop = if then_loop {
-                        self.continue_effectful_loop_arm(
-                            &mut else_run,
-                            &mut else_next,
-                            &else_frame,
-                        )?
-                    } else {
-                        false
-                    };
-                    // A two-edge body branch whose elected join is the loop's own header or
-                    // continue target: the jump arm never returns there, and the continuing
-                    // arm's own nested `if` already ended at its join — a block of this loop
-                    // the body walk resumes at. Electing that block keeps the rest of the body
-                    // (the nested loop, and the update after it) inside the walk instead of
-                    // ending it at the loop's header with those blocks unclaimed.
-                    let continuing_join = (|| {
-                        let then_jump = then_next.is_none()
-                            && matches!(then_run.last(), Some(Region::LoopBreak { .. }));
-                        let else_jump = else_next.is_none()
-                            && matches!(else_run.last(), Some(Region::LoopBreak { .. }));
-                        if then_jump == else_jump {
-                            return None;
-                        }
-                        let (run, next) = if then_jump {
-                            (&else_run, &else_next)
-                        } else {
-                            (&then_run, &then_next)
-                        };
-                        let elected = join_node?;
-                        let last = frame.loop_targets.last()?;
-                        if elected != last.header && elected != last.continue_target {
-                            return None;
-                        }
-                        let Region::If {
-                            join: Some(nested), ..
-                        } = run.last()?
-                        else {
-                            return None;
-                        };
-                        if next.as_ref() != Some(nested) {
-                            return None;
-                        }
-                        let nested_node = self.view.index_of(nested)?;
-                        if nested_node == elected
-                            || nested_node == last.header
-                            || self.visited.contains(&nested_node)
-                            || frame.boundary == Some(nested_node)
-                        {
-                            return None;
-                        }
-                        let blocks = self.view.loop_entered_at(last.header)?.blocks();
-                        if !blocks.contains(&nested_node)
-                            || !self.nested_loop_ahead(nested_node, last.header, blocks)
-                        {
-                            return None;
-                        }
-                        Some(nested.clone())
-                    })();
-                    // The shared-latch two-edge body: this loop's own `continue` edge and the
-                    // nested loop's exit edge route onto the same back-edge destination, so
-                    // the arms' post-dominator is that destination and electing it ends the
-                    // body walk with the nested loop's blocks unclaimed. The structural facts
-                    // — each read from the graph, none from the addresses — that admit
-                    // re-electing the join to where the continuing arm's own statements end:
-                    // the elected join is this loop's continue destination (the update block
-                    // a proved for-header owns, or the header of a loop none does); one arm
-                    // is a goto bridge onto that destination (the edge a `continue` spells,
-                    // exclusively owned by this branch); the other arm's walk ended at a
-                    // nested loop header whose blocks this loop's body holds; and every exit
-                    // of that nested loop lands on one of this loop's own latch blocks — the
-                    // two edges' routes onto the one back edge, whether they name the
-                    // destination itself (an update block both edges share) or a latch whose
-                    // own transfer is the header. The jump arm then carries its own edge as
-                    // the loop continue — the attribution by edge semantics the readings
-                    // above use, with the same exclusive-ownership classifier, not a third
-                    // one.
-                    let shared_latch_join = (|| {
-                        let last = frame.loop_targets.last()?;
-                        let elected = join_node?;
-                        let destination = last.continue_target;
-                        if elected != destination {
-                            return None;
-                        }
-                        let loop_of = self.view.loop_entered_at(last.header)?;
-                        let latches = loop_of.latches();
-                        let blocks = loop_of.blocks();
-                        let (bridge, jump_is_then) = [then_node, else_node]
-                            .into_iter()
-                            .flatten()
-                            .find_map(|entry| {
-                            self.loop_continue_bridge(node, entry, destination, blocks)
-                                .then_some((entry, then_node == Some(entry)))
-                        })?;
-                        let (run, next) = if jump_is_then {
-                            (&then_run, &else_next)
-                        } else {
-                            (&else_run, &then_next)
-                        };
-                        // The jumping arm is nothing but its bridge block: the one-transfer
-                        // run the re-elected join no longer stands for.
-                        let [Region::Straight { blocks: bridge_run }] = run.as_slice() else {
-                            return None;
-                        };
-                        if bridge_run.len() != 1
-                            || self.view.index_of(bridge_run.first()?) != Some(bridge)
-                        {
-                            return None;
-                        }
-                        let source_bci = self.terminal_bci(bridge_run.first()?)?;
-                        let nested = next.as_ref()?;
-                        let nested_node = self.view.index_of(nested)?;
-                        if self.visited.contains(&nested_node)
-                            || frame.boundary == Some(nested_node)
-                        {
-                            return None;
-                        }
-                        let Some(nested_of) = self.view.loop_entered_at(nested_node) else {
-                            return None;
-                        };
-                        let nested_blocks = nested_of.blocks();
-                        if !nested_blocks.is_subset(blocks) {
-                            return None;
-                        }
-                        let nested_exits: BTreeSet<usize> = nested_blocks
-                            .iter()
-                            .flat_map(|member| self.view.successors(*member))
-                            .filter(|successor| !nested_blocks.contains(successor))
-                            .collect();
-                        // Every exit lands on a latch of this loop — directly (the test
-                        // exit onto a shared update block, or onto the back-edge transfer a
-                        // loop whose continue target is its header ends in) or through its
-                        // own one transfer (an inner `break` goto onto that same block).
-                        // Anything else leaves the loop past its back edge, and no exit may:
-                        // this shape's post-dominator is the continue destination only
-                        // because both routes regroup there.
-                        let mut landings: BTreeSet<usize> = BTreeSet::new();
-                        for exit in &nested_exits {
-                            let landing = if latches.contains(exit) {
-                                *exit
-                            } else {
-                                let successors = self.view.successors(*exit);
-                                if successors.len() != 1 || !latches.contains(&successors[0]) {
-                                    return None;
-                                }
-                                successors[0]
-                            };
-                            landings.insert(landing);
-                        }
-                        // The loop's back edges are exactly the routes this shape accounts
-                        // for: the landings, plus the bridge itself when a `continue` in a
-                        // loop whose continue target is its header is a back edge of its own.
-                        // Any other back edge is a jump this reading does not classify.
-                        let mut accounted: BTreeSet<usize> = landings;
-                        if self.view.successors(bridge) == [last.header] {
-                            accounted.insert(bridge);
-                        }
-                        let held: BTreeSet<usize> = latches.iter().copied().collect();
-                        if held != accounted {
-                            return None;
-                        }
-                        Some((jump_is_then, source_bci))
-                    })();
-                    let continuing_join_elected = continuing_join.is_some();
-                    let shared_latch_elected = shared_latch_join.is_some();
-                    let shared_latch = shared_latch_join.and_then(|(jump_is_then, source_bci)| {
-                        let loop_header =
-                            self.view.id_of(frame.loop_targets.last()?.header)?.clone();
-                        let run = if jump_is_then {
-                            &mut then_run
-                        } else {
-                            &mut else_run
-                        };
-                        *run = vec![Region::LoopContinue {
-                            source_bci,
-                            loop_header,
-                        }];
-                        // The continuing arm's trailing straight run is this loop's own
-                        // continuation, and it goes back to the body walk: a counted loop's
-                        // header clause reads its initialisation from a preceding sibling
-                        // statement, not from inside an arm. The run's blocks leave the arm's
-                        // ownership with it — the walk re-claims them at the re-elected join,
-                        // and a claimed block the walk re-enters would be quoted instead.
-                        let continuing = if jump_is_then {
-                            &mut else_run
-                        } else {
-                            &mut then_run
-                        };
-                        let [Region::Straight { blocks: lead }] = continuing.as_slice() else {
-                            return None;
-                        };
-                        let join_block = lead.first()?.clone();
-                        for block in lead {
-                            let node = self.view.index_of(block)?;
-                            if !self.visited.remove(&node) {
-                                return None;
-                            }
-                        }
-                        *continuing = Vec::new();
-                        Some(join_block)
-                    });
-                    let join = continuing_join.or(shared_latch).or(join);
-                    let join_node = join.as_ref().and_then(|join| self.view.index_of(join));
-                    // A nested value can meet at its own join before this arm meets the outer
-                    // join. Keep that intervening straight run inside the *same* arm and frame.
-                    // The helper refuses a partial or multiply entered continuation before any
-                    // of its visited nodes can become a published owner.
-                    let then_at_join =
-                        continuing_join_elected && then_next.as_ref() == join.as_ref();
-                    let then_continued = then_at_join
-                        || self.continue_inner_join_arm(
-                            &mut then_run,
-                            then_next.as_ref(),
-                            &arm_frame,
-                        )?;
-                    let else_at_join =
-                        continuing_join_elected && else_next.as_ref() == join.as_ref();
-                    let else_continued = if then_continued {
-                        else_at_join
-                            || self.continue_inner_join_arm(
-                                &mut else_run,
-                                else_next.as_ref(),
-                                &arm_frame,
-                            )?
-                    } else {
-                        false
-                    };
-                    if !then_loop || !else_loop || !then_continued || !else_continued {
-                        let entered: Vec<_> = self
-                            .visited
-                            .difference(&before_arms)
-                            .filter_map(|node| self.view.id_of(*node).cloned())
-                            .chain(then_next)
-                            .chain(else_next)
-                            .collect();
-                        self.visited = before_arms;
-                        let reason = FallbackReason::ArmsDoNotMeet {
-                            block_bci: branch.bci(),
-                        };
-                        let next = self.unclaimed_join(join.as_ref());
-                        return Ok(gap(prefix, gap_blocks(&branch, entered), reason, next));
-                    }
-                    // An arm the branch cannot present is quoted, not dropped and not written as if
-                    // the branch had been: both arms' blocks are named by the refusal, each once.
-                    let arm_blocks: Vec<CanonicalBlockId> = then_run
-                        .iter()
-                        .chain(else_run.iter())
-                        .flat_map(Region::blocks)
-                        .cloned()
-                        .collect();
-                    // Both arms must meet the join, or leave the method; anything else means the
-                    // recovered structure runs into a block the branch did not describe.
-                    if let Some(join_node) = join_node {
-                        let then_meets =
-                            then_node.is_some_and(|node| self.view.reaches(node, join_node));
-                        let else_meets =
-                            else_node.is_some_and(|node| self.view.reaches(node, join_node));
-                        let certified_continue = fragmented_handler_join == Some(join_node)
-                            && ((then_meets
-                                && else_next.is_none()
-                                && matches!(else_run.last(), Some(Region::LoopContinue { .. })))
-                                || (else_meets
-                                    && then_next.is_none()
-                                    && matches!(
-                                        then_run.last(),
-                                        Some(Region::LoopContinue { .. })
-                                    )));
-                        let both_end = !then_meets && !else_meets;
-                        let local_switch_join = frame.switch_join == Some(join_node);
-                        // The arm that took a loop-jump edge outright: its walk ended (no
-                        // continuation block) in a proved `LoopBreak`, or in nothing but the
-                        // `goto` block whose one transfer is the join — the `continue` edge the
-                        // goto spells when the join is this loop's own continue target.
-                        let takes_loop_edge = |run: &[Region]| -> bool {
-                            if matches!(run.last(), Some(Region::LoopBreak { .. })) {
-                                return true;
-                            }
-                            let [Region::Straight { blocks }] = run else {
-                                return false;
-                            };
-                            blocks.len() == 1
-                                && self.view.index_of(&blocks[0]).is_some_and(|bridge| {
-                                    self.view.successors(bridge) == [join_node]
-                                })
-                        };
-                        let then_breaks = then_next.is_none()
-                            && matches!(then_run.last(), Some(Region::LoopBreak { .. }));
-                        let else_breaks = else_next.is_none()
-                            && matches!(else_run.last(), Some(Region::LoopBreak { .. }));
-                        let switch_breaks = |run: &[Region]| {
-                            frame.switch_fallthrough_target.is_some()
-                                && matches!(run.last(), Some(Region::SwitchBreak {
-                                    switch_bci,
-                                    join,
-                                    ..
-                                }) if frame.switch_branch_bci == Some(*switch_bci)
-                                    && self.view.index_of(join) == Some(join_node))
-                        };
-                        let then_switch_breaks = then_next.is_none() && switch_breaks(&then_run);
-                        let else_switch_breaks = else_next.is_none() && switch_breaks(&else_run);
-                        // A proved `continue` transfer ends its arm the same way a `break` does:
-                        // the edge left for its target loop's destination and never comes back to
-                        // this join. It is the loop-side jump of a two-edge body whose other arm
-                        // is the one that meets the join.
-                        let then_jumps = then_next.is_none()
-                            && matches!(
-                                then_run.last(),
-                                Some(Region::LoopBreak { .. } | Region::LoopContinue { .. })
-                            );
-                        let else_jumps = else_next.is_none()
-                            && matches!(
-                                else_run.last(),
-                                Some(Region::LoopBreak { .. } | Region::LoopContinue { .. })
-                            );
-                        let then_edge = then_next.is_none() && takes_loop_edge(&then_run);
-                        let else_edge = else_next.is_none() && takes_loop_edge(&else_run);
-                        if !(then_meets && else_meets)
-                            && !certified_continue
-                            && !both_end
-                            && !(frame.loop_targets.last().is_some_and(|target| {
-                                // The join is this loop's own continue target and one arm left by
-                                // a proved loop-jump edge while the other meets it — the two-edge
-                                // body's shape. The continue target is the join whether the loop
-                                // spells `while` (it *is* the header this frame ends at) or `for`
-                                // (a proved update block the arms stop at instead), and the
-                                // meeting arm may end *at* the join rather than routing through
-                                // it, its own walk having stopped exactly there.
-                                let then_at_join = then_next.as_ref().is_some_and(|next| {
-                                    self.view.index_of(next) == Some(join_node)
-                                });
-                                let else_at_join = else_next.as_ref().is_some_and(|next| {
-                                    self.view.index_of(next) == Some(join_node)
-                                });
-                                target.continue_target == join_node
-                                    && (((then_meets && else_jumps) || (else_meets && then_jumps))
-                                        || (then_edge && else_at_join)
-                                        || (else_edge && then_at_join))
-                            }))
-                            && !(local_switch_join
-                                && ((then_meets && (else_breaks || else_switch_breaks))
-                                    || (else_meets && (then_breaks || then_switch_breaks))))
-                            // The shared-latch re-election proved both arms' edges from the graph
-                            // already — the continue bridge by exclusive ownership, the nested
-                            // loop by containment and its exit set — and the one arm ends at
-                            // this loop's own latch, a destination the forward reachability of
-                            // the other arm's continuation never states. The re-election, not a
-                            // reaches reading, is what the join stands on.
-                            && !shared_latch_elected
-                            // The ladder's own election proved the same question from the arms'
-                            // routes: each arm reaches the join, and no route of either reaches
-                            // the frame's boundary without passing through it, so the reading the
-                            // refusal below states ("both arms must meet the join, or leave the
-                            // method") is already established — the arm that does not meet it
-                            // leaves the method, which is the early-return leaf the tree states.
-                            && !ladder_elected
-                        {
-                            let reason = FallbackReason::ArmsDoNotMeet {
-                                block_bci: branch.bci(),
-                            };
-                            let next = self.unclaimed_join(join.as_ref());
-                            let blocks = gap_blocks(&branch, arm_blocks);
-                            return Ok(gap(prefix, blocks, reason, next));
-                        }
-                    }
-                    // The condition's arity is a precondition of the statement the builder writes.
-                    if let Err(reason) = self.branch_arity_proved(&branch, branch_bci, op) {
-                        let next = self.unclaimed_join(join.as_ref());
-                        let blocks = gap_blocks(&branch, arm_blocks);
-                        return Ok(gap(prefix, blocks, reason, next));
-                    }
-                    let run = vec![Region::If {
-                        prefix,
-                        branch,
-                        branch_bci,
-                        then_arm: Box::new(sequence_region(then_run)),
-                        else_arm: Box::new(sequence_region(else_run)),
-                        join: join.clone(),
-                    }];
-                    return Ok((run, join));
+                    return self.two_way_region(prefix, &current, &successors, node, frame);
                 }
                 count => {
                     let branch = current.clone();
@@ -7699,6 +6456,1490 @@ impl Walker<'_> {
         }
     }
 
+
+    /// One `region_at_inner` dispatch arm — the two-successor branch — in a frame of its
+    /// own.
+    ///
+    /// The walk recurses **through** this arm: the one-armed, direct-continue and two-armed
+    /// readings each descend with [`Self::region_at`], and the deepest bodies this layer
+    /// walks sit at the recursion bound — a frame the size of every arm of the dispatch at
+    /// once is what a stack the input already fills would overflow on (the `render_value`
+    /// arm methods in build hold the same boundary). The body is the dispatch arm verbatim:
+    /// the claim order, the readings, the refusal reasons and their texts are unchanged, and
+    /// no recursion depth changes.
+    #[inline(never)]
+    fn two_way_region(
+        &mut self,
+        prefix: Vec<CanonicalBlockId>,
+        current: &CanonicalBlockId,
+        successors: &[CanonicalBlockId],
+        node: usize,
+        frame: &Frame,
+    ) -> Result<Run, StopReason> {
+        let branch = current.clone();
+        let branch_bci = match self.terminal_bci(&branch) {
+            Some(bci) => bci,
+            None => {
+                let reason = FallbackReason::MissingEvidence {
+                    block_bci: branch.bci(),
+                };
+                return Ok(gap(prefix, vec![branch], reason, None));
+            }
+        };
+        let Some((op, target)) = self
+            .operations
+            .get(branch_bci)
+            .and_then(Operation::comparison)
+        else {
+            let reason = FallbackReason::UnknownBranchSense {
+                block_bci: branch.bci(),
+                branch_bci,
+            };
+            return Ok(gap(prefix, vec![branch], reason, None));
+        };
+        let Some((fall_through, taken)) = self.split_arms(&successors, target) else {
+            let reason = FallbackReason::UnrenderableOperand { bci: branch_bci };
+            return Ok(gap(prefix, vec![branch], reason, None));
+        };
+        if let Some(region) =
+            self.shared_tail_early_return(&prefix, &branch, branch_bci, frame)?
+        {
+            let next = frame
+                .shared_tail
+                .and_then(|tail| self.view.id_of(tail).cloned());
+            return Ok(one(region, next));
+        }
+        if let Some((regions, next)) =
+            self.short_circuit_value(&prefix, &branch, branch_bci, frame)?
+        {
+            return Ok((regions, next));
+        }
+        if let Some(region) =
+            self.two_exit_return(&prefix, &branch, branch_bci, frame)?
+        {
+            return Ok(one(region, None));
+        }
+        let post_join = self
+            .view
+            .immediate_post_dominator(node)
+            .filter(|join| *join != node)
+            .filter(|join| {
+                !frame.loop_targets.iter().any(|target| {
+                    frame.loop_targets.last().map(|current| current.header)
+                        != Some(target.header)
+                        && target.continue_target == *join
+                })
+            });
+        // A branch inside a switch arm can finish either at the switch's local
+        // join or at the enclosing loop's exit. The method-wide post-dominator is
+        // then the loop exit, but it is not the join of this Java `if`.
+        let then_node = self.view.index_of(&fall_through);
+        let else_node = self.view.index_of(&taken);
+        if !frame.loop_targets.is_empty() {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+                Some(branch_bci),
+            )?;
+        }
+        let loop_bridge_join = frame.loop_targets.last().and_then(|target| {
+            let boundary = frame.boundary?;
+            let exit = self.view.id_of(target.break_target?)?;
+            let blocks = self.view.loop_entered_at(target.header)?.blocks();
+            let through_bridge = [then_node, else_node]
+                .into_iter()
+                .flatten()
+                .any(|arm| self.loop_exit_bridge(node, arm, exit, blocks));
+            let through_latch = [then_node, else_node]
+                .into_iter()
+                .flatten()
+                .any(|arm| blocks.contains(&arm) && self.view.reaches(arm, boundary));
+            (frame.switch_join.is_none() && through_bridge && through_latch).then(
+                || {
+                    // A body that holds two loop-jump edges — one breaking out, one
+                    // keeping the loop — has no single graph join: the post-dominator
+                    // was an enclosing loop's continue target and the bridge proof is
+                    // what classified the arms. When a proved for-header owns an
+                    // update block apart from the header, the loop-side arm's
+                    // statements end there and the join is that block, so the walk
+                    // stops at the update instead of absorbing it. A loop whose
+                    // continue target *is* its header — a `while`/endless loop, where
+                    // the update is the body's own last statement — keeps the
+                    // boundary: the header is where the loop's arms regroup, and a
+                    // join placed on it would end the body walk early.
+                    if target.continue_target != target.header
+                        && target.continue_target != boundary
+                        && blocks.contains(&target.continue_target)
+                    {
+                        target.continue_target
+                    } else {
+                        boundary
+                    }
+                },
+            )
+        });
+        let fragmented_handler_join = self.fragmented.as_ref().and_then(|proof| {
+            let boundary = frame.boundary?;
+            let [a, b] = [then_node?, else_node?];
+            (frame.own_try.is_some()
+                && proof.exceptional_blocks.contains(&node)
+                && proof.loop_header == frame.loop_targets.last()?.header
+                && (self.view.reaches(a, boundary) != self.view.reaches(b, boundary))
+                && self.view.reaches(a, self.view.index_of(&proof.update)?)
+                && self.view.reaches(b, self.view.index_of(&proof.update)?))
+            .then_some(boundary)
+        });
+        let nested_side_exit = if let Some(target) = frame.loop_targets.last() {
+            if let (Some(parent_exit), Some(parent_loop)) = (
+                target.break_target,
+                self.view.loop_entered_at(target.header),
+            ) {
+                let parent_blocks = parent_loop.blocks().clone();
+                if parent_blocks.contains(&node) {
+                    self.nested_loop_side_exit(
+                        target.header,
+                        &parent_blocks,
+                        parent_exit,
+                        frame,
+                        Some(node),
+                    )?
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        let join_node = if let Some(proof) = &nested_side_exit {
+            Some(proof.stay)
+        } else if let Some(boundary) = fragmented_handler_join.or(loop_bridge_join) {
+            Some(boundary)
+        } else if post_join.is_some_and(|join| {
+            frame
+                .loop_targets
+                .iter()
+                .any(|target| target.break_target == Some(join))
+        }) {
+            frame.switch_join.or(post_join)
+        } else {
+            post_join
+        };
+        let shared_join = if join_node.is_none() {
+            if self.return_is_boolean
+                && frame.shared_tail.is_none()
+                && frame.boundary.is_none()
+                && frame.scope.is_none()
+                && frame.case_entries.is_none()
+                && frame.own_try.is_none()
+                && frame.own_finally.is_none()
+                && frame.loop_exit.is_none()
+                && frame.switch_join.is_none()
+                && frame.loop_targets.is_empty()
+            {
+                self.shared_forward_join(node, then_node, else_node, branch_bci)?
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        let join_node = join_node.or(shared_join);
+        let direct_continue_join = if join_node.is_none_or(|join| {
+            frame
+                .scope
+                .as_ref()
+                .is_some_and(|scope| !scope.contains(&join))
+        }) {
+            self.direct_continue_local_join(
+                node, then_node, else_node, frame, branch_bci,
+            )?
+        } else {
+            None
+        };
+        let join_node = direct_continue_join
+            .as_ref()
+            .map(|(boundary, _, _)| *boundary)
+            .or(join_node);
+        let join_node = self
+            .loop_break_body_local_join(node, then_node, else_node, frame)
+            .or(join_node);
+        // A branch inside a loop body whose join none of the readings above states
+        // still states its own edges: the second loop jump pulled the arms' meeting
+        // point past an enclosing loop's continue target (the post-dominator was
+        // filtered) and no exit bridge exists. One arm that is a single `goto` onto
+        // *this* loop's own continue target is a `continue` edge, and the other arm
+        // staying a block of the loop is the loop-side continuation: the continue
+        // target is the join both arms route to — the same reading the one-jump body
+        // takes from its post-dominator, stated here from the edge itself.
+        let continue_target_join = join_node
+            .is_none()
+            .then(|| {
+                frame.loop_targets.last().and_then(|target| {
+                    let blocks =
+                        self.view.loop_entered_at(target.header)?.blocks().clone();
+                    [then_node, else_node]
+                        .into_iter()
+                        .flatten()
+                        .find(|arm| {
+                            self.loop_continue_bridge(
+                                node,
+                                *arm,
+                                target.continue_target,
+                                &blocks,
+                            ) || frame.loop_targets[..frame.loop_targets.len() - 1]
+                                .iter()
+                                .any(|enclosing| {
+                                    [
+                                        enclosing.break_target,
+                                        Some(enclosing.continue_target),
+                                    ]
+                                    .into_iter()
+                                    .flatten()
+                                    .any(|destination| {
+                                        // A bare transfer onto an *enclosing*
+                                        // loop's break or continue destination —
+                                        // a labeled `continue outer`/`break outer`
+                                        // edge of this two-edge body, whose
+                                        // destination leaves this loop entirely.
+                                        !blocks.contains(&destination)
+                                            && self.loop_break_transfer(
+                                                node,
+                                                *arm,
+                                                destination,
+                                                &blocks,
+                                            )
+                                    })
+                                })
+                        })
+                        .filter(|arm| {
+                            // The sibling arm stays the loop's continuation: each of
+                            // its routes ends at a destination this frame's loops own
+                            // — this loop's continue target, or the break/continue
+                            // destination of an enclosing one (the second jump of a
+                            // two-edge body) — and none runs off the method, which is
+                            // a `return`'s shape and not this dispatch's.
+                            let welcome: BTreeSet<usize> = frame
+                                .loop_targets
+                                .iter()
+                                .flat_map(|target| {
+                                    target
+                                        .break_target
+                                        .into_iter()
+                                        .chain([target.continue_target])
+                                })
+                                .chain([target.continue_target])
+                                .collect();
+                            [then_node, else_node].into_iter().flatten().any(|other| {
+                                other != *arm
+                                    && blocks.contains(&other)
+                                    && self.loop_side_routes(other, &welcome)
+                            })
+                        })
+                        .map(|_| target.continue_target)
+                })
+            })
+            .flatten();
+        let join_node = join_node.or(continue_target_join);
+        // An `if`/`else if` ladder whose one arm terminates the method has **no**
+        // post-dominator: the returning arm never passes the block the other arms
+        // regroup on, so none of the readings above states a join and both arm walks
+        // would run on to the frame's own boundary. Inside a loop that boundary is the
+        // header, and the block the arms really meet at — the loop's own latch — is
+        // then claimed by whichever arm walks first while the second re-enters it
+        // ([`FallbackReason::Loop`]); the completed tree owns that block twice and the
+        // whole method is refused (`jre_region_ownership_overlap`). The join is a fact
+        // of the graph all the same, and [`Self::ladder_join`] is the reading of it.
+        let join_outside_scope = join_node.is_some_and(|join| {
+            frame
+                .scope
+                .as_ref()
+                .is_some_and(|scope| !scope.contains(&join))
+        });
+        let (ladder_join, continue_ladder_elected) = if join_node.is_none() {
+            (
+                self.ladder_join(node, then_node, else_node, frame, branch_bci, false)?,
+                false,
+            )
+        } else if join_outside_scope {
+            // A method-wide post-dominator cannot close an arm of a loop body. Replace
+            // that outside candidate only when the narrow local route proof succeeds.
+            let local =
+                self.ladder_join(node, then_node, else_node, frame, branch_bci, true)?;
+            (local, local.is_some())
+        } else {
+            (None, false)
+        };
+        let ladder_elected = ladder_join.is_some();
+        let join_node = if continue_ladder_elected {
+            ladder_join
+        } else {
+            join_node.or(ladder_join)
+        };
+        // The last two-edge reading: the graph's join already left the loop (the
+        // breaking arm's route exits it), one successor is the proved exit transfer
+        // of a loop this frame knows, and the other successor stays in the loop and
+        // its continuation reaches a *nested* loop header before this loop's own
+        // header. The in-loop successor is then where the body's statements continue
+        // — the one-armed shape the existing join reading below writes when a
+        // successor *is* the join — and electing it keeps the nested loop and the
+        // code around it inside the body walk instead of dropping them after a join
+        // no block of the loop holds.
+        let in_loop_successor_join = (|| {
+            let target = frame.loop_targets.last()?;
+            let join_leaves_loop = join_node.is_none_or(|join| {
+                frame
+                    .scope
+                    .as_ref()
+                    .is_some_and(|scope| !scope.contains(&join))
+            });
+            if !join_leaves_loop {
+                return None;
+            }
+            let blocks = self.view.loop_entered_at(target.header)?.blocks().clone();
+            [then_node, else_node]
+                .into_iter()
+                .flatten()
+                .find(|stay| {
+                    blocks.contains(stay)
+                        && self.nested_loop_ahead(*stay, target.header, &blocks)
+                })
+                .and_then(|stay| {
+                    [then_node, else_node]
+                        .into_iter()
+                        .flatten()
+                        .find(|exit| {
+                            *exit != stay
+                                && frame.loop_targets.iter().any(|known| {
+                                    known.break_target.is_some_and(|destination| {
+                                        self.loop_break_transfer(
+                                            node,
+                                            *exit,
+                                            destination,
+                                            &blocks,
+                                        )
+                                    })
+                                })
+                        })
+                        .map(|_| stay)
+                })
+        })();
+        // This reading **overrides** a join the graph stated outside the loop: a
+        // join no block of the body holds cannot close a statement inside it, while
+        // the stay successor is a block the body walk continues at. The readings
+        // that elected a join *inside* the loop (an exit bridge's boundary, a
+        // continue target) return `None` above and keep their join.
+        let proved_break_body_join = frame.loop_targets.last().and_then(|target| {
+            target
+                .break_body
+                .as_ref()
+                .filter(|proof| {
+                    proof.header == target.header
+                        && proof.branch == node
+                        && proof.exit == target.break_target.unwrap_or(usize::MAX)
+                })
+                .map(|proof| proof.stay)
+        });
+        let proved_break_body_boundary_join =
+            frame.loop_targets.iter().rev().find_map(|target| {
+                let proof = target.break_body.as_ref()?;
+                let boundary = frame.boundary?;
+                (proof.header == target.header
+                    && proof.exit == target.break_target.unwrap_or(usize::MAX)
+                    && proof.owners.contains(&node)
+                    && proof.owners.contains(&boundary)
+                    && (then_node == Some(boundary) || else_node == Some(boundary)))
+                .then_some(boundary)
+            });
+        let join_node = proved_break_body_join
+            .or(proved_break_body_boundary_join)
+            .or(in_loop_successor_join)
+            .or(join_node);
+        // A successor that *is* the join is the whole arm: the branch arrives at the
+        // place its structure ends at directly, so that arm holds no block of its own —
+        // the block starting there belongs to whatever follows the `if` — and the other
+        // successor's region is the one body the statement has. The builder writes no
+        // `else` for an empty arm, which is exactly the one-armed `if` the bytecode
+        // states. Nothing here is guessed from the addresses; the join is read in two
+        // ways, and both are facts the graph states:
+        //
+        // * the branch's own **immediate post-dominator**, when one successor *is* it:
+        //   the nearest block every path out of the branch passes through;
+        // * the **forward join** of the two successors ([`Self::forward_join`]), when
+        //   the post-dominator is further away because one arm leaves the method before
+        //   the join — `javac` writes `if (a > 0 && b > 0) return 1; return 0;` as two
+        //   forward branches onto one block, and that block is where both arms meet.
+        //
+        // A branch whose **two** successors are both the join states no arm at all and
+        // keeps the refusal below.
+        let forward_then = shared_join.is_none()
+            && self.forward_join(node, then_node, else_node, frame);
+        let forward_else = shared_join.is_none()
+            && self.forward_join(node, else_node, then_node, frame);
+        if std::env::var_os("JRE_JOIN_PROBE").is_some() {
+            eprintln!(
+                "P3JOIN branch={} ipdom={:?} then={:?} else={:?} ft={forward_then} fe={forward_else} frame_boundary={:?}",
+                branch.bci(),
+                join_node
+                    .and_then(|join| self.view.id_of(join).map(CanonicalBlockId::bci)),
+                then_node
+                    .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
+                else_node
+                    .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
+                frame
+                    .boundary
+                    .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
+            );
+        }
+        let proved_break_body_root = frame
+            .loop_targets
+            .last()
+            .and_then(|target| target.break_body.as_ref())
+            .is_some_and(|proof| proof.branch == node);
+        if !proved_break_body_root
+            && let Some(candidate_join) = join_node
+            && let Some(proof) = self.compound_statement_condition(
+                &branch,
+                branch_bci,
+                op,
+                target,
+                frame,
+                candidate_join,
+            )?
+            && let Some(region) =
+                self.compound_statement_region(&proof, &prefix, branch_bci, frame)?
+        {
+            let next = proof.join.clone();
+            return Ok(one(region, Some(next)));
+        }
+        let one_armed = match join_node {
+            Some(join_node)
+                if (then_node == Some(join_node)) != (else_node == Some(join_node)) =>
+            {
+                Some(join_node)
+            }
+            // The post-dominator states no one-armed shape here: exactly one successor
+            // being the forward join of the two does.
+            _ if forward_then != forward_else => {
+                if forward_then {
+                    then_node
+                } else {
+                    else_node
+                }
+            }
+            _ => None,
+        };
+        let join = one_armed
+            .or(join_node)
+            .and_then(|join| self.view.id_of(join).cloned());
+        if let Some(join_node) = one_armed {
+            let walk = if then_node == Some(join_node) {
+                &taken
+            } else {
+                &fall_through
+            };
+            // The condition's arity is read *before* the arm is walked, so a branch the
+            // builder would refuse claims no block on the way to being refused: an arm
+            // walked and then dropped would leave the blocks it claimed out of the
+            // uncovered-blocks statement as well as out of the text.
+            if let Err(reason) = self.branch_arity_proved(&branch, branch_bci, op) {
+                let next = self.unclaimed_join(join.as_ref());
+                return Ok(gap(prefix, vec![branch], reason, next));
+            }
+            let mut arm_frame = frame.arm(Some(join_node), Some(branch_bci));
+            if shared_join.is_some() && frame.shared_tail.is_none() {
+                arm_frame.shared_tail = Some(join_node);
+            }
+            let arm_trial = TrialState::of(self);
+            let certified_break_body_arm =
+                frame.loop_targets.last().and_then(|target| {
+                    let proof = target.break_body.as_ref()?;
+                    let walk_node = self.view.index_of(walk)?;
+                    (proof.header == target.header
+                        && proof.exit == target.break_target.unwrap_or(usize::MAX)
+                        && (proof.branch == node || proof.owners.contains(&node))
+                        && proof.owners.contains(&walk_node))
+                    .then_some(proof)
+                });
+            let arm_walk = if let Some(proof) = certified_break_body_arm {
+                poll(self.budget, Some(branch.bci()))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(proof.owners.len().saturating_add(1))
+                        .unwrap_or(u64::MAX),
+                    Some(branch.bci()),
+                )?;
+                self.loop_body_sequence(walk, &arm_frame, &proof.owners)
+            } else {
+                self.region_at(walk, &arm_frame)
+            };
+            let (mut arm_run, arm_next) = match arm_walk {
+                Ok(result) => result,
+                Err(stop) => {
+                    // Only the nested side-exit arm is an atomic trial: its claims must not outlive a
+                    // refusal or a stop, because the wider proof that will re-walk this arm starts
+                    // from the claim set the arm found. The plain arm keeps its claims on the way
+                    // out — the refusal it produces names them, and the caller's own rollback is the
+                    // one that decides their fate.
+                    if nested_side_exit.is_some() {
+                        self.restore_shape_claims(&arm_trial);
+                    }
+                    return Err(stop);
+                }
+            };
+            if let Some(next) = arm_next.as_ref()
+                && self.view.index_of(next) != Some(join_node)
+            {
+                let mut continued = if nested_side_exit.is_some() {
+                    match self.continue_prefixed_loop_arm(
+                        &mut arm_run,
+                        next,
+                        walk,
+                        &branch,
+                        &arm_frame,
+                        &arm_trial.visited(),
+                        nested_side_exit.as_ref(),
+                    ) {
+                        Ok(value) => value,
+                        Err(stop) => {
+                            self.restore_shape_claims(&arm_trial);
+                            return Err(stop);
+                        }
+                    }
+                } else {
+                    let mut continued = self.continue_early_return_arm(
+                        &mut arm_run,
+                        next,
+                        &arm_frame,
+                        frame,
+                    )?;
+                    if !continued {
+                        continued = self.continue_prefixed_loop_arm(
+                            &mut arm_run,
+                            next,
+                            walk,
+                            &branch,
+                            &arm_frame,
+                            &arm_trial.visited(),
+                            None,
+                        )?;
+                    }
+                    continued
+                };
+                if !continued && nested_side_exit.is_some() {
+                    self.restore_shape_claims(&arm_trial);
+                    let reason = FallbackReason::ArmsDoNotMeet {
+                        block_bci: branch.bci(),
+                    };
+                    return Ok(gap(prefix, vec![branch], reason, None));
+                }
+                if !continued {
+                    let empty_case_entries = BTreeSet::new();
+                    let case_entries = arm_frame
+                        .case_entries
+                        .as_ref()
+                        .unwrap_or(&empty_case_entries);
+                    continued = self.continue_switch_arm(
+                        &mut arm_run,
+                        next,
+                        walk,
+                        &arm_frame,
+                        case_entries,
+                        true,
+                    )?;
+                }
+                if !continued {
+                    self.unclosed_tail_at.get_or_insert(branch.bci());
+                    let reason = FallbackReason::ArmsDoNotMeet {
+                        block_bci: branch.bci(),
+                    };
+                    return Ok(gap(prefix, vec![branch], reason, None));
+                }
+            }
+            let arm = sequence_region(arm_run);
+            // A one-armed `if` normally has an empty arm because that edge is the
+            // branch's join. Inside a loop, the join can instead be the exact exit of
+            // an enclosing loop. In that case an empty arm drops a real exit edge and
+            // can turn a terminating loop into an infinite one; retain the transfer as
+            // the existing `LoopBreak` leaf.
+            let switch_join_arm = if frame
+                .switch_arm_scope()
+                .is_some_and(|arm| arm.is_proved_arm_joining_at(join_node))
+            {
+                match self.switch_break_branch(&branch, branch_bci, join_node, frame)? {
+                    Some(leaf) => Some(leaf),
+                    None => {
+                        let switch_bci = frame.switch_branch_bci.unwrap_or(branch_bci);
+                        self.unclosed_tail_at.get_or_insert(switch_bci);
+                        return Ok(gap(
+                            prefix,
+                            vec![branch.clone()],
+                            FallbackReason::SwitchShape {
+                                block_bci: switch_bci,
+                            },
+                            join.clone(),
+                        ));
+                    }
+                }
+            } else {
+                None
+            };
+            let join_arm = switch_join_arm.unwrap_or_else(|| {
+                frame
+                    .loop_targets
+                    .iter()
+                    .rev()
+                    .find(|target| target.break_target == Some(join_node))
+                    .and_then(|target| {
+                        self.view.id_of(target.header).cloned().map(|loop_header| {
+                            Region::LoopBreak {
+                                source_bci: branch_bci,
+                                loop_header,
+                            }
+                        })
+                    })
+                    .unwrap_or(Region::Straight { blocks: Vec::new() })
+            });
+            let empty = Box::new(join_arm);
+            let (then_arm, else_arm) = if then_node == Some(join_node) {
+                (empty, Box::new(arm))
+            } else {
+                (Box::new(arm), empty)
+            };
+            let run = vec![Region::If {
+                prefix,
+                branch,
+                branch_bci,
+                then_arm,
+                else_arm,
+                join: join.clone(),
+            }];
+            return Ok((run, join));
+        }
+        if let Some((boundary, continue_arm, expected_chain)) =
+            direct_continue_join.as_ref()
+        {
+            let refusal_bci = branch.bci();
+            let Some(boundary_id) = self.view.id_of(*boundary).cloned() else {
+                let reason = FallbackReason::ArmsDoNotMeet {
+                    block_bci: refusal_bci,
+                };
+                return Ok(gap(prefix, vec![branch], reason, None));
+            };
+            let Some(target) = frame.loop_targets.last() else {
+                unreachable!("the local continue proof requires its loop owner")
+            };
+            if let Err(reason) = self.branch_arity_proved(&branch, branch_bci, op) {
+                return Ok(gap(prefix, vec![branch], reason, Some(boundary_id)));
+            }
+            let other = [then_node, else_node]
+                .into_iter()
+                .flatten()
+                .find(|arm| *arm != *continue_arm)
+                .expect("a two-way branch has the other arm");
+            let other_id = self.view.id_of(other).cloned().expect("known arm id");
+            let other_trial = TrialState::of(self);
+            let other_frame = frame.arm(Some(*boundary), Some(branch_bci));
+            let (other_run, other_next) = match self.region_at(&other_id, &other_frame)
+            {
+                Ok(run) => run,
+                Err(stop) => {
+                    self.restore_claims_and_tail(&other_trial);
+                    return Err(stop);
+                }
+            };
+            let actual_chain = match other_run.as_slice() {
+                [Region::Straight { blocks }] if other_next.is_none() => blocks,
+                _ => {
+                    self.restore_claims_and_tail(&other_trial);
+                    let reason = FallbackReason::ArmsDoNotMeet {
+                        block_bci: refusal_bci,
+                    };
+                    return Ok(gap(prefix, vec![branch], reason, Some(boundary_id)));
+                }
+            };
+            if actual_chain != expected_chain {
+                self.restore_claims_and_tail(&other_trial);
+                let reason = FallbackReason::ArmsDoNotMeet {
+                    block_bci: refusal_bci,
+                };
+                return Ok(gap(prefix, vec![branch], reason, Some(boundary_id)));
+            }
+            let loop_header = self
+                .view
+                .id_of(target.header)
+                .cloned()
+                .expect("loop target is a canonical node");
+            let leaf = Region::LoopContinue {
+                source_bci: branch_bci,
+                loop_header,
+            };
+            let (then_arm, else_arm) = if then_node == Some(*continue_arm) {
+                (Box::new(leaf), Box::new(sequence_region(other_run)))
+            } else {
+                (Box::new(sequence_region(other_run)), Box::new(leaf))
+            };
+            return Ok((
+                vec![Region::If {
+                    prefix,
+                    branch,
+                    branch_bci,
+                    then_arm,
+                    else_arm,
+                    join: Some(boundary_id.clone()),
+                }],
+                Some(boundary_id),
+            ));
+        }
+        // Two successors that are both the join state no arm at all: nothing in the
+        // graph says which of them an arm would be, so the branch keeps its refusal
+        // rather than becoming an `if` with two empty arms. The same holds when both
+        // successors are a forward join: the graph states a convergence, but not which
+        // of the two arms arrives empty, so neither is written.
+        if (join_node.is_some() && then_node == join_node && else_node == join_node)
+            || (forward_then && forward_else)
+        {
+            let reason = FallbackReason::ArmsDoNotMeet {
+                block_bci: branch.bci(),
+            };
+            let next = self.unclaimed_join(join.as_ref());
+            return Ok(gap(prefix, vec![branch], reason, next));
+        }
+        let mut arm_frame = frame.arm(join_node, Some(branch_bci));
+        if let Some(tail) = shared_join
+            .or_else(|| continue_ladder_elected.then_some(join_node).flatten())
+            .filter(|_| frame.shared_tail.is_none())
+        {
+            arm_frame.shared_tail = Some(tail);
+        }
+        let before_arms = self.visited.clone();
+        let mut then_frame = arm_frame.clone();
+        let mut else_frame = arm_frame.clone();
+        let direct_arm = frame.boundary.is_none() && frame.if_arm.is_none();
+        let second_level = frame.if_arm.is_some_and(|(_, _, outer)| outer.is_none())
+            && frame.boundary.is_some();
+        if (direct_arm || second_level)
+            && frame.scope.is_none()
+            && frame.loop_targets.is_empty()
+            && frame.own_try.is_none()
+            && frame.own_finally.is_none()
+            && frame.case_entries.is_none()
+        {
+            let outer = if second_level { frame.boundary } else { None };
+            if let Some(entry) = then_node {
+                then_frame.if_arm = Some((node, entry, outer));
+            }
+            if let Some(entry) = else_node {
+                else_frame.if_arm = Some((node, entry, outer));
+            }
+        }
+        let (mut then_run, mut then_next) =
+            self.region_at(&fall_through, &then_frame)?;
+        let (mut else_run, mut else_next) = self.region_at(&taken, &else_frame)?;
+        // Test5's non-returning arm reaches an ordinary do-while header
+        // after its list-allocation block. The generic arm walk stops at
+        // that header, so finish this certified arm within the bounded
+        // two-segment finally scope before comparing the arms.
+        if frame.multi_return_finally_rows.is_some() {
+            self.continue_multi_return_loop_arm(
+                &mut then_run,
+                &mut then_next,
+                &then_frame,
+            )?;
+            self.continue_multi_return_loop_arm(
+                &mut else_run,
+                &mut else_next,
+                &else_frame,
+            )?;
+        }
+        let then_loop = self.continue_effectful_loop_arm(
+            &mut then_run,
+            &mut then_next,
+            &then_frame,
+        )?;
+        let else_loop = if then_loop {
+            self.continue_effectful_loop_arm(
+                &mut else_run,
+                &mut else_next,
+                &else_frame,
+            )?
+        } else {
+            false
+        };
+        // A two-edge body branch whose elected join is the loop's own header or
+        // continue target: the jump arm never returns there, and the continuing
+        // arm's own nested `if` already ended at its join — a block of this loop
+        // the body walk resumes at. Electing that block keeps the rest of the body
+        // (the nested loop, and the update after it) inside the walk instead of
+        // ending it at the loop's header with those blocks unclaimed.
+        let continuing_join = (|| {
+            let then_jump = then_next.is_none()
+                && run_transfer(&then_run).is_some_and(|transfer| transfer.kind.is_break());
+            let else_jump = else_next.is_none()
+                && run_transfer(&else_run).is_some_and(|transfer| transfer.kind.is_break());
+            if then_jump == else_jump {
+                return None;
+            }
+            let (run, next) = if then_jump {
+                (&else_run, &else_next)
+            } else {
+                (&then_run, &then_next)
+            };
+            let elected = join_node?;
+            let last = frame.loop_targets.last()?;
+            if elected != last.header && elected != last.continue_target {
+                return None;
+            }
+            let Region::If {
+                join: Some(nested), ..
+            } = run.last()?
+            else {
+                return None;
+            };
+            if next.as_ref() != Some(nested) {
+                return None;
+            }
+            let nested_node = self.view.index_of(nested)?;
+            if nested_node == elected
+                || nested_node == last.header
+                || self.visited.contains(&nested_node)
+                || frame.boundary == Some(nested_node)
+            {
+                return None;
+            }
+            let blocks = self.view.loop_entered_at(last.header)?.blocks();
+            if !blocks.contains(&nested_node)
+                || !self.nested_loop_ahead(nested_node, last.header, blocks)
+            {
+                return None;
+            }
+            Some(nested.clone())
+        })();
+        // The shared-latch two-edge body: this loop's own `continue` edge and the
+        // nested loop's exit edge route onto the same back-edge destination, so
+        // the arms' post-dominator is that destination and electing it ends the
+        // body walk with the nested loop's blocks unclaimed. The structural facts
+        // — each read from the graph, none from the addresses — that admit
+        // re-electing the join to where the continuing arm's own statements end:
+        // the elected join is this loop's continue destination (the update block
+        // a proved for-header owns, or the header of a loop none does); one arm
+        // is a goto bridge onto that destination (the edge a `continue` spells,
+        // exclusively owned by this branch); the other arm's walk ended at a
+        // nested loop header whose blocks this loop's body holds; and every exit
+        // of that nested loop lands on one of this loop's own latch blocks — the
+        // two edges' routes onto the one back edge, whether they name the
+        // destination itself (an update block both edges share) or a latch whose
+        // own transfer is the header. The jump arm then carries its own edge as
+        // the loop continue — the attribution by edge semantics the readings
+        // above use, with the same exclusive-ownership classifier, not a third
+        // one.
+        let shared_latch_join = (|| {
+            let last = frame.loop_targets.last()?;
+            let elected = join_node?;
+            let destination = last.continue_target;
+            if elected != destination {
+                return None;
+            }
+            let loop_of = self.view.loop_entered_at(last.header)?;
+            let latches = loop_of.latches();
+            let blocks = loop_of.blocks();
+            let (bridge, jump_is_then) = [then_node, else_node]
+                .into_iter()
+                .flatten()
+                .find_map(|entry| {
+                self.loop_continue_bridge(node, entry, destination, blocks)
+                    .then_some((entry, then_node == Some(entry)))
+            })?;
+            let (run, next) = if jump_is_then {
+                (&then_run, &else_next)
+            } else {
+                (&else_run, &then_next)
+            };
+            // The jumping arm is nothing but its bridge block: the one-transfer
+            // run the re-elected join no longer stands for.
+            let Some(bridge_block) = run_single_block(run) else {
+                return None;
+            };
+            if self.view.index_of(bridge_block) != Some(bridge) {
+                return None;
+            }
+            let source_bci = self.terminal_bci(bridge_block)?;
+            let nested = next.as_ref()?;
+            let nested_node = self.view.index_of(nested)?;
+            if self.visited.contains(&nested_node)
+                || frame.boundary == Some(nested_node)
+            {
+                return None;
+            }
+            let Some(nested_of) = self.view.loop_entered_at(nested_node) else {
+                return None;
+            };
+            let nested_blocks = nested_of.blocks();
+            if !nested_blocks.is_subset(blocks) {
+                return None;
+            }
+            let nested_exits: BTreeSet<usize> = nested_blocks
+                .iter()
+                .flat_map(|member| self.view.successors(*member))
+                .filter(|successor| !nested_blocks.contains(successor))
+                .collect();
+            // Every exit lands on a latch of this loop — directly (the test
+            // exit onto a shared update block, or onto the back-edge transfer a
+            // loop whose continue target is its header ends in) or through its
+            // own one transfer (an inner `break` goto onto that same block).
+            // Anything else leaves the loop past its back edge, and no exit may:
+            // this shape's post-dominator is the continue destination only
+            // because both routes regroup there.
+            let mut landings: BTreeSet<usize> = BTreeSet::new();
+            for exit in &nested_exits {
+                let landing = if latches.contains(exit) {
+                    *exit
+                } else {
+                    let successors = self.view.successors(*exit);
+                    if successors.len() != 1 || !latches.contains(&successors[0]) {
+                        return None;
+                    }
+                    successors[0]
+                };
+                landings.insert(landing);
+            }
+            // The loop's back edges are exactly the routes this shape accounts
+            // for: the landings, plus the bridge itself when a `continue` in a
+            // loop whose continue target is its header is a back edge of its own.
+            // Any other back edge is a jump this reading does not classify.
+            let mut accounted: BTreeSet<usize> = landings;
+            if self.view.successors(bridge) == [last.header] {
+                accounted.insert(bridge);
+            }
+            let held: BTreeSet<usize> = latches.iter().copied().collect();
+            if held != accounted {
+                return None;
+            }
+            Some((jump_is_then, source_bci))
+        })();
+        let continuing_join_elected = continuing_join.is_some();
+        let shared_latch_elected = shared_latch_join.is_some();
+        let shared_latch = shared_latch_join.and_then(|(jump_is_then, source_bci)| {
+            let loop_header =
+                self.view.id_of(frame.loop_targets.last()?.header)?.clone();
+            let run = if jump_is_then {
+                &mut then_run
+            } else {
+                &mut else_run
+            };
+            *run = vec![Region::LoopContinue {
+                source_bci,
+                loop_header,
+            }];
+            // The continuing arm's trailing straight run is this loop's own
+            // continuation, and it goes back to the body walk: a counted loop's
+            // header clause reads its initialisation from a preceding sibling
+            // statement, not from inside an arm. The run's blocks leave the arm's
+            // ownership with it — the walk re-claims them at the re-elected join,
+            // and a claimed block the walk re-enters would be quoted instead.
+            let continuing = if jump_is_then {
+                &mut else_run
+            } else {
+                &mut then_run
+            };
+            let [Region::Straight { blocks: lead }] = continuing.as_slice() else {
+                return None;
+            };
+            let join_block = lead.first()?.clone();
+            for block in lead {
+                let node = self.view.index_of(block)?;
+                if !self.visited.remove(&node) {
+                    return None;
+                }
+            }
+            *continuing = Vec::new();
+            Some(join_block)
+        });
+        let join = continuing_join.or(shared_latch).or(join);
+        let join_node = join.as_ref().and_then(|join| self.view.index_of(join));
+        // A nested value can meet at its own join before this arm meets the outer
+        // join. Keep that intervening straight run inside the *same* arm and frame.
+        // The helper refuses a partial or multiply entered continuation before any
+        // of its visited nodes can become a published owner.
+        let then_at_join =
+            continuing_join_elected && then_next.as_ref() == join.as_ref();
+        let then_continued = then_at_join
+            || self.continue_inner_join_arm(
+                &mut then_run,
+                then_next.as_ref(),
+                &arm_frame,
+            )?;
+        let else_at_join =
+            continuing_join_elected && else_next.as_ref() == join.as_ref();
+        let else_continued = if then_continued {
+            else_at_join
+                || self.continue_inner_join_arm(
+                    &mut else_run,
+                    else_next.as_ref(),
+                    &arm_frame,
+                )?
+        } else {
+            false
+        };
+        if !then_loop || !else_loop || !then_continued || !else_continued {
+            let entered: Vec<_> = self
+                .visited
+                .difference(&before_arms)
+                .filter_map(|node| self.view.id_of(*node).cloned())
+                .chain(then_next)
+                .chain(else_next)
+                .collect();
+            self.visited = before_arms;
+            let reason = FallbackReason::ArmsDoNotMeet {
+                block_bci: branch.bci(),
+            };
+            let next = self.unclaimed_join(join.as_ref());
+            return Ok(gap(prefix, gap_blocks(&branch, entered), reason, next));
+        }
+        // An arm the branch cannot present is quoted, not dropped and not written as if
+        // the branch had been: both arms' blocks are named by the refusal, each once.
+        let arm_blocks: Vec<CanonicalBlockId> = then_run
+            .iter()
+            .chain(else_run.iter())
+            .flat_map(Region::blocks)
+            .cloned()
+            .collect();
+        // Both arms must meet the join, or leave the method; anything else means the
+        // recovered structure runs into a block the branch did not describe.
+        if let Some(join_node) = join_node {
+            let then_meets =
+                then_node.is_some_and(|node| self.view.reaches(node, join_node));
+            let else_meets =
+                else_node.is_some_and(|node| self.view.reaches(node, join_node));
+            let certified_continue = fragmented_handler_join == Some(join_node)
+                && ((then_meets
+                    && else_next.is_none()
+                    && run_transfer(&else_run)
+                        .is_some_and(|transfer| transfer.kind.is_continue()))
+                    || (else_meets
+                        && then_next.is_none()
+                        && run_transfer(&then_run)
+                            .is_some_and(|transfer| transfer.kind.is_continue())));
+            let both_end = !then_meets && !else_meets;
+            let local_switch_join = frame
+                .switch_arm_scope()
+                .is_some_and(|arm| arm.joins_at(join_node));
+            // The arm that took a loop-jump edge outright: its walk ended (no
+            // continuation block) in a proved `LoopBreak`, or in nothing but the
+            // `goto` block whose one transfer is the join — the `continue` edge the
+            // goto spells when the join is this loop's own continue target.
+            let takes_loop_edge = |run: &[Region]| -> bool {
+                if run_transfer(run).is_some_and(|transfer| transfer.kind.is_break()) {
+                    return true;
+                }
+                run_single_block(run).is_some_and(|bridge| {
+                    self.view.index_of(bridge).is_some_and(|node| {
+                        self.view.successors(node) == [join_node]
+                    })
+                })
+            };
+            let then_breaks = then_next.is_none()
+                && run_transfer(&then_run).is_some_and(|transfer| transfer.kind.is_break());
+            let else_breaks = else_next.is_none()
+                && run_transfer(&else_run).is_some_and(|transfer| transfer.kind.is_break());
+            let switch_breaks = |run: &[Region]| {
+                let Some(arm) = frame.switch_arm_scope() else {
+                    return false;
+                };
+                // A switch arm only in the switch's own fallthrough proof, joining where this
+                // frame's join is, for this frame's branch instruction.
+                arm.fallthrough_proved()
+                    && arm.join_node() == Some(join_node)
+                    && run_transfer(run).is_some_and(|transfer| {
+                        transfer.kind.switch_break().is_some_and(|(switch_bci, join)| {
+                            arm.branch_bci() == Some(switch_bci)
+                                && self.view.index_of(join) == Some(join_node)
+                        })
+                    })
+            };
+            let then_switch_breaks = then_next.is_none() && switch_breaks(&then_run);
+            let else_switch_breaks = else_next.is_none() && switch_breaks(&else_run);
+            // A proved `continue` transfer ends its arm the same way a `break` does:
+            // the edge left for its target loop's destination and never comes back to
+            // this join. It is the loop-side jump of a two-edge body whose other arm
+            // is the one that meets the join.
+            let then_jumps = then_next.is_none()
+                && run_transfer(&then_run).is_some_and(|transfer| transfer.kind.is_loop_jump());
+            let else_jumps = else_next.is_none()
+                && run_transfer(&else_run).is_some_and(|transfer| transfer.kind.is_loop_jump());
+            let then_edge = then_next.is_none() && takes_loop_edge(&then_run);
+            let else_edge = else_next.is_none() && takes_loop_edge(&else_run);
+            if !(then_meets && else_meets)
+                && !certified_continue
+                && !both_end
+                && !(frame.loop_targets.last().is_some_and(|target| {
+                    // The join is this loop's own continue target and one arm left by
+                    // a proved loop-jump edge while the other meets it — the two-edge
+                    // body's shape. The continue target is the join whether the loop
+                    // spells `while` (it *is* the header this frame ends at) or `for`
+                    // (a proved update block the arms stop at instead), and the
+                    // meeting arm may end *at* the join rather than routing through
+                    // it, its own walk having stopped exactly there.
+                    let then_at_join = then_next.as_ref().is_some_and(|next| {
+                        self.view.index_of(next) == Some(join_node)
+                    });
+                    let else_at_join = else_next.as_ref().is_some_and(|next| {
+                        self.view.index_of(next) == Some(join_node)
+                    });
+                    target.continue_target == join_node
+                        && (((then_meets && else_jumps) || (else_meets && then_jumps))
+                            || (then_edge && else_at_join)
+                            || (else_edge && then_at_join))
+                }))
+                && !(local_switch_join
+                    && ((then_meets && (else_breaks || else_switch_breaks))
+                        || (else_meets && (then_breaks || then_switch_breaks))))
+                // The shared-latch re-election proved both arms' edges from the graph
+                // already — the continue bridge by exclusive ownership, the nested
+                // loop by containment and its exit set — and the one arm ends at
+                // this loop's own latch, a destination the forward reachability of
+                // the other arm's continuation never states. The re-election, not a
+                // reaches reading, is what the join stands on.
+                && !shared_latch_elected
+                // The ladder's own election proved the same question from the arms'
+                // routes: each arm reaches the join, and no route of either reaches
+                // the frame's boundary without passing through it, so the reading the
+                // refusal below states ("both arms must meet the join, or leave the
+                // method") is already established — the arm that does not meet it
+                // leaves the method, which is the early-return leaf the tree states.
+                && !ladder_elected
+            {
+                let reason = FallbackReason::ArmsDoNotMeet {
+                    block_bci: branch.bci(),
+                };
+                let next = self.unclaimed_join(join.as_ref());
+                let blocks = gap_blocks(&branch, arm_blocks);
+                return Ok(gap(prefix, blocks, reason, next));
+            }
+        }
+        // The condition's arity is a precondition of the statement the builder writes.
+        if let Err(reason) = self.branch_arity_proved(&branch, branch_bci, op) {
+            let next = self.unclaimed_join(join.as_ref());
+            let blocks = gap_blocks(&branch, arm_blocks);
+            return Ok(gap(prefix, blocks, reason, next));
+        }
+        let run = vec![Region::If {
+            prefix,
+            branch,
+            branch_bci,
+            then_arm: Box::new(sequence_region(then_run)),
+            else_arm: Box::new(sequence_region(else_run)),
+            join: join.clone(),
+        }];
+        return Ok((run, join));
+    }
+
+
+    /// One nested-monitor verdict, in a frame of its own (see [`Self::two_way_region`]).
+    #[inline(never)]
+    fn monitor_nested_region(
+        &mut self,
+        guard_verdict: &mut Option<crate::guard::Verdict>,
+        prefix: Vec<CanonicalBlockId>,
+        current: &CanonicalBlockId,
+        frame: &Frame,
+    ) -> Result<Run, StopReason> {
+        let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
+            unreachable!("the nested monitor verdict was just matched")
+        };
+        if let Some(body) = self.monitor_nested_body(&plan, frame)? {
+            for block in plan.owned() {
+                if let Some(node) = self.view.index_of(block) {
+                    self.visited.insert(node);
+                }
+            }
+            let join = plan.join().cloned();
+            return Ok(one(
+                Region::Guard {
+                    prefix,
+                    plan,
+                    body: Some(Box::new(body)),
+                    finally_body: None,
+                },
+                join,
+            ));
+        }
+        let reason = FallbackReason::Guard {
+            pass: None,
+            code: "jre_guard_body",
+            at: current.bci(),
+            message: "the nested synchronized body has no complete bounded structure"
+                .into(),
+        };
+        return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+    }
+
+    /// One multi-exit monitor verdict, in a frame of its own (see [`Self::two_way_region`]).
+    #[inline(never)]
+    fn monitor_branches_region(
+        &mut self,
+        guard_verdict: &mut Option<crate::guard::Verdict>,
+        prefix: Vec<CanonicalBlockId>,
+    ) -> Result<Run, StopReason> {
+        let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
+            unreachable!("the multi-exit monitor verdict was just matched")
+        };
+        for block in plan.owned() {
+            if let Some(node) = self.view.index_of(block) {
+                self.visited.insert(node);
+            }
+        }
+        return Ok(one(
+            Region::Guard {
+                prefix,
+                plan,
+                body: None,
+                finally_body: None,
+            },
+            None,
+        ));
+    }
+
+    /// One structured finally verdict, in a frame of its own (see [`Self::two_way_region`]).
+    #[inline(never)]
+    fn structured_finally_region(
+        &mut self,
+        guard_verdict: &mut Option<crate::guard::Verdict>,
+        prefix: Vec<CanonicalBlockId>,
+        current: &CanonicalBlockId,
+        frame: &Frame,
+    ) -> Result<Run, StopReason> {
+        let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
+            unreachable!("the structured finally verdict was just matched")
+        };
+        let recovered = match plan.shape() {
+            crate::guard::Shape::LoopFinally { .. } => self
+                .loop_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::NullableResourceFinally { .. } => self
+                .nullable_resource_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::FlagConditionalFinally { .. } => self
+                .flag_conditional_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::LocalNullConditionalFinally { .. } => self
+                .local_null_conditional_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::SegmentedNullLeadFinally { .. } => self
+                .segmented_null_lead_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::Finally {
+                completion: crate::guard::FinallyCompletion::Void { .. },
+                row_ordinal,
+                ..
+            } => self
+                .bounded_shared_finally_body(
+                    &current,
+                    plan.body(),
+                    None,
+                    ((*row_ordinal, plan.body()), None),
+                    &plan,
+                    frame,
+                    None,
+                )?
+                .map(|body| (body, None)),
+            _ => self
+                .finally_body(&current, &plan, frame)?
+                .map(|body| (body, None)),
+        };
+        if let Some((body, cleanup)) = recovered {
+            let join = plan.join().cloned();
+            for block in plan.owned() {
+                if let Some(node) = self.view.index_of(block) {
+                    self.visited.insert(node);
+                }
+            }
+            return Ok(one(
+                Region::Guard {
+                    prefix,
+                    plan,
+                    body: Some(Box::new(body)),
+                    finally_body: cleanup.map(Box::new),
+                },
+                join,
+            ));
+        }
+        let reason = FallbackReason::Guard {
+            pass: None,
+            code: "jre_guard_finally_copy",
+            at: current.bci(),
+            message: "the proved finally body has no complete bounded structure".into(),
+        };
+        return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+    }
+
+    /// One named `try` the exception table states with a catch-typed row, in a frame of its
+    /// own (see [`Self::two_way_region`]).
+    #[inline(never)]
+    fn named_try_region(
+        &mut self,
+        prefix: Vec<CanonicalBlockId>,
+        current: &CanonicalBlockId,
+        frame: &Frame,
+        (body, lead, catches, join, tails, exit_bci, transparent, retry): OwnedTry,
+    ) -> Result<Run, StopReason> {
+        let loop_entry_prefix = retry
+            .as_ref()
+            .map(|proof| proof.entry_prefix.clone())
+            .unwrap_or_default();
+        let try_prefix = if loop_entry_prefix.is_empty() {
+            prefix
+        } else {
+            Vec::new()
+        };
+        let try_region = Region::Try {
+            prefix: try_prefix,
+            lead,
+            body,
+            catches,
+            transparent,
+            normal_exit_bci: exit_bci.or_else(|| {
+                self.fragmented.as_ref().and_then(|proof| {
+                    (proof.outer_start != proof.inner_start
+                        && current.bci() == proof.inner_start)
+                        .then_some(proof.inner_exit_bci)
+                })
+            }),
+        };
+        let mut run = if let Some(retry) = retry {
+            let mut regions = if loop_entry_prefix.is_empty() {
+                Vec::new()
+            } else {
+                vec![Region::Straight {
+                    blocks: loop_entry_prefix,
+                }]
+            };
+            regions.push(Region::Loop {
+                header: retry.header,
+                tests: Vec::new(),
+                test_operator: None,
+                form: LoopForm::Endless,
+                for_header: None,
+                body: vec![try_region],
+                exit: Some(retry.exit),
+                gateway_origins: Vec::new(),
+            });
+            regions
+        } else {
+            vec![try_region]
+        };
+        run.extend(tails);
+        if self.fragmented.as_ref().is_some_and(|proof| {
+            proof.outer_start != proof.inner_start
+                && current.bci() == proof.inner_start
+                && frame.own_try.is_some()
+        }) && let Some(tail_start) = join.as_ref()
+            && frame.boundary != self.view.index_of(tail_start)
+        {
+            let mut next = Some(tail_start.clone());
+            for _ in 0..self.canonical.blocks().len() {
+                let Some(at) = next.as_ref() else { break };
+                if frame.boundary == self.view.index_of(at) {
+                    break;
+                }
+                let previous = at.clone();
+                let (tail, following) = self.region_at(&previous, frame)?;
+                run.extend(tail);
+                next = following;
+                if next.as_ref() == Some(&previous) {
+                    break;
+                }
+            }
+            return Ok((run, next));
+        }
+        return Ok((run, join));
+    }
+
+    /// One shared catch-all finally / resource-guard candidate, in a frame of its own (see
+    /// [`Self::two_way_region`]).
+    #[inline(never)]
+    fn shared_finally_region(
+        &mut self,
+        prefix: Vec<CanonicalBlockId>,
+        current: &CanonicalBlockId,
+        frame: &Frame,
+        plan: crate::guard::Plan,
+    ) -> Result<Run, StopReason> {
+        let recovered = match plan.shape() {
+            crate::guard::Shape::Finally { .. } => self
+                .finally_body(&current, &plan, frame)?
+                .map(|body| (body, None)),
+            crate::guard::Shape::LockGuardFinally { .. } => self
+                .lock_guard_finally_body(&current, &plan, frame)?
+                .map(|body| (body, None)),
+            crate::guard::Shape::LoopFinally { .. } => self
+                .loop_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::ConditionalFinally { .. } => self
+                .conditional_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::NullableResourceFinally { .. } => self
+                .nullable_resource_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::FlagConditionalFinally { .. } => self
+                .flag_conditional_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::LocalNullConditionalFinally { .. } => self
+                .local_null_conditional_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::SharedFinally { .. } => self
+                .shared_finally_body(&current, &plan, frame)?
+                .map(|body| (body, None)),
+            crate::guard::Shape::EmptyCatchCallFinally { .. } => self
+                .empty_catch_call_finally_body(&current, &plan, frame)?
+                .map(|body| (body, None)),
+            crate::guard::Shape::TwoCatchReturnFinally { .. } => self
+                .two_catch_return_finally_body(&current, &plan, frame)?
+                .map(|body| (body, None)),
+            crate::guard::Shape::NestedCleanupFinally { .. } => self
+                .nested_cleanup_finally_regions(&current, &plan, frame)?
+                .map(|(body, cleanup)| (body, Some(cleanup))),
+            crate::guard::Shape::SegmentedFinally { .. } => self
+                .segmented_finally_body(&current, &plan, frame)?
+                .map(|body| (body, None)),
+            crate::guard::Shape::MultiReturnLoopFinally { .. } => self
+                .multi_return_loop_finally_body(&current, &plan, frame)?
+                .map(|body| (body, None)),
+            crate::guard::Shape::ResourceGuardFinally { .. } => self
+                .resource_guard_finally_body(&current, &plan, frame)?
+                .map(|body| (body, None)),
+            _ => None,
+        };
+        if let Some((body, finally_body)) = recovered {
+            for block in plan.owned() {
+                if let Some(index) = self.view.index_of(block) {
+                    self.visited.insert(index);
+                }
+            }
+            let join = plan.join().cloned();
+            return Ok(one(
+                Region::Guard {
+                    prefix,
+                    plan,
+                    body: Some(Box::new(body)),
+                    finally_body: finally_body.map(Box::new),
+                },
+                join,
+            ));
+        }
+        let reason = FallbackReason::Guard {
+            pass: None,
+            code: "jre_guard_finally_copy",
+            at: current.bci(),
+            message:
+                "the shared catch-all finally has no complete bounded try and catch bodies"
+                    .into(),
+        };
+        return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+    }
     /// A nested boolean diamond may finish at its own `ireturn` after the enclosing guard's
     /// early-return join. Admit only that single, closed return block: both producer arms must be
     /// its exact normal predecessors, and the recursive walk must claim precisely that block.
@@ -7959,36 +8200,27 @@ impl Walker<'_> {
             return Ok(false);
         }
 
-        let saved_visited = self.visited.clone();
-        let saved_unclosed_tail = self.unclosed_tail_at;
-        let saved_catch_joins = self.catch_joins.clone();
-        let saved_fragmented = self.fragmented.clone();
+        let trial = TrialState::of(self);
         let attempt = self.region_at(next, frame);
         match attempt {
             Ok((tail, tail_next)) => {
                 let newly_visited = self
                     .visited
-                    .difference(&saved_visited)
+                    .difference(trial.visited())
                     .filter_map(|node| self.view.id_of(*node).cloned())
                     .collect::<BTreeSet<_>>();
                 if tail_next.is_some()
                     || !matches!(tail.as_slice(), [Region::Straight { blocks }] if blocks == &[next.clone()])
                     || !continuation_claims_are_exact(&[next.clone()], &newly_visited)
                 {
-                    self.visited = saved_visited;
-                    self.unclosed_tail_at = saved_unclosed_tail;
-                    self.catch_joins = saved_catch_joins;
-                    self.fragmented = saved_fragmented;
+                    self.restore_shape_claims(&trial);
                     return Ok(false);
                 }
                 run.extend(tail);
                 Ok(true)
             }
             Err(stop) => {
-                self.visited = saved_visited;
-                self.unclosed_tail_at = saved_unclosed_tail;
-                self.catch_joins = saved_catch_joins;
-                self.fragmented = saved_fragmented;
+                self.restore_shape_claims(&trial);
                 Err(stop)
             }
         }
@@ -8026,10 +8258,7 @@ impl Walker<'_> {
             match region {
                 Region::Sequence { regions } => {
                     for pair in regions.windows(2) {
-                        gateway_break |= matches!((&pair[0], &pair[1]),
-                            (Region::Straight { blocks }, Region::LoopBreak { loop_header, .. })
-                            if blocks == std::slice::from_ref(targets.gateway)
-                                && loop_header == targets.parent);
+                        gateway_break |= is_gateway_break_pair(pair, targets.gateway, targets.parent);
                     }
                     for child in regions {
                         let facts = visit(child, targets, budget, at)?;
@@ -8075,10 +8304,8 @@ impl Walker<'_> {
                     gateway_break = then_facts.1 || else_facts.1;
                     certified_side_if = then_facts.2 || else_facts.2;
                 }
-                Region::Loop {
-                    header, body, exit, ..
-                } => {
-                    child_loop = header == targets.child && exit.as_ref() == Some(targets.gateway);
+                Region::Loop { header, body, .. } => {
+                    child_loop = header == targets.child && region.loop_exits_at(targets.gateway);
                     for child in body {
                         let facts = visit(child, targets, budget, at)?;
                         child_loop |= facts.0;
@@ -8170,17 +8397,11 @@ impl Walker<'_> {
                 Ok(false)
             }
         }
-        let Region::Loop {
-            header,
-            body,
-            exit: Some(exit),
-            ..
-        } = arm
-        else {
+        let Region::Loop { header, body, .. } = arm else {
             return Ok(None);
         };
         if self.view.index_of(header) != Some(proof.parent_header)
-            || exit != join
+            || !arm.loop_exits_at(join)
             || proof.parent_exit != self.view.index_of(join).unwrap_or(usize::MAX)
         {
             return Ok(None);
@@ -8339,30 +8560,9 @@ impl Walker<'_> {
         join: &CanonicalBlockId,
         frame: &Frame,
     ) -> Result<Option<CanonicalBlockId>, StopReason> {
-        fn closed_body(region: &Region) -> bool {
-            match region {
-                Region::Straight { .. } => true,
-                Region::Sequence { regions } => regions.iter().all(closed_body),
-                Region::If {
-                    then_arm,
-                    else_arm,
-                    join: Some(_),
-                    ..
-                } => closed_body(then_arm) && closed_body(else_arm),
-                Region::CompoundIf {
-                    then_arm,
-                    else_arm,
-                    join: Some(_),
-                    ..
-                } => closed_body(then_arm) && closed_body(else_arm),
-                _ => false,
-            }
-        }
-
         let Region::Loop {
             header,
             body,
-            exit: Some(exit),
             gateway_origins,
             form,
             for_header,
@@ -8381,12 +8581,15 @@ impl Walker<'_> {
             }) if matches!(then_arm.as_ref(), Region::Straight { .. })
                 && matches!(else_arm.as_ref(), Region::Straight { .. })
         );
+        // Every body run must complete inside this loop; the run that ends in the final return
+        // latch is the one exception, and it is that latch's own `join: None` shape.
         let body_is_closed = match (body.split_last(), final_return_latch) {
-            (Some((_, prefix)), true) => prefix.iter().all(closed_body),
-            (_, false) => body.iter().all(closed_body),
+            (Some((_, prefix)), true) => prefix.iter().all(Region::is_closed_run),
+            (_, false) => body.iter().all(Region::is_closed_run),
             (None, true) => false,
         };
-        if exit != join || !body_is_closed {
+        // The arm leaves exactly where the sibling joins: the loop's own stated exit is the join.
+        if !arm.loop_exits_at(join) || !body_is_closed {
             return Ok(None);
         }
         let Some(header_node) = self.view.index_of(header) else {
@@ -8575,28 +8778,22 @@ impl Walker<'_> {
         {
             return Ok(false);
         }
-        let saved_visited = self.visited.clone();
-        let saved_unclosed_tail = self.unclosed_tail_at;
-        let saved_catch_joins = self.catch_joins.clone();
-        let saved_fragmented = self.fragmented.clone();
+        let trial = TrialState::of(self);
         let attempt = (|| -> Result<Option<(Vec<Region>, Vec<Region>)>, StopReason> {
             if !self.closed_straight_chain(prefix, branch, next, branch, frame)? {
                 return Ok(None);
             }
             let (child_run, child_next) = self.region_at(next, frame)?;
             let [
-                child_loop @ Region::Loop {
-                    header,
-                    exit: Some(exit),
-                    ..
-                },
+                child_loop @ Region::Loop { header, .. },
             ] = child_run.as_slice()
             else {
                 return Ok(None);
             };
+            // The child loop's own stated exit is this proof's gateway.
             if header != &child_header_id
-                || exit != &gateway_id
-                || child_next.as_ref() != Some(exit)
+                || !child_loop.loop_exits_at(&gateway_id)
+                || child_next.as_ref() != child_loop.loop_exit()
             {
                 return Ok(None);
             }
@@ -8654,11 +8851,9 @@ impl Walker<'_> {
             let has_gateway_owner = gateway_run.iter().any(|region| {
                 matches!(region, Region::Straight { blocks } if blocks == std::slice::from_ref(&gateway_id))
             });
-            let has_exact_break = gateway_run.windows(2).any(|pair| {
-                matches!((&pair[0], &pair[1]),
-                    (Region::Straight { blocks }, Region::LoopBreak { loop_header, .. })
-                    if blocks == std::slice::from_ref(&gateway_id) && loop_header == &parent_header_id)
-            });
+            let has_exact_break = gateway_run
+                .windows(2)
+                .any(|pair| is_gateway_break_pair(pair, &gateway_id, &parent_header_id));
             let invalid_gateway_region = gateway_next.is_some()
                 || !has_gateway_owner
                 || !has_exact_break
@@ -8725,17 +8920,11 @@ impl Walker<'_> {
                 Ok(true)
             }
             Ok(None) => {
-                self.visited = saved_visited;
-                self.unclosed_tail_at = saved_unclosed_tail;
-                self.catch_joins = saved_catch_joins;
-                self.fragmented = saved_fragmented;
+                self.restore_shape_claims(&trial);
                 Ok(false)
             }
             Err(stop) => {
-                self.visited = saved_visited;
-                self.unclosed_tail_at = saved_unclosed_tail;
-                self.catch_joins = saved_catch_joins;
-                self.fragmented = saved_fragmented;
+                self.restore_shape_claims(&trial);
                 Err(stop)
             }
         }
@@ -8769,24 +8958,18 @@ impl Walker<'_> {
             return Ok(false);
         }
         let prefix = prefix.clone();
-        let saved_visited = self.visited.clone();
-        let saved_unclosed_tail = self.unclosed_tail_at;
-        let saved_catch_joins = self.catch_joins.clone();
-        let saved_fragmented = self.fragmented.clone();
+        let trial = TrialState::of(self);
         let attempt = (|| -> Result<Option<Vec<Region>>, StopReason> {
             if !self.closed_straight_chain(&prefix, branch, next, branch, frame)? {
                 return Ok(None);
             }
             let (loop_run, loop_next) = self.region_at(next, frame)?;
-            let [
-                loop_region @ Region::Loop {
-                    exit: Some(exit), ..
-                },
-            ] = loop_run.as_slice()
-            else {
+            let [loop_region @ Region::Loop { .. }] = loop_run.as_slice() else {
                 return Ok(None);
             };
-            if exit != &boundary || loop_next.as_ref() != Some(exit) {
+            // The nested loop's own stated exit is this arm's boundary, which the run resumes at.
+            if !loop_region.loop_exits_at(&boundary) || loop_next.as_ref() != loop_region.loop_exit()
+            {
                 return Ok(None);
             }
             if self
@@ -8827,17 +9010,11 @@ impl Walker<'_> {
                 Ok(true)
             }
             Ok(None) => {
-                self.visited = saved_visited;
-                self.unclosed_tail_at = saved_unclosed_tail;
-                self.catch_joins = saved_catch_joins;
-                self.fragmented = saved_fragmented;
+                self.restore_shape_claims(&trial);
                 Ok(false)
             }
             Err(stop) => {
-                self.visited = saved_visited;
-                self.unclosed_tail_at = saved_unclosed_tail;
-                self.catch_joins = saved_catch_joins;
-                self.fragmented = saved_fragmented;
+                self.restore_shape_claims(&trial);
                 Err(stop)
             }
         }
@@ -8943,12 +9120,12 @@ impl Walker<'_> {
             );
         }
         let (loop_run, loop_next) = self.region_at(next, frame)?;
-        let [
-            loop_region @ Region::Loop {
-                exit: Some(exit), ..
-            },
-        ] = loop_run.as_slice()
-        else {
+        let [loop_region @ Region::Loop { .. }] = loop_run.as_slice() else {
+            return Ok(false);
+        };
+        // The loop's own stated exit is where this arm's walk resumes, and this helper continues
+        // the arm at it — an endless body states no exit, so there is nothing to continue at.
+        let Some(exit) = loop_region.loop_exit() else {
             return Ok(false);
         };
         if loop_next.as_ref() != Some(exit) {
@@ -9119,10 +9296,8 @@ impl Walker<'_> {
         if !self.view.is_loop_header(header_node) {
             return Ok(true);
         }
-        let [Region::Straight { blocks }] = run.as_slice() else {
-            return Ok(false);
-        };
-        if blocks.len() != 1 || self.view.index_of(&blocks[0]) != Some(entry) {
+        // The run is nothing but the entry block this header is reached from.
+        if run_single_block(run).and_then(|block| self.view.index_of(block)) != Some(entry) {
             return Ok(false);
         }
         let Some(loop_of) = self.view.loop_entered_at(header_node).cloned() else {
@@ -9243,15 +9418,7 @@ impl Walker<'_> {
         // An arm that ends in a proved loop transfer never enters the join: its own edge left
         // for the target loop's break destination, so only the sibling arm's tail block is a
         // predecessor of the continuation.
-        fn ends_in_loop_break(arm: &Region) -> bool {
-            match arm {
-                Region::LoopBreak { .. } => true,
-                Region::Sequence { regions } => {
-                    matches!(regions.last(), Some(Region::LoopBreak { .. }))
-                }
-                _ => false,
-            }
-        }
+        let ends_in_loop_break = Region::ends_in_loop_break;
         let sources = match (then_arm.as_ref(), else_arm.as_ref()) {
             (Region::Straight { .. }, Region::Straight { .. }) => {
                 vec![straight_end(then_arm), straight_end(else_arm)]
@@ -9427,12 +9594,11 @@ impl Walker<'_> {
         };
         let [
             Region::Straight { blocks: entry },
-            Region::Loop {
+            loop_region @ Region::Loop {
                 header,
                 tests,
                 form: LoopForm::Endless,
                 body,
-                exit: Some(exit),
                 gateway_origins,
                 ..
             },
@@ -9443,7 +9609,8 @@ impl Walker<'_> {
         let [entry] = entry.as_slice() else {
             return Ok(None);
         };
-        if exit != join
+        // The endless body's own stated exit is where this arm lands, and it is the join.
+        if !loop_region.loop_exits_at(join)
             || !tests.is_empty()
             || gateway_origins.len() != 1
             || !body.iter().all(Region::is_structured)
@@ -10688,11 +10855,20 @@ impl Walker<'_> {
         catches: &[CatchClause],
         checkpoint: &BTreeSet<usize>,
     ) -> Result<bool, StopReason> {
-        if catches.len() != 1 || !body.is_structured() || !catches[0].body().is_structured() {
+        // Exactly one clause, whose handler and body are the statement's own facts — read from the
+        // owner of that reading, the same one a published `Try` composes with.
+        let [clause] = catches else {
+            return Ok(false);
+        };
+        let clause = clause.exception_clause();
+        let Some(catch_body) = clause.body else {
+            return Ok(false);
+        };
+        if !body.is_structured() || !catch_body.is_structured() {
             return Ok(false);
         }
         let body_blocks = body.blocks();
-        let catch_blocks = catches[0].body().blocks();
+        let catch_blocks = catch_body.blocks();
         let work = body_blocks.len().saturating_add(catch_blocks.len());
         charge(
             self.budget,
@@ -10727,9 +10903,9 @@ impl Walker<'_> {
             return Ok(false);
         }
         let handler_shape_complete = if let Some(branch) = &proof.handler_branch {
-            catches[0].handler() == &proof.handler
+            clause.handler == proof.handler
                 && retry_handler_branch_region_complete(
-                    catches[0].body(),
+                    catch_body,
                     &proof.handler,
                     branch,
                     proof.continue_source_bci,
@@ -10838,7 +11014,7 @@ impl Walker<'_> {
             .as_ref()
             .is_some_and(|proof| !proof.entry_prefix.is_empty())
         {
-            Some(self.loop_body_trial_state(Some(start.bci()))?)
+            Some(self.charged_trial_state(Some(start.bci()))?)
         } else {
             None
         };
@@ -10879,7 +11055,7 @@ impl Walker<'_> {
                 Ok(level) => level,
                 Err(stop) => {
                     if let Some(state) = prefixed_retry_trial.take() {
-                        self.restore_loop_body_trial_state(state);
+                        self.restore_trial_state(&state);
                     } else {
                         if let Some(previous) = previous.clone() {
                             self.visited = previous;
@@ -10901,7 +11077,7 @@ impl Walker<'_> {
                 Ok(complete) => complete,
                 Err(stop) => {
                     if let Some(state) = prefixed_retry_trial.take() {
-                        self.restore_loop_body_trial_state(state);
+                        self.restore_trial_state(&state);
                     } else {
                         self.visited = checkpoint.clone();
                         self.unclosed_tail_at =
@@ -10912,7 +11088,7 @@ impl Walker<'_> {
             };
             if !complete {
                 if let Some(state) = prefixed_retry_trial.take() {
-                    self.restore_loop_body_trial_state(state);
+                    self.restore_trial_state(&state);
                 } else {
                     self.visited = checkpoint.clone();
                     self.unclosed_tail_at = previous_unclosed_tail.expect("retry tail checkpoint");
@@ -11327,25 +11503,7 @@ impl Walker<'_> {
                         u64::try_from(checkpoint_items.saturating_mul(2)).unwrap_or(u64::MAX),
                         Some(loop_header.bci()),
                     )?;
-                    let saved_visited = self.visited.clone();
-                    let saved_unclosed_tail = self.unclosed_tail_at;
-                    let saved_catch_joins = self.catch_joins.clone();
-                    let saved_loop_catch_terminal_owners = self.loop_catch_terminal_owners.clone();
-                    let saved_fragmented = self.fragmented.clone();
-                    let saved_own_monitor = self.own_monitor.clone();
-                    let saved_depth = self.depth;
-                    macro_rules! restore_candidate {
-                        () => {{
-                            self.visited = saved_visited.clone();
-                            self.unclosed_tail_at = saved_unclosed_tail;
-                            self.catch_joins = saved_catch_joins.clone();
-                            self.loop_catch_terminal_owners =
-                                saved_loop_catch_terminal_owners.clone();
-                            self.fragmented = saved_fragmented.clone();
-                            self.own_monitor = saved_own_monitor.clone();
-                            self.depth = saved_depth;
-                        }};
-                    }
+                    let trial = TrialState::of(self);
                     let attempt: Result<
                         Option<(Vec<Region>, Vec<Region>, Option<u32>)>,
                         StopReason,
@@ -11420,12 +11578,12 @@ impl Walker<'_> {
                             let Some(node) = self.view.index_of(block) else {
                                 return Ok(None);
                             };
-                            if saved_visited.contains(&node) || !child_nodes.insert(node) {
+                            if trial.visited().contains(&node) || !child_nodes.insert(node) {
                                 return Ok(None);
                             }
                         }
 
-                        let delta_work = self.visited.len().saturating_add(saved_visited.len());
+                        let delta_work = self.visited.len().saturating_add(trial.visited().len());
                         charge(
                             self.budget,
                             CountedBudgetDimension::AnalysisSteps,
@@ -11437,7 +11595,7 @@ impl Walker<'_> {
                             if let Some(block) = self.canonical.blocks().get(*node) {
                                 poll(self.budget, Some(block.id().bci()))?;
                             }
-                            if !saved_visited.contains(node) {
+                            if !trial.visited().contains(node) {
                                 newly_visited.insert(*node);
                             }
                         }
@@ -11571,7 +11729,7 @@ impl Walker<'_> {
                             prefix_blocks,
                             &child_blocks,
                             &candidate_owner_blocks,
-                            &saved_visited,
+                            &trial.visited(),
                         )? {
                             return Ok(None);
                         }
@@ -11585,9 +11743,9 @@ impl Walker<'_> {
                             exit_bci = bridge_bci;
                             composed_prefix_loop = true;
                         }
-                        Ok(None) => restore_candidate!(),
+                        Ok(None) => self.restore_trial_state(&trial),
                         Err(stop) => {
-                            restore_candidate!();
+                            self.restore_trial_state(&trial);
                             return Err(stop);
                         }
                     }
@@ -12311,7 +12469,7 @@ impl Walker<'_> {
         {
             return Ok(None);
         }
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let mut frame = outer.clone();
         frame.scope = Some(expected.clone());
         frame.boundary = Some(exit_node);
@@ -12321,12 +12479,12 @@ impl Walker<'_> {
         let (regions, next) = match walked {
             Ok(run) => run,
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
         let [loop_region @ Region::Loop { .. }] = regions.as_slice() else {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         };
         let actual = loop_region
@@ -12338,12 +12496,12 @@ impl Walker<'_> {
             || actual != expected
             || self
                 .visited
-                .difference(&previous)
+                .difference(previous.visited())
                 .copied()
                 .collect::<BTreeSet<_>>()
                 != expected
         {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         Ok(Some((
@@ -12478,7 +12636,7 @@ impl Walker<'_> {
         } else {
             None
         };
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let mut frame = outer.clone();
         frame.scope = Some(expected.clone());
         // A conditional body stops at its proved second cleanup entry, not at the fused tail.
@@ -12507,7 +12665,7 @@ impl Walker<'_> {
         let (mut regions, mut next) = match walked {
             Ok(result) => result,
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
@@ -12526,12 +12684,12 @@ impl Walker<'_> {
             let (tail, following) = match self.region_at(at, &frame) {
                 Ok(result) => result,
                 Err(stop) => {
-                    self.visited = previous;
+                    self.restore_claims(&previous);
                     return Err(stop);
                 }
             };
             if following.as_ref() == Some(at) || tail.is_empty() {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Ok(None);
             }
             regions.extend(tail);
@@ -12576,12 +12734,12 @@ impl Walker<'_> {
             || save_count != usize::from(save.is_some())
             || self
                 .visited
-                .difference(&previous)
+                .difference(previous.visited())
                 .copied()
                 .collect::<BTreeSet<_>>()
                 != expected
         {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         Ok(Some(body))
@@ -12653,7 +12811,7 @@ impl Walker<'_> {
         {
             return Ok(None);
         }
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let mut frame = outer.clone();
         frame.scope = Some(expected.clone());
         frame.boundary = None;
@@ -12667,12 +12825,12 @@ impl Walker<'_> {
             Ok(Some(result)) => result,
             Ok(None) => {
                 self.own_monitor = enclosing_monitor;
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Ok(None);
             }
             Err(stop) => {
                 self.own_monitor = enclosing_monitor;
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
@@ -12695,13 +12853,13 @@ impl Walker<'_> {
             || actual.len() != blocks.len()
             || self
                 .visited
-                .difference(&previous)
+                .difference(previous.visited())
                 .copied()
                 .collect::<BTreeSet<_>>()
                 != expected
         {
             self.own_monitor = enclosing_monitor;
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         self.own_monitor = enclosing_monitor;
@@ -12765,7 +12923,7 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let protected = self.bounded_conditional_finally_region(
             start,
             plan.body(),
@@ -12777,11 +12935,11 @@ impl Walker<'_> {
         let protected = match protected {
             Ok(Some(body)) => body,
             Ok(None) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Ok(None);
             }
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
@@ -12792,7 +12950,7 @@ impl Walker<'_> {
             .find(|block| block.id().bci() == normal_cleanup.0)
             .map(|block| block.id().clone())
         else {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         };
         let cleanup = self.bounded_conditional_finally_region(
@@ -12806,16 +12964,16 @@ impl Walker<'_> {
         let cleanup = match cleanup {
             Ok(Some(body)) => body,
             Ok(None) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Ok(None);
             }
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
         if !matches!(protected, Region::If { .. }) || !matches!(cleanup, Region::If { .. }) {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         Ok(Some((protected, cleanup)))
@@ -12836,7 +12994,7 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let body = self.bounded_conditional_finally_region(
             start,
             (plan.body().0, saved_return.0),
@@ -12848,11 +13006,11 @@ impl Walker<'_> {
         let body = match body {
             Ok(Some(body)) => body,
             Ok(None) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Ok(None);
             }
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
@@ -12868,7 +13026,7 @@ impl Walker<'_> {
             })
             .map(|block| block.block().clone())
         else {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         };
         // The save at the first instruction of this block belongs to the try body; the
@@ -12896,11 +13054,11 @@ impl Walker<'_> {
         let cleanup = match cleanup {
             Ok(Some(cleanup)) if matches!(cleanup, Region::If { .. }) => cleanup,
             Ok(_) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Ok(None);
             }
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
@@ -12977,7 +13135,7 @@ impl Walker<'_> {
         let body = Region::Straight {
             blocks: vec![start.clone()],
         };
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let mut frame = outer.clone();
         frame.scope = Some(expected.clone());
         frame.boundary = Some(exit_node);
@@ -12987,7 +13145,7 @@ impl Walker<'_> {
         let (regions, next) = match walked {
             Ok(result) => result,
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
@@ -13004,12 +13162,12 @@ impl Walker<'_> {
             || blocks.len() != actual.len()
             || self
                 .visited
-                .difference(&previous)
+                .difference(previous.visited())
                 .copied()
                 .collect::<BTreeSet<_>>()
                 != expected
         {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         Ok(Some((body, cleanup)))
@@ -13082,7 +13240,7 @@ impl Walker<'_> {
         let body = Region::Straight {
             blocks: vec![start.clone()],
         };
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let mut frame = outer.clone();
         frame.scope = Some(expected.clone());
         frame.boundary = Some(exit_node);
@@ -13092,7 +13250,7 @@ impl Walker<'_> {
         let (regions, next) = match walked {
             Ok(result) => result,
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
@@ -13109,12 +13267,12 @@ impl Walker<'_> {
             || blocks.len() != actual.len()
             || self
                 .visited
-                .difference(&previous)
+                .difference(previous.visited())
                 .copied()
                 .collect::<BTreeSet<_>>()
                 != expected
         {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         Ok(Some((body, cleanup)))
@@ -13169,7 +13327,7 @@ impl Walker<'_> {
             })
             .filter_map(|block| self.view.index_of(block))
             .collect();
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let mut frame = outer.clone();
         frame.scope = Some(expected.clone());
         frame.boundary = None;
@@ -13185,7 +13343,7 @@ impl Walker<'_> {
         let (mut regions, mut next) = match walked {
             Ok(result) => result,
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
@@ -13209,12 +13367,12 @@ impl Walker<'_> {
                 let (part, following) = match self.region_at(at, &frame) {
                     Ok(result) => result,
                     Err(stop) => {
-                        self.visited = previous;
+                        self.restore_claims(&previous);
                         return Err(stop);
                     }
                 };
                 if part.is_empty() || following.as_ref() == Some(at) {
-                    self.visited = previous;
+                    self.restore_claims(&previous);
                     return Ok(None);
                 }
                 regions.extend(part);
@@ -13240,12 +13398,12 @@ impl Walker<'_> {
             || actual.len() != blocks.len()
             || self
                 .visited
-                .difference(&previous)
+                .difference(previous.visited())
                 .copied()
                 .collect::<BTreeSet<_>>()
                 != expected
         {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         let Some(tail_block) = plan.owned().iter().find(|block| {
@@ -13256,7 +13414,7 @@ impl Walker<'_> {
                     .any(|instruction| instruction.bci() == normal_cleanup.0)
             })
         }) else {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         };
         let cleanup = Region::Straight {
@@ -13329,7 +13487,7 @@ impl Walker<'_> {
         {
             return Ok(None);
         }
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let mut frame = outer.clone();
         frame.scope = Some(expected.clone());
         frame.boundary = Some(exit_node);
@@ -13339,7 +13497,7 @@ impl Walker<'_> {
         let (regions, next) = match walked {
             Ok(run) => run,
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
@@ -13355,12 +13513,12 @@ impl Walker<'_> {
             || blocks.len() != actual.len()
             || self
                 .visited
-                .difference(&previous)
+                .difference(previous.visited())
                 .copied()
                 .collect::<BTreeSet<_>>()
                 != expected
         {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         Ok(Some(region))
@@ -13565,7 +13723,7 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let try_rows = ((rows[0], plan.body()), Some((rows[1], plan.body())));
         let try_body = self.bounded_shared_finally_body(
             start,
@@ -13581,7 +13739,7 @@ impl Walker<'_> {
             None,
         )?;
         let Some(try_body) = try_body else {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         };
         let catch_rows = ((rows[2], *catch_body), None);
@@ -13601,18 +13759,18 @@ impl Walker<'_> {
         let catch = match catch {
             Ok(catch) => catch,
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
         let Some(catch) = catch else {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         };
         let try_blocks = try_body.blocks().into_iter().collect::<BTreeSet<_>>();
         let catch_blocks = catch.blocks().into_iter().collect::<BTreeSet<_>>();
         if !try_blocks.is_disjoint(&catch_blocks) {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         Ok(Some(Region::Try {
@@ -13648,7 +13806,7 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let owned_rows = [
             (rows[0], segments[0]),
             (rows[1], segments[1]),
@@ -13665,7 +13823,7 @@ impl Walker<'_> {
             Some(owned_rows),
         )?;
         let Some(try_body) = try_body else {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         };
         let catch = self.bounded_shared_finally_body(
@@ -13680,18 +13838,18 @@ impl Walker<'_> {
         let catch = match catch {
             Ok(catch) => catch,
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
         let Some(catch) = catch else {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         };
         let try_blocks = try_body.blocks().into_iter().collect::<BTreeSet<_>>();
         let catch_blocks = catch.blocks().into_iter().collect::<BTreeSet<_>>();
         if !try_blocks.is_disjoint(&catch_blocks) {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         Ok(Some(Region::Try {
@@ -13859,7 +14017,7 @@ impl Walker<'_> {
         {
             return Ok(None);
         }
-        let previous = self.visited.clone();
+        let previous = TrialState::of(self);
         let mut frame = outer.clone();
         frame.scope = Some(expected.clone());
         // The body's own end — the block that begins where the protected range stops — is this
@@ -13921,7 +14079,7 @@ impl Walker<'_> {
         let (mut regions, mut next) = match walked {
             Ok(result) => result,
             Err(stop) => {
-                self.visited = previous;
+                self.restore_claims(&previous);
                 return Err(stop);
             }
         };
@@ -13937,12 +14095,12 @@ impl Walker<'_> {
                 let (part, following) = match self.region_at(at, &frame) {
                     Ok(result) => result,
                     Err(stop) => {
-                        self.visited = previous;
+                        self.restore_claims(&previous);
                         return Err(stop);
                     }
                 };
                 if part.is_empty() || following.as_ref() == Some(at) {
-                    self.visited = previous;
+                    self.restore_claims(&previous);
                     return Ok(None);
                 }
                 regions.extend(part);
@@ -13980,12 +14138,12 @@ impl Walker<'_> {
             || save_count != usize::from(save.is_some())
             || self
                 .visited
-                .difference(&previous)
+                .difference(previous.visited())
                 .copied()
                 .collect::<BTreeSet<_>>()
                 != expected
         {
-            self.visited = previous;
+            self.restore_claims(&previous);
             return Ok(None);
         }
         Ok(Some(body))
@@ -14042,12 +14200,7 @@ impl Walker<'_> {
         rows: ((u32, (u32, u32)), Option<(u32, (u32, u32))>),
     ) -> bool {
         let mut accounted = false;
-        for edge in self
-            .canonical
-            .edges()
-            .iter()
-            .filter(|edge| edge.from() == block)
-        {
+        for edge in self.outgoing(block) {
             match edge.kind() {
                 CanonicalEdgeKind::Exception { handler_ordinal } => {
                     let matches =
@@ -14090,12 +14243,7 @@ impl Walker<'_> {
         owned: &[CanonicalBlockId],
     ) -> bool {
         let mut accounted = false;
-        for edge in self
-            .canonical
-            .edges()
-            .iter()
-            .filter(|edge| edge.from() == block)
-        {
+        for edge in self.outgoing(block) {
             match edge.kind() {
                 CanonicalEdgeKind::Exception { handler_ordinal } => {
                     let matches = self.handlers.iter().any(|row| {
@@ -14125,13 +14273,30 @@ impl Walker<'_> {
     /// Every edge the graph states is read as the graph states it; whether the block can *take* one
     /// is [`Self::leaves_only_through_dead_edges`]'s question, asked where a quote is decided. The
     /// two are separate on purpose: this edge is what sends a block to the guarded rules of P3 2.4
+    /// The edges one block leaves by, as one contiguous slice of the canonical table.
+    ///
+    /// The table is published sorted by `from`, then kind, then `to`
+    /// (`jarde_jvm::canonical`'s `fuse`/publication step), so every block's outgoing edges sit next
+    /// to each other and the two binary searches below read them without walking the rest of the
+    /// method. That ordering **is** the index: building a second `from -> Vec<edge>` map here would
+    /// be a second copy of the same fact, and the two could disagree.
+    ///
+    /// This is a pure read — it charges nothing and polls nothing — so a caller that already paid
+    /// for the scan it replaces keeps its own price. It is for the sites that need *only* this
+    /// block's edges; a site whose reading depends on the order the whole table is enumerated in
+    /// must keep saying so explicitly.
+    fn outgoing(&self, block: &CanonicalBlockId) -> &[CanonicalEdge] {
+        let edges = self.canonical.edges();
+        let start = edges.partition_point(|edge| edge.from() < block);
+        let end = edges.partition_point(|edge| edge.from() <= block);
+        &edges[start..end]
+    }
+
     /// ([`crate::guard::examine`]), and a rule that refuses the block refuses it whatever an
     /// instruction of it may raise.
     fn leaving_edge(&self, block: &CanonicalBlockId) -> Option<FallbackReason> {
-        self.canonical
-            .edges()
+        self.outgoing(block)
             .iter()
-            .filter(|edge| edge.from() == block)
             .find_map(|edge| match edge.kind() {
                 CanonicalEdgeKind::Exception { handler_ordinal } => {
                     Some(FallbackReason::ExceptionEdge {
@@ -14190,12 +14355,7 @@ impl Walker<'_> {
     /// [`Self::leaving_edge`] reads it.
     fn leaves_only_through_dead_edges(&self, block: &CanonicalBlockId) -> bool {
         let mut dead = false;
-        for edge in self
-            .canonical
-            .edges()
-            .iter()
-            .filter(|edge| edge.from() == block)
-        {
+        for edge in self.outgoing(block) {
             match edge.kind() {
                 CanonicalEdgeKind::Exception { handler_ordinal } => {
                     if self.exception_edge_takeable(block, handler_ordinal) {
@@ -14227,12 +14387,7 @@ impl Walker<'_> {
     /// [`Self::leaves_only_through_dead_edges`]'s answer to give at the quote site.
     fn edges_accounted_by_catches(&self, block: &CanonicalBlockId, frame: &Frame) -> bool {
         let mut accounted = false;
-        for edge in self
-            .canonical
-            .edges()
-            .iter()
-            .filter(|edge| edge.from() == block)
-        {
+        for edge in self.outgoing(block) {
             match edge.kind() {
                 CanonicalEdgeKind::Exception { handler_ordinal } => {
                     if !self.exception_edge_takeable(block, handler_ordinal) {
@@ -14911,10 +15066,7 @@ impl Walker<'_> {
                 .saturating_add(u64::try_from(prefix.len()).unwrap_or(u64::MAX)),
             Some(root_bci),
         )?;
-        let saved_visited = self.visited.clone();
-        let saved_unclosed_tail = self.unclosed_tail_at;
-        let saved_catch_joins = self.catch_joins.clone();
-        let saved_fragmented = self.fragmented.clone();
+        let trial = TrialState::of(self);
         let attempt = (|| -> Result<Option<Region>, StopReason> {
             let Some(root) = proof.tests.first() else {
                 return Ok(None);
@@ -14990,7 +15142,7 @@ impl Walker<'_> {
             let mut allowed_join_sources = tests_owned.clone();
             allowed_join_sources.extend(all_arms.iter().cloned());
             allowed_join_sources.extend(
-                saved_visited
+                trial.visited()
                     .iter()
                     .filter_map(|node| self.view.id_of(*node).cloned()),
             );
@@ -15000,7 +15152,7 @@ impl Walker<'_> {
                 u64::try_from(all_arms.len())
                     .unwrap_or(u64::MAX)
                     .saturating_add(u64::try_from(tests_owned.len()).unwrap_or(u64::MAX))
-                    .saturating_add(u64::try_from(saved_visited.len()).unwrap_or(u64::MAX)),
+                    .saturating_add(u64::try_from(trial.visited().len()).unwrap_or(u64::MAX)),
                 Some(root_bci),
             )?;
             let mut arm_incoming = BTreeMap::<CanonicalBlockId, BTreeSet<CanonicalBlockId>>::new();
@@ -15043,7 +15195,7 @@ impl Walker<'_> {
                 }
                 if exits.contains(&edge.to()) {
                     let external_join_source = edge.to() == &proof.join
-                        && saved_visited
+                        && trial.visited()
                             .iter()
                             .any(|node| self.view.id_of(*node) == Some(edge.from()));
                     if edge.kind() != CanonicalEdgeKind::Normal
@@ -15103,17 +15255,11 @@ impl Walker<'_> {
         match attempt {
             Ok(Some(region)) => Ok(Some(region)),
             Ok(None) => {
-                self.visited = saved_visited;
-                self.unclosed_tail_at = saved_unclosed_tail;
-                self.catch_joins = saved_catch_joins;
-                self.fragmented = saved_fragmented;
+                self.restore_shape_claims(&trial);
                 Ok(None)
             }
             Err(stop) => {
-                self.visited = saved_visited;
-                self.unclosed_tail_at = saved_unclosed_tail;
-                self.catch_joins = saved_catch_joins;
-                self.fragmented = saved_fragmented;
+                self.restore_shape_claims(&trial);
                 Err(stop)
             }
         }
@@ -16422,12 +16568,7 @@ impl Walker<'_> {
             }
             let mut takeable_exception = None;
             for block in &owned_blocks {
-                for edge in self
-                    .canonical
-                    .edges()
-                    .iter()
-                    .filter(|edge| edge.from() == block)
-                {
+                for edge in self.outgoing(block) {
                     match edge.kind() {
                         CanonicalEdgeKind::Exception {
                             handler_ordinal: edge_ordinal,
@@ -18005,30 +18146,13 @@ impl Walker<'_> {
             u64::try_from(checkpoint_work).unwrap_or(u64::MAX),
             Some(outer_header.bci()),
         )?;
-        let saved_visited = self.visited.clone();
-        let saved_unclosed_tail = self.unclosed_tail_at;
-        let saved_catch_joins = self.catch_joins.clone();
-        let saved_loop_catch_terminal_owners = self.loop_catch_terminal_owners.clone();
-        let saved_fragmented = self.fragmented.clone();
-        let saved_own_monitor = self.own_monitor.clone();
-        let saved_depth = self.depth;
-        macro_rules! restore_candidate {
-            () => {{
-                self.visited = saved_visited;
-                self.unclosed_tail_at = saved_unclosed_tail;
-                self.catch_joins = saved_catch_joins;
-                self.loop_catch_terminal_owners = saved_loop_catch_terminal_owners;
-                self.fragmented = saved_fragmented;
-                self.own_monitor = saved_own_monitor;
-                self.depth = saved_depth;
-            }};
-        }
+        let trial = TrialState::of(self);
 
         let attempt: Result<Option<Run>, StopReason> = (|| {
             if facts
                 .outer_nodes
                 .iter()
-                .any(|node| saved_visited.contains(node))
+                .any(|node| trial.visited().contains(node))
             {
                 return Ok(None);
             }
@@ -18221,7 +18345,7 @@ impl Walker<'_> {
             }
 
             let mut added = BTreeSet::new();
-            let work = self.visited.len().saturating_add(saved_visited.len());
+            let work = self.visited.len().saturating_add(trial.visited().len());
             charge(
                 self.budget,
                 CountedBudgetDimension::AnalysisSteps,
@@ -18232,7 +18356,7 @@ impl Walker<'_> {
                 if let Some(block) = self.canonical.blocks().get(*node) {
                     poll(self.budget, Some(block.id().bci()))?;
                 }
-                if !saved_visited.contains(node) {
+                if !trial.visited().contains(node) {
                     added.insert(*node);
                 }
             }
@@ -18271,11 +18395,11 @@ impl Walker<'_> {
         match attempt {
             Ok(Some(run)) => Ok(Some(run)),
             Ok(None) => {
-                restore_candidate!();
+                self.restore_trial_state(&trial);
                 Ok(None)
             }
             Err(stop) => {
-                restore_candidate!();
+                self.restore_trial_state(&trial);
                 Err(stop)
             }
         }
@@ -19291,9 +19415,9 @@ impl Walker<'_> {
                 let [(Slot::Stack(0), initialized)] = call.writes() else {
                     return Ok(None);
                 };
-                if ty != "java/io/File"
+                if ty.0 != b"java/io/File"
                     || target.kind() != crate::facts::InvokeKind::Special
-                    || target.owner() != ty
+                    || target.raw_owner() != ty
                     || target.name() != "<init>"
                     || target.descriptor() != "(Ljava/lang/String;)V"
                     || allocate.opcode() != 0xbb
@@ -20317,7 +20441,7 @@ impl Walker<'_> {
             poll(self.budget, Some(header.bci()))?;
         }
         let mut body_state = if side_exit.is_some() || loop_break_body.is_some() {
-            Some(self.loop_body_trial_state(Some(header.bci()))?)
+            Some(self.charged_trial_state(Some(header.bci()))?)
         } else {
             None
         };
@@ -20326,7 +20450,7 @@ impl Walker<'_> {
             Ok(result) => result,
             Err(stop) => {
                 if let Some(state) = body_state.take() {
-                    self.restore_loop_body_trial_state(state);
+                    self.restore_trial_state(&state);
                 }
                 return Err(stop);
             }
@@ -20348,7 +20472,7 @@ impl Walker<'_> {
             });
             if let Err(stop) = check {
                 if let Some(state) = body_state.take() {
-                    self.restore_loop_body_trial_state(state);
+                    self.restore_trial_state(&state);
                 }
                 return Err(stop);
             }
@@ -20381,7 +20505,7 @@ impl Walker<'_> {
                         body_state.as_ref().is_some_and(|state| {
                             let mut newly_visited = self
                                 .visited
-                                .difference(&state.visited)
+                                .difference(state.visited())
                                 .copied()
                                 .collect::<BTreeSet<_>>();
                             newly_visited.remove(&header_node);
@@ -20394,13 +20518,13 @@ impl Walker<'_> {
             && let Err(stop) = poll(self.budget, Some(header.bci()))
         {
             if let Some(state) = body_state.take() {
-                self.restore_loop_body_trial_state(state);
+                self.restore_trial_state(&state);
             }
             return Err(stop);
         }
         if !self.covers(&expected) || exact_side_owners == Some(false) {
             if let Some(state) = body_state.take() {
-                self.restore_loop_body_trial_state(state);
+                self.restore_trial_state(&state);
             }
             // The loop's shape is refused, and every block the body's walk claimed goes into the
             // refusal with it: the body region is dropped here, so naming its blocks is the only
@@ -20430,7 +20554,7 @@ impl Walker<'_> {
             Ok(origin) => origin,
             Err(stop) => {
                 if let Some(state) = body_state.take() {
-                    self.restore_loop_body_trial_state(state);
+                    self.restore_trial_state(&state);
                 }
                 return Err(stop);
             }
@@ -20444,7 +20568,7 @@ impl Walker<'_> {
             && let Err(stop) = poll(self.budget, Some(header.bci()))
         {
             if let Some(state) = body_state.take() {
-                self.restore_loop_body_trial_state(state);
+                self.restore_trial_state(&state);
             }
             return Err(stop);
         }
@@ -22552,7 +22676,7 @@ impl Walker<'_> {
         // Only the newly admitted return-leaf candidate needs an ownership checkpoint; ordinary
         // latch/goto candidates keep their existing clone and budget costs.
         let return_trial = if terminal_returns_checked && !terminal_returns.is_empty() {
-            Some(self.loop_body_trial_state(Some(header.bci()))?)
+            Some(self.charged_trial_state(Some(header.bci()))?)
         } else {
             None
         };
@@ -22574,7 +22698,7 @@ impl Walker<'_> {
             Ok(body) => body,
             Err(stop) => {
                 if let Some(state) = return_trial {
-                    self.restore_loop_body_trial_state(state);
+                    self.restore_trial_state(&state);
                 }
                 return Err(stop);
             }
@@ -22597,7 +22721,7 @@ impl Walker<'_> {
         );
         if !self.covers(&expected) {
             if let Some(state) = return_trial {
-                self.restore_loop_body_trial_state(state);
+                self.restore_trial_state(&state);
                 return Ok(None);
             }
             let reason = FallbackReason::LoopShape {
@@ -22971,6 +23095,50 @@ impl Walker<'_> {
         Ok(true)
     }
 
+    /// The transfer block's own certificate: one `goto`/`jsr` transfer that only `source` reaches,
+    /// whose branch is a decoded comparison, and which cannot leave the method by an exception or
+    /// a `call`.
+    ///
+    /// Three readings classify a body branch's transfer block exactly this way — the loop's exit
+    /// bridge, its continue bridge, and a labeled break of an enclosing loop — and each adds only
+    /// its own destination and loop-membership test afterwards. The certificate is one owner so the
+    /// three cannot drift apart. It reads facts only and charges nothing.
+    fn transfer_bridge(&self, source: usize, bridge: usize) -> Option<&CanonicalBlockId> {
+        // `source` transfers to exactly two blocks, one of which is the transfer block.
+        if !self.view.successors(source).contains(&bridge)
+            || self.view.successors(source).len() != 2
+        {
+            return None;
+        }
+        let (bridge_id, source_id) = (self.view.id_of(bridge)?, self.view.id_of(source)?);
+        // The branch instruction is a decoded comparison: the sense of the arm split is known.
+        if !self
+            .terminal_bci(source_id)
+            .and_then(|bci| self.operations.get(bci))
+            .is_some_and(|operation| operation.comparison().is_some())
+        {
+            return None;
+        }
+        // The transfer block belongs to this branch alone: its one normal predecessor is `source`.
+        let incoming: Vec<_> = self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.to() == bridge_id)
+            .map(|edge| (edge.kind(), edge.from().clone()))
+            .collect();
+        if !exact_normal_predecessors(&incoming, &[source_id.clone()]) {
+            return None;
+        }
+        // It is one `goto`/`jsr` and nothing else, and it takes no leaving edge of its own.
+        let single_transfer = self.ssa.block(bridge_id).is_some_and(|block| {
+            matches!(block.instructions(), [instruction]
+                if matches!(instruction.opcode(), 0xa7 | 0xc8)
+                    && matches!(self.operations.get(instruction.bci()), Some(Operation::Transfer)))
+        });
+        (self.leaving_edge(bridge_id).is_none() && single_transfer).then_some(bridge_id)
+    }
+
     fn loop_exit_bridge(
         &self,
         source: usize,
@@ -22982,28 +23150,12 @@ impl Walker<'_> {
             || blocks.contains(&bridge)
             || self.view.successors(bridge)
                 != self.view.index_of(exit).into_iter().collect::<Vec<_>>()
-            || !self.view.successors(source).contains(&bridge)
-            || self.view.successors(source).len() != 2
         {
             return false;
         }
-        let (Some(id), Some(source_id)) = (self.view.id_of(bridge), self.view.id_of(source)) else {
+        let Some(id) = self.transfer_bridge(source, bridge) else {
             return false;
         };
-        if !self
-            .terminal_bci(source_id)
-            .and_then(|bci| self.operations.get(bci))
-            .is_some_and(|operation| operation.comparison().is_some())
-        {
-            return false;
-        }
-        let incoming: Vec<_> = self
-            .canonical
-            .edges()
-            .iter()
-            .filter(|edge| edge.to() == id)
-            .map(|edge| (edge.kind(), edge.from().clone()))
-            .collect();
         let outgoing: Vec<_> = self
             .canonical
             .edges()
@@ -23011,17 +23163,7 @@ impl Walker<'_> {
             .filter(|edge| edge.from() == id)
             .map(|edge| (edge.kind(), edge.to().clone()))
             .collect();
-        if !exact_normal_predecessors(&incoming, &[source_id.clone()])
-            || outgoing != [(CanonicalEdgeKind::Normal, exit.clone())]
-        {
-            return false;
-        }
-        self.leaving_edge(id).is_none()
-            && self.ssa.block(id).is_some_and(|block| {
-                matches!(block.instructions(), [instruction]
-                    if matches!(instruction.opcode(), 0xa7 | 0xc8)
-                        && matches!(self.operations.get(instruction.bci()), Some(Operation::Transfer)))
-            })
+        outgoing == [(CanonicalEdgeKind::Normal, exit.clone())]
     }
 
     /// Validate the one ordinary named row allowed to own a protected loop. Exception edges are
@@ -24221,28 +24363,12 @@ impl Walker<'_> {
             || !blocks.contains(&bridge)
             || bridge == continue_target
             || self.view.successors(bridge) != [continue_target]
-            || !self.view.successors(source).contains(&bridge)
-            || self.view.successors(source).len() != 2
         {
             return false;
         }
-        let (Some(id), Some(source_id)) = (self.view.id_of(bridge), self.view.id_of(source)) else {
+        let Some(id) = self.transfer_bridge(source, bridge) else {
             return false;
         };
-        if !self
-            .terminal_bci(source_id)
-            .and_then(|bci| self.operations.get(bci))
-            .is_some_and(|operation| operation.comparison().is_some())
-        {
-            return false;
-        }
-        let incoming: Vec<_> = self
-            .canonical
-            .edges()
-            .iter()
-            .filter(|edge| edge.to() == id)
-            .map(|edge| (edge.kind(), edge.from().clone()))
-            .collect();
         let outgoing: Vec<_> = self
             .canonical
             .edges()
@@ -24250,17 +24376,7 @@ impl Walker<'_> {
             .filter(|edge| edge.from() == id)
             .map(|edge| (edge.kind(), edge.to().clone()))
             .collect();
-        if !exact_normal_predecessors(&incoming, &[source_id.clone()])
-            || outgoing != [(CanonicalEdgeKind::Normal, target_id)]
-        {
-            return false;
-        }
-        self.leaving_edge(id).is_none()
-            && self.ssa.block(id).is_some_and(|block| {
-                matches!(block.instructions(), [instruction]
-                    if matches!(instruction.opcode(), 0xa7 | 0xc8)
-                        && matches!(self.operations.get(instruction.bci()), Some(Operation::Transfer)))
-            })
+        outgoing == [(CanonicalEdgeKind::Normal, target_id)]
     }
 
     /// A body branch's successor that is nothing but the `break` edge itself: a block **inside**
@@ -24280,39 +24396,10 @@ impl Walker<'_> {
         // break of an enclosing loop never comes back to this loop's latch, so the
         // natural-loop walk does not hold it. What classifies the edge is the destination
         // it names and its exclusive ownership by the branch — not the block's membership.
-        if !blocks.contains(&source)
-            || self.view.successors(exit) != [destination]
-            || !self.view.successors(source).contains(&exit)
-            || self.view.successors(source).len() != 2
-        {
+        if !blocks.contains(&source) || self.view.successors(exit) != [destination] {
             return false;
         }
-        let (Some(id), Some(source_id)) = (self.view.id_of(exit), self.view.id_of(source)) else {
-            return false;
-        };
-        if !self
-            .terminal_bci(source_id)
-            .and_then(|bci| self.operations.get(bci))
-            .is_some_and(|operation| operation.comparison().is_some())
-        {
-            return false;
-        }
-        let incoming: Vec<_> = self
-            .canonical
-            .edges()
-            .iter()
-            .filter(|edge| edge.to() == id)
-            .map(|edge| (edge.kind(), edge.from().clone()))
-            .collect();
-        if !exact_normal_predecessors(&incoming, &[source_id.clone()]) {
-            return false;
-        }
-        self.leaving_edge(id).is_none()
-            && self.ssa.block(id).is_some_and(|block| {
-                matches!(block.instructions(), [instruction]
-                    if matches!(instruction.opcode(), 0xa7 | 0xc8)
-                        && matches!(self.operations.get(instruction.bci()), Some(Operation::Transfer)))
-            })
+        self.transfer_bridge(source, exit).is_some()
     }
 
     /// The header's physical failure gateway remains the loop's `exit`; a second proved gateway
@@ -25568,15 +25655,18 @@ impl Walker<'_> {
         join: &CanonicalBlockId,
         frame: &Frame,
     ) -> Result<Option<Region>, StopReason> {
-        let (Some(switch_bci), Some(_)) =
-            (frame.switch_branch_bci, frame.switch_fallthrough_target)
-        else {
+        let Some(arm) = frame.switch_arm_scope() else {
+            return Ok(None);
+        };
+        // The switch's own fallthrough proof must have made this frame an arm, and it must name
+        // this arm's branch and join.
+        let Some(switch_bci) = arm.branch_bci() else {
             return Ok(None);
         };
         let Some(join_node) = self.view.index_of(join) else {
             return Ok(None);
         };
-        if frame.switch_join != Some(join_node) || source.path() != join.path() {
+        if !arm.is_proved_arm_joining_at(join_node) || source.path() != join.path() {
             return Ok(None);
         }
         let Some(source_bci) = self.terminal_bci(source) else {
@@ -25623,12 +25713,15 @@ impl Walker<'_> {
         join_node: usize,
         frame: &Frame,
     ) -> Result<Option<Region>, StopReason> {
-        let (Some(switch_bci), Some(_)) =
-            (frame.switch_branch_bci, frame.switch_fallthrough_target)
-        else {
+        let Some(arm) = frame.switch_arm_scope() else {
             return Ok(None);
         };
-        if frame.switch_join != Some(join_node)
+        // The switch's own fallthrough proof must have made this frame an arm, and it must name
+        // this arm's branch and join.
+        let Some(switch_bci) = arm.branch_bci() else {
+            return Ok(None);
+        };
+        if !arm.is_proved_arm_joining_at(join_node)
             || self.terminal_bci(branch) != Some(branch_bci)
             || !self
                 .operations
@@ -27104,7 +27197,7 @@ mod tests {
                 Some(2),
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 ..
             })
         ));
@@ -27668,7 +27761,7 @@ mod tests {
                 assert!(matches!(
                     stop,
                     StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         at: Some(175),
                         ..
                     }
@@ -27771,7 +27864,9 @@ mod tests {
                 assert_eq!(
                     late_stop,
                     StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                        consumed: 53,
+                        requested: 1,
                         written: 0,
                         limit: 53,
                         at: Some(197),
@@ -28036,7 +28131,7 @@ mod tests {
         assert!(matches!(operations.get(5), Some(Operation::Duplicate)));
         assert!(matches!(operations.get(6), Some(Operation::Field {
             access: crate::facts::FieldAccess::Write, is_static: true, owner, name, ..
-        }) if owner == "SharedStoreInput" && name == "savedField"));
+        }) if owner.0.as_slice() == b"SharedStoreInput" && name.0.as_slice() == b"savedField"));
         assert!(matches!(
             operations.get(9),
             Some(Operation::Store { slot: 3 })
@@ -28365,7 +28460,7 @@ mod tests {
         assert!(matches!(
             stop,
             StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 at: Some(16),
                 ..
             }
@@ -28379,7 +28474,7 @@ mod tests {
         assert!(matches!(
             stop,
             StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 at: Some(25),
                 ..
             }
@@ -28393,7 +28488,7 @@ mod tests {
         assert!(matches!(
             stop,
             StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 at: Some(25),
                 ..
             }
@@ -28472,7 +28567,9 @@ mod tests {
         assert_eq!(
             return_stop,
             StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                consumed: 14,
+                requested: 1,
                 written: 0,
                 limit: 14,
                 at: Some(22),
@@ -28573,7 +28670,9 @@ mod tests {
         assert_eq!(
             stop,
             StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                consumed: 0,
+                requested: u64::try_from(proof_steps).expect("measured proof charge fits u64"),
                 written: 0,
                 limit: proof_limit,
                 at: Some(header.bci()),
@@ -28700,7 +28799,10 @@ mod tests {
         assert_eq!(
             stop,
             StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                consumed: 3,
+                requested: u64::try_from(canonical.edges().len())
+                    .expect("latch edge scan charge fits u64"),
                 written: 0,
                 limit: 8,
                 at: Some(25),
@@ -29480,7 +29582,9 @@ mod tests {
                 assert_eq!(
                     stop,
                     StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                        consumed: 29,
+                        requested: 1,
                         written: 0,
                         limit: 29,
                         at: Some(5),
@@ -29912,7 +30016,9 @@ mod tests {
                 assert_eq!(
                     stop,
                     StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                        consumed: 36,
+                        requested: 1,
                         written: 0,
                         limit: 36,
                         at: Some(136),
@@ -29994,13 +30100,17 @@ mod tests {
                 let before_unclosed_tail = late_integration_walker.unclosed_tail_at;
                 let before_catch_joins = late_integration_walker.catch_joins.clone();
                 let before_fragmented = late_integration_walker.fragmented.clone();
+                let late_edge_closure_work = u64::try_from(input.canonical.edges().len())
+                    .expect("canonical edge-closure charge fits u64");
                 let late_integration_stop = late_integration_walker
                     .compound_statement_region(&proof, &[], root_branch_bci, &Frame::default())
                     .expect_err("the late edge-closure scan stops after both arms were walked");
                 assert_eq!(
                     late_integration_stop,
                     StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                        consumed: 11,
+                        requested: late_edge_closure_work,
                         written: 0,
                         limit: 39,
                         at: Some(108),
@@ -30076,7 +30186,10 @@ mod tests {
                 assert_eq!(
                     stop,
                     StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                        consumed: 116,
+                        requested: u64::try_from(proof.tests.len())
+                            .expect("final condition combination charge fits u64"),
                         written: 0,
                         limit: 119,
                         at: Some(108),
@@ -30108,7 +30221,10 @@ mod tests {
                 assert_eq!(
                     stop,
                     StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                        consumed: 0,
+                        requested: u64::try_from(input.view.successor_ids(&root).len())
+                            .expect("root successor charge fits u64"),
                         written: 0,
                         limit: 0,
                         at: Some(root_branch_bci),
@@ -31836,7 +31952,7 @@ mod tests {
         use jarde_jvm::environment::ResolutionEnvironment;
         use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
         use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-        use jarde_reader::budget::{Budget, CountedBudgetDimension, Limits};
+        use jarde_reader::budget::{Budget, Limits};
         use jarde_reader::model::{
             ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
             PhysicalMethodId, PhysicalVariant,
@@ -32563,7 +32679,7 @@ mod tests {
             matches!(
                 consumer_stop,
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     ..
                 })
             ),
@@ -32649,7 +32765,7 @@ mod tests {
             if matches!(
                 &reason,
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(23),
                     ..
                 })
@@ -32843,13 +32959,30 @@ mod tests {
                     );
 
                     if name == "test" {
+                        let blocks = canonical.blocks().len();
+                        let edges = canonical.edges().len();
+                        let phis = ssa.phis().len();
+                        let instructions = code.instructions.len();
+                        let proof_work = edges
+                            .saturating_mul(edges)
+                            .saturating_mul(4)
+                            .saturating_add(blocks.saturating_mul(blocks))
+                            .saturating_add(phis.saturating_mul(8))
+                            .saturating_add(
+                                instructions.saturating_mul(instructions).saturating_mul(4),
+                            )
+                            .saturating_add(64);
+                        let proof_work =
+                            u64::try_from(proof_work).expect("fixture proof charge fits u64");
                         let mut short_budget = Budget::new(limits(1));
                         let stopped =
                             prove(canonical, view, ssa, operations, code, &mut short_budget);
                         assert_eq!(
                             stopped,
                             Err(StopReason::Budget {
-                                dimension: CountedBudgetDimension::AnalysisSteps,
+                                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                                consumed: 1,
+                                requested: proof_work,
                                 written: 0,
                                 limit: 1,
                                 at: Some(entry_bci),
@@ -32903,7 +33036,7 @@ mod tests {
         use jarde_jvm::environment::ResolutionEnvironment;
         use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
         use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-        use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+        use jarde_reader::budget::{Budget, CancellationToken, Limits};
         use jarde_reader::classfile::MethodCodeFacts;
         use jarde_reader::model::{
             ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
@@ -33332,6 +33465,19 @@ mod tests {
                 "parent stop is not re-owned"
             );
 
+            let prefix_instruction_count = ssa
+                .block(view.id_of(prefix_node).expect("prefix node id"))
+                .expect("prefix SSA block")
+                .instructions()
+                .len();
+            let prefix_proof_work = canonical
+                .edges()
+                .len()
+                .saturating_mul(3)
+                .saturating_add(code.instructions.len())
+                .saturating_add(prefix_instruction_count.saturating_mul(2));
+            let prefix_proof_work =
+                u64::try_from(prefix_proof_work).expect("post-test prefix charge fits u64");
             let mut short_budget = Budget::new(limits(1));
             let mut short = make_walker(
                 canonical,
@@ -33355,7 +33501,9 @@ mod tests {
                     &Frame::default()
                 ),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                    consumed: 0,
+                    requested: prefix_proof_work,
                     written: 0,
                     limit: 1,
                     at: Some(view.id_of(prefix_node).expect("prefix id").bci()),
@@ -34169,7 +34317,7 @@ mod tests {
                     true,
                 ),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     ..
                 })
             ));
@@ -34294,7 +34442,7 @@ mod tests {
                     child_bci,
                 ),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     ..
                 })
             ));
@@ -34331,6 +34479,231 @@ mod tests {
             assert!(cancelled.visited.is_empty());
             assert_eq!(cancelled.unclosed_tail_at, None);
         }
+    }
+
+    /// A4.2 (task 5.4): a refused trial must not pollute the ownership the next candidate sees,
+    /// and each rollback gives back exactly the facts its own site can change.
+    ///
+    /// The three scopes exist because the sites differ in what they *can* change, not in taste:
+    ///
+    /// * [`Walker::restore_claims`] — one candidate's blocks go back; the refusal marker stays,
+    ///   because that marker refuses the whole method and an abandoned attempt must not erase the
+    ///   evidence that the method still holds a block this walk could not place.
+    /// * [`Walker::restore_shape_claims`] — a branch arm, a `finally` body or a continuation, whose
+    ///   attempt can also register a catch join, displace the fragmented proof and record a refusal.
+    /// * [`Walker::restore_trial_state`] — a wider proof (the prefixed retry, a monitor body) that
+    ///   displaced the monitor, the edge exclusions or the recursion depth.
+    ///
+    /// Widening a site's scope is not free. Restoring `depth` from a stale snapshot discards the
+    /// increments the enclosing frames made after it was taken; restoring `unclosed_tail_at` where
+    /// the original code deliberately kept it clears a method-level refusal. Both were measured on
+    /// `TestTryCatchFinally5` while this consolidation was written.
+    #[test]
+    fn trial_rollback_scopes_keep_exactly_their_own_facts() {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_reader::budget::Limits;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        const CLASS: &[u8] = include_bytes!(
+            "../../../openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsCycle.class"
+        );
+
+        let mut budget = Budget::new(Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 32,
+            dependency_depth: 32,
+            elapsed_millis: u64::MAX,
+        });
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
+            .expect("the pinned class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
+                length: u64::try_from(CLASS.len()).expect("fixture length fits"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let analysis = analyze_method_ir(
+            &[snapshot.clone()],
+            &MethodAnalysisRequest {
+                environment: ResolutionEnvironment {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: snapshot.id().clone(),
+                            scope: PhysicalScope::SnapshotAll,
+                        },
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
+                    },
+                    domains: vec![domain],
+                    providers: Vec::new(),
+                },
+                method: PhysicalMethodId {
+                    owner: definition,
+                    name: JvmBytes(b"test".to_vec()),
+                    descriptor: JvmBytes(
+                        b"(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;".to_vec(),
+                    ),
+                },
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut budget,
+        )
+        .expect("reader analyzes the pinned method");
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("canonical CFG exists");
+        let ssa = ir.ssa().expect("SSA exists");
+        let code = ir.code().expect("decoded facts exist");
+        let operations = Operations::of(code, ir.constant_pool());
+        let view = NormalFlowView::build(canonical, &mut budget).expect("normal-flow view exists");
+        let chains = crate::concat::Plan::empty();
+        let sites = crate::init::Sites::empty();
+        let mut walk_budget = Budget::new(Limits {
+            analysis_steps: 1 << 20,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+
+        let first = canonical.blocks()[0].id().clone();
+        let last = canonical
+            .blocks()
+            .last()
+            .expect("the method has blocks")
+            .id()
+            .clone();
+        let initial_visited = BTreeSet::from([0usize]);
+        let initial_joins = BTreeSet::from([(0usize, 1usize)]);
+        let initial_excluded = BTreeSet::from([last.clone()]);
+        let mut walker = Walker {
+            canonical,
+            view: &view,
+            ssa,
+            operations: &operations,
+            pool: ir.constant_pool(),
+            chains: &chains,
+            sites: &sites,
+            code,
+            method_synchronized: Some(false),
+            has_reachable_explicit_monitor: false,
+            return_is_boolean: false,
+            handlers: &code.exception_handlers,
+            profile: &crate::pass::JAVA_8,
+            budget: &mut walk_budget,
+            catch_joins: initial_joins.clone(),
+            loop_catch_terminal_owners: Vec::new(),
+            fragmented: None,
+            excluded_edge_nodes: initial_excluded.clone(),
+            visited: initial_visited.clone(),
+            unclosed_tail_at: Some(181),
+            own_monitor: Some(MonitorBody {
+                owned: vec![first.clone()],
+            }),
+            depth: 3,
+        };
+        let trial = TrialState::of(&walker);
+
+        // A refused attempt: it claims another block, records why it stopped short, registers a
+        // join, excludes another edge and moves the facts only a wider trial displaces.
+        walker.visited.insert(1);
+        walker.unclosed_tail_at = Some(11);
+        walker.catch_joins.insert((1, 2));
+        walker.excluded_edge_nodes.clear();
+        walker.own_monitor = None;
+        walker.depth = 5;
+
+        // 1. A claim-only rollback: the blocks go back, the refusal the attempt recorded stays.
+        walker.restore_claims(&trial);
+        assert_eq!(
+            walker.visited, initial_visited,
+            "a refused candidate keeps no block it claimed"
+        );
+        assert_eq!(
+            walker.unclosed_tail_at,
+            Some(11),
+            "a claim-only rollback keeps the refusal marker that refuses the method"
+        );
+        assert_eq!(
+            walker.catch_joins,
+            BTreeSet::from([(0usize, 1usize), (1usize, 2usize)]),
+            "a claim-only rollback does not rewind the joins the attempt registered"
+        );
+
+        // 2. A shape trial's rollback: claims, marker, joins and the fragmented proof come back;
+        //    the recursion depth is not this site's to rewind.
+        walker.restore_shape_claims(&trial);
+        assert_eq!(walker.visited, initial_visited);
+        assert_eq!(
+            walker.unclosed_tail_at,
+            Some(181),
+            "a shape trial's refusal belongs to the withdrawn candidate"
+        );
+        assert_eq!(walker.catch_joins, initial_joins);
+        assert!(
+            walker.fragmented.is_none(),
+            "the fragmented proof is back where the trial found it"
+        );
+        assert_eq!(
+            walker.depth, 5,
+            "a shape trial must not rewind recursion depth it never owned"
+        );
+
+        // 3. A wider trial's rollback: everything the attempt could displace comes back.
+        walker.restore_trial_state(&trial);
+        assert_eq!(walker.visited, initial_visited);
+        assert_eq!(walker.unclosed_tail_at, Some(181));
+        assert_eq!(walker.catch_joins, initial_joins);
+        assert_eq!(
+            walker.excluded_edge_nodes, initial_excluded,
+            "the edge exclusions the wider proof cleared come back"
+        );
+        assert!(
+            walker.own_monitor.is_some(),
+            "the enclosing monitor body is restored"
+        );
+        assert_eq!(walker.depth, 3, "the recursion depth is restored");
     }
 }
 
@@ -34369,3 +34742,7 @@ mod do_while_break2_return_tests;
 #[cfg(test)]
 #[path = "region/prefixed_catch_retry_tests.rs"]
 mod prefixed_catch_retry_tests;
+
+#[cfg(test)]
+#[path = "region/summary_tests.rs"]
+mod summary_tests;

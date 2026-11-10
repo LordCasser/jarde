@@ -968,7 +968,7 @@ fn retry_proof_budget_and_precancellation_leave_walker_state_unpublished() {
                 matches!(
                     stopped_late,
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         ..
                     })
                 ),

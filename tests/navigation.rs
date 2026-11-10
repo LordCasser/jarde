@@ -551,7 +551,7 @@ fn a_path_that_disagrees_with_the_declared_name_keeps_both() {
     assert_eq!(
         item.binding,
         ClassNameBinding::PathNameDiffers {
-            path_name: bytes(b"p/Wrong")
+            path_name: ArchiveNameBytes(b"p/Wrong".to_vec())
         },
         "the path's own name is published beside it, neither rewriting the other"
     );

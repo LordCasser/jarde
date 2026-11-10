@@ -114,6 +114,7 @@ fn recover(fixture: &Fixture, name: &str) -> RecoveredMethod {
     Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request(fixture, name),
             &RecoveryEvidenceRequest::all(),
             &mut Budget::new(limits()),
@@ -127,6 +128,7 @@ fn class_source(
     evidence: RecoveryEvidenceRequest,
 ) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -328,6 +330,7 @@ fn evidence_selection_and_stops_keep_the_existing_body_contract() {
     let ample = Engine::new()
         .recover_method(
             slice::from_ref(&sample.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &body_request,
             &mut Budget::new(limits()),
         )
@@ -345,6 +348,7 @@ fn evidence_selection_and_stops_keep_the_existing_body_contract() {
     let stopped = Engine::new()
         .recover_method(
             slice::from_ref(&sample.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &body_request,
             &mut Budget::new(Limits {
                 output_bytes: output_limit,
@@ -356,7 +360,7 @@ fn evidence_selection_and_stops_keep_the_existing_body_contract() {
         matches!(
             stopped.recovery().outcome,
             RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: CountedBudgetDimension::OutputBytes,
+                dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
                 ..
             })
         ),
@@ -372,6 +376,7 @@ fn evidence_selection_and_stops_keep_the_existing_body_contract() {
     let cancelled = Engine::new()
         .recover_method(
             slice::from_ref(&sample.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &body_request,
             &mut Budget::with_cancellation_token(limits(), token),
         )

@@ -18,6 +18,7 @@ fn selected_anonymous_class_stays_a_separate_class_source_declaration() {
         .open(ArtifactInput::bytes(ANONYMOUS_CLASS.to_vec()), &mut budget)
         .expect("the compiled Java 8 anonymous class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("AnonymousCaptureCases$1"),
         },

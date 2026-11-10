@@ -174,6 +174,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// with the source map materialized: the origins are half of what this fixture pins.
 fn class_source_of(snapshot: &ArtifactSnapshot, class: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -659,6 +660,7 @@ fn a_bounded_or_cancelled_run_commits_no_partial_body() {
         .class_source(
             slice::from_ref(&snapshot),
             &ClassSourceRequest {
+                source_target: jarde::SourceTarget::JAVA_8,
                 class: ClassRef::Name {
                     class: ClassNameQuery::internal("ScopePlan"),
                 },
@@ -691,6 +693,7 @@ fn a_bounded_or_cancelled_run_commits_no_partial_body() {
         .class_source_with_evidence(
             slice::from_ref(&snapshot),
             &ClassSourceRequest {
+                source_target: jarde::SourceTarget::JAVA_8,
                 class: ClassRef::Name {
                     class: ClassNameQuery::internal("ScopePlan"),
                 },

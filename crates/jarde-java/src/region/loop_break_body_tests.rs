@@ -473,7 +473,7 @@ fn reader_late_implicit_latch_stop_restores_trial_state_without_refunding_usage(
             matches!(
                 stopped,
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     ..
                 })
             ),
@@ -665,7 +665,7 @@ fn comparison_gate_refuses_switch_and_budget_or_cancellation_stays_a_stop() {
                 &Frame::default()
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 ..
             })
         ));

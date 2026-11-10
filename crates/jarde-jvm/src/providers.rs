@@ -73,7 +73,7 @@ use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{ClassFacts, class_facts};
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
-    ClassBytesId, ContainerOrigin, Diagnostic, DiagnosticSeverity, Digest, JvmBytes,
+    ClassBytesId, ContainerOrigin, Diagnostic, DiagnosticSeverity, Digest, JvmBytes, JvmString,
     PhysicalClassLocation, PhysicalDefinitionId, PhysicalEntryId, PhysicalVariant, SnapshotId,
     physical_variant_for_path,
 };
@@ -378,6 +378,14 @@ fn search_class_header(
 
     let mut reads = Vec::new();
     let mut examined = 0_u32;
+    if let Err(error) = budget.poll() {
+        return HeaderSearch {
+            lookup: Err(error),
+            examined,
+            positions: total,
+            reads,
+        };
+    }
     for position in &positions {
         let decided = match probe_root(content, position, internal_name, known, budget, &mut reads)
         {
@@ -569,6 +577,9 @@ pub(crate) struct DemandAnswer {
 pub(crate) struct HeaderClosure<'a> {
     content: &'a [ArtifactSnapshot],
     environment: &'a ResolutionEnvironment,
+    /// A physical header already paid for by the caller's IR read. It is only a read hint:
+    /// each search still elects its own position and defining loader.
+    known: Option<(&'a PhysicalDefinitionId, &'a Arc<ClassFacts>)>,
     /// The initiating loader of the request's own caller domain.
     ///
     /// It starts only the request's **first** symbol demand ([`HeaderClosure::demand_from_caller`]);
@@ -597,12 +608,22 @@ impl<'a> HeaderClosure<'a> {
             caller_loader: environment.runtime.load_domain.loader.clone(),
             content,
             environment,
+            known: None,
             resolutions: Vec::new(),
             reads: Vec::new(),
             read_identities: Vec::new(),
             diagnostics: Vec::new(),
             searched: (0, 0),
         }
+    }
+
+    pub(crate) fn with_header(
+        mut self,
+        definition: &'a PhysicalDefinitionId,
+        facts: &'a Arc<ClassFacts>,
+    ) -> Self {
+        self.known = Some((definition, facts));
+        self
     }
 
     /// Demands one class header as the request's **caller** would.
@@ -660,10 +681,17 @@ impl<'a> HeaderClosure<'a> {
     ) -> DemandAnswer {
         if let Some(index) = self.remembered(initiating_loader, name) {
             return DemandAnswer {
-                decision: Ok(ClassHandle(index)),
+                decision: budget.poll().map(|()| ClassHandle(index)),
             };
         }
-        let search = match known {
+        let shared_header = self.known.map(|(_, facts)| ClassHeaderFacts {
+            facts: Arc::clone(facts),
+        });
+        let shared_read = self
+            .known
+            .zip(shared_header.as_ref())
+            .map(|((definition, _), header)| ReadDefinition { definition, header });
+        let search = match known.or(shared_read.as_ref()) {
             Some(known) => search_class_header(
                 self.content,
                 self.environment,
@@ -801,6 +829,7 @@ impl<'a> HeaderClosure<'a> {
         demand: HeaderDemand,
         budget: &mut Budget,
     ) -> Result<ClassHeaderFacts> {
+        budget.poll()?;
         let claimed = NodeIdentity::new(defining_loader, definition);
         if let Some(header) = self.bound_header(&claimed) {
             return Ok(header);
@@ -1621,7 +1650,7 @@ fn search_positions<'a>(domains: &[&'a LoadDomain]) -> Vec<SearchPosition<'a>> {
 /// decided at all. Every read the position really performed is appended to `reads`.
 ///
 /// The name a position looks for is composed **inside** the position, because the declared root
-/// carries the prefix: `prefix + internal_name + ".class"`, concatenated byte for byte with a
+/// carries the prefix: `prefix + UTF-8(internal_name) + ".class"`, with a
 /// checked length. A root whose prefix is neither empty nor closed by `/` was refused by the
 /// environment validator and is not searched here; the composition itself may still refuse an
 /// impossible length, and that refusal names the position like every other one.
@@ -1690,7 +1719,8 @@ fn probe_root(
 }
 
 /// The raw entry name one container position looks up: the declared prefix, the requested
-/// internal name and the class suffix, concatenated byte for byte.
+/// internal name's lossless UTF-8 spelling and the class suffix. Only the JVM name is transcoded;
+/// the prefix and every stored entry retain their original archive bytes.
 ///
 /// This is the whole prefix rule. It is deliberately the only place a name is composed, so no
 /// consumer can apply a second normalization: no trimming, no URL decoding, no case folding and
@@ -1699,9 +1729,26 @@ fn probe_root(
 /// fit a machine word is not a name this engine can look up, and the refusal says so instead of
 /// wrapping.
 fn position_entry_name(prefix: &[u8], internal_name: &[u8]) -> Result<Vec<u8>> {
+    // Preserve the common ASCII path without allocating an intermediate decoded name.
+    // Other MUTF-8 values must have a scalar spelling: replacement text would address a
+    // different entry, and an unrepresentable name is an undecided lookup, not Missing.
+    let decoded;
+    let internal_utf8 = if internal_name.iter().all(|byte| (1..=0x7f).contains(byte)) {
+        internal_name
+    } else {
+        decoded = JvmString::from_mutf8(internal_name)
+            .and_then(|name| name.to_unicode().ok())
+            .ok_or_else(|| {
+                Error::invalid_input(
+                    "class_entry_name_unrepresentable",
+                    "the JVM name has no lossless UTF-8 archive spelling",
+                )
+            })?;
+        decoded.as_bytes()
+    };
     let length = prefix
         .len()
-        .checked_add(internal_name.len())
+        .checked_add(internal_utf8.len())
         .and_then(|length| length.checked_add(CLASS_SUFFIX.len()))
         .ok_or_else(|| {
             Error::invalid_input(
@@ -1711,7 +1758,7 @@ fn position_entry_name(prefix: &[u8], internal_name: &[u8]) -> Result<Vec<u8>> {
         })?;
     let mut expected = Vec::with_capacity(length);
     expected.extend_from_slice(prefix);
-    expected.extend_from_slice(internal_name);
+    expected.extend_from_slice(internal_utf8);
     expected.extend_from_slice(CLASS_SUFFIX);
     Ok(expected)
 }
@@ -1783,16 +1830,15 @@ fn decide(
                     .map(|location| (location, known.header))
             });
             if let Some((location, header)) = reused {
-                // The request read these bytes itself and the name it searches is the name the
-                // read verified ([`HeaderClosure::read_own_definition`]), so the candidate's own
-                // header is the agreement this check would compare.
+                let origin = format!("{} {}", position_label(position), entry_label(&entry.id));
+                require_candidate_name(&header.facts.this_class.raw().0, internal_name, &origin)?;
                 return Ok(Some(HeaderLookup::found(location, header.clone())));
             }
             let content = read_candidate(snapshot, position, entry, budget)?;
             let facts = class_facts(&content.bytes, budget)
                 .map_err(|error| at_origin(error, &content.origin))?;
             reads.push(content.location.clone());
-            require_candidate_name(&facts.this_class.raw().0, internal_name, &content)?;
+            require_candidate_name(&facts.this_class.raw().0, internal_name, &content.origin)?;
             Ok(Some(HeaderLookup::found(
                 content.location,
                 ClassHeaderFacts {
@@ -1824,11 +1870,7 @@ fn decide(
 /// Name agreement proves this binding only. It says nothing about the rest of the class file
 /// being loadable, verifiable or legal, and the caller owns no more than the fact that these bytes
 /// declare this name.
-fn require_candidate_name(
-    declared: &[u8],
-    requested: &[u8],
-    content: &CandidateContent,
-) -> Result<()> {
+fn require_candidate_name(declared: &[u8], requested: &[u8], origin: &str) -> Result<()> {
     if declared == requested {
         return Ok(());
     }
@@ -1837,7 +1879,7 @@ fn require_candidate_name(
         format!(
             "{} holds the class `{}`, but it was selected as the class `{}`; the declaration \
              does not bind this physical candidate to the requested name",
-            content.origin,
+            origin,
             escaped(declared),
             escaped(requested)
         ),
@@ -1924,7 +1966,7 @@ fn standalone_probe(
     let origin = format!("{} (standalone CLASS root)", position_label(position));
     charge_header_attempt(budget)?;
     let bytes = snapshot
-        .root_bytes(budget)
+        .root_bytes_for_analysis(budget)
         .map_err(|error| at_origin(error, &origin))?;
     let facts = class_facts(&bytes, budget).map_err(|error| at_origin(error, &origin))?;
     let length = u64::try_from(bytes.len()).map_err(|_| {
@@ -2062,7 +2104,7 @@ pub(crate) fn read_definition_class(
         }
         PhysicalClassLocation::StandaloneRoot { .. } => {
             let bytes = snapshot
-                .root_bytes(budget)
+                .root_bytes_for_analysis(budget)
                 .map_err(|error| at_origin(error, &label))?;
             let digest = Digest(blake3::hash(&bytes).to_hex().to_string());
             (bytes, digest)
@@ -3036,6 +3078,57 @@ mod tests {
             closure.resolution(first).lookup.state,
             HeaderLookupState::Found
         );
+    }
+
+    #[test]
+    fn a_memoized_demand_still_observes_cancellation() {
+        let snapshot = open(zip(&[(b"p/C.class", &class_bytes(b"p/C", 52))]));
+        let environment = app_environment(&snapshot);
+        let token = CancellationToken::new();
+        let mut budget = Budget::with_cancellation_token(closure_limits(), token.clone());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+
+        let first = closure
+            .demand_from_caller(b"p/C", HeaderDemand::RequestedDefinition, &mut budget)
+            .decision
+            .expect("the fixture resolves p/C");
+        assert_eq!(
+            closure.resolution(first).lookup.state,
+            HeaderLookupState::Found
+        );
+        let searched = closure.searched_extent();
+        let reads = closure.reads().len();
+        token.cancel();
+
+        let repeated =
+            closure.demand_from_caller(b"p/C", HeaderDemand::HierarchyClosure, &mut budget);
+        assert!(
+            matches!(repeated.decision, Err(Error::Cancelled { .. })),
+            "a memo hit must poll before returning its prior decision"
+        );
+        assert_eq!(
+            closure.searched_extent(),
+            searched,
+            "observing cancellation does not repeat the search"
+        );
+        assert_eq!(closure.reads().len(), reads, "the memo hit reads no header");
+        let location = closure
+            .resolution(first)
+            .lookup
+            .location
+            .as_ref()
+            .unwrap()
+            .clone();
+        assert!(matches!(
+            closure.read_definition(
+                &location.loader,
+                &location.definition,
+                HeaderDemand::HierarchyClosure,
+                &mut budget,
+            ),
+            Err(Error::Cancelled { .. })
+        ));
+        assert_eq!(closure.reads().len(), reads);
     }
 
     #[test]

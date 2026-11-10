@@ -8,7 +8,7 @@ use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+use jarde_reader::budget::{Budget, CancellationToken, Limits};
 use jarde_reader::classfile::{
     LocalDebugTable, LocalDebugTypeTable, MethodSelector, inspect_method_bytecode,
 };
@@ -219,33 +219,36 @@ fn recover_class_method_with_budget(
                 String::from_utf8_lossy(&declaration.class_name().0).into_owned(),
                 declaration.class_access_flags(),
             )
-            .with_inner_class_members(
-                declaration
-                    .inner_class_members()
-                    .iter()
-                    .map(|member| String::from_utf8_lossy(&member.0).replace('/', ".")),
-            ),
+            .with_inner_classes(declaration.inner_classes().clone()),
         ),
     )
     .with_debug_locals(debug_locals);
     let mut recovery_budget = recovery_budget.unwrap_or(analysis_budget);
     let report = recover(
-        &RecoveryRequest::new(ir, &facts, JAVA_8)
-            .with_evidence(evidence)
-            .with_subject(subject),
+        &RecoveryRequest::new(
+            ir,
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(evidence)
+        .with_subject(subject),
         &mut recovery_budget,
     );
     if report.produced() {
-        let binding = report
-            .artifact
-            .binding()
-            .expect("trusted subject binds the artifact");
-        assert_eq!(binding.method(), &analysis.report().method);
-        assert_eq!(binding.member_ordinal(), Some(member_ordinal));
         assert_eq!(
-            binding.environment(),
-            &analysis.report().environment_identity
+            report.input_origin,
+            jarde_java::report::RecoveryInputOrigin::CallerSupplied
         );
+        assert!(
+            report.artifact.binding().is_none(),
+            "caller subject metadata is not a verified read binding"
+        );
+        assert_eq!(analysis.ir().declaration().unwrap().identity(), &method);
     }
     (report, method)
 }
@@ -290,28 +293,6 @@ fn assert_full_physical_method_coverage(
     );
 }
 
-fn read_unique_ordinal(
-    class: &[u8],
-    name: &str,
-    descriptor: &str,
-) -> jarde_reader::prepared::MethodOrdinal {
-    let mut budget = Budget::new(limits());
-    let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
-        .expect("frozen class opens for the trusted declaration lookup");
-    let read = snapshot
-        .prepared_root_class(&mut budget)
-        .expect("frozen root class is read");
-    let prepared = jarde_reader::prepared::PreparedClass::prepare(&read, &mut budget)
-        .expect("frozen member table is complete");
-    let ordinals = prepared.locate_method(name.as_bytes(), descriptor.as_bytes());
-    assert_eq!(
-        ordinals.len(),
-        1,
-        "selector must locate exactly one declared record"
-    );
-    ordinals[0]
-}
-
 fn assert_default_equals_all(
     class: &[u8],
     owner: &str,
@@ -336,14 +317,10 @@ fn assert_default_equals_all(
     assert_eq!(default.text, all.text);
     assert_eq!(default.source_map, all.source_map);
     assert!(!all.text.contains("@bytecode"), "{}", all.text);
-    let binding = all
-        .artifact
-        .binding()
-        .expect("subject binds the committed artifact");
-    assert_eq!(binding.method(), &method);
+    assert!(all.artifact.binding().is_none());
     assert_eq!(
-        binding.member_ordinal(),
-        Some(read_unique_ordinal(class, name, descriptor))
+        all.input_origin,
+        jarde_java::report::RecoveryInputOrigin::CallerSupplied
     );
     (all, method)
 }
@@ -419,7 +396,7 @@ fn cf12_recovery_budget_stop_and_cancellation_publish_no_partial_source() {
     assert!(matches!(
         stopped.stop(),
         Some(StopReason::Budget {
-            dimension: CountedBudgetDimension::AnalysisSteps,
+            dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
             ..
         })
     ));
@@ -647,34 +624,70 @@ fn recover_slot_reuse(
     )
 }
 
+/// `possibleSlotReuse` writes slot 2 twice with no overlap in liveness: `istore_2` at BCI 10 writes
+/// an `int` that `iload_2` at BCI 11 reads, and `astore_2` at BCI 16 writes a `String`-valued
+/// `Object` that `aload_2` at BCI 54 reads. Those are two independent destinations, so `reuse`'s
+/// `exclusive_definition_split` proves them apart — each definition owns its own block, neither
+/// block reaches the other's, and `local_value_stays_before` proves the earlier value dies before
+/// the later write — and the presentation declares two source variables instead of refusing the
+/// one slot as contradictory.
+///
+/// **Changed 2026-11-08** (admission-domain expansion, gated, not a narrowing). Until this gate the
+/// test pinned the older behaviour: one source variable per slot, so the two types collided and the
+/// region was refused as an exact fallback. The split was already the accepted mechanism; this
+/// shape simply reaches it. Evidence and the compile/run comparison that justifies widening the
+/// admitted domain: `openspec/changes/restructure-demand-driven-recovery/results/
+/// s4-region-summary-v1/cross-domain-regression-r1/appendix-expansion-gate.md`. Because the same
+/// input now recovers differently, `RECOVERY_SEMANTICS` moved 68 → 69.
 #[test]
-fn typed_boundary_real_slot_conflict_is_preserved_as_the_exact_fallback_in_default_and_all() {
+fn typed_boundary_reused_slot_splits_into_independent_source_variables_in_default_and_all() {
     let fixtures = [
-        (TYPED_BOUNDARY_DEBUG, "value", "number"),
-        (TYPED_BOUNDARY_NODEBUG, "local2", "local1"),
+        (
+            TYPED_BOUNDARY_DEBUG,
+            "stringValue",
+            "value",
+            "value_2",
+            "number",
+        ),
+        (
+            TYPED_BOUNDARY_NODEBUG,
+            "arg0",
+            "local2",
+            "local2_2",
+            "local1",
+        ),
     ];
-    let conflict = "local 2 is treated as one source variable, but the selected type `int` is not proved compatible with the value written at BCI 17 (`Object`); this region is refused instead of publishing a contradictory local (first write at BCI 10)";
-    let expected_missing = [0, 1, 4, 6, 9, 16, 22, 28, 31, 32, 34];
-    for (class, local_name, number_name) in fixtures {
+    for (class, condition, int_name, string_name, number_name) in fixtures {
         let (default, method) = recover_slot_reuse(
             class,
             RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
         );
         let (all, all_method) = recover_slot_reuse(class, RecoveryEvidenceRequest::all());
         assert_eq!(method, all_method);
-        assert_eq!(default.quality, Quality::Fallback);
-        assert_eq!(all.quality, Quality::Fallback);
+
+        // The split is admitted: structured text, no quoted bytecode, and no fallback at all.
+        assert_eq!(default.quality, Quality::Structured, "{}", default.text);
+        assert_eq!(all.quality, Quality::Structured, "{}", all.text);
         assert_eq!(default.outcome, RecoveryOutcome::Produced);
         assert_eq!(all.outcome, RecoveryOutcome::Produced);
         assert_eq!(default.text, all.text);
         assert_eq!(default.source_map, all.source_map);
-        assert_eq!(default.fallbacks, all.fallbacks);
-        assert!(default.text.contains(conflict), "{}", default.text);
-        let missing_explanation = format!(
-            "the statement at BCI 61 reads `{local_name}`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)"
+        assert!(default.fallbacks.is_empty(), "{:?}", default.fallbacks);
+        assert!(!default.text.contains("@bytecode"), "{}", default.text);
+
+        // One slot, two source variables: each definition gets its own destination and its own
+        // type, and neither is spelled with the other's.
+        assert!(
+            default
+                .text
+                .contains(&format!("int {int_name} = {condition} ? 65536 : -1;")),
+            "{}",
+            default.text
         );
         assert!(
-            default.text.contains(&missing_explanation),
+            default
+                .text
+                .contains(&format!("java.lang.String {string_name};")),
             "{}",
             default.text
         );
@@ -685,18 +698,62 @@ fn typed_boundary_real_slot_conflict_is_preserved_as_the_exact_fallback_in_defau
             "{}",
             default.text
         );
-        assert!(!default.text.contains("int value;"), "{}", default.text);
-        assert!(!default.text.contains("String value;"), "{}", default.text);
-        assert!(!default.text.contains("char value;"), "{}", default.text);
-        assert!(!default.text.contains("value ="), "{}", default.text);
-        assert!(!default.text.contains("local2 ="), "{}", default.text);
+        assert_eq!(
+            default.text.matches(&format!("int {int_name}")).count(),
+            1,
+            "the int destination is declared once: {}",
+            default.text
+        );
+        assert_eq!(
+            default
+                .text
+                .matches(&format!("java.lang.String {string_name}"))
+                .count(),
+            1,
+            "the String destination is declared once: {}",
+            default.text
+        );
+
+        // The earlier `int` write is read by the `Integer.toString` call and the later `String`
+        // writes only ever reach the string destination — the ranges really are disjoint.
+        assert!(
+            default
+                .text
+                .contains(&format!("{number_name} = java.lang.Integer.toString({int_name});")),
+            "{}",
+            default.text
+        );
+        assert!(
+            default
+                .text
+                .contains(&format!("{string_name} = \"reused-string\";")),
+            "{}",
+            default.text
+        );
+        assert!(
+            default
+                .text
+                .contains(&format!("{string_name} = new java.lang.String(\"other-string\");")),
+            "{}",
+            default.text
+        );
+        assert!(
+            default
+                .text
+                .contains(&format!("return {number_name} + \":\" + {string_name};")),
+            "{}",
+            default.text
+        );
+
+        // Two ranges still cover every physical instruction of the method: splitting the slot does
+        // not move a byte out of the source map.
         assert_eq!(
             missing_physical_bcis(
                 &default,
                 &method,
                 &method_bcis(class, "possibleSlotReuse", "(Z)Ljava/lang/String;"),
             ),
-            expected_missing,
+            Vec::<u32>::new(),
             "{}",
             default.text
         );
@@ -725,10 +782,11 @@ fn assert_typed_boundary_budget_stop(
     assert!(matches!(
         &report.outcome,
         RecoveryOutcome::Stopped(StopReason::Budget {
-            dimension: CountedBudgetDimension::AnalysisSteps,
+            dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
             written: 0,
             limit: observed_limit,
             at: Some(observed_at),
+            ..
         }) if *observed_limit == limit && *observed_at == at
     ));
     assert_eq!(report.content, RecoveryContent::NotProduced);
@@ -741,12 +799,21 @@ fn assert_typed_boundary_budget_stop(
 fn typed_boundary_proof_budget_stops_before_publication_at_observed_sites() {
     // Root re-observed the same type-proof write@29 and null proof@1 after the switch
     // certificate's real work was added; keep these stops inside the type proof.
+    //
+    // Re-pinned 2026-11-08 (cross-domain-regression-r1): 365 → 628 and 130 → 349. The earlier
+    // readings were taken before `report.rs::recover_inner` gained its `collect_reference_relations`
+    // pre-pass, which walks a direct request's own call sites once before any pass runs. A fresh
+    // sweep over 1..=3000 finds the same two sites at higher offsets and confirms each re-pin is
+    // the *first* limit that reaches its site (char: 627 stops at at=26, 628 at at=29; null: 348
+    // stops at at=0, 349 at at=1). These are the suite's observed boundary limits, not product
+    // pins: the assertion — the proof stops before publication, with no text and no artifact — is
+    // unchanged.
     assert_typed_boundary_budget_stop(
         CHAR_CLASS,
         "jadx/tests/integration/switches/TestSwitch$TestCls",
         "test",
         "(Ljava/lang/String;)Ljava/lang/String;",
-        365,
+        628,
         29,
     );
     assert_typed_boundary_budget_stop(
@@ -754,7 +821,7 @@ fn typed_boundary_proof_budget_stops_before_publication_at_observed_sites() {
         "jadx/tests/integration/switches/TestSwitchNoDefault$TestCls",
         "test",
         "(I)V",
-        130,
+        349,
         1,
     );
 }

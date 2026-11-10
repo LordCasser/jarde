@@ -626,6 +626,7 @@ fn the_same_methods_read_one_at_a_time_cost_one_class_read_each() {
         let direct = Engine::new()
             .recover_method(
                 &content,
+                jarde::SourceTarget::JAVA_8,
                 &MethodAnalysisRequest {
                     environment: built.clone(),
                     method: method.method.clone(),

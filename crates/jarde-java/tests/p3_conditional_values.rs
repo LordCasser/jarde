@@ -9,7 +9,7 @@ use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+use jarde_reader::budget::{Budget, CancellationToken, Limits};
 use jarde_reader::model::{
     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
     PhysicalVariant,
@@ -119,7 +119,17 @@ fn recover_method_with_budget(
     );
     let mut budget = recovery_budget.unwrap_or(budget);
     recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8).with_evidence(evidence),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(evidence),
         &mut budget,
     )
 }
@@ -214,7 +224,7 @@ fn a_conditional_value_cannot_publish_partial_text_on_budget_or_cancellation() {
     assert!(matches!(
         output.stop(),
         Some(StopReason::Budget {
-            dimension: CountedBudgetDimension::OutputBytes,
+            dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
             ..
         })
     ));
@@ -232,7 +242,7 @@ fn a_conditional_value_cannot_publish_partial_text_on_budget_or_cancellation() {
     assert!(matches!(
         ir.stop(),
         Some(StopReason::Budget {
-            dimension: CountedBudgetDimension::IrItems,
+            dimension: jarde_reader::budget::BudgetDimension::IrItems,
             ..
         })
     ));

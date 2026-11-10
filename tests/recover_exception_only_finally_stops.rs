@@ -22,6 +22,7 @@ fn open_fixture() -> ArtifactSnapshot {
 
 fn exception_only_stop_request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(CLASS),
         },

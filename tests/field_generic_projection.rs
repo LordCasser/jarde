@@ -121,6 +121,7 @@ fn class_source(
 
 fn class_request(snapshot: &ArtifactSnapshot, class_name: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },

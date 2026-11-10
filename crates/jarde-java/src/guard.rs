@@ -54,7 +54,7 @@
 //!
 //! # A narrow `finally` shape can be claimed
 //!
-//! A `finally` clause is not a region with a handler: javac **copies** its code onto every exit path
+//! A `finally` clause use is not a region with a handler: javac **copies** its code onto every exit path
 //! of the `try` (the fixture's `fin()` shows the two copies of `tail()`, one on the normal path and
 //! one in the handler that rethrows), and presenting that as one `try { … } finally { … }` restates
 //! the source only if the copies are provably the same code and every exit runs exactly one copy.
@@ -97,6 +97,7 @@
 mod loop_transfer;
 pub(crate) use loop_transfer::{BCIS as LOOP_TRANSFER_BCIS, DeadLoopTransferHandler};
 
+use jarde_reader::model::JvmBytes;
 use std::collections::{BTreeMap, BTreeSet};
 
 use jarde_jvm::method_ir::{
@@ -110,7 +111,7 @@ use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::facts::{CompareOp, InvokeKind, Operation};
 use crate::init::Sites;
-use crate::lambda::parse_method;
+use crate::lambda::parse_method_bytes;
 use crate::normal_flow::NormalFlowView;
 use crate::pass::{FINALLY, MONITOR, Pass, TWR};
 use crate::refusal::Refusal;
@@ -2062,7 +2063,10 @@ fn statement_ends(facts: &Facts<'_>, at: u32) -> bool {
         // one. An invocation that returns is a value producer, and the statement that consumes it
         // ends at *that* consumer, not at the call.
         Some(Operation::Invoke(called)) => {
-            matches!(parse_method(called.descriptor()), Some((_, None)))
+            matches!(
+                parse_method_bytes(&called.raw_descriptor().0),
+                Some((_, None))
+            )
         }
         Some(Operation::Field {
             access: crate::facts::FieldAccess::Write,
@@ -2974,15 +2978,15 @@ fn prove_call_return_loop_finally(
                 Operation::Field {
                     access: FieldAccess::Read,
                     is_static: true,
-                    owner: "java/lang/System".into(),
-                    name: "out".into(),
-                    descriptor: "Ljava/io/PrintStream;".into(),
+                    owner: JvmBytes::from_unicode("java/lang/System"),
+                    name: JvmBytes::from_unicode("out"),
+                    descriptor: JvmBytes::from_unicode("Ljava/io/PrintStream;"),
                 },
             ),
             (
                 3,
                 Operation::Allocate {
-                    ty: "java/lang/StringBuilder".into(),
+                    ty: jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
                 },
             ),
             (6, Operation::Duplicate),
@@ -4111,7 +4115,7 @@ fn prove_conditional_return_finally(
         || !(matches!(
             facts.op(b[8]),
             Some(Operation::Push(crate::facts::ConstantValue::Int(_)))
-        ) || matches!(facts.op(b[8]), Some(Operation::Field { access: crate::facts::FieldAccess::Read, is_static: true, descriptor, .. }) if descriptor == "I"))
+        ) || matches!(facts.op(b[8]), Some(Operation::Field { access: crate::facts::FieldAccess::Read, is_static: true, descriptor, .. }) if descriptor.0.as_slice() == b"I"))
     {
         return Ok(None);
     }
@@ -4417,7 +4421,7 @@ fn append_cleanup(
         .step(receiver)
         .is_some_and(|step| step.instruction.opcode() == 0x2a)
         && facts.op(receiver) == Some(&Operation::Load { slot: 0 })
-        && descriptor == "Ljava/lang/StringBuilder;"
+        && descriptor.0.as_slice() == b"Ljava/lang/StringBuilder;"
         && matches!(
             facts.op(constant),
             Some(Operation::Push(crate::facts::ConstantValue::String(_)))
@@ -5522,7 +5526,7 @@ fn null_lead_copies_read_the_lead(
         else {
             return Ok(false);
         };
-        let Some((parameters, _)) = parse_method(target.descriptor()) else {
+        let Some((parameters, _)) = parse_method_bytes(&target.raw_descriptor().0) else {
             return Ok(false);
         };
         if producers.len() < parameters.len() {
@@ -5596,12 +5600,12 @@ fn conditional_cleanup_copy(
             is_static: false,
             descriptor,
             ..
-        } if descriptor.starts_with('L') && descriptor.ends_with(';'))
+        } if descriptor.0.starts_with(b"L") && descriptor.0.ends_with(b";"))
         || !matches!(&invoke, Operation::Invoke(target)
             if target.kind() == InvokeKind::Virtual
                 && target.descriptor() == "()V"
                 && matches!(&field, Operation::Field { descriptor, .. }
-                    if descriptor == &format!("L{};", target.owner())))
+                    if descriptor.0 == [b"L".as_slice(), &target.raw_owner().0, b";"].concat()))
     {
         return None;
     }
@@ -7410,9 +7414,9 @@ fn prove_nullable_resource_finally(
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct FlagCleanupGuard {
     /// The static `boolean` the tail reads, as the pool states it.
-    field: (String, String, String),
+    field: (JvmBytes, JvmBytes, JvmBytes),
     /// The class the tail allocates.
-    class: String,
+    class: jarde_reader::model::JvmBytes,
     /// The message constant the tail passes the constructor.
     message: String,
 }
@@ -7492,7 +7496,7 @@ fn flag_cleanup_copy(
             != Some(&Operation::Arithmetic {
                 op: crate::facts::ArithmeticOp::Subtract,
             })
-        || descriptor != "I"
+        || descriptor.0.as_slice() != b"I"
         || (owner, name, descriptor) != (write_owner, write_name, write_descriptor)
         || !matches!(
             facts.op(constant),
@@ -7656,7 +7660,7 @@ fn flag_cleanup_copy(
         else {
             return None;
         };
-        if guard_descriptor != "Z"
+        if guard_descriptor.0.as_slice() != b"Z"
             || facts.op(guard_branch)
                 != Some(&Operation::Comparison {
                     op: CompareOp::JumpIfZero,
@@ -7678,7 +7682,7 @@ fn flag_cleanup_copy(
         if target.kind() != InvokeKind::Special
             || target.name() != "<init>"
             || target.descriptor() != "(Ljava/lang/String;)V"
-            || target.owner() != class
+            || target.raw_owner() != class
             || facts.op(rethrow_new) != Some(&Operation::Throw)
         {
             return None;
@@ -8365,7 +8369,7 @@ fn local_null_cleanup_copy(
         else {
             return None;
         };
-        if guard_descriptor != "Z"
+        if guard_descriptor.0.as_slice() != b"Z"
             || facts.op(*guard_branch)
                 != Some(&Operation::Comparison {
                     op: CompareOp::JumpIfZero,
@@ -8387,7 +8391,7 @@ fn local_null_cleanup_copy(
         if construct_target.kind() != InvokeKind::Special
             || construct_target.name() != "<init>"
             || construct_target.descriptor() != "(Ljava/lang/String;)V"
-            || construct_target.owner() != class
+            || construct_target.raw_owner() != class
             || facts.op(*rethrow_new) != Some(&Operation::Throw)
         {
             return None;
@@ -8995,7 +8999,7 @@ fn shared_cleanup_span(facts: &Facts<'_>, start: u32) -> Option<(u32, u32)> {
             is_static: true,
             descriptor,
             ..
-        } if descriptor == "I" => {
+        } if descriptor.0.as_slice() == b"I" => {
             let push = facts.next_bci(start)?;
             let add = facts.next_bci(push)?;
             let write = facts.next_bci(add)?;
@@ -9009,7 +9013,7 @@ fn shared_cleanup_span(facts: &Facts<'_>, start: u32) -> Option<(u32, u32)> {
                     op: crate::facts::ArithmeticOp::Add,
                 }))
             .then_some(())?;
-            matches!(facts.op(write), Some(Operation::Field { access: crate::facts::FieldAccess::Write, is_static: true, descriptor, .. }) if descriptor == "I")
+            matches!(facts.op(write), Some(Operation::Field { access: crate::facts::FieldAccess::Write, is_static: true, descriptor, .. }) if descriptor.0.as_slice() == b"I")
                 .then_some((start, write))
         }
         _ => None,
@@ -9077,7 +9081,7 @@ fn shared_cleanup_copies(
         else {
             return Ok(false);
         };
-        if descriptor != "I"
+        if descriptor.0.as_slice() != b"I"
             || facts.op(write)
                 != Some(&Operation::Field {
                     access: crate::facts::FieldAccess::Write,
@@ -9090,7 +9094,7 @@ fn shared_cleanup_copies(
                         Operation::Field { name, .. } => name.clone(),
                         _ => return Ok(false),
                     },
-                    descriptor: "I".to_owned(),
+                    descriptor: JvmBytes::from_unicode("I"),
                 })
         {
             return Ok(false);
@@ -9178,7 +9182,7 @@ fn boolean_join_cleanup(
     else {
         return Ok(None);
     };
-    if descriptor != "Z"
+    if descriptor.0.as_slice() != b"Z"
         || !copies
             .iter()
             .all(|&(_, write)| facts.op(write) == facts.op(copies[0].1))
@@ -10566,7 +10570,7 @@ fn entry_field_increment_cleanup(
             }
             _ => false,
         };
-        if descriptor != "I"
+        if descriptor.0.as_slice() != b"I"
             || field.as_ref().is_some_and(|prior| prior != &read_field)
             || !matching_write
             || facts.op(start) != Some(&Operation::Load { slot: 0 })
@@ -13370,7 +13374,7 @@ pub(crate) fn shared_finally_candidate(
     pool: &[CpEntryFacts],
     chains: &crate::concat::Plan,
     handlers: &[ExceptionHandlerFact],
-    profile: &crate::pass::RecoveryProfile,
+    profile: &crate::pass::SourceTarget,
     current: &CanonicalBlockId,
     budget: &mut Budget,
 ) -> Result<Option<Plan>, StopReason> {
@@ -13791,7 +13795,7 @@ mod finally_copy_tests {
                 assert!(matches!(
                     resources(facts, &crate::pass::JAVA_8, &entry),
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         written: 0,
                         ..
                     })
@@ -13831,7 +13835,11 @@ mod finally_copy_tests {
                 facts.budget.with_ledger(ledger, UsageOwner::Methods);
                 assert!(matches!(
                     resources(facts, &crate::pass::JAVA_8, &entry),
-                    Err(StopReason::Interrupted { at: Some(_), .. })
+                    Err(StopReason::Budget {
+                        dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
+                        at: Some(_),
+                        ..
+                    })
                 ));
                 assert_eq!(deadline_observer.charges.load(Ordering::SeqCst), 10);
                 assert_eq!(facts.budget.usage().analysis_steps, 10);
@@ -14119,7 +14127,7 @@ mod finally_copy_tests {
             assert!(matches!(
                 prove_local_increment_loop_finally(facts, &current),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(61),
                     written: 0,
                     ..
@@ -14202,7 +14210,7 @@ mod finally_copy_tests {
             assert!(matches!(
                 prove_conditional_return_finally(facts, &row),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(49),
                     written: 0,
                     ..
@@ -14401,7 +14409,7 @@ mod finally_copy_tests {
             assert!(matches!(
                 prove_call_return_loop_finally(facts, &current),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(126),
                     written: 0,
                     ..
@@ -14431,7 +14439,11 @@ mod finally_copy_tests {
             *facts.budget = Budget::new(deadline_limits);
             assert!(matches!(
                 prove_call_return_loop_finally(facts, &current),
-                Err(StopReason::Interrupted { at: Some(0), .. })
+                Err(StopReason::Budget {
+                    dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
+                    at: Some(0),
+                    ..
+                })
             ));
             assert_eq!(facts.budget.usage().analysis_steps, 0);
             *facts.budget = Budget::new(limits());
@@ -14762,7 +14774,7 @@ mod finally_copy_tests {
             assert!(matches!(
                 loop_transfer::prove(facts),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(60),
                     written: 0,
                     ..
@@ -14793,7 +14805,11 @@ mod finally_copy_tests {
             *facts.budget = Budget::new(deadline_limits);
             assert!(matches!(
                 loop_transfer::prove(facts),
-                Err(StopReason::Interrupted { at: Some(0), .. })
+                Err(StopReason::Budget {
+                    dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
+                    at: Some(0),
+                    ..
+                })
             ));
             assert_eq!(facts.budget.usage().analysis_steps, 0);
             let observer = Arc::new(Observer {
@@ -14809,7 +14825,11 @@ mod finally_copy_tests {
             facts.budget.with_ledger(ledger, UsageOwner::Methods);
             assert!(matches!(
                 loop_transfer::prove(facts),
-                Err(StopReason::Interrupted { at: Some(60), .. })
+                Err(StopReason::Budget {
+                    dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
+                    at: Some(60),
+                    ..
+                })
             ));
             assert_eq!(observer.charges.load(Ordering::SeqCst), charges);
             assert_eq!(facts.budget.usage().analysis_steps, usage.analysis_steps);
@@ -15907,7 +15927,7 @@ mod finally_copy_tests {
             assert!(matches!(
                 resources(facts, &crate::pass::JAVA_8, &entry),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     written: 0,
                     ..
                 })
@@ -15949,7 +15969,11 @@ mod finally_copy_tests {
             facts.budget.with_ledger(ledger, UsageOwner::Methods);
             assert!(matches!(
                 resources(facts, &crate::pass::JAVA_8, &entry),
-                Err(StopReason::Interrupted { at: Some(_), .. })
+                Err(StopReason::Budget {
+                    dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
+                    at: Some(_),
+                    ..
+                })
             ));
             assert_eq!(deadline_observer.charges.load(Ordering::SeqCst), cancel_at);
             assert_eq!(facts.budget.usage().analysis_steps, cancel_at as u64);
@@ -17341,7 +17365,7 @@ mod finally_copy_tests {
                                 .find(|site| site.bci() == bci)
                                 .unwrap()
                                 .handlers(),
-                            &[]
+                            &[] as &[u32]
                         );
                     }
                     let entry = facts.canonical.blocks()[0].id().clone();
@@ -17394,7 +17418,7 @@ mod finally_copy_tests {
                                     .find(|site| site.bci() == 9)
                                     .unwrap()
                                     .handlers(),
-                                &[]
+                                &[] as &[u32]
                             );
                         }
                         "cleanup call protected by own catch-all" => assert_eq!(
@@ -17500,7 +17524,7 @@ mod finally_copy_tests {
 
     #[test]
     fn exception_only_finally_stops_at_real_budget_cancel_and_deadline_checkpoints() {
-        use jarde_reader::budget::{CancellationToken, CountedBudgetDimension};
+        use jarde_reader::budget::CancellationToken;
         use jarde_reader::ledger::{
             LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
         };
@@ -17572,7 +17596,7 @@ mod finally_copy_tests {
                 assert!(matches!(
                     prove_exception_only_finally(facts, &entry),
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         ..
                     })
                 ));
@@ -17585,7 +17609,7 @@ mod finally_copy_tests {
                 assert!(matches!(
                     prove_exception_only_finally(facts, &entry),
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         ..
                     })
                 ));
@@ -17628,8 +17652,8 @@ mod finally_copy_tests {
                     facts.budget.with_ledger(ledger, UsageOwner::Methods);
                     assert!(matches!(
                         prove_exception_only_finally(facts, &entry),
-                        Err(StopReason::Interrupted {
-                            code: "jre_budget_interrupted",
+                        Err(StopReason::Budget {
+                            dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
                             ..
                         })
                     ));
@@ -18004,7 +18028,7 @@ pub(crate) fn prove_dead_loop_transfer_handler(
     ops: &Operations,
     code: &jarde_reader::classfile::MethodCodeFacts,
     sites: &Sites,
-    profile: &crate::pass::RecoveryProfile,
+    profile: &crate::pass::SourceTarget,
     budget: &mut Budget,
 ) -> Result<Option<DeadLoopTransferHandler>, StopReason> {
     if !FINALLY.admits(profile)
@@ -18050,7 +18074,7 @@ pub(crate) fn examine(
     ops: &Operations,
     handlers: &[ExceptionHandlerFact],
     sites: &Sites,
-    profile: &crate::pass::RecoveryProfile,
+    profile: &crate::pass::SourceTarget,
     current: &CanonicalBlockId,
     budget: &mut Budget,
 ) -> Result<Verdict, StopReason> {
@@ -18070,7 +18094,7 @@ pub(crate) fn examine(
 /// whose guarded shapes are *not here*, which is what the `try`/`catch` shape is read on.
 fn guarded(
     facts: &mut Facts<'_>,
-    profile: &crate::pass::RecoveryProfile,
+    profile: &crate::pass::SourceTarget,
     current: &CanonicalBlockId,
 ) -> Result<Option<Verdict>, StopReason> {
     if let Some(verdict) = monitor(facts, profile, current)? {
@@ -18229,7 +18253,7 @@ pub(crate) fn catches(
     handlers: &[ExceptionHandlerFact],
     fragmented: Option<&crate::fragmented_catch::FragmentedCatch>,
     visible_named_row: Option<u32>,
-    profile: &crate::pass::RecoveryProfile,
+    profile: &crate::pass::SourceTarget,
     current: &CanonicalBlockId,
     budget: &mut Budget,
 ) -> Result<Option<Catches>, StopReason> {
@@ -18804,7 +18828,7 @@ fn exception_only_cleanup(facts: &mut Facts<'_>, cleanup: &[u32]) -> Result<bool
     else {
         return Ok(false);
     };
-    if descriptor != "I"
+    if descriptor.0.as_slice() != b"I"
         || !matches!(
             facts.op(*push),
             Some(Operation::Push(crate::facts::ConstantValue::Int(_)))
@@ -18965,7 +18989,7 @@ fn join_after(facts: &Facts<'_>, end_bci: u32) -> Option<CanonicalBlockId> {
 /// The `synchronized` shape: one `monitorenter`, one `monitorexit` on each path out of the region.
 fn monitor(
     facts: &mut Facts<'_>,
-    profile: &crate::pass::RecoveryProfile,
+    profile: &crate::pass::SourceTarget,
     current: &CanonicalBlockId,
 ) -> Result<Option<Verdict>, StopReason> {
     let start = current.bci();
@@ -20196,7 +20220,7 @@ fn prove_exception_only_finally(
 /// The `try`-with-resources shape.
 fn resources(
     facts: &mut Facts<'_>,
-    profile: &crate::pass::RecoveryProfile,
+    profile: &crate::pass::SourceTarget,
     current: &CanonicalBlockId,
 ) -> Result<Verdict, StopReason> {
     let start = current.bci();
@@ -20585,7 +20609,7 @@ fn resources(
 /// One proved `try`-with-resources, from the shape's innermost row outwards.
 fn twr<'a>(
     facts: &mut Facts<'a>,
-    profile: &crate::pass::RecoveryProfile,
+    profile: &crate::pass::SourceTarget,
     current: &CanonicalBlockId,
     innermost: &'a ExceptionHandlerFact,
 ) -> Result<Plan, TwrFailure> {
@@ -21702,7 +21726,7 @@ fn lead_normal_close(
 ///    its span is owned by [`Facts::cleanup_blocks`] through those rows.
 fn twr_lead(
     facts: &mut Facts<'_>,
-    profile: &crate::pass::RecoveryProfile,
+    profile: &crate::pass::SourceTarget,
     current: &CanonicalBlockId,
     level: &ExceptionHandlerFact,
 ) -> Result<LeadReading, StopReason> {

@@ -43,6 +43,7 @@ fn report(holder: &[u8], holder_a: &[u8], name: &str, budget: &mut Budget) -> Cl
         .open(ArtifactInput::bytes(jar(holder, holder_a)), budget)
         .expect("the Java 8 fixture archive opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -376,6 +377,7 @@ fn cancellation_stops_before_any_nested_declaration_is_published() {
         .open(ArtifactInput::bytes(jar(HOLDER, HOLDER_A)), &mut budget())
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("dt22/Holder"),
         },

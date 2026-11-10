@@ -241,6 +241,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// plain-jar` declares.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -419,18 +420,29 @@ fn the_store_driver_keeps_its_controls_and_its_negatives() {
 }
 
 #[test]
-fn an_unproven_component_keeps_its_presentation() {
+fn merged_reference_arrays_have_one_legal_declaration() {
     for leg in LEGS {
         let report = presentation(leg, "UB");
         assert_the_self_header(&report, "UB");
         let expected = if leg.real_javac8 { UB_JAVAC8_V8 } else { UB_V8 };
+        let declaration = "        java.lang.Object[] local3;\n";
+        assert_eq!(report.text.matches(declaration).count(), 1);
         assert_eq!(
-            report.text, expected,
-            "{}: a receiver whose component no fact states keeps its text",
+            report
+                .text
+                .replace(declaration, "        java.lang.String[] local3;\n"),
+            expected,
+            "{}: only the merged array declaration changes from the frozen baseline",
             leg.label
         );
-        // The merged local's store states no component, so nothing is widened and the member keeps
-        // the debt it had: the widening reads facts and does not guess one.
+        assert!(
+            report
+                .methods
+                .iter()
+                .all(|method| method.markers.is_empty())
+        );
+        // The declared Object[] permits the original aastore; runtime component checking still
+        // throws ArrayStoreException for the String[] predecessor, as the controlled oracle checks.
         assert!(
             report
                 .text
@@ -609,13 +621,13 @@ fn the_subtype_store_answers_what_its_class_answers() {
 }
 
 #[test]
-#[ignore = "needs both JDKs: the merged local's own rendering debt keeps the text uncompilable \
-            (see the module doc)"]
-fn an_unproven_component_text_stays_uncompilable() {
+#[ignore = "needs both JDKs: compiles the complete unmodified merged-array source"]
+fn merged_reference_array_text_recompiles() {
     for leg in LEGS {
         let temp = TempDir::new("UB-debt");
         let source = temp.path().join("UB.java");
-        fs::write(&source, replay_source(leg, "UB")).expect("write the presented text");
+        fs::write(&source, presentation(leg, "UB").text)
+            .expect("write the complete presented text");
         let result = leg
             .javac()
             .args(["-d"])
@@ -623,15 +635,12 @@ fn an_unproven_component_text_stays_uncompilable() {
             .arg(&source)
             .output()
             .expect("the leg's compiler is installed");
-        // The reviewed state of the debt: a receiver whose component no fact states is presented
-        // as it was, and the merged local's declaration is what the text gets wrong. A run that
-        // compiles it is a debt this test's assertion wants to hear about.
         assert!(
-            !result.status.success(),
-            "{}: the unproven receiver's text must stay uncompilable while nothing states its \
-             component:\n{}",
+            result.status.success(),
+            "{}: the complete merged-array source must compile:\n{}\n{}",
             leg.label,
-            fs::read_to_string(&source).expect("the text reads")
+            fs::read_to_string(&source).expect("the text reads"),
+            String::from_utf8_lossy(&result.stderr),
         );
     }
 }

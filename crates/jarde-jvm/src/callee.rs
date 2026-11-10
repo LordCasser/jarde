@@ -57,11 +57,12 @@
 //! member table, pool and decoder that run read its body with.
 
 use serde::Serialize;
+use std::sync::Arc;
 
 use jarde_reader::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
 use jarde_reader::classfile::{MemberHeader, MethodCodeFacts};
 use jarde_reader::error::Result;
-use jarde_reader::model::{JvmBytes, PhysicalDefinitionId, PhysicalMethodId};
+use jarde_reader::model::{JvmBytes, JvmString, PhysicalDefinitionId, PhysicalMethodId};
 use jarde_reader::prepared::{MethodOrdinal, PreparedClass};
 
 use crate::environment::ResolutionEnvironment;
@@ -125,6 +126,7 @@ pub struct CalleeReadRequest<'a> {
     environment: &'a ResolutionEnvironment,
     definition: &'a PhysicalDefinitionId,
     candidates: &'a [CalleeCandidate],
+    analyzed: Option<&'a crate::method_ir::MethodIr>,
 }
 
 impl<'a> CalleeReadRequest<'a> {
@@ -138,12 +140,23 @@ impl<'a> CalleeReadRequest<'a> {
             environment,
             definition,
             candidates,
+            analyzed: None,
         }
+    }
+
+    /// 复用同次 driver 分析的可信事实；读取点仍核对完整物理方法身份。
+    /// 调用方不能借此注入或替换 Body，MethodIr 的解码字段由分析 driver 构造。
+    #[doc(hidden)]
+    pub fn with_analyzed_method(mut self, analyzed: &'a crate::method_ir::MethodIr) -> Self {
+        self.analyzed = Some(analyzed);
+        self
     }
 }
 
 /// The decoded body of one member this read produced.
 ///
+/// 共享事实中的 execution.usage 记录实际完成那次解码的 ledger；当前读取费用由
+/// CalleeReadReport::usage 报告，命中不会假称又解码了一次。
 /// The caller that decides a shape from this member reads the facts through
 /// [`CalleeBody::facts`]. The report's own document states it as the two numbers that describe the
 /// body — how many instructions it holds and how many code bytes — because no product schema of this
@@ -154,11 +167,11 @@ pub struct CalleeBody {
     instructions: usize,
     code_bytes: usize,
     #[serde(skip)]
-    facts: MethodCodeFacts,
+    facts: Arc<MethodCodeFacts>,
 }
 
 impl CalleeBody {
-    fn new(facts: MethodCodeFacts) -> Self {
+    fn new(facts: Arc<MethodCodeFacts>) -> Self {
         Self {
             instructions: facts.instructions.len(),
             code_bytes: usize::try_from(facts.code_span.length).unwrap_or(usize::MAX),
@@ -173,7 +186,7 @@ impl CalleeBody {
 
     /// The same body by value, for the caller that hands it on.
     pub fn into_facts(self) -> MethodCodeFacts {
-        self.facts
+        Arc::unwrap_or_clone(self.facts)
     }
 }
 
@@ -233,6 +246,7 @@ impl CalleeRefusal {
 /// refused, the read it performed and what it charged.
 #[derive(Clone, Debug, Serialize)]
 pub struct CalleeReadReport {
+    raw_class: JvmBytes,
     class: String,
     members: Vec<CalleeMember>,
     refusals: Vec<CalleeRefusal>,
@@ -241,6 +255,10 @@ pub struct CalleeReadReport {
 }
 
 impl CalleeReadReport {
+    /// The exact internal class name; presentation text is not an owner identity.
+    pub fn raw_class(&self) -> &JvmBytes {
+        &self.raw_class
+    }
     /// The name the definition declares for itself (`this_class`), in internal form: the class every
     /// member of this report is of, and the name a call site's owner has to be for a member of it to
     /// be the callee that call reaches.
@@ -336,7 +354,8 @@ pub fn read_callees(
     // against it by this very read, and the caller above holds the pool of the same definition (the
     // presented run's own), so a second copy of it on this report would be one fact stated twice.
     Ok(CalleeReadReport {
-        class,
+        raw_class: class.raw().clone(),
+        class: class.to_unicode().unwrap_or_else(|_| class.escaped()),
         members,
         refusals,
         reads,
@@ -396,7 +415,8 @@ pub fn read_prepared_callees(
     let (class, members, refusals) =
         callee_members(request, CalleeClass::Prepared(prepared), budget)?;
     Ok(CalleeReadReport {
-        class,
+        raw_class: class.raw().clone(),
+        class: class.to_unicode().unwrap_or_else(|_| class.escaped()),
         members,
         refusals,
         reads,
@@ -430,13 +450,12 @@ struct CalleeRecord<'a> {
 }
 
 impl CalleeClass<'_> {
-    /// The class's own internal name (`this_class`), lossily spelled as this report states it.
-    fn class_name(&self) -> String {
-        let declared = match self {
-            Self::Read(read) => read.header.facts.this_class.raw(),
-            Self::Prepared(prepared) => prepared.class_facts().this_class.raw(),
-        };
-        String::from_utf8_lossy(&declared.0).into_owned()
+    /// The class's own lossless internal name, from the same header that owns the members.
+    fn class_name(&self) -> &JvmString {
+        match self {
+            Self::Read(read) => &read.header.facts.this_class,
+            Self::Prepared(prepared) => &prepared.class_facts().this_class,
+        }
     }
 
     /// The unique member declaring this raw name and descriptor, before body admission.
@@ -484,15 +503,22 @@ impl CalleeClass<'_> {
     /// The bytes are the ones the class was read from, the pool is that same read's, and the decode
     /// is the one implementation both sources go through, so a body this entry answers with is the
     /// body the single-method path publishes for it — facts, stop position and charges alike.
-    fn decode(&self, located: CalleeRecord<'_>, budget: &mut Budget) -> Result<MethodCodeFacts> {
-        budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
+    fn decode(
+        &self,
+        located: CalleeRecord<'_>,
+        budget: &mut Budget,
+    ) -> Result<Arc<MethodCodeFacts>> {
         match self {
-            Self::Read(read) => jarde_reader::classfile::method_code_facts(
-                read.read.bytes(),
-                located.record,
-                budget,
-            ),
-            Self::Prepared(prepared) => prepared.method_code(located.ordinal, budget),
+            Self::Read(read) => {
+                budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
+                jarde_reader::classfile::method_code_facts(
+                    read.read.bytes(),
+                    located.record,
+                    budget,
+                )
+                .map(Arc::new)
+            }
+            Self::Prepared(prepared) => prepared.shared_method_code(located.ordinal, budget),
         }
     }
 }
@@ -510,14 +536,15 @@ fn callee_members(
     request: &CalleeReadRequest<'_>,
     class: CalleeClass<'_>,
     budget: &mut Budget,
-) -> Result<(String, Vec<CalleeMember>, Vec<CalleeRefusal>)> {
-    let class_name = class.class_name();
+) -> Result<(JvmString, Vec<CalleeMember>, Vec<CalleeRefusal>)> {
+    let declared = class.class_name().clone();
+    let class_name = declared.to_unicode().unwrap_or_else(|_| declared.escaped());
     let mut members: Vec<CalleeMember> = Vec::new();
     let mut refusals: Vec<CalleeRefusal> = Vec::new();
     let mut seen: Vec<(Vec<u8>, Vec<u8>)> = Vec::new();
     for candidate in request.candidates {
         let owner = String::from_utf8_lossy(&candidate.owner.0).into_owned();
-        if owner != class_name {
+        if &candidate.owner != declared.raw() {
             refusals.push(CalleeRefusal {
                 candidate: candidate.clone(),
                 code: "callee_not_this_class",
@@ -562,12 +589,33 @@ fn callee_members(
             });
             continue;
         }
-        let facts = class.decode(located, budget)?;
+        budget.poll()?;
+        let same_run = request
+            .analyzed
+            .filter(|ir| {
+                ir.declaration()
+                    .is_some_and(|member| member.identity() == &identity)
+            })
+            .and_then(|ir| ir.code_handle())
+            .filter(|code| {
+                code.stopped_at.is_none()
+                    && matches!(
+                        code.execution,
+                        jarde_reader::model::ExecutionReport::Complete { .. }
+                    )
+            });
+        let facts = match same_run {
+            Some(code) => Arc::clone(code),
+            None => class.decode(located, budget)?,
+        };
+        if let Some(error) = facts.stop_error() {
+            return Err(error.clone());
+        }
         members.push(CalleeMember {
             identity,
             access_flags: located.record.access_flags,
             body: Some(CalleeBody::new(facts)),
         });
     }
-    Ok((class_name, members, refusals))
+    Ok((declared, members, refusals))
 }

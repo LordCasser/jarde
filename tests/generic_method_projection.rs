@@ -26,6 +26,7 @@ fn source_with_budget(
         )
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },

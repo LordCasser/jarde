@@ -1,0 +1,57 @@
+[
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/classes/flow/GenericParent.class",
+    "bytes": 458,
+    "sha256": "fe362b0f07f9859c95aa84da1194f53103c6996121a8f283acfaef0445658979"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/classes/flow/HeaderClosed.class",
+    "bytes": 631,
+    "sha256": "53fb74a435f3c4334f0af691ca6c96f976b888f4030facef481029885a273d70"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/classes/flow/HeaderUnclosed.class",
+    "bytes": 702,
+    "sha256": "01aa0de8f4b6c4feab66ce220d729018c3d8dc2c73e0dadb1915f12cd9c60ef9"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/classes/flow/TypeTag.class",
+    "bytes": 374,
+    "sha256": "34a9c02ba11df7d13e487abd872a8b9f042b998e56e9f15d7ec6003330e3ed97"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/javac-r1.json",
+    "bytes": 804,
+    "sha256": "d2719338a7503fcf4a4991e324d8beb6ca7711ff903db6d901735600da4b4847"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/javac-r2.json",
+    "bytes": 804,
+    "sha256": "d2719338a7503fcf4a4991e324d8beb6ca7711ff903db6d901735600da4b4847"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/javac-r3.json",
+    "bytes": 937,
+    "sha256": "bf0d8b65f9d210e6b673232cd8898388ead1adc5736fdedc67a00986d97f6469"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/GenericParent.java",
+    "bytes": 202,
+    "sha256": "edac44055d80564a4292fe064724183dd379caa49bfa7b09b083ec55b4c8d1d3"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/HeaderClosed.java",
+    "bytes": 191,
+    "sha256": "cce60175ac085420418484903ae9ffd3fcc30b1b421c60bdf58dfcc5e3b90e69"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/HeaderUnclosed.java",
+    "bytes": 204,
+    "sha256": "497a23da472bcc876f17483592ea14ef267cab50aa49f018ed3d79bb17626df8"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/TypeTag.java",
+    "bytes": 265,
+    "sha256": "7d7fcebd1e2c9fe3ad854fea67c2ede340b47c096c0926457cd9aa2fa8579dba"
+  }
+]

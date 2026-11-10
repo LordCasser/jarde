@@ -20,6 +20,7 @@ fn report_bytes(class_bytes: &[u8], class_name: &str) -> ClassSourceReport {
         .open(ArtifactInput::bytes(class_bytes.to_vec()), &mut budget())
         .expect("the Java class fixture opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },

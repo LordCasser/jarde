@@ -63,6 +63,7 @@ fn class_source_from_bytes(
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut open_budget)
         .expect("the fixture class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -139,7 +140,12 @@ fn exhausted_call_publication_does_not_leave_a_partial_generic_chain() {
             include_str!(
                 "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CallRelay.java"
             ),
-            &[("identity", "relay")][..],
+            &[(
+                "identity",
+                "relay",
+                "public T identity(T arg1)",
+                "public T relay(T arg1)",
+            )][..],
         ),
         (
             "IndependentChains",
@@ -149,7 +155,32 @@ fn exhausted_call_publication_does_not_leave_a_partial_generic_chain() {
              public T second(T x) { return x; }
              public T secondRelay(T x) { return second(x); }
              }",
-            &[("first", "firstRelay"), ("second", "secondRelay")][..],
+            &[
+                (
+                    "first",
+                    "firstRelay",
+                    "public T first(T arg1)",
+                    "public T firstRelay(T arg1)",
+                ),
+                (
+                    "second",
+                    "secondRelay",
+                    "public T second(T arg1)",
+                    "public T secondRelay(T arg1)",
+                ),
+            ][..],
+        ),
+        (
+            "MethodShadow",
+            include_str!(
+                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/MethodShadow.java"
+            ),
+            &[(
+                "identity",
+                "relay",
+                "public <U extends java.lang.Number> U identity(U arg1)",
+                "public <T extends java.lang.Number> T relay(T arg1)",
+            )][..],
         ),
     ] {
         let bytes = fixture_bytes(name, source, false);
@@ -164,17 +195,9 @@ fn exhausted_call_publication_does_not_leave_a_partial_generic_chain() {
             complete.execution,
             ExecutionReport::Complete { .. }
         ));
-        for (callee, caller) in pairs {
-            assert!(
-                complete
-                    .text
-                    .contains(&format!("public T {callee}(T arg1)"))
-            );
-            assert!(
-                complete
-                    .text
-                    .contains(&format!("public T {caller}(T arg1)"))
-            );
+        for (_callee, _caller, callee_header, caller_header) in pairs {
+            assert!(complete.text.contains(*callee_header));
+            assert!(complete.text.contains(*caller_header));
         }
         let usage = complete_budget.usage();
         let mut assembly_stops = 0;
@@ -212,7 +235,7 @@ fn exhausted_call_publication_does_not_leave_a_partial_generic_chain() {
                 if matches!(report.execution, ExecutionReport::Complete { .. }) {
                     continue;
                 }
-                for (callee, caller) in pairs {
+                for (callee, caller, callee_header, caller_header) in pairs {
                     let recovered_chain: Vec<_> = report
                 .methods
                 .iter()
@@ -236,8 +259,7 @@ fn exhausted_call_publication_does_not_leave_a_partial_generic_chain() {
                         .iter()
                         .filter(|method| {
                             method.declaration.as_deref().is_some_and(|declaration| {
-                                declaration.contains("public T ")
-                                    && declaration.contains("(T arg1)")
+                                declaration == *callee_header || declaration == *caller_header
                             })
                         })
                         .count();

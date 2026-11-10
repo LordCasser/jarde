@@ -145,6 +145,7 @@ fn class_source_request(
     definition: PhysicalDefinitionId,
 ) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Definition { definition },
         environment: EnvironmentRequest {
             snapshot: snapshot.id().clone(),

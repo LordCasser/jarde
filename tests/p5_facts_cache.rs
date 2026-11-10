@@ -1565,12 +1565,22 @@ fn a_raw_layer_entry_survives_the_profile_and_the_recovery_above_it() {
         stages: AnalysisStage::ALL.to_vec(),
     };
     let recovered_off = Engine::new()
-        .recover_method(&content, &request(), &mut Budget::new(limits()))
+        .recover_method(
+            &content,
+            jarde::SourceTarget::JAVA_8,
+            &request(),
+            &mut Budget::new(limits()),
+        )
         .expect("the named member is presented");
     let before = store.report().hits;
     let mut budget = Budget::new(limits()).with_facts_cache(store.clone());
     let recovered_on = Engine::new()
-        .recover_method(&content, &request(), &mut budget)
+        .recover_method(
+            &content,
+            jarde::SourceTarget::JAVA_8,
+            &request(),
+            &mut budget,
+        )
         .expect("the named member is presented");
     let presented = |recovery: &RecoveryReport| {
         let mut value = serde_json::to_value(recovery).expect("a presentation serializes");
@@ -1724,7 +1734,12 @@ fn a_provider_added_later_is_answered_by_a_fresh_search() {
     let (on_with, _) = resolve_with(&content, &with, Some(&store));
 
     assert_eq!(
-        on_with.environment_identity.providers,
+        on_with
+            .environment_identity
+            .providers
+            .iter()
+            .map(|provider| provider.id.clone())
+            .collect::<Vec<_>>(),
         vec![ProviderId("app-headers".to_string())],
         "the second result has to carry the provider set it was asked under"
     );

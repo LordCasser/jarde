@@ -36,6 +36,7 @@ fn source(input: &Input, all: bool) -> ClassSourceReport {
         .open(ArtifactInput::bytes(input.bytes.to_vec()), &mut budget)
         .unwrap_or_else(|error| panic!("{}: frozen input opens: {error:?}", input.label));
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(OWNER),
         },
@@ -314,6 +315,7 @@ fn original_public_class_source_propagates_precancellation() {
         .open(ArtifactInput::bytes(DEBUG_CLASS.to_vec()), &mut open_budget)
         .expect("original class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(OWNER),
         },

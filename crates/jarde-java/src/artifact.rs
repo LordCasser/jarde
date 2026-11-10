@@ -6,8 +6,8 @@
 //!
 //! A caller that wants to explain a text it received earlier hands the run an *expectation*: the
 //! binding it kept from the first recovery. The run never trusts that value — it computes the
-//! binding of the artifact **it** just committed and compares the two — so a value that no trusted
-//! read produced can never be mistaken for a cache hit. Anything the comparison does not cover is a
+//! binding of the artifact **it** just committed and compares the two. Metadata construction
+//! alone never grants provenance; only the read-owning entry can perform this check. Anything the comparison does not cover is a
 //! dimension on which two different artifacts could collide and be explained by each other's
 //! evidence, and the dimensions this binding states are exactly the ones that decide the bytes:
 //!
@@ -15,8 +15,9 @@
 //! | --- | --- | --- |
 //! | [`ArtifactBinding::method`] | the **complete physical method identity** — snapshot, container chain, entry ordinal, class-bytes digest and length, syntactic variant, raw name and descriptor | two same-named classes of different content, one class stored twice, one byte-identical class reached through two origins |
 //! | [`ArtifactBinding::member_ordinal`] | the member **record** the read established, when it walked the member table — compared when both sides state one | two records of one name and descriptor inside one class |
-//! | [`ArtifactBinding::environment`] | the environment identity the run was presented under: runtime view, declared domains, providers and the snapshots the entry provided | one artifact read under another loader, scope or profile view |
-//! | the configuration ([`ArtifactBinding::schema`], [`ArtifactBinding::engine`], [`ArtifactBinding::registry`], [`ArtifactBinding::profile`], [`ArtifactBinding::rules`]) | this binding's own schema, the recovery build that wrote the artifact, the reader's dialect registry, the recovery profile and the registered rule table | a rule set, a dialect registry or a format that changed while the textual shape stayed the same |
+//! | [`ArtifactBinding::environment`] | the environment identity the run was presented under: runtime view, declared domains, providers and the snapshots the entry provided | one artifact read under another loader, scope or runtime profile view |
+//! | the configuration ([`ArtifactBinding::schema`], [`ArtifactBinding::engine`], [`ArtifactBinding::registry`], [`ArtifactBinding::source_target`], [`ArtifactBinding::rules`]) | this binding's schema, independent recovery/resolution contracts and source implementations, semantic handoff, source target and rules | a rule set, a dialect registry or a format that changed while the textual shape stayed the same |
+//! | [`ArtifactBinding::dependencies`] | the observed physical decision inputs with their defining loaders | same bytes selected through another loader or origin |
 //! | [`ArtifactBinding::text_digest`] / [`ArtifactBinding::text_bytes`] | a digest of the exact UTF-8 bytes of the artifact, and their length | a text that changed under the same identity and configuration (another debug table, a tighter budget) |
 //!
 //! # The binding holds facts, never the artifact
@@ -40,18 +41,19 @@
 //! # The digest this layer computes itself
 //!
 //! The text identity is a digest of the committed text (FNV-1a, 128-bit, over the exact bytes,
-//! [`TEXT_DIGEST`]) computed here. `blake3` — the crate the layers below identity a class with — is
-//! not a dependency of this crate, and this layer states its own algorithm rather than pretending to
-//! reuse one it cannot reach: [`ARTIFACT_SCHEMA`] is bumped when the algorithm changes, so a binding
-//! always states which digest produced it.
+//! [`TEXT_DIGEST`]) computed here. Semantic handoff inputs use streaming BLAKE3 separately.
+//! [`ARTIFACT_SCHEMA`] changes when these encodings change; neither is a package/cursor version.
 
+pub use crate::artifact_inputs::ArtifactConfiguration;
 use jarde_jvm::environment::EnvironmentIdentity;
-use jarde_reader::model::{PhysicalClassLocation, PhysicalMethodId};
+use jarde_jvm::semantics::ResolutionSemantics;
+use jarde_reader::model::{PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId};
 use jarde_reader::prepared::MethodOrdinal;
 use jarde_reader::release_registry::HIGHEST_REGISTERED_MAJOR;
+use jarde_reader::view::LoaderId;
 use serde::{Deserialize, Serialize};
 
-use crate::pass::{PASSES, RecoveryProfile};
+use crate::pass::{PASSES, SourceTarget};
 
 /// The schema of the binding's own contract: which facts it states, and which algorithm digests the
 /// text.
@@ -59,7 +61,36 @@ use crate::pass::{PASSES, RecoveryProfile};
 /// A binding of another schema is a **mismatch** and never an agreement, exactly as a report of
 /// another schema is refused elsewhere in this workspace. Bumped when a dimension is added, removed
 /// or re-defined, and when [`TEXT_DIGEST`]'s algorithm changes.
-pub const ARTIFACT_SCHEMA: u16 = 1;
+pub const ARTIFACT_SCHEMA: u16 = 14;
+
+/// Recovery contract revision. Package versions, binding schemas and cursor schemas are separate.
+///
+/// 67 → 68: a class header may now be projected for a parent-interface entry whose type
+/// argument is a variable the class itself declares, which widens what this recovery admits —
+/// the same input can recover differently, so an artifact or evidence cached under 67 must be
+/// refused rather than explained by this run's evidence. The binding's own schema is unchanged;
+/// this is a difference of proof semantics, not of encoding.
+///
+/// 68 → 69: a slot whose definitions have disjoint lifetimes is now presented as independent source
+/// variables, and the copy/store/test position admits the shapes that keep a duplicated call result
+/// on the stack. Both widen what this recovery admits rather than narrowing it: shapes that were
+/// refused (a reused slot presented as one contradictory variable) or quoted (`@bytecode` fallbacks
+/// for the extra `dup`) now recover as structured text, so the same input can recover differently
+/// and an artifact or evidence cached under 68 must be refused. Verified by compiling the recovered
+/// classes with `javac --release 8` and comparing their run against the frozen classes, output
+/// identical byte for byte — `openspec/changes/restructure-demand-driven-recovery/results/
+/// s4-region-summary-v1/cross-domain-regression-r1/appendix-expansion-gate.md`. The binding's own
+/// schema is unchanged; this is a difference of proof semantics, not of encoding.
+pub const RECOVERY_SEMANTICS: u16 = 69;
+
+/// Actual Java and optional facade implementations participating in this recovery.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RecoverySemantics {
+    pub contract: u16,
+    pub java: String,
+    pub facade: Option<String>,
+}
 
 /// The algorithm [`ArtifactBinding::text_digest`] states its value with.
 pub const TEXT_DIGEST: &str = "fnv1a-128";
@@ -72,15 +103,9 @@ pub const TEXT_DIGEST: &str = "fnv1a-128";
 /// caller's text.
 pub const ARTIFACT_MISMATCH_CODE: &str = "evidence_artifact_mismatch";
 
-/// The code of the refusal of an expectation this entry cannot check at all: the request named an
-/// artifact and the run holds no subject to bind its own artifact to.
-///
-/// This is `Unverifiable` and neither a mismatch nor a delivery: an entry that did not state the
-/// identity it wrote its artifact for cannot claim the artifact is the one the caller named, and it
-/// must not answer with the evidence of a text nobody compared. It is a *usage* problem of the
-/// request — the direct [`crate::recover`] entry with no
-/// [`subject`](crate::RecoveryRequest::with_subject) — and it is stated as its own code so it is
-/// never read as "the texts agree" or "the texts differ".
+/// The code for an expectation this entry cannot verify against read-owned provenance.
+/// Public Java recovery returns this when an expectation is supplied, even with a subject label.
+/// No evidence is attached to the named artifact; the current preview text remains available.
 pub const ARTIFACT_UNVERIFIABLE_CODE: &str = "evidence_artifact_unverifiable";
 
 /// The code of the refusal of a request that states an expectation and selects nothing.
@@ -91,25 +116,22 @@ pub const EXPECTATION_SHAPE_CODE: &str = "jre_evidence_artifact_shape";
 
 /// What one run's artifact is **of**, as the entry that performed the read states it.
 ///
-/// The entry holds the trusted read: it knows the physical identity the run was bound to, the member
-/// record the read established and the environment the run was presented under. Those three are the
-/// inputs a binding cannot be built without, and they are the entry's own facts — never the
-/// caller's, and never the request's spelling.
+/// Subject metadata stated by a caller or a read-owning adapter. Construction does not verify
+/// these values. Public Java recovery never promotes this label to read provenance; the Engine
+/// checks its same-run handoff before constructing a binding in its private orchestration.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ArtifactSubject {
     method: PhysicalMethodId,
     member_ordinal: Option<MethodOrdinal>,
     environment: EnvironmentIdentity,
+    recovery_implementation: Option<String>,
+    dependencies: Vec<ArtifactDependency>,
 }
 
 impl ArtifactSubject {
-    /// The three facts one entry states about the artifact its run is about to commit.
-    ///
-    /// `member_ordinal` is the record the read **established** — the ordinal the member table walk
-    /// located for this member — and `None` when this entry walked no member table at all. It is
-    /// never guessed from a position in the request: a class that declares one name and descriptor
-    /// twice has two records and no established one, and an entry that walked the table states the
-    /// ordinal it located (see [`crate::RecoveryReport::artifact`]).
+    /// Construct subject metadata without verifying it. The Engine supplies the actual physical
+    /// identity, member ordinal established by its table walk, and complete read environment;
+    /// public callers can construct labels, but labels do not authenticate a recovery request.
     pub fn new(
         method: PhysicalMethodId,
         member_ordinal: Option<MethodOrdinal>,
@@ -119,7 +141,27 @@ impl ArtifactSubject {
             method,
             member_ordinal,
             environment,
+            recovery_implementation: None,
+            dependencies: Vec::new(),
         }
+    }
+
+    /// The entry implementation that supplied source proofs and projection decisions.
+    #[doc(hidden)]
+    pub fn with_recovery_implementation(mut self, implementation: &str) -> Self {
+        self.recovery_implementation = Some(implementation.into());
+        self
+    }
+
+    /// Selected physical inputs retained by the entry; no class bytes are read here.
+    #[doc(hidden)]
+    pub fn with_dependencies(mut self, dependencies: Vec<ArtifactDependency>) -> Self {
+        self.dependencies = dependencies;
+        self
+    }
+
+    pub fn dependencies(&self) -> &[ArtifactDependency] {
+        &self.dependencies
     }
 
     /// The complete physical identity of the method this run is about.
@@ -138,12 +180,20 @@ impl ArtifactSubject {
     }
 }
 
+/// A selected header/body input; equal bytes in different defining loaders remain distinct.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ArtifactDependency {
+    pub loader: LoaderId,
+    pub definition: PhysicalDefinitionId,
+}
+
 /// One recovered artifact, stated as the contract facts that identify it.
 ///
-/// The value is produced by the run that committed the artifact ([`crate::recover`], or the entry
-/// point that ran it) and is what a caller keeps to ask a later request for the evidence of *that*
-/// text. The later request presents it as `expected_artifact`; the later run computes its own
-/// binding and compares ([`Self::mismatch`]), and only an agreement attaches evidence.
+/// The read-owning Engine publishes this value for the artifact it committed. A later request
+/// presents it as `expected_artifact`; the Engine computes its own binding and compares it.
+/// This type and its public constructors are metadata, not certificates or authority tokens.
+/// Public Java recovery cannot authenticate supplied labels and never publishes a trusted binding.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ArtifactBinding {
@@ -151,9 +201,13 @@ pub struct ArtifactBinding {
     method: PhysicalMethodId,
     member_ordinal: Option<MethodOrdinal>,
     environment: EnvironmentIdentity,
-    engine: String,
-    registry: u16,
-    profile: RecoveryProfile,
+    engine: RecoverySemantics,
+    registry: ResolutionSemantics,
+    package_version: String,
+    highest_registered_major: u16,
+    configuration: ArtifactConfiguration,
+    dependencies: Vec<ArtifactDependency>,
+    source_target: SourceTarget,
     rules: Vec<String>,
     text_digest: String,
     text_bytes: u64,
@@ -161,16 +215,30 @@ pub struct ArtifactBinding {
 
 impl ArtifactBinding {
     /// The binding of one committed artifact: the subject the entry stated, the configuration the
-    /// run applied, and the digest of the text it wrote.
-    pub(crate) fn of(subject: &ArtifactSubject, profile: &RecoveryProfile, text: &str) -> Self {
+    /// run applied, and the digest of the text it wrote. This metadata constructor does not read
+    /// or validate caller assertions. Provenance belongs to the entry that owns the read.
+    pub fn of(
+        subject: &ArtifactSubject,
+        source_target: &SourceTarget,
+        text: &str,
+        configuration: ArtifactConfiguration,
+    ) -> Self {
         Self {
             schema: ARTIFACT_SCHEMA,
             method: subject.method.clone(),
             member_ordinal: subject.member_ordinal,
             environment: subject.environment.clone(),
-            engine: env!("CARGO_PKG_VERSION").to_string(),
-            registry: HIGHEST_REGISTERED_MAJOR,
-            profile: profile.clone(),
+            engine: RecoverySemantics {
+                contract: RECOVERY_SEMANTICS,
+                java: crate::IMPLEMENTATION_ID.into(),
+                facade: subject.recovery_implementation.clone(),
+            },
+            registry: ResolutionSemantics::current(),
+            package_version: env!("CARGO_PKG_VERSION").into(),
+            highest_registered_major: HIGHEST_REGISTERED_MAJOR,
+            configuration,
+            dependencies: subject.dependencies.clone(),
+            source_target: source_target.clone(),
             rules: registered_rules(),
             text_digest: digest_of(text),
             text_bytes: u64::try_from(text.len()).unwrap_or(u64::MAX),
@@ -197,24 +265,39 @@ impl ArtifactBinding {
         &self.environment
     }
 
-    /// The recovery layer's own build that wrote this artifact.
-    ///
-    /// A build of another version is a different engine, and two engines do not agree about an
-    /// artifact by default: a binding carried across builds is therefore refused unless the build
-    /// states the same version. The refusal is the fail-safe direction — an artifact that two builds
-    /// *would* have written identically is not explained by a binding one of them wrote.
-    pub fn engine(&self) -> &str {
+    /// Recovery contract and the actual Java/facade source implementations that supplied it.
+    /// Equality of package metadata or text is insufficient. A source change may invalidate
+    /// conservatively even when these particular bytes would have been emitted identically.
+    pub fn engine(&self) -> &RecoverySemantics {
         &self.engine
     }
 
-    /// The reader's dialect registry these facts were parsed under.
-    pub fn registry(&self) -> u16 {
-        self.registry
+    /// Resolution/analysis contract and participating implementations.
+    pub fn registry(&self) -> &ResolutionSemantics {
+        &self.registry
     }
 
-    /// The recovery profile (release, multi-release policy, layout) this artifact was written under.
-    pub fn profile(&self) -> &RecoveryProfile {
-        &self.profile
+    /// Package metadata; equality does not establish implementation identity.
+    pub fn package_version(&self) -> &str {
+        &self.package_version
+    }
+
+    /// Dialect capability, independent of resolution semantics.
+    pub fn highest_registered_major(&self) -> u16 {
+        self.highest_registered_major
+    }
+
+    pub fn configuration(&self) -> &ArtifactConfiguration {
+        &self.configuration
+    }
+
+    pub fn dependencies(&self) -> &[ArtifactDependency] {
+        &self.dependencies
+    }
+
+    /// The source language target this artifact was written under.
+    pub fn source_target(&self) -> &SourceTarget {
+        &self.source_target
     }
 
     /// Every rule this build registers, in table order, as `rule@version`.
@@ -281,6 +364,10 @@ impl ArtifactBinding {
                 self.environment.runtime.load_domain.loader.0,
             ));
         }
+        if self.dependencies != expected.dependencies {
+            dimensions.push(ArtifactDimension::Dependencies);
+            reasons.push("the selected physical dependency inputs".into());
+        }
         if let Some(reason) = self.configuration_reason(expected) {
             dimensions.push(ArtifactDimension::Configuration);
             reasons.push(reason);
@@ -310,32 +397,31 @@ impl ArtifactBinding {
 
     /// The configuration half of the comparison, as one phrase when it differs.
     ///
-    /// Engine, registry, profile and the registered rule table are one dimension because they are one
+    /// Engine, registry, source_target and the registered rule table are one dimension because they are one
     /// question — "was this artifact written by the same engine under the same rules" — and the
     /// phrase names every part of it that changed.
     fn configuration_reason(&self, expected: &Self) -> Option<String> {
         let mut changed = Vec::new();
+        if self.configuration != expected.configuration {
+            changed.push("the lexical/projection configuration or semantic handoff".into());
+        }
         if self.engine != expected.engine {
             changed.push(format!(
-                "the recovery build (`{}` against `{}`)",
+                "the recovery semantics (`{:?}` against `{:?}`)",
                 expected.engine, self.engine
             ));
         }
         if self.registry != expected.registry {
             changed.push(format!(
-                "the reader's dialect registry ({} against {})",
+                "the resolution semantics ({:?} against {:?})",
                 expected.registry, self.registry
             ));
         }
-        if self.profile != expected.profile {
+        if self.source_target != expected.source_target {
             changed.push(format!(
-                "the recovery profile (release {}, {}, {} against release {}, {}, {})",
-                expected.profile.java_release,
-                spell(&expected.profile),
-                layout(&expected.profile),
-                self.profile.java_release,
-                spell(&self.profile),
-                layout(&self.profile),
+                "the source target (Java {} against Java {})",
+                expected.source_target.java_release(),
+                self.source_target.java_release(),
             ));
         }
         if self.rules != expected.rules {
@@ -369,7 +455,9 @@ pub enum ArtifactDimension {
     MemberOrdinal,
     /// The environment the run was presented under.
     Environment,
-    /// Schema, reader facts, profile and registered rules.
+    /// Selected physical inputs, including their defining loaders.
+    Dependencies,
+    /// Recovery/analysis semantics, source target and semantic configuration.
     Configuration,
     /// The exact text.
     Text,
@@ -377,11 +465,12 @@ pub enum ArtifactDimension {
 
 impl ArtifactDimension {
     /// Every dimension, in the order [`ArtifactMismatch`] states them.
-    pub const ALL: [Self; 6] = [
+    pub const ALL: [Self; 7] = [
         Self::Schema,
         Self::Method,
         Self::MemberOrdinal,
         Self::Environment,
+        Self::Dependencies,
         Self::Configuration,
         Self::Text,
     ];
@@ -393,6 +482,7 @@ impl ArtifactDimension {
             Self::Method => "method",
             Self::MemberOrdinal => "member_ordinal",
             Self::Environment => "environment",
+            Self::Dependencies => "dependencies",
             Self::Configuration => "configuration",
             Self::Text => "text",
         }
@@ -486,9 +576,9 @@ impl ArtifactAgreement {
 ///
 /// The two halves answer two different questions and neither stands in for the other: `binding` is
 /// this run's own product identity — a caller keeps it to explain this text later — and `agreement`
-/// is what this run decided about the artifact the request named. The binding is `None` exactly when
-/// there is no artifact: the run stopped before one was committed, or the entry held no subject to
-/// bind the one it produced.
+/// is what this run decided about the artifact the request named. The binding is `None` when the
+/// run stopped before committing, or when the entry cannot establish read-owned provenance.
+/// A supplied subject label alone does not establish that provenance.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct RecoveryArtifact {
     binding: Option<ArtifactBinding>,
@@ -496,8 +586,8 @@ pub struct RecoveryArtifact {
 }
 
 impl RecoveryArtifact {
-    /// An artifact this run committed, under the entry's own subject, judged against `expected`.
-    pub(crate) fn of(binding: ArtifactBinding, expected: Option<&ArtifactBinding>) -> Self {
+    /// Compare two binding values. This does not verify their provenance or perform recovery.
+    pub fn of(binding: ArtifactBinding, expected: Option<&ArtifactBinding>) -> Self {
         let agreement = match expected {
             None => ArtifactAgreement::NotStated,
             Some(expected) => match binding.mismatch(expected) {
@@ -511,16 +601,14 @@ impl RecoveryArtifact {
         }
     }
 
-    /// An artifact the entry held no subject for: the text is delivered, and no binding is claimed.
-    ///
-    /// A request that named an artifact gets `Unverifiable` — never an agreement — because a run that
-    /// was not told the identity it wrote for cannot claim the caller's text is the one it produced.
+    /// Deliver preview text without claiming verified read provenance.
+    /// A named expectation remains `Unverifiable`, including when caller labels were supplied.
     pub(crate) fn unbound(expected: Option<&ArtifactBinding>) -> Self {
         let agreement = match expected {
             None => ArtifactAgreement::NotStated,
             Some(_) => ArtifactAgreement::Unverifiable {
                 reason: "the request named an artifact to attach its evidence to, and this entry \
-                         stated no subject for the artifact it produced, so the two were not \
+                         held no verified subject for the artifact it produced (caller labels are not read provenance), so the two were not \
                          compared"
                     .to_owned(),
             },
@@ -532,7 +620,7 @@ impl RecoveryArtifact {
     }
 
     /// A run that committed no artifact: there is nothing to bind and nothing to compare.
-    pub(crate) fn not_produced(expected: Option<&ArtifactBinding>) -> Self {
+    pub fn not_produced(expected: Option<&ArtifactBinding>) -> Self {
         let agreement = match expected {
             None => ArtifactAgreement::NotStated,
             Some(_) => ArtifactAgreement::Unverifiable {
@@ -643,16 +731,6 @@ fn ordinal_of(ordinal: Option<MethodOrdinal>) -> String {
     }
 }
 
-/// The multi-release policy of a profile, as a phrase.
-fn spell(profile: &RecoveryProfile) -> String {
-    format!("{:?}", profile.multi_release)
-}
-
-/// The layout of a profile, as a phrase.
-fn layout(profile: &RecoveryProfile) -> String {
-    format!("{:?}", profile.layout)
-}
-
 /// The first rule one table holds that the other does not, in table order.
 fn first_difference<'a>(left: &'a [String], right: &[String]) -> Option<&'a str> {
     left.iter()
@@ -720,7 +798,7 @@ mod tests {
                     },
                     load_domain: domain.clone(),
                 },
-                domain_loaders: vec![domain.loader.clone()],
+                domains: vec![domain.clone()],
                 providers: Vec::new(),
                 content: Vec::new(),
             },
@@ -728,7 +806,17 @@ mod tests {
     }
 
     fn binding_of(text: &str) -> ArtifactBinding {
-        ArtifactBinding::of(&subject(), &crate::pass::JAVA_8, text)
+        ArtifactBinding::of(
+            &subject(),
+            &crate::pass::JAVA_8,
+            text,
+            ArtifactConfiguration {
+                pool_spelled_members: false,
+                projection_types: Vec::new(),
+                allow_array_constructor_method_references: true,
+                inputs_digest: "unit-inputs".into(),
+            },
+        )
     }
 
     /// Two texts of the same length are two different artifacts: the digest is what tells them apart,
@@ -818,9 +906,11 @@ mod tests {
         );
 
         let mut other_profile = base.clone();
-        other_profile.profile.java_release = 7;
+        other_profile.source_target = SourceTarget::JAVA_7;
         assert_eq!(
-            base.mismatch(&other_profile).expect("profile").dimensions(),
+            base.mismatch(&other_profile)
+                .expect("source_target")
+                .dimensions(),
             [ArtifactDimension::Configuration]
         );
 
@@ -863,9 +953,12 @@ mod tests {
     fn the_configuration_states_the_rule_table_this_build_registers() {
         let binding = binding_of("return 1;");
         assert_eq!(binding.schema(), ARTIFACT_SCHEMA);
-        assert_eq!(binding.profile(), &crate::pass::JAVA_8);
-        assert_eq!(binding.engine(), env!("CARGO_PKG_VERSION"));
-        assert_eq!(binding.registry(), HIGHEST_REGISTERED_MAJOR);
+        assert_eq!(binding.source_target(), &crate::pass::JAVA_8);
+        assert_eq!(binding.package_version(), env!("CARGO_PKG_VERSION"));
+        assert_eq!(binding.engine().contract, RECOVERY_SEMANTICS);
+        assert_eq!(binding.engine().java, crate::IMPLEMENTATION_ID);
+        assert_eq!(binding.registry(), &ResolutionSemantics::current());
+        assert_eq!(binding.highest_registered_major(), HIGHEST_REGISTERED_MAJOR);
         let rules: Vec<&str> = binding.rules().collect();
         assert_eq!(
             rules.len(),

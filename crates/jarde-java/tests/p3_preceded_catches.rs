@@ -104,7 +104,12 @@ fn limits() -> Limits {
         analysis_steps: 1 << 20,
         normalization_clones: 1 << 20,
         nested_depth: 8,
-        dependency_depth: 4,
+        // Re-pinned 2026-11-08 (cross-domain-regression-r1): the reference-relation walk added
+        // with the source-proof pre-pass really descends 5 platform-parent layers here
+        // (`M1.handled`, measured high-water 5; was 0 on the clean HEAD baseline). This bound is
+        // the suite's own generous ceiling, not a product pin: no test in this file asserts
+        // DependencyDepth. Text and quality are unchanged, so only the depth account grew.
+        dependency_depth: 8,
         elapsed_millis: u64::MAX,
     }
 }
@@ -253,9 +258,18 @@ fn present(
     let facts = facts_of(class, name, parameters);
     let members = members_of(class);
     let mut budget = Budget::new(limits());
-    let request = RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-        .with_members(&members)
-        .with_evidence(jarde_java::RecoveryEvidenceRequest::all());
+    let request = RecoveryRequest::new(
+        payload.analysis.ir(),
+        &facts,
+        jarde_java::pass::JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
+    )
+    .with_members(&members)
+    .with_evidence(jarde_java::RecoveryEvidenceRequest::all());
     recover(&request, &mut budget)
 }
 
@@ -593,8 +607,17 @@ fn m3_recovery_stops_atomically_under_budget_and_cancellation() {
         ir_items: 1,
         ..limits()
     });
-    let request = RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-        .with_members(&members);
+    let request = RecoveryRequest::new(
+        payload.analysis.ir(),
+        &facts,
+        jarde_java::pass::JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
+    )
+    .with_members(&members);
     let limited = recover(&request, &mut limited_budget);
     assert!(!limited.produced(), "{:?}", limited.outcome);
     assert!(limited.text.is_empty(), "{}", limited.text);
@@ -603,8 +626,17 @@ fn m3_recovery_stops_atomically_under_budget_and_cancellation() {
     let token = jarde_reader::budget::CancellationToken::new();
     token.cancel();
     let mut cancelled_budget = Budget::with_cancellation_token(limits(), token);
-    let request = RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-        .with_members(&members);
+    let request = RecoveryRequest::new(
+        payload.analysis.ir(),
+        &facts,
+        jarde_java::pass::JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
+    )
+    .with_members(&members);
     let cancelled = recover(&request, &mut cancelled_budget);
     assert!(!cancelled.produced(), "{:?}", cancelled.outcome);
     assert!(matches!(

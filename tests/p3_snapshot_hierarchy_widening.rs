@@ -85,6 +85,7 @@ fn opened(jar: &[u8], class: &str) -> (artifact::ArtifactSnapshot, ClassSourceRe
         .open(ArtifactInput::bytes(jar.to_vec()), &mut budget)
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },

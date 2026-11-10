@@ -207,7 +207,7 @@ fn budget_stops(sink: &Metered) -> usize {
             matches!(
                 stop,
                 StopReason::Budget {
-                    dimension: CountedBudgetDimension::OutputBytes,
+                    dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
                     ..
                 }
             )
@@ -469,7 +469,7 @@ fn one_declaration_bounds_the_librarys_own_presentation_too() {
                         matches!(
                             stop,
                             StopReason::Budget {
-                                dimension: CountedBudgetDimension::OutputBytes,
+                                dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
                                 ..
                             }
                         ),

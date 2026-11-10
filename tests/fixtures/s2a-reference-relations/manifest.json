@@ -1,0 +1,74 @@
+{
+  "schema": "s2a-reference-relations-fixtures-v1",
+  "input_campaign": "results/s2a-variable-legalization-v1/platform-header-override-v1/r2",
+  "profile": {
+    "runtime_release": 8,
+    "source_target": 8,
+    "policy": "PlainJar",
+    "multi_release": "disabled",
+    "layout": "generic"
+  },
+  "fixtures": [
+    {
+      "compiler": "corretto8",
+      "variant": "normal",
+      "path": "corretto8-normal.jar",
+      "bytes": 311,
+      "sha256": "1407990514e78d51d032fb333252a4bf880f35294033a5c32a908adaa90dfa66",
+      "members": [
+        "Consumer.class"
+      ]
+    },
+    {
+      "compiler": "corretto8",
+      "variant": "override",
+      "path": "corretto8-override.jar",
+      "bytes": 556,
+      "sha256": "094b80c77b204f27ecdc23691f42dccff9ef0afb08364aaf7366c500dfd17b36",
+      "members": [
+        "Consumer.class",
+        "java/util/ArrayList.class"
+      ],
+      "fake_header": {
+        "entry_name": "java/util/ArrayList.class",
+        "class_sha256": "11a75a9d87d23e04c994fbfddbc4b6f607b2f05b68f94bbdb147ea6e3b479f0b",
+        "class_bytes_blake3": "378cd292e10f7fe6a876eb39478e6cc3e0a3707224a5624a98bab7886ab23595",
+        "this_class": "java/util/ArrayList",
+        "super_class": "java/lang/Object",
+        "interfaces_count": 0,
+        "source": "platform-header-override-v1/r2/build/build-receipt.json and r2 before-relations-r5 physical dependency report"
+      }
+    },
+    {
+      "compiler": "openjdk23",
+      "variant": "normal",
+      "path": "openjdk23-normal.jar",
+      "bytes": 311,
+      "sha256": "dc7c5c73769a70205d02d25f161bf0bafa21a26ea23c6415f2d9c82a0f1144c5",
+      "members": [
+        "Consumer.class"
+      ]
+    },
+    {
+      "compiler": "openjdk23",
+      "variant": "override",
+      "path": "openjdk23-override.jar",
+      "bytes": 555,
+      "sha256": "69be6f7dacaee4a1c0f61c984b7080ec2ead749d20a9eb46dc3dffba6f0c076f",
+      "members": [
+        "Consumer.class",
+        "java/util/ArrayList.class"
+      ],
+      "fake_header": {
+        "entry_name": "java/util/ArrayList.class",
+        "class_sha256": "065f9febbafe0c099d903b51d252bfe882d2b6fd5ee7ce59b9982e2eab36268e",
+        "class_bytes_blake3": "eaa3a1cea0ad0ef3f57f80567ca42067417fa26ace5726b206cd16c38176172b",
+        "this_class": "java/util/ArrayList",
+        "super_class": "java/lang/Object",
+        "interfaces_count": 0,
+        "source": "platform-header-override-v1/r2/build/build-receipt.json and r2 before-relations-r5 physical dependency report"
+      }
+    }
+  ],
+  "class_bytes_digest_algorithm": "BLAKE3 (jarde-reader hashes selected class entry bytes with blake3::hash)"
+}

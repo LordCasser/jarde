@@ -1,0 +1,80 @@
+{
+  "schema": "s2b-static-generic-members-fixture-r1",
+  "javac": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+  "javac_args": [
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-g",
+    "-classpath",
+    "crates/jarde-java/tests/fixtures/s2b-bound-type-identities-r1/identity-a/classes"
+  ],
+  "javap_args": {
+    "Box": [
+      "-p",
+      "-s",
+      "-v",
+      "flow.Box"
+    ],
+    "BoxConsumer": [
+      "-p",
+      "-s",
+      "-c",
+      "flow.BoxConsumer"
+    ]
+  },
+  "runtime_execution": false,
+  "files": [
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-generic-members-r1/src/flow/Box.java",
+      "size": 470,
+      "sha256": "90c374424ab9a8b544f96d84769fb62438635b8d26d7603e3c7b70c9a1fa5943"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-generic-members-r1/src/flow/BoxConsumer.java",
+      "size": 1258,
+      "sha256": "8b6ddfafaf94f43dd886b49729601e1cdd8b840a2471c2afe68730b3bbf15d0c"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-generic-members-r1/classes/flow/Box.class",
+      "size": 1039,
+      "sha256": "f776d6d64b179933e9e40a805114b1b1c0095f9af85a0477782ce43c84ab3c07"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-generic-members-r1/classes/flow/BoxConsumer.class",
+      "size": 2361,
+      "sha256": "6126aa73d062cab859a2674eeb95f106c93b2dea9dad2f9a39ce7491222ffbfe"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-generic-members-r1/classes/flow/RawChildBox.class",
+      "size": 252,
+      "sha256": "0b3f561c97f3a7806e25a7c737ca726ea4a0febaaafe125911555efadae7841b"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-generic-members-r1/classes/flow/StringChildBox.class",
+      "size": 311,
+      "sha256": "12116d546b1771e4a73516a5fdc6d7b83d01f98a8b8f87aeb86e917200a22154"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-bound-type-identities-r1/identity-a/classes/identity/Foo.class",
+      "size": 349,
+      "sha256": "96d648ea785ae03101917c65039409cf125ad6228f6e1ddf8e873ee231111bec"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-generic-members-r1/javac.log",
+      "size": 207,
+      "sha256": "eefd6c3806309843d89f7bd99f0a4c3875307fc6f939032c960e239a04b21ebd"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-generic-members-r1/Box.javap.txt",
+      "size": 5175,
+      "sha256": "5963dc988ff27ee859e1a7350a46e2fb50db3bf974048d2b41b67450a3170738"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-generic-members-r1/BoxConsumer.javap.txt",
+      "size": 3613,
+      "sha256": "26fddb6e778ffc1ffea8fecb43ca933ed5a92f0d1fa6e79d67a4e26085dc9e67"
+    }
+  ]
+}

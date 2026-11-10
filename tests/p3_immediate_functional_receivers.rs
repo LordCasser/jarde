@@ -269,6 +269,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 
 fn request(snapshot: &ArtifactSnapshot, class: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -352,6 +353,7 @@ fn method_identity(
 
 fn recover_method(
     snapshot: &ArtifactSnapshot,
+    _source_target: crate::SourceTarget,
     identity: &PhysicalMethodId,
     evidence: &RecoveryEvidenceRequest,
     budget: &mut Budget,
@@ -373,7 +375,13 @@ fn recover_method(
         },
     };
     Engine::new()
-        .recover_target_with_evidence(slice::from_ref(snapshot), &request, evidence, budget)
+        .recover_target_with_evidence(
+            slice::from_ref(snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            evidence,
+            budget,
+        )
         .expect("the physical method request is valid")
 }
 
@@ -877,7 +885,13 @@ fn receiver_cast_output_and_ir_budgets_and_cancellation_do_not_publish_partial_j
     let snapshot = open(DIRECT_METHOD);
     let identity = method_identity(&snapshot, b"abs", b"(I)I");
     let evidence = RecoveryEvidenceRequest::essential();
-    let complete = match recover_method(&snapshot, &identity, &evidence, &mut budget()) {
+    let complete = match recover_method(
+        &snapshot,
+        jarde::SourceTarget::JAVA_8,
+        &identity,
+        &evidence,
+        &mut budget(),
+    ) {
         OperationOutcome::Performed(report) => report,
         other => panic!("the immediate method-reference body completes: {other:?}"),
     };
@@ -899,6 +913,7 @@ fn receiver_cast_output_and_ir_budgets_and_cancellation_do_not_publish_partial_j
         .expect("the complete body writes output");
     let output_stopped = recover_method(
         &snapshot,
+        jarde::SourceTarget::JAVA_8,
         &identity,
         &evidence,
         &mut Budget::new(output_limits),
@@ -911,13 +926,20 @@ fn receiver_cast_output_and_ir_budgets_and_cancellation_do_not_publish_partial_j
         .ir_items
         .checked_sub(1)
         .expect("the complete body charges IR items");
-    let ir_stopped = recover_method(&snapshot, &identity, &evidence, &mut Budget::new(ir_limits));
+    let ir_stopped = recover_method(
+        &snapshot,
+        jarde::SourceTarget::JAVA_8,
+        &identity,
+        &evidence,
+        &mut Budget::new(ir_limits),
+    );
     assert_no_partial_java_body(ir_stopped, "one IR item below the complete receiver body");
 
     let token = jarde::budget::CancellationToken::new();
     token.cancel();
     let cancelled = recover_method(
         &snapshot,
+        jarde::SourceTarget::JAVA_8,
         &identity,
         &evidence,
         &mut Budget::with_cancellation_token(complete.limits, token),

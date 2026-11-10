@@ -136,10 +136,9 @@ fn usage_of(report: &RecoveryReport) -> UsageSnapshot {
 
 /// One report as two runs of it compare: identical but for the wall clock.
 fn without_elapsed(report: &RecoveryReport) -> RecoveryReport {
-    RecoveryReport {
-        execution: without_wall_clock(&report.execution),
-        ..report.clone()
-    }
+    let mut report = report.clone();
+    report.execution = without_wall_clock(&report.execution);
+    report
 }
 
 fn limits() -> Limits {
@@ -160,7 +159,11 @@ fn limits() -> Limits {
         analysis_steps: 1 << 20,
         normalization_clones: 1 << 20,
         nested_depth: 8,
-        dependency_depth: 4,
+        // Re-pinned 2026-11-08 (cross-domain-regression-r1): the cf18 fixtures' platform-parent
+        // relation walk measures a dependency high-water of 6 (was 0 on the clean HEAD baseline).
+        // This bound is the suite's own generous ceiling, not a product pin: no test in this file
+        // asserts DependencyDepth.
+        dependency_depth: 8,
         elapsed_millis: u64::MAX,
     }
 }
@@ -257,6 +260,39 @@ fn facts_of(
     .with_debug_locals(stated_names(debug))
 }
 
+/// The same method facts, with declaration metadata read from the class's own header.
+fn facts_of_declared(
+    class: &[u8],
+    name: &[u8],
+    parameters: u16,
+    debug: Vec<Option<String>>,
+) -> RecoveryFacts {
+    let mut budget = Budget::new(limits());
+    let header = class_facts(class, &mut budget).expect("the fixture is a class file");
+    let member = header
+        .methods
+        .iter()
+        .find(|member| member.name.raw().0 == name)
+        .expect("the fixture declares the method");
+    let class_name = header
+        .this_class
+        .to_unicode()
+        .expect("the fixture class name has a faithful Unicode spelling");
+    RecoveryFacts::new(
+        MethodFacts::from_raw(
+            member.name.raw().clone(),
+            member.descriptor.raw().clone(),
+            parameters,
+        )
+        .with_access_flags(member.access_flags)
+        .with_declaring_class(jarde_java::facts::DeclaringClass::new(
+            class_name,
+            header.access_flags,
+        )),
+    )
+    .with_debug_locals(stated_names(debug))
+}
+
 /// The debug records of a test that states **one name per slot**: each name covers its slot with no
 /// range stated, so no slot is ever split for them (P3 3.4).
 fn stated_names(debug: Vec<Option<String>>) -> Vec<jarde_java::DebugLocal> {
@@ -277,8 +313,17 @@ fn recover_body(
     budget: &mut Budget,
 ) -> jarde_java::RecoveryReport {
     recover(
-        &RecoveryRequest::new(payload.analysis.ir(), facts, jarde_java::pass::JAVA_8)
-            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         budget,
     )
 }
@@ -464,14 +509,14 @@ fn cf16_named_catch_owns_complete_switch_and_range_end_transfer() {
             .collect::<Vec<_>>(),
         vec![(11, 61, 64)]
     );
-    let facts = facts_of(class, b"runTest", 3, vec![]);
+    let facts = facts_of_declared(class, b"runTest", 3, vec![]);
     let report = recover_body(&payload, &facts, &mut Budget::new(limits()));
     assert_eq!(report.quality, Quality::Structured, "{}", report.text);
     assert!(report.fallbacks.is_empty(), "{}", report.text);
     assert!(
         report
             .text
-            .contains("arg0.sb = new java.lang.StringBuilder();"),
+            .contains("this.sb = new java.lang.StringBuilder();"),
         "{}",
         report.text
     );
@@ -487,10 +532,10 @@ fn cf16_named_catch_owns_complete_switch_and_range_end_transfer() {
             .count(),
         1
     );
-    for call in ["arg0.test1(", "arg0.test2(", "arg0.test3("] {
+    for call in ["this.test1(", "this.test2(", "this.test3("] {
         assert_eq!(report.text.matches(call).count(), 1);
     }
-    assert!(report.text.contains("return arg0.sb.toString();"));
+    assert!(report.text.contains("return this.sb.toString();"));
     let mut owned = std::collections::BTreeSet::new();
     for region in &report.regions {
         assert!(region.structured, "{region:?}");
@@ -1398,7 +1443,7 @@ fn a_straight_line_body_with_a_call_reaches_text_and_a_segment_table() {
     );
     assert!(report.text.contains("return;\n"), "{}", report.text);
     assert!(
-        report.text.contains("Object local1 = null;"),
+        report.text.contains("java.lang.Runnable local1 = null;"),
         "the local is declared with the type the value has:\n{}",
         report.text
     );
@@ -1427,7 +1472,7 @@ fn a_straight_line_body_with_a_call_reaches_text_and_a_segment_table() {
     );
     assert_eq!(
         report.text_of_bci(1),
-        vec!["    Object local1 = null;\n"],
+        vec!["    java.lang.Runnable local1 = null;\n"],
         "{:?}",
         report.text_of_bci(1)
     );
@@ -1531,8 +1576,15 @@ fn a_body_without_debug_metadata_gets_deterministic_names() {
     let mut budget = Budget::new(limits());
     let report = recover_body(&payload, &facts, &mut budget);
     assert!(
-        report.text.contains("Object local1 = null;"),
+        report.text.contains("java.lang.Runnable local1 = null;"),
         "{}",
+        report.text
+    );
+    assert_eq!(report.quality, Quality::Structured, "{}", report.text);
+    assert!(report.fallbacks.is_empty(), "{}", report.text);
+    assert!(
+        report.text.contains("local1.run(0L);\n    return;"),
+        "the complete straight-line method remains present:\n{}",
         report.text
     );
     assert!(
@@ -1561,7 +1613,9 @@ fn a_body_without_debug_metadata_gets_deterministic_names() {
     let mut named_budget = Budget::new(limits());
     let named_report = recover_body(&payload, &named, &mut named_budget);
     assert!(
-        named_report.text.contains("Object receiver = null;"),
+        named_report
+            .text
+            .contains("java.lang.Runnable receiver = null;"),
         "{}",
         named_report.text
     );
@@ -1582,11 +1636,14 @@ fn a_keyword_name_takes_a_deterministic_alias_and_the_syntax_plane_says_so() {
 
     assert!(report.produced(), "{:?}", report.outcome);
     assert!(
-        report.text.contains("Object int_ = null;"),
+        report.text.contains("java.lang.Runnable int_ = null;"),
         "the keyword became a deterministic alias:\n{}",
         report.text
     );
     assert!(report.text.contains("int_.run(0L);"), "{}", report.text);
+    assert_eq!(report.quality, Quality::Structured, "{}", report.text);
+    assert!(report.fallbacks.is_empty(), "{:?}", report.fallbacks);
+    assert!(report.text.contains("return;\n"), "{}", report.text);
     assert!(
         !report.text.contains("Object int ="),
         "no identifier is spelled as a keyword"
@@ -2147,8 +2204,17 @@ fn a_payload_without_the_tables_the_recovery_needs_states_that_instead_of_an_emp
     let facts = RecoveryFacts::new(MethodFacts::new("absent", "()V", 0));
     let mut recovery_budget = Budget::new(limits());
     let report = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut recovery_budget,
     );
     assert!(!report.produced());
@@ -2165,16 +2231,12 @@ fn a_payload_without_the_tables_the_recovery_needs_states_that_instead_of_an_emp
 
 #[test]
 fn a_slot_the_records_cannot_place_is_one_variable_with_the_ordinal_name() {
-    // P3 3.4's other half, and the reason the split needs more than two records: a slot the debug
-    // table names twice is split **only** when the body's own uses say which variable each use
-    // belongs to. Two records whose ranges overlap state no such thing — there is no bytecode range
-    // in which the slot carried one and then the other — so neither name is written, and the slot
-    // stays the one variable P3 3.1 wrote, declared where every use of it can see it.
+    // Two slot-3 debug ranges overlap, so those ranges alone cannot prove a split. The body’s own
+    // stores and reads now establish separate branch-local lifetimes. Slot 2 has the same name in
+    // two ranges and remains one variable, declared where both branches and the join can see it.
     //
-    // The body is the committed `reuse(ZI)I`; the evidence is stated **here** rather than read from
-    // the class, because the shapes that decline the split are exactly the ones a compiler does not
-    // emit: javac's own table is asserted where the whole run is driven (`tests/p3_scope.rs`). Both
-    // declining shapes are in the evidence below:
+    // The body is the committed `reuse(ZI)I`; the ranges are stated here to keep this caller-input
+    // case exact. javac's own table is asserted where the whole run is driven (`tests/p3_scope.rs`).
     //
     // * slot 3 carries `c` and `d`, and their ranges `[0, 12)` and `[8, 21)` **overlap**;
     // * slot 2 carries `a` twice with the **same** name over `[10, 13)` and `[19, 21)`, which is one
@@ -2194,9 +2256,10 @@ fn a_slot_the_records_cannot_place_is_one_variable_with_the_ordinal_name() {
     assert!(report.produced(), "{:?}", report.outcome);
     assert_eq!(report.representation, Representation::Java, "{report:?}");
     assert_eq!(report.quality, Quality::Structured);
+    assert!(report.fallbacks.is_empty(), "{:?}", report.fallbacks);
     assert!(
         report.text.trim_end().ends_with(
-            "{\n    int a;\n    int local3;\n    if (b) {\n        local3 = seed + 1;\n        a = local3;\n    } else {\n        local3 = seed + 2;\n        a = local3;\n    }\n    return a;\n}"
+            "{\n    int a;\n    if (b) {\n        int local3 = seed + 1;\n        a = local3;\n    } else {\n        int local3_2 = seed + 2;\n        a = local3_2;\n    }\n    return a;\n}"
         ),
         "the unplaceable slot is one variable with its ordinal name, and `a` — one name over two \
          records — keeps the declaration both arms and the join see:\n{}",
@@ -2248,14 +2311,12 @@ fn a_body_without_debug_names_is_named_deterministically_and_invents_no_source_s
         0,
         "the comparison form carries no clock to compare"
     );
-    let clocked = RecoveryReport {
-        execution: ExecutionReport::Complete {
-            usage: UsageSnapshot {
-                elapsed_millis: 7,
-                ..usage_of(&first)
-            },
+    let mut clocked = first.clone();
+    clocked.execution = ExecutionReport::Complete {
+        usage: UsageSnapshot {
+            elapsed_millis: 7,
+            ..usage_of(&first)
         },
-        ..first.clone()
     };
     assert_eq!(
         without_elapsed(&first),
@@ -3695,14 +3756,23 @@ fn recover_class(class: &[u8]) -> jarde_java::RecoveryReport {
 /// The same, under one named profile.
 fn recover_class_under(
     class: &[u8],
-    profile: jarde_java::RecoveryProfile,
+    profile: jarde_java::SourceTarget,
 ) -> jarde_java::RecoveryReport {
     let payload = analyze(class, b"method", b"()V");
     let facts = facts_of(class, b"method", 0, Vec::new());
     let mut budget = Budget::new(limits());
     recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, profile)
-            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            profile,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut budget,
     )
 }
@@ -3720,8 +3790,17 @@ fn recover_named_method(
     let payload = analyze(class, name, descriptor);
     let facts = facts_of(class, name, parameters, Vec::new());
     recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut Budget::new(limits()),
     )
 }
@@ -3732,18 +3811,41 @@ fn recover_instance_method(
     descriptor: &[u8],
 ) -> jarde_java::RecoveryReport {
     let payload = analyze(class, name, descriptor);
+    let mut budget = Budget::new(limits());
+    let header = class_facts(class, &mut budget).expect("the fixture is a class file");
+    let member = header
+        .methods
+        .iter()
+        .find(|member| member.name.raw().0 == name)
+        .expect("the fixture declares the method");
+    let declaring_name = header
+        .this_class
+        .to_unicode()
+        .expect("the fixture class name has a faithful Unicode spelling");
     let facts = RecoveryFacts::new(
-        MethodFacts::new(
-            String::from_utf8_lossy(name),
-            String::from_utf8_lossy(descriptor),
+        MethodFacts::from_raw(
+            member.name.raw().clone(),
+            member.descriptor.raw().clone(),
             1,
         )
-        .with_access_flags(0x0001)
-        .with_declaring_class(jarde_java::facts::DeclaringClass::new("Test", 0x0021)),
+        .with_access_flags(member.access_flags)
+        .with_declaring_class(jarde_java::facts::DeclaringClass::new(
+            declaring_name,
+            header.access_flags,
+        )),
     );
     recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut Budget::new(limits()),
     )
 }
@@ -4657,13 +4759,7 @@ fn a_profile_that_does_not_present_java_8_is_refused_the_lambda_rule() {
     // site is a Java 8 construct, and a run whose profile presents the artifact as Java 7 is not
     // admitted the rule. The body is still presented — the site is refused, the run is not stopped.
     let class = capture_lambda_class();
-    let report = recover_class_under(
-        &class,
-        jarde_java::RecoveryProfile {
-            java_release: 7,
-            ..jarde_java::pass::JAVA_8
-        },
-    );
+    let report = recover_class_under(&class, jarde_java::SourceTarget::JAVA_7);
     assert!(report.produced(), "{:?}", report.outcome);
     assert!(!report.text.contains("->"), "{}", report.text);
     let site = site_of(&report, 3);
@@ -4717,8 +4813,17 @@ fn a_budget_that_refuses_the_emission_of_a_lambda_body_hands_out_nothing() {
     let whole = {
         let mut budget = Budget::new(limits());
         recover(
-            &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-                .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
+            &RecoveryRequest::new(
+                payload.analysis.ir(),
+                &facts,
+                jarde_java::pass::JAVA_8,
+                jarde_reader::view::RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: jarde_reader::view::LayoutMode::Generic,
+                },
+            )
+            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
             &mut budget,
         )
         .text
@@ -4729,8 +4834,17 @@ fn a_budget_that_refuses_the_emission_of_a_lambda_body_hands_out_nothing() {
         ..limits()
     });
     let stopped = recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut budget,
     );
     assert!(!stopped.produced(), "{:?}", stopped.outcome);

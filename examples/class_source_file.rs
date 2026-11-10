@@ -24,6 +24,7 @@ fn run(path: PathBuf) -> jarde::Result<()> {
     let mut open_budget = budget();
     let snapshot = engine.open(ArtifactInput::Path(path), &mut open_budget)?;
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(internal),
         },

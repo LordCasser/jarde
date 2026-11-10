@@ -114,8 +114,17 @@ fn direct_string_char_array_has_explicit_new_and_all_source_anchors() {
     let facts = direct_facts();
     let mut budget = Budget::new(limits());
     let report = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         &mut budget,
     );
     assert!(report.produced(), "{:?}", report.outcome);
@@ -142,7 +151,16 @@ fn output_budget_and_cancellation_publish_no_partial_string_constructor() {
     let mut tiny = limits();
     tiny.output_bytes = 8;
     let stopped = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, jarde_java::pass::JAVA_8),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        ),
         &mut Budget::new(tiny),
     );
     assert!(!stopped.produced());
@@ -151,7 +169,16 @@ fn output_budget_and_cancellation_publish_no_partial_string_constructor() {
     let token = CancellationToken::new();
     token.cancel();
     let cancelled = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, jarde_java::pass::JAVA_8),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        ),
         &mut Budget::with_cancellation_token(limits(), token),
     );
     assert!(!cancelled.produced());

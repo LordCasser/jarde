@@ -206,6 +206,7 @@ fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport
             .class_source(
                 slice::from_ref(snapshot),
                 &ClassSourceRequest {
+                    source_target: jarde::SourceTarget::JAVA_8,
                     class: ClassRef::Name {
                         class: ClassNameQuery::internal(name),
                     },

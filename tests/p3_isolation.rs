@@ -226,7 +226,12 @@ fn a_physical_query_constructs_none_of_the_recovery_layer_and_the_recovery_run_c
     let request = recovery_request(&snapshot, &inspected);
     let mut recovery_budget = Budget::new(limits());
     let recovered = engine
-        .recover_method(slice::from_ref(&snapshot), &request, &mut recovery_budget)
+        .recover_method(
+            slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            &mut recovery_budget,
+        )
         .expect("a legal request is answered, not raised");
 
     let presented = usage_of(recovered.analysis());

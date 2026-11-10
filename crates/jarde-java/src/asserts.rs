@@ -394,7 +394,7 @@ impl Fold<'_> {
                 StmtKind::Synchronized { lock, body }
             }
         };
-        Ok(Some(Stmt { kind, origin }))
+        Ok(Some(Stmt::new(kind, origin)))
     }
 
     /// An optional statement list: `None` input folds to `None` output without refusing.
@@ -521,6 +521,9 @@ impl Fold<'_> {
         Some(Stmt {
             kind: StmtKind::Assert { cond, message },
             origin: statement.origin.clone(),
+            declared_field: false,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::Stmt),
         })
     }
 }
@@ -545,6 +548,10 @@ fn negate_condition(failing: &Expr) -> Option<Expr> {
                 },
                 origin: failing.origin.clone(),
                 presented: failing.presented.clone(),
+                declared_type: None,
+                declared_call: false,
+                #[cfg(any(test, feature = "test-support"))]
+                observation: crate::observation::Token::new(crate::observation::Kind::Expr),
             })
         }
         _ => wrap_not(failing),
@@ -562,6 +569,10 @@ fn wrap_not(condition: &Expr) -> Option<Expr> {
         },
         origin: condition.origin.clone(),
         presented: Some(Type::Boolean),
+        declared_type: None,
+        declared_call: false,
+        #[cfg(any(test, feature = "test-support"))]
+        observation: crate::observation::Token::new(crate::observation::Kind::Expr),
     })
 }
 
@@ -574,7 +585,7 @@ fn wrap_not(condition: &Expr) -> Option<Expr> {
 /// message. Any other cast stays: a downcast is a real instruction with real failure semantics.
 fn assertion_message(argument: &Expr) -> Expr {
     match &argument.kind {
-        ExprKind::Cast { ty, value } if matches!(ty, Type::Reference(name) if name == "java.lang.Object") => {
+        ExprKind::Cast { ty, value, .. } if matches!(ty, Type::Reference(name) if name == "java.lang.Object") => {
             (**value).clone()
         }
         _ => argument.clone(),

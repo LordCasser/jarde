@@ -93,6 +93,7 @@ fn class_source(
     evidence: RecoveryEvidenceRequest,
 ) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("NarrowArrayStores"),
         },
@@ -439,6 +440,7 @@ fn insufficient_output_budget_and_cancellation_stop_the_method_run() {
     let limited = Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut Budget::new(bounded),
@@ -458,6 +460,7 @@ fn insufficient_output_budget_and_cancellation_stop_the_method_run() {
     let cancelled = Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut Budget::with_cancellation_token(limits(), cancellation),

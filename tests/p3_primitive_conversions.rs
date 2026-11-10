@@ -96,6 +96,7 @@ fn class_source_of(
 
 fn class_source_request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("PrimitiveConversions"),
         },
@@ -152,7 +153,13 @@ fn recover_method_with_budget(
         environment: class_source_request(snapshot).environment,
     };
     Engine::new()
-        .recover_target_with_evidence(slice::from_ref(snapshot), &request, evidence, budget)
+        .recover_target_with_evidence(
+            slice::from_ref(snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            evidence,
+            budget,
+        )
         .expect("a legal class-source request is answered")
 }
 

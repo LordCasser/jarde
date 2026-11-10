@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-g",
+    "-d",
+    "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/classes",
+    "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/GenericParent.java",
+    "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/HeaderUnclosed.java",
+    "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/TypeTag.java"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

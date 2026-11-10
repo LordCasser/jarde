@@ -17,3 +17,7 @@ serde = { version = "=1.0.229", features = ["derive"] }
 [dev-dependencies]
 # The query contract's unit tests read the serde spelling of the report and page types.
 serde_json = "=1.0.151"
+
+[build-dependencies]
+# Build identity only; reuse the workspace-pinned pure Rust implementation.
+blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }

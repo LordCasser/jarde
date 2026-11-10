@@ -63,11 +63,21 @@ fn recover_method(
     descriptor: &str,
     parameter_count: u16,
 ) -> jarde_java::RecoveryReport {
-    recover_method_with_options(class, name, descriptor, parameter_count, true, None, false)
+    recover_method_with_options(
+        class,
+        jarde_java::SourceTarget::JAVA_8,
+        name,
+        descriptor,
+        parameter_count,
+        true,
+        None,
+        false,
+    )
 }
 
 fn recover_method_with_options(
     class: &[u8],
+    source_target: jarde_java::SourceTarget,
     name: &str,
     descriptor: &str,
     parameter_count: u16,
@@ -148,7 +158,16 @@ fn recover_method_with_options(
     )
     .expect("fixture method analysis completes");
     let facts = RecoveryFacts::new(MethodFacts::new(name, descriptor, parameter_count));
-    let mut request = RecoveryRequest::new(analysis.ir(), &facts, jarde_java::pass::JAVA_8);
+    let mut request = RecoveryRequest::new(
+        analysis.ir(),
+        &facts,
+        source_target,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
+    );
     if all_evidence {
         request = request.with_evidence(RecoveryEvidenceRequest::all());
     }
@@ -301,6 +320,7 @@ fn unknown_user_array_supertypes_keep_the_complete_fallback() {
 fn default_and_all_evidence_emit_the_same_successful_body_and_stop_before_partial_output() {
     let essential = recover_method_with_options(
         CORE,
+        jarde_java::SourceTarget::JAVA_8,
         "typedStringArray",
         "([Ljava/lang/String;)Ljava/lang/String;",
         1,
@@ -310,6 +330,7 @@ fn default_and_all_evidence_emit_the_same_successful_body_and_stop_before_partia
     );
     let all = recover_method_with_options(
         CORE,
+        jarde_java::SourceTarget::JAVA_8,
         "typedStringArray",
         "([Ljava/lang/String;)Ljava/lang/String;",
         1,
@@ -322,6 +343,7 @@ fn default_and_all_evidence_emit_the_same_successful_body_and_stop_before_partia
 
     let stopped = recover_method_with_options(
         CORE,
+        jarde_java::SourceTarget::JAVA_8,
         "typedStringArray",
         "([Ljava/lang/String;)Ljava/lang/String;",
         1,
@@ -336,6 +358,7 @@ fn default_and_all_evidence_emit_the_same_successful_body_and_stop_before_partia
 
     let cancelled = recover_method_with_options(
         CORE,
+        jarde_java::SourceTarget::JAVA_8,
         "typedStringArray",
         "([Ljava/lang/String;)Ljava/lang/String;",
         1,
@@ -385,6 +408,7 @@ fn list_argument_keeps_the_iterable_call_once_with_both_origins() {
 
     let stopped = recover_method_with_options(
         LIST_TO_ITERABLE,
+        jarde_java::SourceTarget::JAVA_8,
         "main",
         "([Ljava/lang/String;)V",
         1,
@@ -399,6 +423,7 @@ fn list_argument_keeps_the_iterable_call_once_with_both_origins() {
 
     let cancelled = recover_method_with_options(
         LIST_TO_ITERABLE,
+        jarde_java::SourceTarget::JAVA_8,
         "main",
         "([Ljava/lang/String;)V",
         1,
@@ -415,4 +440,49 @@ fn list_argument_keeps_the_iterable_call_once_with_both_origins() {
             .expect("cancelled run stops")
             .is_cancelled()
     );
+}
+
+#[test]
+fn source7_keeps_runtime8_platform_widenings() {
+    for (class, name, descriptor, parameters, expected) in [
+        (
+            LIST_TO_ITERABLE,
+            "main",
+            "([Ljava/lang/String;)V",
+            1,
+            "consume((java.lang.Iterable) asList(",
+        ),
+        (
+            CORE,
+            "typedStringArray",
+            "([Ljava/lang/String;)Ljava/lang/String;",
+            1,
+            "java.lang.Object[]",
+        ),
+    ] {
+        let seven = recover_method_with_options(
+            class,
+            jarde_java::SourceTarget::JAVA_7,
+            name,
+            descriptor,
+            parameters,
+            true,
+            None,
+            false,
+        );
+        let eight = recover_method_with_options(
+            class,
+            jarde_java::SourceTarget::JAVA_8,
+            name,
+            descriptor,
+            parameters,
+            true,
+            None,
+            false,
+        );
+        assert_recovered(&seven, expected);
+        assert_eq!(seven.text, eight.text);
+        assert_eq!(seven.runtime_profile.java_release, 8);
+        assert_eq!(seven.source_target, jarde_java::SourceTarget::JAVA_7);
+    }
 }

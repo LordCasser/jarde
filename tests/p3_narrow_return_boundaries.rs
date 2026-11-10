@@ -72,6 +72,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 fn class_source(bytes: &[u8], name: &str, java_release: u16) -> ClassSourceReport {
     let snapshot = open(bytes);
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },

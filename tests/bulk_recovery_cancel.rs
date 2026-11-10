@@ -430,6 +430,31 @@ fn a_cancellation_wakes_a_producer_waiting_for_room_in_the_shared_pool() {
 }
 
 #[test]
+fn a_serial_sink_stop_does_not_force_class_end_or_final() {
+    let (content, request, mut budget) = fixture(1);
+    let mut sink = Recorder::new();
+    sink.method_behaviour = bulk_support::Behaviour::StopAt(0);
+    let report = Engine::new()
+        .recover_all(&content, &request, &mut budget, &mut sink)
+        .expect("a serial sink stop returns its prefix");
+
+    assert_eq!(report.summary.status(), "cancelled", "{:?}", report.summary);
+    assert_eq!(report.summary.methods_delivered, 0);
+    assert_eq!(
+        sink.prepared().len(),
+        1,
+        "Prepared was confirmed before the stop"
+    );
+    assert!(matches!(sink.events.last(), Some(Recorded::Method(_))));
+    assert!(
+        sink.class_ends().is_empty(),
+        "no ClassEnd follows a refused method"
+    );
+    assert!(sink.final_event().is_none());
+    assert!(!report.final_delivered);
+}
+
+#[test]
 fn a_consumer_that_stops_the_stream_keeps_its_prefix() {
     let (content, request, mut budget) = fixture(4);
     let mut sink = Recorder::new();
@@ -446,6 +471,10 @@ fn a_consumer_that_stops_the_stream_keeps_its_prefix() {
         report.summary
     );
     assert!(sink.methods().len() >= 2);
+    assert!(
+        matches!(sink.events.last(), Some(Recorded::Method(_))),
+        "the method callback that the sink stopped on is the last event; no ClassEnd or Final is forced after refusal"
+    );
     assert!(sink.final_event().is_none() || !report.final_delivered);
     assert!(
         matches!(
@@ -484,6 +513,10 @@ fn a_consumer_that_fails_is_infrastructure() {
     assert_eq!(
         report.summary.methods_delivered, 2,
         "the two records it confirmed before failing are the delivered ones"
+    );
+    assert!(
+        matches!(sink.events.last(), Some(Recorded::Method(_))),
+        "the method callback that failed is the last event; no ClassEnd or Final is forced after failure"
     );
     assert!(
         report

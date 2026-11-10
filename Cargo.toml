@@ -24,7 +24,7 @@ description = "Bounded, provenance-preserving JVM artifact analysis contracts"
 # out of a normal build for the same reason the reader crate's fixtures are: they exist so a test
 # can drive the real entry point into a failure it could not otherwise cause, and nothing in this
 # feature is a second code path the shipped operation uses.
-test-support = []
+test-support = ["jarde-reader/test-support", "jarde-jvm/test-support", "jarde-java/test-support"]
 
 [dependencies]
 # The recovery layer (P3 1.3) is the fourth, and the only one above the analysis half: the
@@ -57,3 +57,7 @@ petgraph = { version = "=0.8.3", default-features = false, features = ["std"] }
 proptest = "=1.11.0"
 rawzip = "=0.5.1"
 serde_json = "=1.0.151"
+
+[build-dependencies]
+# Build identity only; reuse the workspace-pinned pure Rust implementation.
+blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }

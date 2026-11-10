@@ -71,8 +71,8 @@ pub enum DelegationPolicy {
 ///   a name is looked up under. The prefix is an archive-internal byte prefix, not a host path: it
 ///   is empty (the container's own root) or ends with `/`, and a non-empty prefix that does not
 ///   end with that boundary is an invalid declaration (the runtime environment validator reports
-///   it as `invalid_root_prefix`). Lookup composes `prefix + internal name + ".class"` byte for
-///   byte — no trimming, no URL decoding, no case folding and no `.`/`..`/backslash folding — and
+///   it as `invalid_root_prefix`). Lookup composes the raw prefix, the JVM name's lossless UTF-8
+///   spelling and `.class` — no trimming, URL decoding, case folding or `.`/`..`/backslash folding — and
 ///   never requires a directory entry to exist for the prefix, because a ZIP's directory entries
 ///   are not what makes an entry reachable.
 /// * [`LoadRoot::External`] names content the entry has not provided: it is a declaration, not a

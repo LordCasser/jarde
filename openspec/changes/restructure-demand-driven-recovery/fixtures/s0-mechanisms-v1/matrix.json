@@ -1,0 +1,358 @@
+{
+  "schema": "jarde-s0-mechanism-matrix-v1",
+  "inputs": [
+    -2,
+    0,
+    1,
+    4,
+    9
+  ],
+  "cases": [
+    {
+      "id": "T1-dev",
+      "family": "T1",
+      "split": "development",
+      "class_name": "T1RefMergeDev",
+      "source_file": "T1RefMergeDev.java",
+      "stage": "S2",
+      "shape": "interface reference merge followed by a disjoint primitive local lifetime",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Reference merge and independent primitive lifetime must not become one conflicting source variable.",
+      "driver": "T1RefMergeDevDriver",
+      "driver_source": "T1RefMergeDevDriver.java",
+      "lineage": "T1-dev",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "T1-holdout",
+      "family": "T1",
+      "split": "holdout",
+      "class_name": "T1RefMergeHoldout",
+      "source_file": "T1RefMergeHoldout.java",
+      "stage": "S2",
+      "shape": "nullable reference merge and loop-carried slot lifetime",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Two branches produce distinct reference implementations; a later loop overwrites the merge slot and observes null separately.",
+      "driver": "T1RefMergeHoldoutDriver",
+      "driver_source": "T1RefMergeHoldoutDriver.java",
+      "lineage": "T1-holdout",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "T2-dev",
+      "family": "T2",
+      "split": "development",
+      "class_name": "T2GenericRelayDev",
+      "source_file": "T2GenericRelayDev.java",
+      "stage": "S2",
+      "shape": "generic argument flows through a holder and interface sink",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "A parameterized value traverses Holder<T>, Relay<T>, and Sink<T> without raw conversion.",
+      "driver": "T2GenericRelayDevDriver",
+      "driver_source": "T2GenericRelayDevDriver.java",
+      "lineage": "T2-dev",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "T2-holdout",
+      "family": "T2",
+      "split": "holdout",
+      "class_name": "T2GenericPipelineHoldout",
+      "source_file": "T2GenericPipelineHoldout.java",
+      "stage": "S2",
+      "shape": "generic argument flows through a two-stage container/interface pipeline",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "A value passes through a generic source, mapped container, and consumer interface using a different API shape from development.",
+      "driver": "T2GenericPipelineHoldoutDriver",
+      "driver_source": "T2GenericPipelineHoldoutDriver.java",
+      "lineage": "T2-holdout",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "E1-dev",
+      "family": "E1",
+      "split": "development",
+      "class_name": "E1PostfixValueDev",
+      "source_file": "E1PostfixValueDev.java",
+      "stage": "S3",
+      "shape": "prefix/postfix values consumed in call arguments and assignment expression",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Observe old and new values while a compound expression consumes an assignment result more than once.",
+      "driver": "E1PostfixValueDevDriver",
+      "driver_source": "E1PostfixValueDevDriver.java",
+      "lineage": "E1-dev",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "E1-holdout",
+      "family": "E1",
+      "split": "holdout",
+      "class_name": "E1ArrayIndexPostfixHoldout",
+      "source_file": "E1ArrayIndexPostfixHoldout.java",
+      "stage": "S3",
+      "shape": "postfix value used as array index and assignment result passed to a helper",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Index evaluation and returned assignment value are both observed in order; source structure differs from development.",
+      "driver": "E1ArrayIndexPostfixHoldoutDriver",
+      "driver_source": "E1ArrayIndexPostfixHoldoutDriver.java",
+      "lineage": "E1-holdout",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "E2-dev",
+      "family": "E2",
+      "split": "development",
+      "class_name": "E2FieldArrayOrderDev",
+      "source_file": "E2FieldArrayOrderDev.java",
+      "stage": "S3",
+      "shape": "effectful receiver, field update, array index and RHS ordering",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Trace receiver selection, index selection, RHS evaluation, field mutation, and array store.",
+      "driver": "E2FieldArrayOrderDevDriver",
+      "driver_source": "E2FieldArrayOrderDevDriver.java",
+      "lineage": "E2-dev",
+      "origin": "original S0 controlled fixture, 2026-10-20",
+      "exception_paths": [
+        "null receiver/array at n=0",
+        "throwing RHS at n=9 (development) or n=4 (holdout)",
+        "out-of-bounds store at n=9 (holdout)"
+      ]
+    },
+    {
+      "id": "E2-holdout",
+      "family": "E2",
+      "split": "holdout",
+      "class_name": "E2ArgumentArrayOrderHoldout",
+      "source_file": "E2ArgumentArrayOrderHoldout.java",
+      "stage": "S3",
+      "shape": "effectful method arguments feed field and array lvalues",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Argument effects precede RHS effects; array receiver/index are evaluated once before store.",
+      "driver": "E2ArgumentArrayOrderHoldoutDriver",
+      "driver_source": "E2ArgumentArrayOrderHoldoutDriver.java",
+      "lineage": "E2-holdout",
+      "origin": "original S0 controlled fixture, 2026-10-20",
+      "exception_paths": [
+        "null receiver/array at n=0",
+        "throwing RHS at n=9 (development) or n=4 (holdout)",
+        "out-of-bounds store at n=9 (holdout)"
+      ]
+    },
+    {
+      "id": "R1-dev",
+      "family": "R1",
+      "split": "development",
+      "class_name": "R1LoopCatchDev",
+      "source_file": "R1LoopCatchDev.java",
+      "stage": "S4",
+      "shape": "loop with per-iteration ordinary catch and continued execution",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Selected iterations throw inside a loop; catch records the event and subsequent iterations proceed.",
+      "driver": "R1LoopCatchDevDriver",
+      "driver_source": "R1LoopCatchDevDriver.java",
+      "lineage": "R1-dev",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "R1-holdout",
+      "family": "R1",
+      "split": "holdout",
+      "class_name": "R1CatchLoopHoldout",
+      "source_file": "R1CatchLoopHoldout.java",
+      "stage": "S4",
+      "shape": "outer catch around loop with inner per-item catch",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Nested ordinary catches distinguish local recovery from loop-wide failure and preserve trace order.",
+      "driver": "R1CatchLoopHoldoutDriver",
+      "driver_source": "R1CatchLoopHoldoutDriver.java",
+      "lineage": "R1-holdout",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "R2-dev",
+      "family": "R2",
+      "split": "development",
+      "class_name": "R2LabeledExitDev",
+      "source_file": "R2LabeledExitDev.java",
+      "stage": "S4",
+      "shape": "nested loops with labeled break/continue, return and throw destinations",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Different conditions exercise labeled loop exits, method return, and an exception caught outside both loops.",
+      "driver": "R2LabeledExitDevDriver",
+      "driver_source": "R2LabeledExitDevDriver.java",
+      "lineage": "R2-dev",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "R2-holdout",
+      "family": "R2",
+      "split": "holdout",
+      "class_name": "R2NestedExitHoldout",
+      "source_file": "R2NestedExitHoldout.java",
+      "stage": "S4",
+      "shape": "nested enhanced/index loops with distinct exit destinations",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "An inner loop break, outer-loop continue, early return, and propagated throw follow separate paths.",
+      "driver": "R2NestedExitHoldoutDriver",
+      "driver_source": "R2NestedExitHoldoutDriver.java",
+      "lineage": "R2-holdout",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "C1-dev",
+      "family": "C1",
+      "split": "development",
+      "class_name": "C1GenericOverloadDev",
+      "source_file": "C1GenericOverloadDev.java",
+      "stage": "S5",
+      "shape": "generic method inference selects overloads with consistent declared type",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Bounded generic return and overloaded String/Integer calls retain source-level argument and result types.",
+      "driver": "C1GenericOverloadDevDriver",
+      "driver_source": "C1GenericOverloadDevDriver.java",
+      "lineage": "C1-dev",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "C1-holdout",
+      "family": "C1",
+      "split": "holdout",
+      "class_name": "C1OverloadedRelayHoldout",
+      "source_file": "C1OverloadedRelayHoldout.java",
+      "stage": "S5",
+      "shape": "generic declaration and overloaded invocation through a typed relay",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Generic type parameter is preserved through a relay and overloaded target; distinct method declarations and call sites from development.",
+      "driver": "C1OverloadedRelayHoldoutDriver",
+      "driver_source": "C1OverloadedRelayHoldoutDriver.java",
+      "lineage": "C1-holdout",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "C2-dev",
+      "family": "C2",
+      "split": "development",
+      "class_name": "C2AnonymousCaptureDev",
+      "source_file": "C2AnonymousCaptureDev.java",
+      "stage": "S5",
+      "shape": "anonymous instances capture locals and run instance initializers at two creation sites",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Branch-selected anonymous implementations capture a value; initializer and method effects append to trace.",
+      "driver": "C2AnonymousCaptureDevDriver",
+      "driver_source": "C2AnonymousCaptureDevDriver.java",
+      "lineage": "C2-dev",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    },
+    {
+      "id": "C2-holdout",
+      "family": "C2",
+      "split": "holdout",
+      "class_name": "C2AnonymousFactoryHoldout",
+      "source_file": "C2AnonymousFactoryHoldout.java",
+      "stage": "S5",
+      "shape": "multiple anonymous creation points in a loop with captured per-iteration values",
+      "oracle_input": [
+        -2,
+        0,
+        1,
+        4,
+        9
+      ],
+      "expected_intent": "Anonymous objects are created at distinct expressions, each initializer captures a stable local and effects are observed in creation order.",
+      "driver": "C2AnonymousFactoryHoldoutDriver",
+      "driver_source": "C2AnonymousFactoryHoldoutDriver.java",
+      "lineage": "C2-holdout",
+      "origin": "original S0 controlled fixture, 2026-10-20"
+    }
+  ]
+}

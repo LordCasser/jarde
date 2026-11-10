@@ -218,7 +218,16 @@ fn analyze_target(
 
 fn recovered_default(analyzed: &Analyzed, budget: &mut Budget) -> RecoveryReport {
     recover(
-        &RecoveryRequest::new(analyzed.analysis.ir(), &analyzed.facts, JAVA_8),
+        &RecoveryRequest::new(
+            analyzed.analysis.ir(),
+            &analyzed.facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        ),
         budget,
     )
 }
@@ -229,8 +238,17 @@ fn recovered(
     budget: &mut Budget,
 ) -> RecoveryReport {
     recover(
-        &RecoveryRequest::new(analyzed.analysis.ir(), &analyzed.facts, JAVA_8)
-            .with_evidence(evidence.clone()),
+        &RecoveryRequest::new(
+            analyzed.analysis.ir(),
+            &analyzed.facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(evidence.clone()),
         budget,
     )
 }
@@ -397,7 +415,7 @@ fn prefixed_exceptional_retry_late_recovery_budget_publishes_no_source_or_map() 
             matches!(
                 stopped.stop(),
                 Some(StopReason::Budget {
-                    dimension: jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     ..
                 })
             ),

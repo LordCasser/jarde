@@ -25,6 +25,7 @@ fn class_source(bytes: &[u8], name: &str) -> ClassSourceReport {
 
 fn request(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -563,6 +564,26 @@ fn bounded_class_variable_on_bodyless_interface_preserves_reflection() {
         }
     "#;
     let report = compile_source("ClassVariableNoBody", original);
+    assert_eq!(
+        report.usage.method_bodies, 0,
+        "the interface has no Code attribute"
+    );
+    assert_eq!(
+        report.usage.ir_items, 0,
+        "a NoBody signature needs no method IR"
+    );
+    let identity = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"identity")
+        .expect("the physical interface method remains visible");
+    assert!(matches!(identity.outcome, ClassSourceOutcome::NoBody));
+    assert!(
+        identity
+            .markers
+            .iter()
+            .any(|marker| marker.contains("physical NoBody/Signature erasure proof"))
+    );
     assert!(
         report.text.contains(
             "interface ClassVariableNoBody<U extends java.lang.Number & java.io.Serializable>"

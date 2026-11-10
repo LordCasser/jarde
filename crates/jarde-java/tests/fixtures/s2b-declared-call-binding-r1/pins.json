@@ -1,0 +1,141 @@
+{
+  "schema": "s2b-declared-call-binding-fixture-r1",
+  "javac": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+  "javac_args": [
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-g"
+  ],
+  "javap_args": {
+    "CallBox": [
+      "-p",
+      "-s",
+      "-v",
+      "flow.CallBox"
+    ],
+    "CallBoxConsumer": [
+      "-p",
+      "-s",
+      "-c",
+      "flow.CallBoxConsumer"
+    ],
+    "BridgeChild": [
+      "-p",
+      "-s",
+      "-v",
+      "flow.BridgeChild"
+    ],
+    "VarargBox": [
+      "-p",
+      "-s",
+      "-v",
+      "flow.VarargBox"
+    ],
+    "KeepChild": [
+      "-p",
+      "-s",
+      "-v",
+      "flow.KeepChild"
+    ]
+  },
+  "runtime_execution": false,
+  "files": [
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/src/flow/CallBox.java",
+      "size": 817,
+      "sha256": "f425d9ad42ab307fdc5fcb8545840e11f0a78f493b1b37eb3ee776d7d3ce964e"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/src/flow/CallBoxConsumer.java",
+      "size": 693,
+      "sha256": "a9050fe21019f46ce470a7c5d406cff6372d040d684960e9231899d3bd02e0f8"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/classes/flow/BridgeBase.class",
+      "size": 591,
+      "sha256": "2bc353dd0b2f6fd58c31091baf28544fa0ddf413726a7398ef064243d4f0ed66"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/classes/flow/BridgeChild.class",
+      "size": 606,
+      "sha256": "7d44ba9256d25cdfd0148f54c2e69f1df8642ace330e4a00e2115221087d940c"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/classes/flow/CallBox.class",
+      "size": 1518,
+      "sha256": "6ca6c4986970360756905c05aa2b489b78d4d24971824da37764d629a395e2c0"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/classes/flow/CallBoxConsumer.class",
+      "size": 1980,
+      "sha256": "44119f6340dd81b1851f41201ded9e90d5c6598ad852321679d15f10fd0eef79"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/classes/flow/KeepBase.class",
+      "size": 385,
+      "sha256": "b5c25f46269a6aff1c61c40252eb6bf79a60463218445d2d174a76b27ab3117e"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/classes/flow/KeepChild.class",
+      "size": 384,
+      "sha256": "14982f6e6cda90c8f249ad63eb3a538abd48e11c53a3a72c26bde1682ff99983"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/classes/flow/VarargBox.class",
+      "size": 509,
+      "sha256": "aa55f56ecc36ffc803b7c09a0f91feed75cee49e48519e58def5809ddca6c37d"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/failed-attempt-r1/CallBox.java",
+      "size": 858,
+      "sha256": "99258d6def327f76862ba52614b3f8dcd8c319cc1bdcf1746d3f8dbceb022c38"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/failed-attempt-r1/CallBoxConsumer.java",
+      "size": 742,
+      "sha256": "f53c8f672599f47b0c1abc91e916782119e821a641f3a4047bb6c9dce5807a0c"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/javac-initial.log",
+      "size": 676,
+      "sha256": "7b64e7b3e77d503e5c7924e9f2d9b8beda0c4e0a6c39c1844508c228dde56c90"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/javac-r2.log",
+      "size": 210,
+      "sha256": "42b69dd39e89acb5e92613df095fa4d0696a9b6275f7738dca5de9047d70214d"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/javac-r3.log",
+      "size": 210,
+      "sha256": "42b69dd39e89acb5e92613df095fa4d0696a9b6275f7738dca5de9047d70214d"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/CallBox.javap.txt",
+      "size": 7237,
+      "sha256": "868a74668945d7afa297f6524a7de6e5f882d74c2cd743082f9f38b441329368"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/CallBoxConsumer.javap.txt",
+      "size": 2311,
+      "sha256": "18994bddf302aba20725967d88a216e3ddd0cd6197d2cf7002fa5b9c619742d3"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/BridgeChild.javap.txt",
+      "size": 3283,
+      "sha256": "cfaf5661489d142f62b1ebf5da7c64a3661805cb25ddcc7c251b935176dea999"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/VarargBox.javap.txt",
+      "size": 2543,
+      "sha256": "60829397f557d393682da2875575285a862ac690c8d9a10cc3692f25f6cabf9a"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/KeepChild.javap.txt",
+      "size": 2019,
+      "sha256": "fe42b7e844e8a52a00c9a5185a37bb780111d4d6d1433e30ae6bf683e39cf4ad"
+    }
+  ]
+}

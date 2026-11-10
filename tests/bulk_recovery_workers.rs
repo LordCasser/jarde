@@ -355,7 +355,7 @@ fn the_operations_total_and_a_methods_local_limit_are_two_declarations() {
         stopped.iter().all(|reason| matches!(
             reason,
             StopReason::Budget {
-                dimension: CountedBudgetDimension::OutputBytes,
+                dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
                 ..
             }
         )),

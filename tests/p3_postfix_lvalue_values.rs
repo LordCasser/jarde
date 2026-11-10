@@ -117,6 +117,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -377,6 +378,7 @@ fn postfix_return_keeps_evidence_and_stops_without_partial_output() {
     let full = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut full_budget,
@@ -397,6 +399,7 @@ fn postfix_return_keeps_evidence_and_stops_without_partial_output() {
     let essential = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::essential(),
             &mut essential_budget,
@@ -421,6 +424,7 @@ fn postfix_return_keeps_evidence_and_stops_without_partial_output() {
     let limited = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut limited_budget,
@@ -432,7 +436,7 @@ fn postfix_return_keeps_evidence_and_stops_without_partial_output() {
     assert!(matches!(
         limited.recovery().stop(),
         Some(StopReason::Budget {
-            dimension: CountedBudgetDimension::OutputBytes,
+            dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
             ..
         })
     ));
@@ -446,6 +450,7 @@ fn postfix_return_keeps_evidence_and_stops_without_partial_output() {
     let cancelled = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut cancelled_budget,
@@ -486,6 +491,7 @@ fn a_receiver_beyond_the_value_depth_bound_is_not_partially_postfixed() {
     let recovered = Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut budget(),

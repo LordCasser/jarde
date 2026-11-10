@@ -20,6 +20,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 
 fn request(snapshot: &ArtifactSnapshot, class: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -227,6 +228,7 @@ fn evidence_modes_and_method_replay_keep_the_same_body_and_origins() {
         Engine::new()
             .recover_method_with_evidence(
                 slice::from_ref(&snapshot),
+                jarde::SourceTarget::JAVA_8,
                 &recovery_request,
                 &RecoveryEvidenceRequest::all(),
                 &mut budget(),
@@ -255,6 +257,7 @@ fn output_budget_and_precancellation_publish_no_partial_low_bit_result() {
     let full = Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &method_request,
             &RecoveryEvidenceRequest::all(),
             &mut full_budget,
@@ -269,6 +272,7 @@ fn output_budget_and_precancellation_publish_no_partial_low_bit_result() {
     let stopped = Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &method_request,
             &RecoveryEvidenceRequest::all(),
             &mut limited,
@@ -286,6 +290,7 @@ fn output_budget_and_precancellation_publish_no_partial_low_bit_result() {
     let cancelled = Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &method_request,
             &RecoveryEvidenceRequest::all(),
             &mut Budget::with_cancellation_token(task_limits(&[]).unwrap(), token),

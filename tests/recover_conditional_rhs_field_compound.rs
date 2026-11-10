@@ -213,6 +213,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// One class-source presentation over the snapshot's own root container.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -426,8 +427,8 @@ fn no_recovering_method_keeps_a_quote() {
 // The negatives keep their refusals.
 // -------------------------------------------------------------------------------------------
 
-/// The three refusals keep the text they had, and no refused body writes a field assignment its own
-/// refusal does not cover.
+/// The three refusals keep their reasons and covered instructions. A failed value chain can also
+/// quote the stack copy and its input; no refused body writes an uncovered field assignment.
 #[test]
 fn the_negatives_keep_their_refusals_on_both_legs() {
     for leg in LEGS {
@@ -436,11 +437,30 @@ fn the_negatives_keep_their_refusals_on_both_legs() {
         for (signature, refusals) in NEG_REFUSALS {
             let body = method_body(&report.text, signature);
             for refusal in *refusals {
+                if let Some(bcis) = refusal.strip_prefix("// @bytecode ") {
+                    let expected = bcis
+                        .split_whitespace()
+                        .map(|bci| bci.parse::<u32>().unwrap())
+                        .collect::<Vec<_>>();
+                    assert!(
+                        body.lines().any(|line| {
+                            line.trim_start().starts_with("// @bytecode ")
+                                && expected.iter().all(|bci| quoted_bcis(line).contains(bci))
+                        }),
+                        "`RCN.{signature}` on {} lost one quote covering {expected:?}:\n{body}",
+                        leg.label
+                    );
+                    continue;
+                }
                 assert!(
                     body.contains(refusal),
                     "`RCN.{signature}` on {} lost the refusal {refusal:?}:\n{body}",
                     leg.label
                 );
+            }
+            if matches!(*signature, "armCall(Z)V" | "nested(II)V") {
+                let quoted = quoted_bcis(body);
+                assert!(quoted.contains(&1) && quoted.contains(&0), "{body}");
             }
         }
         // The refused bodies present no field assignment at all: a copy's value written as a

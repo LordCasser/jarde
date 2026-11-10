@@ -48,7 +48,7 @@ use crate::facts::{MethodFacts, Operation};
 use crate::field;
 use crate::pass::{INIT, NEW, Precondition, RuleVersion};
 use crate::refusal::{Gap, Refusal};
-use crate::report::ProvedMemberInnerTarget;
+use crate::report::MemberInnerTargetInput;
 
 /// The pass answerable for a construction site.
 pub(crate) const NEW_RULE: RuleVersion = NEW.rule();
@@ -74,7 +74,7 @@ pub(crate) struct Site {
     /// The BCI of the constructor call.
     pub(crate) constructor: u32,
     /// The class the allocation builds, in internal form, as the `new`'s own pool entry states it.
-    pub(crate) class: String,
+    pub(crate) class: jarde_reader::model::JvmBytes,
     /// The BCIs of the values the constructor call takes, in the order it reads them: the evidence
     /// of the argument order, and the anchors the written expression keeps.
     pub(crate) arguments: Vec<u32>,
@@ -150,7 +150,7 @@ pub(crate) struct MemberInnerSite {
     pub(crate) qualifier: u32,
     pub(crate) check: u32,
     pub(crate) pop: u32,
-    pub(crate) outer: String,
+    pub(crate) outer: jarde_reader::model::JvmBytes,
     pub(crate) simple_name: String,
     pub(crate) generic_diamond: bool,
     pub(crate) implicit_this: bool,
@@ -172,7 +172,7 @@ struct ConstructionFacts<'a> {
     reserved: &'a BTreeSet<u32>,
     fields: &'a field::Plan,
     arrays: &'a crate::build::ChildArrayFacts<'a>,
-    member_targets: &'a [ProvedMemberInnerTarget],
+    member_targets: &'a [MemberInnerTargetInput],
     method: Option<&'a crate::facts::MethodFacts>,
     code: &'a MethodCodeFacts,
 }
@@ -183,7 +183,7 @@ struct ConstructionFacts<'a> {
 pub(crate) struct ArrayCompositionContext<'a> {
     pub(crate) chains: &'a crate::concat::Plan,
     pub(crate) reserved: &'a BTreeSet<u32>,
-    pub(crate) member_targets: &'a [ProvedMemberInnerTarget],
+    pub(crate) member_targets: &'a [MemberInnerTargetInput],
     pub(crate) method: &'a crate::facts::MethodFacts,
     pub(crate) code: &'a MethodCodeFacts,
 }
@@ -240,7 +240,7 @@ pub(crate) fn verify_array_store(
     block: &[SsaInstruction],
     head: u32,
     index: usize,
-    ty: String,
+    ty: jarde_reader::model::JvmBytes,
     store: u32,
     stored_value: ValueId,
     budget: &mut Budget,
@@ -316,7 +316,7 @@ pub(crate) struct Sites {
 /// The bounded census of allocation instructions that `new@1` considered or another rule owned.
 pub(crate) struct AllocationCandidate {
     pub(crate) head: u32,
-    pub(crate) class: String,
+    pub(crate) class: jarde_reader::model::JvmBytes,
     pub(crate) verified: bool,
 }
 
@@ -325,7 +325,7 @@ struct Refused {
     /// The BCI of the allocation the refused candidate starts at.
     head: u32,
     /// The class the allocation named, in internal form.
-    class: String,
+    class: jarde_reader::model::JvmBytes,
     /// Which link of the verification failed.
     refusal: Refusal,
 }
@@ -489,6 +489,49 @@ impl Sites {
         (read, presented)
     }
 
+    /// Same-run accepted construction facts required by the supplied family targets. This does
+    /// not materialize RuleDetails and does not retain unrelated allocation candidates.
+    pub(crate) fn projection_records(
+        &self,
+        committed: &field::CommittedPresentations,
+        targets: &[crate::report::MemberInnerTargetInput],
+        budget: &mut jarde_reader::budget::Budget,
+    ) -> Result<Vec<NewRecord>, crate::stop::StopReason> {
+        if targets.is_empty() {
+            return Ok(Vec::new());
+        }
+        let mut records = Vec::new();
+        for site in &self.sites {
+            crate::stop::poll(budget, Some(site.head))?;
+            let mut selected = false;
+            for target in targets {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    1 + target.owner.0.len().max(site.class.0.len()) as u64,
+                    Some(site.head),
+                )?;
+                if target.owner == site.class {
+                    selected = true;
+                    break;
+                }
+            }
+            if !selected || !conditional_site_presented(site, committed) {
+                continue;
+            }
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                (1usize
+                    .saturating_add(site.class.0.len())
+                    .saturating_add(site.arguments.len())) as u64,
+                Some(site.head),
+            )?;
+            records.push(NewRecord::of_site(site));
+        }
+        Ok(records)
+    }
+
     /// The owning records this plan publishes under `publication`, in BCI order, within the phase's
     /// remaining allowance.
     pub(crate) fn materialize(
@@ -544,7 +587,7 @@ pub(crate) fn sites(
     reserved: &BTreeSet<u32>,
     fields: &field::Plan,
     arrays: &crate::build::ArrayInitializers,
-    member_targets: &[ProvedMemberInnerTarget],
+    member_targets: &[MemberInnerTargetInput],
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
 ) -> Sites {
@@ -574,7 +617,7 @@ pub(crate) fn sites_after_array_composition(
     reserved: &BTreeSet<u32>,
     fields: &field::Plan,
     arrays: &mut crate::build::ArrayInitializers,
-    member_targets: &[ProvedMemberInnerTarget],
+    member_targets: &[MemberInnerTargetInput],
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
     budget: &mut Budget,
@@ -607,7 +650,7 @@ fn sites_with_pending_array_composition(
     fields: &field::Plan,
     arrays: &crate::build::ArrayInitializers,
     mut pending_sites: BTreeMap<u32, Site>,
-    member_targets: &[ProvedMemberInnerTarget],
+    member_targets: &[MemberInnerTargetInput],
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
     meter: &mut VerifyMeter<'_>,
@@ -712,7 +755,7 @@ fn verify(
     head: u32,
     index: usize,
     block: &[SsaInstruction],
-    ty: String,
+    ty: jarde_reader::model::JvmBytes,
     facts: &ConstructionFacts<'_>,
     depth: u32,
     expected_array_store: Option<(u32, ValueId)>,
@@ -738,7 +781,7 @@ fn verify_metered(
     head: u32,
     index: usize,
     block: &[SsaInstruction],
-    ty: String,
+    ty: jarde_reader::model::JvmBytes,
     facts: &ConstructionFacts<'_>,
     depth: u32,
     expected_array_store: Option<(u32, ValueId)>,
@@ -754,6 +797,7 @@ fn verify_metered(
         member_targets,
         ..
     } = *facts;
+    let ty_display = crate::facts::display_jvm_bytes(&ty);
     let shape = |detail: String| VerifyFailure::Refusal(Refusal::shape("jre_new_shape", detail));
     let Some(dup) = block.get(index + 1) else {
         return Err(shape(format!(
@@ -829,7 +873,7 @@ fn verify_metered(
         }
         if matches!(
             operations.get(bci),
-            Some(Operation::Invoke(target)) if target.owner() == ty && target.name() == "<init>"
+            Some(Operation::Invoke(target)) if target.raw_owner() == &ty && target.raw_name().0 == b"<init>"
         ) {
             let operands = stack_operands_metered(instruction, bci, meter)?;
             if operands.first().is_some_and(|(_, receiver)| {
@@ -842,7 +886,7 @@ fn verify_metered(
     };
     let Some((constructor, operands)) = found else {
         return Err(shape(format!(
-            "the allocation at BCI {head} is never constructed: no `{ty}.<init>(…)` call reads the instance it builds and the copy of it"
+            "the allocation at BCI {head} is never constructed: no `{ty_display}.<init>(…)` call reads the instance it builds and the copy of it"
         )));
     };
     let at = constructor.bci();
@@ -907,7 +951,7 @@ fn verify_metered(
         if target.owner == ty
             && matches!(
                 operations.get(at),
-                Some(Operation::Invoke(call)) if call.descriptor() == target.constructor_descriptor
+                Some(Operation::Invoke(call)) if call.raw_owner() == &target.owner && call.raw_descriptor() == &target.constructor_descriptor
             )
         {
             selected_member = Some(target);
@@ -1362,7 +1406,7 @@ fn verify_member(
     constructor: &SsaInstruction,
     operands: &[(jarde_jvm::method_ir::Slot, ValueId)],
     facts: &ConstructionFacts<'_>,
-    target: &ProvedMemberInnerTarget,
+    target: &MemberInnerTargetInput,
     nested_sites: &[Site],
     meter: &mut VerifyMeter<'_>,
 ) -> Result<MemberProof, VerifyFailure> {
@@ -1383,26 +1427,26 @@ fn verify_member(
             "the member constructor at BCI {at} has no physical outer argument"
         )));
     };
-    let outer_descriptor = format!("L{};", target.outer);
+    let outer_descriptor = [b"L".as_slice(), target.outer.0.as_slice(), b";"].concat();
     // The frame facts keep a `new`/`this` class name as an internal name while a descriptor
     // parameter keeps its `L...;` spelling; both spell this exact selected Outer.
     let names_outer = |value: ValueId| {
         matches!(ssa.value(value).ty(),
             Value::Ref(RefType::Named { name, .. })
-                if name == target.outer.as_bytes() || name == outer_descriptor.as_bytes())
+                if name == target.outer.0.as_slice() || name == outer_descriptor.as_slice())
     };
     if let (Some([receiver, call]), Some(method_facts)) = (block.get(index + 2..index + 4), method)
     {
-        let root_descriptor = [b"()L".as_slice(), target.owner.as_bytes(), b";"].concat();
-        let constructor_descriptor = format!("(L{};)V", target.outer);
-        let exact_root_return = method_facts.name() == "make"
-            && method_facts.descriptor().as_bytes() == root_descriptor
+        let root_descriptor = [b"()L".as_slice(), target.owner.0.as_slice(), b";"].concat();
+        let constructor_descriptor = [b"(L".as_slice(), target.outer.0.as_slice(), b";)V"].concat();
+        let exact_root_return = method_facts.raw_name().0 == b"make"
+            && method_facts.raw_descriptor().0 == root_descriptor
             && method_facts
                 .access_flags()
                 .is_some_and(|flags| flags & 0x0008 == 0)
             && method_facts
                 .declaring_class()
-                .is_some_and(|class| class.name() == target.outer);
+                .is_some_and(|class| class.raw_name() == &target.outer);
         let mut exact_opcodes = true;
         for (instruction, expected) in code.instructions.iter().zip([0xbb, 0x59, 0x2a, 0xb7, 0xb0])
         {
@@ -1424,9 +1468,9 @@ fn verify_member(
             )
             && matches!(operations.get(call.bci()), Some(Operation::Invoke(invoke))
                 if invoke.kind() == crate::facts::InvokeKind::Special
-                    && invoke.owner() == target.owner
-                    && invoke.name() == "<init>"
-                    && invoke.descriptor() == constructor_descriptor)
+                    && invoke.raw_owner() == &target.owner
+                    && invoke.raw_name().0 == b"<init>"
+                    && invoke.raw_descriptor().0 == constructor_descriptor)
             && operands.len() == 2
             && receiver_value == Some(physical_outer)
             && single_use_at_metered(ssa, physical_outer, call.bci(), meter)?
@@ -1628,7 +1672,7 @@ fn verify_member(
         return Err(shape(format!(
             "the qualifier at BCI {} has no exact static type `{}` for member binding (SSA type {:?})",
             qualifier.bci(),
-            target.outer,
+            crate::facts::display_jvm_bytes(&target.outer),
             ssa.value(qualifier_writes[0].1).ty()
         )));
     }
@@ -2057,7 +2101,7 @@ fn receiver_tails(ssa: &SsaTable, operations: &Operations) -> Vec<ReceiverTail> 
         // quoted with the site: the claim would take that quote away from a body that keeps the
         // refusal, and a reader who strips the comments would be left with the refusal's statement
         // gone and the rest of the body presented.
-        if captured_reference(dynamic.descriptor()) != Some(allocated) {
+        if captured_reference(&dynamic.raw_descriptor().0) != Some(allocated) {
             continue;
         }
         let copy_writes: Vec<ValueId> = copy.writes().iter().map(|(_, value)| *value).collect();
@@ -2094,7 +2138,7 @@ pub(crate) fn proved_receiver_class(
     ssa: &SsaTable,
     operations: &Operations,
     value: ValueId,
-) -> Option<String> {
+) -> Option<jarde_reader::model::JvmBytes> {
     let behind = crate::build::allocation_behind_value(ssa, operations, value)?;
     if let Some((slot, read_at)) = behind.read
         && operations.iter().any(|(bci, operation)| {
@@ -2118,15 +2162,15 @@ pub(crate) fn proved_receiver_class(
 /// [`crate::build::array_descriptor`] uses — so the bytes are not walked a second time by hand, and
 /// the position is the descriptor's own: the values a site captures come before the SAM's
 /// parameters.
-fn captured_reference(descriptor: &str) -> Option<String> {
+fn captured_reference(descriptor: &[u8]) -> Option<jarde_reader::model::JvmBytes> {
     let facts = jarde_reader::classfile::descriptor_facts(
-        descriptor.as_bytes(),
+        descriptor,
         jarde_reader::classfile::DescriptorKind::Method,
     )
     .ok()?;
     let first = facts.parameters().first()?;
     match first.base() {
-        Base::Object(name) => String::from_utf8(name.0.clone()).ok(),
+        Base::Object(name) => Some(name.clone()),
         Base::Primitive(_) => None,
     }
 }
@@ -2500,7 +2544,7 @@ fn array_store_consumes_site_value(
     constructor: u32,
     store: u32,
     stored: ValueId,
-    class: &str,
+    class: &jarde_reader::model::JvmBytes,
     meter: &mut VerifyMeter<'_>,
 ) -> Result<bool, VerifyFailure> {
     for bci in [head, duplicate, constructor, store] {
@@ -2620,7 +2664,7 @@ fn array_store_consumes_site_value(
     };
     let class_matches = matches!(
         ssa.value(*completed).ty(),
-        Value::Ref(RefType::Named { name, .. }) if name == class.as_bytes()
+        Value::Ref(RefType::Named { name, .. }) if name == class.0.as_slice()
     );
     let mut only_store_use = true;
     let stored_uses = ssa.value(stored).uses();
@@ -2863,7 +2907,7 @@ pub struct NewRecord {
     /// The BCI of the constructor call, when the walk reached one.
     pub constructor: Option<u32>,
     /// The class the allocation builds, in internal form.
-    pub class: String,
+    pub class: jarde_reader::model::JvmBytes,
     /// The BCI that produced each argument, in the order the constructor reads them.
     pub arguments: Vec<u32>,
     /// Whether the site was presented as a `new` expression.
@@ -2907,12 +2951,12 @@ impl NewRecord {
         }
     }
 
-    fn of_candidate(head: u32, class: &str, refusal: NewRefusal) -> Self {
+    fn of_candidate(head: u32, class: &jarde_reader::model::JvmBytes, refusal: NewRefusal) -> Self {
         Self {
             head,
             dup: None,
             constructor: None,
-            class: class.to_string(),
+            class: class.clone(),
             arguments: Vec::new(),
             presented: false,
             refusal: Some(refusal),
@@ -3138,7 +3182,7 @@ impl Prologues {
 /// no owning record is built here. The verdict stays in [`Prologues`] and
 /// [`Prologues::materialize`] writes the record from it after the artifact is committed.
 pub(crate) fn prologue(ssa: &SsaTable, operations: &Operations, method: &MethodFacts) -> Prologues {
-    if method.name() != "<init>" {
+    if method.raw_name().0 != b"<init>" {
         // Not an instance initializer: nothing is claimed and nothing is refused.
         return Prologues::none();
     }
@@ -3198,7 +3242,7 @@ pub(crate) fn prologue(ssa: &SsaTable, operations: &Operations, method: &MethodF
     // `UninitializedThis` is converted by an `<init>` of the class that declares the constructor or
     // of its `super_class` — so a call that does *not* name the declaring class names the direct
     // superclass, and there is no third possibility to guess at.
-    let target_kind = if class == declaring.name() {
+    let target_kind = if target.raw_owner() == declaring.raw_name() {
         ConstructorTarget::This
     } else {
         ConstructorTarget::Super
@@ -3238,6 +3282,15 @@ pub struct InitRecord {
 }
 
 impl InitRecord {
+    /// Whether the stated Unicode declaring name faithfully encodes this exact raw JVM name.
+    /// Diagnostic escapes are never decoded into an identity; same-run/SSA and presentation
+    /// guards remain the consumer's responsibility.
+    pub fn declares_raw_class(&self, raw: &[u8]) -> bool {
+        self.declared
+            .as_deref()
+            .is_some_and(|declared| jarde_reader::model::JvmBytes::from_unicode(declared).0 == raw)
+    }
+
     /// Whether the prologue was presented.
     pub fn presented(&self) -> bool {
         self.presented
@@ -3565,7 +3618,7 @@ mod tests {
                 let accepted: Vec<_> = plan
                     .sites
                     .iter()
-                    .filter(|site| site.class.ends_with(owner_suffix))
+                    .filter(|site| site.class.0.ends_with(owner_suffix.as_bytes()))
                     .collect();
                 assert_eq!(accepted.len(), 1, "{compiler}/{name}: direct outer site");
                 assert_eq!(
@@ -3587,7 +3640,7 @@ mod tests {
                 let actual_element_sites = plan
                     .sites
                     .iter()
-                    .filter(|site| site.class.ends_with("$Element"))
+                    .filter(|site| site.class.0.ends_with(b"$Element"))
                     .count();
                 assert_eq!(
                     actual_element_sites, element_sites,
@@ -3607,16 +3660,16 @@ mod tests {
             let mut accepted: Vec<_> = plan
                 .sites
                 .iter()
-                .map(|site| (site.head, site.constructor, site.class.as_str()))
-                .filter(|(_, _, ty)| *ty == "SameOwnerArrayArguments")
+                .map(|site| (site.head, site.constructor, site.class.0.as_slice()))
+                .filter(|(_, _, ty)| *ty == b"SameOwnerArrayArguments")
                 .collect();
             accepted.sort_by_key(|(head, _, _)| *head);
             assert_eq!(
                 accepted,
                 [
-                    (0, 30, "SameOwnerArrayArguments"),
-                    (10, 15, "SameOwnerArrayArguments"),
-                    (21, 26, "SameOwnerArrayArguments"),
+                    (0, 30, b"SameOwnerArrayArguments".as_slice()),
+                    (10, 15, b"SameOwnerArrayArguments".as_slice()),
+                    (21, 26, b"SameOwnerArrayArguments".as_slice()),
                 ],
                 "{compiler}: each same-owner constructor belongs to its receiver allocation"
             );
@@ -3627,7 +3680,7 @@ mod tests {
             assert_eq!(
                 plan.sites
                     .iter()
-                    .filter(|site| site.class == "SameOwnerArrayArguments")
+                    .filter(|site| site.class.0 == "SameOwnerArrayArguments".as_bytes())
                     .count(),
                 3,
                 "{compiler}: pending element constructor sites commit once"
@@ -3700,28 +3753,28 @@ mod tests {
         let other_owner_site = other_owner
             .site_at_head(0)
             .expect("complete direct char[] argument to another owner");
-        assert_eq!(other_owner_site.class, "em27/Probe$Holder");
+        assert_eq!(other_owner_site.class.0, "em27/Probe$Holder".as_bytes());
         assert_eq!(other_owner_site.arguments.len(), 1);
 
         let effectful = inline_char_sites("effectful", "()Ljava/lang/String;", None);
         let effectful_site = effectful
             .site_at_head(0)
             .expect("complete effectful char[] initializer uses the general array proof");
-        assert_eq!(effectful_site.class, "java/lang/String");
+        assert_eq!(effectful_site.class.0, "java/lang/String".as_bytes());
         assert_eq!(effectful_site.arguments.len(), 1);
 
         let other_descriptor = inline_char_sites("wrongDescriptor", "()Ljava/lang/String;", None);
         let descriptor_site = other_descriptor
             .site_at_head(0)
             .expect("complete char[] is the exact first operand of String(char[], int, int)");
-        assert_eq!(descriptor_site.class, "java/lang/String");
+        assert_eq!(descriptor_site.class.0, "java/lang/String".as_bytes());
         assert_eq!(descriptor_site.arguments.len(), 3);
 
         let factory_consumer = inline_char_sites("extraReader", "()Ljava/lang/String;", None);
         let factory_site = factory_consumer
             .site_at_head(0)
             .expect("array consumed once by a factory in the constructor argument dependency");
-        assert_eq!(factory_site.class, "java/lang/String");
+        assert_eq!(factory_site.class.0, "java/lang/String".as_bytes());
         assert_eq!(factory_site.arguments.len(), 1);
         let crossed = inline_char_sites("direct", "()Ljava/lang/String;", Some((5, 22)));
         assert!(crossed.site_at_head(0).is_none());
@@ -4057,7 +4110,7 @@ mod tests {
                     &mut limited,
                 ),
                 Err(crate::stop::StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(4),
                     ..
                 })
@@ -5088,7 +5141,7 @@ mod tests {
             block,
             6,
             head_index,
-            "java/lang/StringBuilder".to_owned(),
+            jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
             18,
             *stored,
             &mut budget,
@@ -5132,7 +5185,7 @@ mod tests {
             15,
             18,
             *stored,
-            "java/lang/StringBuilder",
+            &jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
             &mut meter,
         )
         .expect("first store identity check")
@@ -5197,14 +5250,16 @@ mod tests {
         )
     }
 
-    fn target(definition: PhysicalDefinitionId, outer: &str) -> ProvedMemberInnerTarget {
-        ProvedMemberInnerTarget {
+    fn target(definition: PhysicalDefinitionId, outer: &str) -> MemberInnerTargetInput {
+        MemberInnerTargetInput {
             definition,
-            owner: format!("{outer}$Inner"),
-            outer: outer.to_owned(),
+            owner: jarde_reader::model::JvmBytes::from_unicode(&format!("{outer}$Inner")),
+            outer: jarde_reader::model::JvmBytes::from_unicode(outer),
             simple_name: "Inner".to_owned(),
-            constructor_descriptor: format!("(L{outer};I)V"),
-            capture_field: "this$0".to_owned(),
+            constructor_descriptor: jarde_reader::model::JvmBytes::from_unicode(&format!(
+                "(L{outer};I)V"
+            )),
+            capture_field: jarde_reader::model::JvmBytes::from_unicode("this$0"),
             generic_diamond: false,
             source_type_path: Vec::new(),
         }
@@ -5284,8 +5339,8 @@ mod tests {
             .filter_map(|candidate| sites.site_at_head(candidate.head))
             .filter(|site| {
                 matches!(
-                    site.class.as_str(),
-                    "java/lang/StringBuilder" | "java/lang/StringBuffer"
+                    site.class.0.as_slice(),
+                    b"java/lang/StringBuilder" | b"java/lang/StringBuffer"
                 )
             })
             .collect();
@@ -5338,8 +5393,8 @@ mod tests {
             .filter_map(|candidate| sites.site_at_head(candidate.head))
             .filter(|site| {
                 matches!(
-                    site.class.as_str(),
-                    "java/util/ArrayList" | "java/util/HashSet"
+                    site.class.0.as_slice(),
+                    b"java/util/ArrayList" | b"java/util/HashSet"
                 )
             })
             .collect();
@@ -5471,7 +5526,7 @@ mod tests {
                 block,
                 6,
                 outer_index,
-                "java/lang/StringBuilder".to_owned(),
+                jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
                 store,
                 stored,
                 &mut budget,
@@ -5496,7 +5551,7 @@ mod tests {
                     block,
                     head,
                     index,
-                    "java/lang/StringBuilder".to_owned(),
+                    jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
                     store,
                     value,
                     &mut budget,
@@ -5516,7 +5571,7 @@ mod tests {
                 22,
                 store,
                 stored,
-                "java/lang/StringBuilder",
+                &jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
                 &mut meter,
             )
             .expect("wrong-dup check completes")
@@ -5590,7 +5645,7 @@ mod tests {
                 block,
                 6,
                 outer_index,
-                "java/lang/StringBuilder".to_owned(),
+                jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
                 store,
                 stored,
                 &mut complete_budget,
@@ -5616,7 +5671,7 @@ mod tests {
                 block,
                 6,
                 outer_index,
-                "java/lang/StringBuilder".to_owned(),
+                jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
                 store,
                 stored,
                 &mut budget,
@@ -5688,7 +5743,7 @@ mod tests {
             .find(|instruction| {
                 matches!(
                     operations.get(instruction.bci()),
-                    Some(Operation::Allocate { ty }) if ty == "java/lang/Long"
+                    Some(Operation::Allocate { ty }) if ty.0 == b"java/lang/Long"
                 )
             })
             .expect("second element Long allocation");
@@ -5737,7 +5792,7 @@ mod tests {
         assert_eq!(pending.len(), 2, "both constructed array elements transfer");
         let long_site = pending
             .values()
-            .find(|site| site.class == "java/lang/Long")
+            .find(|site| site.class.0 == "java/lang/Long".as_bytes())
             .expect("the second element is an independently committed Long Site");
         assert!(long_site.arguments.contains(&conversion));
 
@@ -6114,7 +6169,7 @@ mod tests {
                     15,
                     19,
                     *stored_alias,
-                    "java/lang/StringBuilder",
+                    &jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
                     &mut meter,
                 )
                 .expect("exact stored-alias guard returns a decision")
@@ -6130,7 +6185,7 @@ mod tests {
                     15,
                     19,
                     completed,
-                    "java/lang/StringBuilder",
+                    &jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
                     &mut meter,
                 )
                 .expect("constructor-value counterfactual returns a decision")
@@ -6332,7 +6387,7 @@ mod tests {
                         block,
                         6,
                         head_index,
-                        "java/lang/StringBuilder".to_owned(),
+                        jarde_reader::model::JvmBytes::from_unicode("java/lang/StringBuilder"),
                         18,
                         *stored,
                         &mut direct_budget,
@@ -6404,12 +6459,16 @@ mod tests {
         let Some(Operation::Allocate { ty }) = operations.get(head) else {
             unreachable!()
         };
-        let outer = ty.strip_suffix("$Inner").expect("fixture member name");
+        let outer_raw = ty.0.strip_suffix(b"$Inner").expect("fixture member name");
+        let outer_text = jarde_reader::model::JvmBytes(outer_raw.to_vec())
+            .to_unicode()
+            .expect("fixture name");
+        let outer = outer_text.as_str();
         let mut targets = Vec::new();
         if has_target {
             let mut fact = target(definition, outer);
             if let Some(outer) = target_outer {
-                fact.outer = outer.to_owned();
+                fact.outer = jarde_reader::model::JvmBytes::from_unicode(outer);
             }
             targets.push(fact);
         }
@@ -7180,5 +7239,31 @@ mod tests {
         assert_eq!(NEW_RULE.citation(), "new@1");
         assert_eq!(ConstructorTarget::Super.spell(), "super");
         assert_eq!(ConstructorTarget::This.spell(), "this");
+    }
+}
+
+#[cfg(test)]
+mod raw_declaring_name_tests {
+    use super::*;
+    use jarde_reader::model::JvmBytes;
+
+    #[test]
+    fn declaring_name_join_is_exact_mutf8_without_diagnostic_aliases() {
+        let mut record = InitRecord {
+            bci: Some(1),
+            target: Some(ConstructorTarget::Super),
+            class: Some("java/lang/Object".into()),
+            declared: Some("p/𐐀Ctor".into()),
+            presented: true,
+            refusal: None,
+        };
+        assert!(record.declares_raw_class(&JvmBytes::from_unicode("p/𐐀Ctor").0));
+        assert!(!record.declares_raw_class("p/𐐀Ctor".as_bytes()));
+        assert!(!record.declares_raw_class(&JvmBytes::from_unicode("p/𐐀Other").0));
+        record.declared = Some(r"p/\uD800".into());
+        assert!(!record.declares_raw_class(b"p/\xed\xa0\x80"));
+        assert!(!record.declares_raw_class(b"p/\xed\xa0"));
+        record.declared = None;
+        assert!(!record.declares_raw_class(b"p/Ctor"));
     }
 }

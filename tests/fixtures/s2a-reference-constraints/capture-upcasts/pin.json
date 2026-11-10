@@ -1,0 +1,39 @@
+{
+  "schema": "s2a-capture-upcasts-fixture-pin-v1",
+  "source_manifest_repo_relative": "openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/capture-upcasts-boundary-v1/input-manifest.json",
+  "source_manifest_sha256": "81af73007ff567ccb59128ceee17419ee0e9ab715f2d14307835b8f6c0c60588",
+  "jars": [
+    {
+      "repo_relative_path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/jars/corretto8-debug.jar",
+      "bytes": 995,
+      "sha256": "a19792da457f0846a1b06eb0a6d5a5322ddcb4cf07f9f4188669f059bbe4bcec",
+      "members": [
+        "CaptureUpcasts.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/jars/corretto8-no-debug.jar",
+      "bytes": 774,
+      "sha256": "161c943a59ffac0f58764046d45dac413fa3c898f8983b078b047bee02c2e575",
+      "members": [
+        "CaptureUpcasts.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/jars/openjdk23-debug.jar",
+      "bytes": 1003,
+      "sha256": "a4ccd6d3b51b4a4d7f748f68b03ec55a7fd92d1a52fa13af4d410aff3fe3928d",
+      "members": [
+        "CaptureUpcasts.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/jars/openjdk23-no-debug.jar",
+      "bytes": 775,
+      "sha256": "bde003371fa02a53b462d949deb0ec5d940475f87ce89256e5e0a6eb1a46ad49",
+      "members": [
+        "CaptureUpcasts.class"
+      ]
+    }
+  ]
+}

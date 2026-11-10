@@ -1,0 +1,26 @@
+{
+  "files": [
+    {
+      "path": "tests/fixtures/s1-raw-names/RawAlias.class",
+      "bytes": 605,
+      "sha256": "80cc3a820e8bfa031ffe875ad70f07caab1823353b24c41e67932e09af5d3501"
+    },
+    {
+      "path": "tests/fixtures/s1-raw-names/RawAlias.java",
+      "bytes": 163,
+      "sha256": "840cc8995dbfd1df9d0995cb1af34421572b561d85892159ad29574eb0cbdb95"
+    }
+  ],
+  "compile": [
+    "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-g",
+    "-d",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s1-raw-names-v1/fixtures/RawAlias-javac8-debug/classes",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s1-raw-names-v1/fixtures/RawAlias-javac8-debug/RawAlias.java"
+  ],
+  "source": "S1 2.9 controlled fixture, no external target artifact"
+}

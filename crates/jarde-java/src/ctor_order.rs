@@ -21,7 +21,7 @@
 //!   field header the run read is the primary evidence, and the javac minting scheme
 //!   (`this$<digits>`, a name starting with `val$`) is the fallback only for a run that read no
 //!   field headers at all; a header that names the member and does **not** state the flag is a
-//!   negative, however javac-shaped the name is, because a name alone is not the compiler's
+//!   negative, however javac-shaped the name is, because use a name alone is not the compiler's
 //!   evidence;
 //! * the receiver of the write is the frames' `UninitializedThis` — the constructor's own
 //!   `this`, before its constructor call;
@@ -74,6 +74,7 @@
 //!
 //! [`facts::ACC_SYNTHETIC`]: crate::facts::ACC_SYNTHETIC
 
+use jarde_reader::model::JvmBytes;
 use std::collections::BTreeSet;
 
 use jarde_jvm::method_ir::{Definition, SsaInstruction, SsaTable, Value, ValueId};
@@ -151,7 +152,7 @@ pub(crate) fn present_prologue_first(
     // The members the group writes, as the same `field@1` verdicts the pattern check reads them:
     // what a constructor-call argument must not be built from, and what the second proof below
     // moves past a call it cannot be observed through.
-    let mut moved: Vec<(&str, &str)> = Vec::with_capacity(prologue_index);
+    let mut moved: Vec<(&[u8], &[u8])> = Vec::with_capacity(prologue_index);
     for stmt in stmts[..prologue_index].iter() {
         stop::poll(budget, Some(stmt.origin.primary().bci()))?;
         stop::charge(
@@ -173,7 +174,7 @@ pub(crate) fn present_prologue_first(
             return Ok(());
         }
         if let Some((evidence, _)) = fields.claim(stmt.origin.primary().bci()) {
-            moved.push((evidence.name.as_str(), evidence.descriptor.as_str()));
+            moved.push((evidence.name.0.as_slice(), evidence.descriptor.0.as_slice()));
         }
     }
     // Prologue first, then the group in its original order, then the rest in its original order:
@@ -268,10 +269,12 @@ fn is_synthetic_parameter_store(
     let Some(declaring) = declaring else {
         return false;
     };
-    if declaring != evidence.owner || evidence.name != *name {
+    if evidence.owner != JvmBytes::from_unicode(declaring)
+        || evidence.name != JvmBytes::from_unicode(name)
+    {
         return false;
     }
-    is_synthetic_field(class_fields, &evidence.name, &evidence.descriptor)
+    is_synthetic_field(class_fields, &evidence.name.0, &evidence.descriptor.0)
         && is_direct_parameter_load(ssa, operations, stored, parameters, has_receiver)
 }
 
@@ -324,7 +327,7 @@ fn declares_only_initializers(class_methods: Option<&[MemberHeader]>) -> bool {
 /// writes were proved on — and a call whose receiver is anything else is not the shape this
 /// presentation owns.
 fn call_arguments_avoid(
-    moved: &[(&str, &str)],
+    moved: &[(&[u8], &[u8])],
     ssa: &SsaTable,
     operations: &Operations,
     fields: &field::Plan,
@@ -355,7 +358,7 @@ fn call_arguments_avoid(
 /// walk can read.
 fn value_observes_moved(
     start: ValueId,
-    moved: &[(&str, &str)],
+    moved: &[(&[u8], &[u8])],
     ssa: &SsaTable,
     operations: &Operations,
     fields: &field::Plan,
@@ -380,10 +383,11 @@ fn value_observes_moved(
                     return Ok(true);
                 };
                 if let Some((evidence, _)) = fields.claim(*bci) {
-                    let names_a_moved = declaring == Some(evidence.owner.as_str())
-                        && moved.iter().any(|(name, descriptor)| {
-                            evidence.name == *name && evidence.descriptor == *descriptor
-                        });
+                    let names_a_moved = declaring.is_some_and(|declaring| {
+                        evidence.owner == JvmBytes::from_unicode(declaring)
+                    }) && moved.iter().any(|(name, descriptor)| {
+                        evidence.name.0 == *name && evidence.descriptor.0 == *descriptor
+                    });
                     if names_a_moved {
                         return Ok(true);
                     }
@@ -421,12 +425,16 @@ fn value_observes_moved(
 /// that names this member. The javac minting scheme (`this$<digits>`, `val$…`) is the fallback
 /// only where no header travelled, and a header that names the member without the flag is a
 /// negative however the name is spelled.
-fn is_synthetic_field(class_fields: Option<&[MemberHeader]>, name: &str, descriptor: &str) -> bool {
+fn is_synthetic_field(
+    class_fields: Option<&[MemberHeader]>,
+    name: &[u8],
+    descriptor: &[u8],
+) -> bool {
     match class_fields {
         Some(headers) => {
             let mut named = headers.iter().filter(|header| {
-                header.name.raw().0.as_slice() == name.as_bytes()
-                    && header.descriptor.raw().0.as_slice() == descriptor.as_bytes()
+                header.name.raw().0.as_slice() == name
+                    && header.descriptor.raw().0.as_slice() == descriptor
             });
             let (Some(header), None) = (named.next(), named.next()) else {
                 // No header names this member, or two do: neither states the compiler's own
@@ -435,7 +443,9 @@ fn is_synthetic_field(class_fields: Option<&[MemberHeader]>, name: &str, descrip
             };
             header.access_flags & ACC_SYNTHETIC != 0
         }
-        None => is_synthetic_name(name),
+        None => JvmBytes(name.to_vec())
+            .to_unicode()
+            .is_some_and(|name| is_synthetic_name(&name)),
     }
 }
 

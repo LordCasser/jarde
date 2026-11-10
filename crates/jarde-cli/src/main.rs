@@ -163,14 +163,9 @@ enum Operation {
     /// carries, because it is the *same run* — the library performs the analysis once and hands
     /// its own payload to the presentation.
     ///
-    /// Why there is no separate recovery-profile field: the profile the gate reads is the
-    /// environment's own runtime profile, and a second field naming a release would be a second
-    /// source of truth for one fact (and a way for a request to present a Java 8 artifact under a
-    /// profile its environment never declared). Why `stages` is required and not defaulted: a
-    /// schedule is a request's own statement, and a recovery request whose stages omit the tables
-    /// the presentation reads is answered with a *stop* inside the response (`jre_ir_table_missing`)
-    /// rather than with an adapter-chosen schedule.
+    /// Output syntax is declared independently of the runtime used for input and API selection.
     RecoverMethod {
+        source_target: jarde::SourceTarget,
         environment: Box<ResolutionEnvironment>,
         method: PhysicalMethodId,
         stages: Vec<AnalysisStage>,
@@ -481,6 +476,7 @@ fn execute(
                 .map(|report| OperationResult::MethodAnalysis { report })
         }
         Operation::RecoverMethod {
+            source_target,
             environment,
             method,
             stages,
@@ -497,6 +493,7 @@ fn execute(
             engine
                 .recover_method_with_evidence(
                     slice::from_ref(&snapshot),
+                    source_target,
                     &request,
                     &evidence,
                     budget,

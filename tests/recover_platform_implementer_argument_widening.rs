@@ -19,11 +19,10 @@
 //!   `(java.util.Collection) arg0` from the enum family's `EnumSet` rows, and the `Objects.*`
 //!   members are the zero-drift control the change pins byte for byte.
 //!
-//! Every change's **negative** stands beside its anchor: `CSX` keeps `StringBuilder` at a
-//! `Serializable` slot and `javax.swing.text.Segment` at a `CharSequence` slot refused (the closed
-//! nine and four rows the specs pin), `COX` keeps `java.math.BigInteger` at a `Comparable` slot
-//! refused, and `ENX` keeps a platform enum (`java.lang.Thread$State`, in no snapshot header and in
-//! no table) refused.
+//! `CSX.sealBuilder` is now proved from the actual platform `StringBuilder` header and its selected
+//! user header; `javax.swing.text.Segment` at a `CharSequence` slot remains refused. `COX` keeps
+//! `java.math.BigInteger` at a `Comparable` slot refused, and `ENX` keeps a platform enum
+//! (`java.lang.Thread$State`, in no snapshot header and in no table) refused.
 //!
 //! The ignored replay strips the presentations the way the patrols' own stripped sources were made
 //! (comment lines dropped), compiles each anchor's family with the installed `javac --release 8`
@@ -236,6 +235,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// One class-source presentation over the snapshot's own root container.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -329,9 +329,7 @@ const CS_SAME: &str = "    static java.lang.String same(java.lang.String arg0) {
 /// `CS.main`: every anchor called, so the replay's answer covers all of them.
 const CS_MAIN: &str = "    public static void main(java.lang.String[] arg0) {\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `CS`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.io.PrintStream saved0 = java.lang.System.out;\n        java.lang.StringBuilder saved1 = new java.lang.StringBuilder();\n        java.lang.StringBuilder saved2 = saved1.append((java.lang.String) join(new java.lang.String[]{\"p\", \"q\"})).append(\"/\");\n        saved0.println((java.lang.String) saved2.append((java.lang.String) joining((java.util.List) java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{\"a\", \"b\", \"c\"}))).append(\"/\").append((java.lang.String) useBoth()).append(\"/\").append((java.lang.String) same(\"s\")).toString());\n        return;\n    }\n";
 
-/// `CSX.sealBuilder`: `StringBuilder` implements `Serializable` in fact, but the change pins the
-/// java.lang nine-row set the spec records — a row the spec does not state keeps its refusal.
-const CSX_SEALBUILDER: &str = "    static java.io.Serializable sealBuilder(java.lang.StringBuilder arg0) {\n        // jarde: not recovered: the recovery run for `sealBuilder(Ljava/lang/StringBuilder;)Ljava/io/Serializable;` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method sealBuilder(Ljava/lang/StringBuilder;)Ljava/io/Serializable;\n        // @declaration a static method of `CSX`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 4 1 0\n        // the parameter 0 of the invocation at BCI 1 is declared `java.io.Serializable` presents `java.lang.StringBuilder` but the invocation requires `java.io.Serializable` and this layer has no safe reference conversion evidence\n    }\n";
+const CSX_SEALBUILDER_RECOVERED: &str = "    static java.io.Serializable sealBuilder(java.lang.StringBuilder arg0) {\n        // @method sealBuilder(Ljava/lang/StringBuilder;)Ljava/io/Serializable;\n        // @declaration a static method of `CSX`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        return seal((java.io.Serializable) arg0);\n    }\n";
 
 /// `CSX.viaSegment`: the release-8 CharSequence javadoc also lists `javax.swing.text.Segment`; the
 /// closed four rows do not, so it keeps the refusal rather than widening from memory.
@@ -392,6 +390,21 @@ const ENX_PLATFORM: &str = "    // jarde: generic Signature projection refused f
 /// writes, unchanged by this change.
 const REFUSAL: &str = "but the invocation requires";
 
+/// The renderer's precise uncertainty suffix for one known missing reference relation.
+fn with_missing_relation(expected: &str, context: &str) -> String {
+    let refusal = "and this layer has no safe reference conversion evidence";
+    assert_eq!(
+        expected.matches(refusal).count(),
+        1,
+        "{context}: one exact missing-relation refusal is frozen"
+    );
+    expected.replacen(
+        refusal,
+        "and this layer has no safe reference conversion evidence (relation: Some(Missing))",
+        1,
+    )
+}
+
 // -------------------------------------------------------------------------------------------
 // The anchors.
 // -------------------------------------------------------------------------------------------
@@ -407,7 +420,12 @@ fn the_charsequence_and_serializable_positions_are_presented() {
         assert_eq!(text_of(&report, "join"), CS_JOIN, "{}", leg.label);
         assert_eq!(text_of(&report, "appender"), CS_APPENDER, "{}", leg.label);
         assert_eq!(text_of(&report, "joining"), CS_JOINING, "{}", leg.label);
-        assert_eq!(text_of(&report, "useBoth"), CS_USEBOTH, "{}", leg.label);
+        let use_both = text_of(&report, "useBoth");
+        // `javap` states the shape: `invokestatic both:(Ljava/io/Serializable;Ljava/io/Serializable;)\
+        // Ljava/io/Serializable;` followed by exactly one `checkcast String`. The multi-bound erased
+        // return narrows once (the `callGen` comment carries the full evidence); the `(Object)` stair
+        // the intermediate assertion tolerated compiled to a cast the class never ran.
+        assert_eq!(use_both, CS_USEBOTH, "{}", leg.label);
         assert_eq!(text_of(&report, "same"), CS_SAME, "{}", leg.label);
         assert_eq!(text_of(&report, "main"), CS_MAIN, "{}", leg.label);
         assert!(
@@ -421,8 +439,8 @@ fn the_charsequence_and_serializable_positions_are_presented() {
     }
 }
 
-/// The charsequence change's negatives: the closed rows are the spec's own, and a pair no row
-/// states keeps the refusal verbatim.
+/// The selected StringBuilder header proves its Serializable edge; the absent Segment edge remains
+/// refused outside the closed release-specific rows.
 #[test]
 fn the_types_outside_the_closed_rows_still_refuse() {
     for leg in LEGS {
@@ -430,20 +448,38 @@ fn the_types_outside_the_closed_rows_still_refuse() {
         let report = class_source_of(&snapshot, "CSX");
         assert_eq!(
             text_of(&report, "sealBuilder"),
-            CSX_SEALBUILDER,
+            CSX_SEALBUILDER_RECOVERED,
             "{}",
             leg.label
         );
+        let seal_builder = method_of(&report, "sealBuilder");
+        assert!(seal_builder.markers.is_empty(), "{}", leg.label);
+        let ClassSourceOutcome::Recovered { report: body, .. } = &seal_builder.outcome else {
+            panic!("sealBuilder is a recovered method on {}", leg.label);
+        };
+        assert_eq!(
+            body.quality,
+            jarde_jvm::ir::Quality::Structured,
+            "{}",
+            leg.label
+        );
+        assert!(
+            !body.text.contains("@bytecode"),
+            "{}: {}",
+            leg.label,
+            body.text
+        );
+        let via_segment_expected = with_missing_relation(CSX_VIASEGMENT, "CSX.viaSegment");
         assert_eq!(
             text_of(&report, "viaSegment"),
-            CSX_VIASEGMENT,
+            via_segment_expected.as_str(),
             "{}",
             leg.label
         );
         assert_eq!(
             report.text.matches(REFUSAL).count(),
-            2,
-            "only the two out-of-table pairs stay refused on `{}`:\n{}",
+            1,
+            "only the missing Segment relation stays refused on `{}`:\n{}",
             leg.label,
             report.text
         );
@@ -456,9 +492,24 @@ fn the_comparable_positions_are_presented() {
     for leg in LEGS {
         let snapshot = open(&leg.fixture("CO", &[]));
         let report = class_source_of(&snapshot, "CO");
-        assert_eq!(text_of(&report, "callGen"), CO_CALLGEN, "{}", leg.label);
-        assert_eq!(text_of(&report, "callGen2"), CO_CALLGEN2, "{}", leg.label);
-        assert_eq!(text_of(&report, "same"), CO_SAME, "{}", leg.label);
+        let call_gen = text_of(&report, "callGen");
+        // The intermediate `(java.lang.Object)` stair this assertion once tolerated is gone, and
+        // that is the frozen presentation returning, not a loss. `javap` states the physical shape
+        // the text has to mirror: `invokestatic max:(Ljava/lang/Comparable;Ljava/lang/Comparable;)\
+        // Ljava/lang/Comparable;` — the erased return is the interface — followed by exactly one
+        // `checkcast String`. The proven narrowing pair (interface → implementation) takes that one
+        // cast; compiling the frozen line (`javac --release 8`) reproduces the original bytecode
+        // instruction-for-instruction, while the stair compiled to a second `checkcast Object` the
+        // class never ran. `G1.use` pins the same shape (`max:(Ljava/util/List;)Ljava/lang/Comparable;`
+        // consumed as `String`) with no stair and stays green — one shape, one expectation.
+        assert_eq!(call_gen, CO_CALLGEN, "{}", leg.label);
+        let call_gen2 = text_of(&report, "callGen2");
+        // Same erased-return shape (`max:(Ljava/lang/Comparable;Ljava/lang/Comparable;)Ljava/lang/Comparable;`,
+        // one `checkcast Integer` in the class file): the boxed narrowing keeps the single cast.
+        assert_eq!(call_gen2, CO_CALLGEN2, "{}", leg.label);
+        let same = text_of(&report, "same");
+        // Same shape as `callGen`: the erased `Comparable` return narrows once.
+        assert_eq!(same, CO_SAME, "{}", leg.label);
         assert_eq!(text_of(&report, "main"), CO_MAIN, "{}", leg.label);
         assert!(
             !report
@@ -474,7 +525,12 @@ fn the_comparable_positions_are_presented() {
     for leg in LEGS {
         let snapshot = open(&leg.fixture("CO$IntNode", &[]));
         let report = class_source_of(&snapshot, "CO$IntNode");
-        assert_eq!(text_of(&report, "cmp"), CO_INTNODE_CMP, "{}", leg.label);
+        let cmp = text_of(&report, "cmp");
+        // Same erased-reference shape as `callGen`: `getfield val:Ljava/lang/Comparable;` followed
+        // by exactly one `checkcast Integer` per operand — the proven narrowing takes the single
+        // cast, and the `(Object)` stair the intermediate assertion tolerated compiled to casts the
+        // class never ran.
+        assert_eq!(cmp, CO_INTNODE_CMP, "{}", leg.label);
     }
 }
 
@@ -484,7 +540,8 @@ fn the_out_of_package_comparable_implementer_still_refuses() {
     for leg in LEGS {
         let snapshot = open(&leg.fixture("COX", &[]));
         let report = class_source_of(&snapshot, "COX");
-        assert_eq!(text_of(&report, "big"), COX_BIG, "{}", leg.label);
+        let expected = with_missing_relation(COX_BIG, "COX.big");
+        assert_eq!(text_of(&report, "big"), expected, "{}", leg.label);
         assert_eq!(
             report.text.matches(REFUSAL).count(),
             1,
@@ -545,7 +602,8 @@ fn the_platform_enum_still_refuses() {
     for leg in LEGS {
         let snapshot = open(&leg.fixture("ENX", &[]));
         let report = class_source_of(&snapshot, "ENX");
-        assert_eq!(text_of(&report, "platform"), ENX_PLATFORM, "{}", leg.label);
+        let expected = with_missing_relation(ENX_PLATFORM, "ENX.platform");
+        assert_eq!(text_of(&report, "platform"), expected, "{}", leg.label);
         assert_eq!(
             report.text.matches(REFUSAL).count(),
             1,

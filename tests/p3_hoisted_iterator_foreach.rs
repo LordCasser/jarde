@@ -21,6 +21,7 @@ const DESCRIPTOR: &str = "(Ljava/util/List;Ljava/util/List;)V";
 
 fn request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(INTERNAL_CLASS),
         },
@@ -40,6 +41,7 @@ fn request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
 
 fn outer_assignment_request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("cf11/CF11OuterAssignmentTarget"),
         },

@@ -19,6 +19,7 @@ const DESCRIPTOR: &str = "(Ljava/lang/String;)Ljava/lang/String;";
 
 fn request_for(snapshot: &ArtifactSnapshot, internal_class: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(internal_class),
         },
@@ -306,7 +307,7 @@ fn conditional_constructor_public_reports_agree_across_evidence_selections() {
         record.presented,
         "the committed conditional construction is presented: {record:?}"
     );
-    assert_eq!(record.class, "java/lang/String");
+    assert_eq!(record.class.0, b"java/lang/String");
     assert!(record.dup.is_some());
     assert!(record.constructor.is_some());
     assert!(record.refusal.is_none());
@@ -433,7 +434,7 @@ fn conditional_constructor_positive_all_evidence_reports_four_exact_methods() {
         );
         for record in &body.news {
             assert!(record.presented, "{name}: {record:?}");
-            assert_eq!(record.class, "java/lang/String");
+            assert_eq!(record.class.0, b"java/lang/String");
             assert!(record.dup.is_some());
             assert!(record.constructor.is_some());
             assert!(record.refusal.is_none());

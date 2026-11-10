@@ -75,7 +75,13 @@ fn recover(
         environment: environment(snapshot),
     };
     let OperationOutcome::Performed(report) = Engine::new()
-        .recover_target_with_evidence(std::slice::from_ref(snapshot), &request, evidence, budget)
+        .recover_target_with_evidence(
+            std::slice::from_ref(snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            evidence,
+            budget,
+        )
         .expect("a selected public method returns its recovery report")
     else {
         panic!("the fixture selects one physical method");
@@ -159,9 +165,10 @@ fn depth_zero_public_interface_proof_preserves_original_stop() {
     );
     assert!(matches!(
         report.recovered.recovery().outcome,
-        RecoveryOutcome::Stopped(StopReason::Interrupted {
-            code: "jre_budget_interrupted",
-            at: None
+        RecoveryOutcome::Stopped(StopReason::Budget {
+            dimension: BudgetDimension::DependencyDepth,
+            at: None,
+            ..
         })
     ));
     assert_eq!(report.usage.dependency_depth, 0);
@@ -244,6 +251,7 @@ fn missing_interface_evidence_remains_a_complete_ordinary_refusal() {
 fn class_source_ends_on_the_interface_proof_stop_and_keeps_earlier_members() {
     let snapshot = open(true);
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("SpecialProbe"),
         },

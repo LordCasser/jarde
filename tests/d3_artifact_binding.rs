@@ -307,7 +307,13 @@ fn recover(
     budget: &mut Budget,
 ) -> RecoveredMethod {
     engine
-        .recover_method_with_evidence(slice::from_ref(snapshot), request, evidence, budget)
+        .recover_method_with_evidence(
+            slice::from_ref(snapshot),
+            jarde::SourceTarget::JAVA_8,
+            request,
+            evidence,
+            budget,
+        )
         .expect("a legal request is answered, not raised")
 }
 
@@ -662,7 +668,12 @@ fn a_duplicated_member_record_binds_nothing() {
         VALUE_MEMBER.0,
         VALUE_MEMBER.1,
     );
-    let outcome = engine.recover_method(slice::from_ref(&snapshot), &request, &mut budget);
+    let outcome = engine.recover_method(
+        slice::from_ref(&snapshot),
+        jarde::SourceTarget::JAVA_8,
+        &request,
+        &mut budget,
+    );
     let recovered = match outcome {
         Ok(recovered) => recovered,
         Err(Error::InvalidInput { ref code, .. }) => {
@@ -697,7 +708,7 @@ fn a_duplicated_member_record_binds_nothing() {
 /// A changed rule set: the same body presented under another profile is a different artifact, even
 /// when the text the two profiles write happens to be the same.
 #[test]
-fn a_changed_rule_set_is_a_mismatch() {
+fn a_changed_runtime_is_an_environment_mismatch() {
     let _gate = gate();
     let engine = Engine::new();
     let snapshot = open(&assembled(b"Fixture", &[value_member(1)]));
@@ -741,8 +752,8 @@ fn a_changed_rule_set_is_a_mismatch() {
     );
     let mismatch = mismatch_of(report);
     assert!(
-        mismatch.disagrees_on(ArtifactDimension::Configuration),
-        "the profile is part of the configuration the artifact was written under: {:?}",
+        mismatch.disagrees_on(ArtifactDimension::Environment),
+        "the runtime profile is part of the environment the artifact was recovered under: {:?}",
         mismatch.dimensions()
     );
     assert!(
@@ -1359,6 +1370,7 @@ fn a_binding_states_the_member_record_the_read_established() {
     let snapshot = open(SCOPE);
     let definition = definitions(&engine, &snapshot)[0].clone();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Definition {
             definition: definition.clone(),
         },
@@ -1519,4 +1531,219 @@ fn the_binding_holds_no_payload_of_the_run() {
     );
     let text = std::mem::size_of::<String>();
     assert!(size > text, "and it is not empty either: {size} byte(s)");
+}
+
+/// A1.5: package metadata and text cannot establish implementation agreement.
+#[test]
+fn semantic_implementation_domains_refuse_stale_evidence_with_identical_text() {
+    let _gate = gate();
+    let engine = Engine::new();
+    let snapshot = open(&assembled(b"SemanticContext", &[value_member(1)]));
+    let definition = definitions(&engine, &snapshot).remove(0);
+    let first = run_with(
+        &engine,
+        &snapshot,
+        environment(&snapshot),
+        &definition,
+        VALUE_MEMBER,
+        &RecoveryEvidenceRequest::all(),
+        &mut new_budget(),
+    );
+    let binding = binding_of(&first);
+    for path in [
+        vec!["engine", "java"],
+        vec!["engine", "facade"],
+        vec!["registry", "reader"],
+        vec!["registry", "query"],
+        vec!["registry", "jvm"],
+    ] {
+        let mut document = serde_json::to_value(&binding).unwrap();
+        document[path[0]][path[1]] = serde_json::json!("another-implementation");
+        let expected = serde_json::from_value(document).unwrap();
+        let run = run_with(
+            &engine,
+            &snapshot,
+            environment(&snapshot),
+            &definition,
+            VALUE_MEMBER,
+            &RecoveryEvidenceRequest::all().with_expected_artifact(expected),
+            &mut new_budget(),
+        );
+        assert_eq!(run.recovery().text, first.recovery().text);
+        assert_eq!(
+            mismatch_of(run.recovery()).dimensions(),
+            [ArtifactDimension::Configuration]
+        );
+        assert!(!run.recovery().artifact.attaches());
+        assert_eq!(binding_of(&run), binding);
+    }
+    for kind in [
+        RecoveryEvidenceRequest::essential(),
+        RecoveryEvidenceRequest::all(),
+        RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+    ] {
+        let run = run_with(
+            &engine,
+            &snapshot,
+            environment(&snapshot),
+            &definition,
+            VALUE_MEMBER,
+            &kind,
+            &mut new_budget(),
+        );
+        assert_eq!(binding_of(&run), binding);
+        assert_eq!(run.recovery().text, first.recovery().text);
+    }
+}
+
+/// A1.5/A1.6: semantic input identity remains observable without upgrading caller assertions.
+#[test]
+fn lexical_projection_and_proof_inputs_are_compared_independently_of_text() {
+    fn observe(
+        request: &RecoveryRequest<'_>,
+        class: bool,
+    ) -> (jarde_java::RecoveryReport, ArtifactConfiguration) {
+        let mut inputs = None;
+        let mut gate = |_: &str, configuration| {
+            inputs = Some(configuration);
+            true
+        };
+        let report = if class {
+            jarde_java::report::recover_for_class_source(
+                request,
+                &mut new_budget(),
+                jarde_java::report::ClassSourceOptions::default(),
+                Some(&mut gate),
+            )
+            .report
+        } else {
+            jarde_java::report::recover_with_evidence_gate(
+                request,
+                &mut new_budget(),
+                Some(&mut gate),
+            )
+        };
+        assert!(report.produced());
+        assert_eq!(
+            report.input_origin,
+            jarde_java::report::RecoveryInputOrigin::CallerSupplied
+        );
+        assert!(
+            report.artifact.binding().is_none(),
+            "a metadata observer cannot issue a read binding"
+        );
+        (
+            report,
+            inputs.expect("source commitment reports its input identity"),
+        )
+    }
+    let _gate = gate();
+    let engine = Engine::new();
+    let snapshot = open(&assembled(b"LexicalContext", &[value_member(1)]));
+    let definition = definitions(&engine, &snapshot).remove(0);
+    let analysis_request = request(
+        environment(&snapshot),
+        &definition,
+        VALUE_MEMBER.0,
+        VALUE_MEMBER.1,
+    );
+    let seed = recover(
+        &engine,
+        &snapshot,
+        &analysis_request,
+        &RecoveryEvidenceRequest::all(),
+        &mut new_budget(),
+    );
+    let analyzed = jarde_jvm::analyze_method_ir(
+        std::slice::from_ref(&snapshot),
+        &analysis_request,
+        &mut new_budget(),
+    )
+    .unwrap();
+    let seed_binding = binding_of(&seed);
+    let subject = ArtifactSubject::new(
+        seed_binding.method().clone(),
+        seed_binding.member_ordinal(),
+        seed_binding.environment().clone(),
+    );
+    let base_request = RecoveryRequest::new(
+        analyzed.ir(),
+        seed.facts(),
+        SourceTarget::JAVA_8,
+        analysis_request.environment.runtime.profile.clone(),
+    )
+    .with_subject(subject.clone())
+    .with_evidence(RecoveryEvidenceRequest::all());
+    let (base, base_inputs) = observe(&base_request, false);
+    // This constructs comparison metadata, not a recovery result or a claim of verified reads.
+    let expected = ArtifactBinding::of(&subject, &SourceTarget::JAVA_8, &base.text, base_inputs);
+    let (class, class_inputs) = observe(&base_request, true);
+    assert_eq!(class.text, base.text);
+    assert!(!class_inputs.allow_array_constructor_method_references);
+    assert!(
+        expected
+            .configuration()
+            .allow_array_constructor_method_references
+    );
+    let other = ArtifactBinding::of(&subject, &SourceTarget::JAVA_8, &class.text, class_inputs);
+    assert_eq!(
+        other.mismatch(&expected).unwrap().dimensions(),
+        [ArtifactDimension::Configuration]
+    );
+    let names: &[&[u8]] = &[b"p/Outer$Inner"];
+    let proofs = [jarde_java::report::InterfaceSuperCallInput {
+        owner: JvmBytes::from_unicode("p/I"),
+        name: JvmBytes::from_unicode("value"),
+        descriptor: JvmBytes::from_unicode("()I"),
+    }];
+    for request in [
+        base_request.clone().with_pool_spelled_members(true),
+        base_request.clone().with_projection_types(names),
+        base_request.with_interface_super_calls(&proofs),
+    ] {
+        let (changed, inputs) = observe(&request, false);
+        assert_eq!(changed.text, base.text);
+        let metadata = ArtifactBinding::of(&subject, &SourceTarget::JAVA_8, &changed.text, inputs);
+        assert_eq!(
+            metadata.mismatch(&expected).unwrap().dimensions(),
+            [ArtifactDimension::Configuration]
+        );
+    }
+}
+
+#[test]
+fn selected_dependency_loader_changes_refuse_evidence_without_changing_subject_or_text() {
+    let _gate = gate();
+    let engine = Engine::new();
+    let snapshot = open(&assembled(b"DependencyContext", &[value_member(1)]));
+    let definition = definitions(&engine, &snapshot).remove(0);
+    let first = run_with(
+        &engine,
+        &snapshot,
+        environment(&snapshot),
+        &definition,
+        VALUE_MEMBER,
+        &RecoveryEvidenceRequest::all(),
+        &mut new_budget(),
+    );
+    let binding = binding_of(&first);
+    assert!(!binding.dependencies().is_empty());
+    let mut document = serde_json::to_value(&binding).unwrap();
+    document["dependencies"][0]["loader"] = serde_json::json!("another-defining-loader");
+    let expected = serde_json::from_value(document).unwrap();
+    let run = run_with(
+        &engine,
+        &snapshot,
+        environment(&snapshot),
+        &definition,
+        VALUE_MEMBER,
+        &RecoveryEvidenceRequest::all().with_expected_artifact(expected),
+        &mut new_budget(),
+    );
+    assert_eq!(run.recovery().text, first.recovery().text);
+    assert_eq!(
+        mismatch_of(run.recovery()).dimensions(),
+        [ArtifactDimension::Dependencies]
+    );
+    assert_eq!(binding_of(&run), binding);
 }

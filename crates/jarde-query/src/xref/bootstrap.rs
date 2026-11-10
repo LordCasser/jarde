@@ -178,8 +178,8 @@ use crate::query::{
 use jarde_reader::budget::{BudgetDimension, Limits, UsageSnapshot};
 use jarde_reader::classfile::{
     AttributeShell, BytecodeStop, ClassFacts, CpEntryFacts, CpEntryKind, EntryDescriptor,
-    MemberHeader, MethodCodeFacts, bootstrap_methods, class_facts, cp_entry, descriptor_types,
-    entry_descriptor, method_code_facts,
+    MemberHeader, MethodCodeFacts, bootstrap_methods, class_facts_shared, cp_entry,
+    descriptor_types, entry_descriptor, method_code_facts,
 };
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
@@ -252,7 +252,7 @@ pub(super) fn scan(
     });
     let facts = {
         let budget = ctx.budget();
-        class_facts(&content.bytes, budget)?
+        class_facts_shared(&content.bytes, budget)?
     };
     let found = use_sites(ctx, &content.bytes, &facts, &definition)?;
     if found.sites.is_empty() {

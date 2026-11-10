@@ -133,8 +133,7 @@ fn compile_family(label: &str, source: &str) -> (Vec<u8>, Vec<(String, Vec<u8>)>
     (jar_of(&entries), owned)
 }
 
-/// The class-source report of one named class, under the source-map evidence every family fold's
-/// provenance anchors need (the same selection the nested-enum fold established).
+/// Equivalent projection decisions across all three public evidence selections.
 fn source_of(jar: &[u8], class: &str) -> ClassSourceReport {
     let engine = Engine::new();
     let mut budget =
@@ -143,6 +142,7 @@ fn source_of(jar: &[u8], class: &str) -> ClassSourceReport {
         .open(ArtifactInput::bytes(jar.to_vec()), &mut budget)
         .expect("the family jar opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -159,7 +159,7 @@ fn source_of(jar: &[u8], class: &str) -> ClassSourceReport {
         },
     };
     let evidence = RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap);
-    match engine.class_source_with_evidence(
+    let reference = match engine.class_source_with_evidence(
         std::slice::from_ref(&snapshot),
         &request,
         &evidence,
@@ -167,24 +167,69 @@ fn source_of(jar: &[u8], class: &str) -> ClassSourceReport {
     ) {
         Ok(OperationOutcome::Performed(report)) => report,
         other => panic!("one family answers one class-source request: {other:?}"),
+    };
+    for evidence in [
+        RecoveryEvidenceRequest::essential(),
+        RecoveryEvidenceRequest::all(),
+    ] {
+        let mut budget = Budget::new(jarde::facade::task_limits(&[]).unwrap());
+        let Ok(OperationOutcome::Performed(report)) = engine.class_source_with_evidence(
+            std::slice::from_ref(&snapshot),
+            &request,
+            &evidence,
+            &mut budget,
+        ) else {
+            panic!("same selected family must resolve");
+        };
+        assert_eq!(
+            reference.text, report.text,
+            "evidence cannot change a projected-emission fold"
+        );
+        match (&reference.member_family, &report.member_family) {
+            (
+                ClassSourceMemberFamily::PreparedStatic { projection: a, .. },
+                ClassSourceMemberFamily::PreparedStatic { projection: b, .. },
+            ) => assert_eq!(a, b),
+            (
+                ClassSourceMemberFamily::Prepared { projection: a, .. },
+                ClassSourceMemberFamily::Prepared { projection: b, .. },
+            ) => assert_eq!(a, b),
+            pair => panic!("evidence changed family decision: {pair:?}"),
+        }
     }
+    reference
 }
 
 /// Compiles one recovered text as `--release 8` Java, runs it under `-Xverify:all`, and returns
-/// what the run printed. The classpath holds exactly the original compiled family, never a
-/// rewritten text — the same convention the static-fold acceptance uses.
+/// what the generated class prints, checked against a separately loaded original family.
+/// Compilation has empty class/source paths; execution contains generated classes only.
 fn recompile_and_run(label: &str, text: &str, class_name: &str, jar: &[u8]) -> String {
     let temp = TestDirectory::new(label);
     std::fs::write(temp.path().join(format!("{class_name}.java")), text)
         .expect("the recovered text is written");
-    let deps = temp.path().join("deps");
-    std::fs::create_dir_all(&deps).expect("the dependency directory is created");
-    std::fs::write(deps.join("family.jar"), jar).expect("the family jar is written");
+    let empty = temp.path().join("empty");
+    std::fs::create_dir_all(&empty).unwrap();
+    let original = temp.path().join("original.jar");
+    std::fs::write(&original, jar).unwrap();
+    let oracle = Command::new("java")
+        .args(["-Xverify:all", "-cp"])
+        .arg(&original)
+        .arg(class_name)
+        .output()
+        .unwrap();
+    assert!(
+        oracle.status.success(),
+        "{}",
+        String::from_utf8_lossy(&oracle.stderr)
+    );
     let compiled = Command::new("javac")
         .arg("--release")
         .arg("8")
         .arg("-cp")
-        .arg(deps.join("family.jar"))
+        .arg(&empty)
+        .arg("-sourcepath")
+        .arg(&empty)
+        .arg("-proc:none")
         .arg(format!("{class_name}.java"))
         .current_dir(temp.path())
         .output()
@@ -196,11 +241,7 @@ fn recompile_and_run(label: &str, text: &str, class_name: &str, jar: &[u8]) -> S
         String::from_utf8_lossy(&compiled.stderr)
     );
     let run = Command::new("java")
-        .args([
-            "-Xverify:all",
-            "-cp",
-            &format!("{}:.", deps.join("family.jar").display()),
-        ])
+        .args(["-Xverify:all", "-cp", "."])
         .arg(class_name)
         .current_dir(temp.path())
         .output()
@@ -210,6 +251,10 @@ fn recompile_and_run(label: &str, text: &str, class_name: &str, jar: &[u8]) -> S
         "the recompiled {} verifies and runs:\n{}",
         class_name,
         String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(
+        run.stdout, oracle.stdout,
+        "generated-only execution matches the separately loaded original"
     );
     String::from_utf8(run.stdout).expect("the run prints text")
 }

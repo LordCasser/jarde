@@ -1,6 +1,6 @@
 //! Reader-backed checks for the exact saved dup_x1/putfield/direct-compare proof.
 use super::*;
-use jarde_reader::budget::{CancellationToken, CountedBudgetDimension, Limits};
+use jarde_reader::budget::{CancellationToken, Limits};
 
 const SEQ1_JAVAC8_DEBUG: &[u8] = include_bytes!(
     "../../../../../tests/fixtures/recover-statementful-loop-headers/supplement/javac8-debug/classes/SequentialLoopEffects.class"
@@ -85,10 +85,11 @@ fn with_field_method<R>(
         &operations,
         &|_| None,
         Some(&declaring),
-        method_name,
-        descriptor,
+        ir.declaration().unwrap().name().0.as_slice(),
+        ir.declaration().unwrap().descriptor().0.as_slice(),
         ir.class_fields(),
         &[],
+        None,
         &mut child_array_test_budget(),
     )
     .expect("Reader field symbols and this-class declaration form a real field plan");
@@ -241,12 +242,12 @@ fn prove_and_check_saved_test_copy(
         .unwrap();
     assert_eq!(store_fact.opcode, 0xb5);
     assert!(
-        matches!(operations.get(store_bci), Some(Operation::Field { access: FieldAccess::Write, is_static: false, descriptor, .. }) if descriptor == "I")
+        matches!(operations.get(store_bci), Some(Operation::Field { access: FieldAccess::Write, is_static: false, descriptor, .. }) if descriptor.0.as_slice() == b"I")
     );
     let (evidence, store_shape) = fields
         .claim(store_bci)
         .expect("the store has Reader field evidence");
-    assert_eq!(evidence.descriptor, "I");
+    assert_eq!(evidence.descriptor.0.as_slice(), b"I");
     assert_eq!(evidence.access, FieldAccess::Write);
     assert!(store_shape.writes());
 
@@ -467,7 +468,7 @@ fn exact_new_proof_cost_stop_and_pre_cancel_publish_no_copy_plan() {
                         &mut limited_budget
                     ),
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         ..
                     })
                 ),
@@ -500,7 +501,7 @@ fn exact_new_proof_cost_stop_and_pre_cancel_publish_no_copy_plan() {
                 matches!(
                     stopped_plan,
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         ..
                     })
                 ),
@@ -539,8 +540,8 @@ fn exact_new_proof_cost_stop_and_pre_cancel_publish_no_copy_plan() {
                         index,
                         &mut deadline_budget
                     ),
-                    Err(StopReason::Interrupted {
-                        code: crate::stop::BUDGET_INTERRUPTED_CODE,
+                    Err(StopReason::Budget {
+                        dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
                         ..
                     })
                 ),

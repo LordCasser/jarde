@@ -52,6 +52,7 @@ fn source(snapshot: &ArtifactSnapshot, budget: &mut Budget) -> OperationOutcome<
         .class_source_with_evidence(
             slice::from_ref(snapshot),
             &ClassSourceRequest {
+                source_target: jarde::SourceTarget::JAVA_8,
                 class: ClassRef::Name {
                     class: ClassNameQuery::internal("em23probe/FieldUnitProbe"),
                 },

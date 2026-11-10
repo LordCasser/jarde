@@ -53,6 +53,7 @@ use crate::facts::Operation;
 use crate::names::{DebugLocal, LocalVariable, SlotEvidence};
 use crate::region::Region;
 use crate::stop::{StopReason, charge, poll};
+use jarde_reader::model::JvmBytes;
 
 /// What this run decided the body's local slots hold (P3 3.4).
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -140,6 +141,7 @@ pub(crate) fn plan(
         if let Some((names, split)) = typed_split(
             ssa,
             canonical,
+            operations,
             regions,
             &mut monitor_guards,
             slot,
@@ -183,12 +185,30 @@ pub(crate) fn plan(
             plan.splits.insert(slot, split);
             continue;
         }
+        if let Some((names, split)) = exclusive_definition_split(
+            ssa,
+            canonical,
+            operations,
+            slot,
+            parameters,
+            slot_records,
+            accesses.get(&slot),
+            resources,
+            budget,
+        )? {
+            plan.evidence[index] = SlotEvidence::Split(names);
+            plan.splits.insert(slot, split);
+            continue;
+        }
         if slot_records.is_empty() {
             continue;
         }
-        let names: BTreeSet<&str> = slot_records.iter().map(|record| record.name()).collect();
+        let names: BTreeSet<&[u8]> = slot_records
+            .iter()
+            .map(|record| record.name().0.as_slice())
+            .collect();
         if names.len() <= 1 {
-            plan.evidence[index] = SlotEvidence::Whole(slot_records[0].name().to_string());
+            plan.evidence[index] = SlotEvidence::Whole(slot_records[0].name().clone());
             continue;
         }
         match split(ssa, slot, slot_records, &accesses, resources) {
@@ -297,19 +317,25 @@ fn accesses(ssa: &SsaTable) -> BTreeMap<u16, Accesses> {
     accesses
 }
 
-/// The first deliberately narrow inference beyond two LVT names: a reference lifetime followed
-/// by an int lifetime, or the reverse. Both categories are stated by the frames, not by a debug
-/// spelling. A value in any other category leaves the old plan in force.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+/// JVM categories distinguish independent lifetimes without relying on debug names. Source
+/// refinement within one category (boolean/char, or a reference subtype) remains the type plan's
+/// decision; an unreadable frame value cannot establish a variable.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 enum Category {
     Reference,
     Int,
+    Long,
+    Float,
+    Double,
 }
 
 fn category(value: &Value) -> Option<Category> {
     match value {
-        Value::Ref(_) => Some(Category::Reference),
+        Value::Ref(_) | Value::Null => Some(Category::Reference),
         Value::Int => Some(Category::Int),
+        Value::Long => Some(Category::Long),
+        Value::Float => Some(Category::Float),
+        Value::Double => Some(Category::Double),
         _ => None,
     }
 }
@@ -317,24 +343,31 @@ fn category(value: &Value) -> Option<Category> {
 /// A trivial phi is an alias of the value that replaced it. A nontrivial phi is never used as a
 /// reason to cut a lifetime; following the published replacement chain is bounded by the SSA's
 /// own value count, so malformed cycles cannot make this proof loop forever.
-fn representative(ssa: &SsaTable, mut value: ValueId) -> Option<ValueId> {
+fn representative(
+    ssa: &SsaTable,
+    mut value: ValueId,
+    budget: &mut Budget,
+) -> Result<Option<ValueId>, StopReason> {
     for _ in 0..=ssa.values().len() {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
         let Some(next) = ssa.value(value).replaced_by() else {
-            return Some(value);
+            return Ok(Some(value));
         };
         value = next;
     }
-    None
+    Ok(None)
 }
 
-/// Infer two locals only when every access has a typed value chain, the two categories occupy
-/// ordered, non-overlapping parts of the CFG, and no later block can reach an earlier access.
-/// This admits a loop within the first part (including its trivial self phi) but not a loop from
-/// the later part back into it. Handler and call-context edges are left for a separate proof.
+/// Infer independent locals only when SSA owns every access and the categories occupy ordered,
+/// non-overlapping lifetimes. A phi groups its reaching stores into the same variable. A later
+/// lifetime cannot reach an earlier access. Only an existing monitor proof can account for
+/// exceptional edges here; ordinary handler locals retain their separate scope proof.
 #[allow(clippy::too_many_arguments)]
 fn typed_split(
     ssa: &SsaTable,
     canonical: &CanonicalCfg,
+    operations: &Operations,
     regions: &[Region],
     monitor_guards: &mut Option<Vec<(BTreeSet<CanonicalBlockId>, BTreeSet<u32>)>>,
     slot: u16,
@@ -343,7 +376,7 @@ fn typed_split(
     accesses: Option<&Accesses>,
     resources: &BTreeSet<u16>,
     budget: &mut Budget,
-) -> Result<Option<(Vec<Option<String>>, Split)>, StopReason> {
+) -> Result<Option<(Vec<Option<JvmBytes>>, Split)>, StopReason> {
     if slot < parameters || resources.contains(&slot) || !canonical.unreachable().is_empty() {
         return Ok(None);
     }
@@ -370,27 +403,36 @@ fn typed_split(
         }
         typed.push((*access, kind));
     }
-    let bounds = |kind| {
-        let mut bcis = typed
-            .iter()
-            .filter(|(_, found)| *found == kind)
-            .map(|(access, _)| access.bci);
-        let first = bcis.next()?;
-        Some(bcis.fold((first, first), |(lo, hi), bci| (lo.min(bci), hi.max(bci))))
-    };
-    let (Some(reference), Some(int)) = (bounds(Category::Reference), bounds(Category::Int)) else {
+    // A physical slot can carry several JVM categories over independent lifetimes. The
+    // category orders the access sets only; SSA definitions below must still own every read.
+    typed.sort_by_key(|(access, _)| access.bci);
+    let mut parts: Vec<(Category, (u32, u32))> = Vec::new();
+    let mut by_bci = BTreeMap::new();
+    for (access, kind) in &typed {
+        match parts.last_mut() {
+            Some((previous, (_, last))) if previous == kind => *last = access.bci,
+            _ => parts.push((*kind, (access.bci, access.bci))),
+        }
+        let Ok(part) = u16::try_from(parts.len() - 1) else {
+            return Ok(None);
+        };
+        if by_bci
+            .insert(access.bci, part)
+            .is_some_and(|old| old != part)
+        {
+            return Ok(None);
+        }
+    }
+    if parts.len() < 2 {
         return Ok(None);
-    };
-    let (earlier, later, boundary) = if reference.1 < int.0 {
-        (Category::Reference, Category::Int, int.0)
-    } else if int.1 < reference.0 {
-        (Category::Int, Category::Reference, reference.0)
-    } else {
-        return Ok(None);
-    };
-    let first_bci = reference.0.min(int.0);
-    if !accesses.writes.iter().any(|write| write.bci == first_bci)
-        || !accesses.writes.iter().any(|write| write.bci == boundary)
+    }
+    let index = |access: &Access| usize::from(by_bci[&access.bci]);
+    let earlier = parts[0].0;
+    let later = parts[1].0;
+    let boundary = parts[1].1.0;
+    if parts
+        .iter()
+        .any(|(_, (first, _))| !accesses.writes.iter().any(|write| write.bci == *first))
     {
         return Ok(None);
     }
@@ -400,16 +442,17 @@ fn typed_split(
         .filter(|(_, kind)| *kind == earlier)
         .map(|(access, _)| ssa.blocks()[access.block].block().clone())
         .collect();
-    let later_blocks: BTreeSet<_> = typed
-        .iter()
-        .filter(|(_, kind)| *kind == later)
-        .map(|(access, _)| ssa.blocks()[access.block].block().clone())
-        .collect();
     let mut monitor = None;
-    if earlier == Category::Reference
+    if parts.len() == 2
+        && earlier == Category::Reference
         && later == Category::Int
         && !canonical.handler_rows().is_empty()
     {
+        let later_blocks: BTreeSet<_> = typed
+            .iter()
+            .filter(|(_, kind)| *kind == later)
+            .map(|(access, _)| ssa.blocks()[access.block].block().clone())
+            .collect();
         // A monitor proof needs its cleanup exception rows. Ordinary methods need no region
         // scan, and walking already-billed non-monitor regions must not alter their ledger.
         if monitor_guards.is_none() {
@@ -433,36 +476,25 @@ fn typed_split(
         }
     }
 
-    let index = |kind| if kind == earlier { 0u16 } else { 1u16 };
-    let mut by_bci = BTreeMap::new();
-    for (access, kind) in &typed {
-        let assigned = index(*kind);
-        if by_bci
-            .insert(access.bci, assigned)
-            .is_some_and(|old| old != assigned)
-        {
-            return Ok(None);
-        }
-    }
-    let mut writes: [BTreeSet<ValueId>; 2] = std::array::from_fn(|_| BTreeSet::new());
-    let mut reads: [BTreeSet<ValueId>; 2] = std::array::from_fn(|_| BTreeSet::new());
+    let mut writes = vec![BTreeSet::new(); parts.len()];
+    let mut reads = vec![BTreeSet::new(); parts.len()];
     for access in &accesses.writes {
-        let kind = category(ssa.value(access.value).ty()).expect("all accesses were classified");
-        let Some(value) = representative(ssa, access.value) else {
+        let Some(value) = representative(ssa, access.value, budget)? else {
             return Ok(None);
         };
-        writes[usize::from(index(kind))].insert(value);
+        writes[index(access)].insert(value);
     }
     for access in &accesses.reads {
-        let kind = category(ssa.value(access.value).ty()).expect("all accesses were classified");
-        let Some(value) = representative(ssa, access.value) else {
+        let Some(value) = representative(ssa, access.value, budget)? else {
             return Ok(None);
         };
-        reads[usize::from(index(kind))].insert(value);
+        reads[index(access)].insert(value);
     }
-    let mut phi_inputs = BTreeSet::new();
-    let mut phi_values = BTreeSet::new();
-    let mut phi_blocks = BTreeSet::new();
+    // Local phis connect multiple definitions to one source variable, rather than defining a
+    // new lifetime at each predecessor. A complete normal-flow phi may be cyclic; following the
+    // input-to-output graph from actual stores proves that every consumed phi is store-rooted.
+    let mut phi_parts = BTreeMap::new();
+    let mut dependents: BTreeMap<ValueId, Vec<ValueId>> = BTreeMap::new();
     for phi in ssa
         .phis()
         .iter()
@@ -475,29 +507,37 @@ fn typed_split(
             1,
             Some(phi.block().bci()),
         )?;
-        if let Some(replaced) = ssa.value(phi.value()).replaced_by() {
-            let Some(replaced) = representative(ssa, replaced) else {
-                return Ok(None);
-            };
-            if phi.inputs().iter().any(|input| match input {
-                jarde_jvm::method_ir::PhiInput::Value(value) => {
-                    representative(ssa, *value) != Some(replaced)
-                }
-                jarde_jvm::method_ir::PhiInput::Itself => false,
-            }) {
-                return Ok(None);
-            }
+        if ssa.value(phi.value()).replaced_by().is_some() {
             continue;
         }
-        // A loop-carried phi is admitted only for the integer lifetime after this proved
-        // monitor guard. Its every incoming value must be one of that lifetime's writes.
-        if monitor.is_none_or(|(owned, _)| owned.contains(phi.block()))
-            || phi.block().bci() < boundary
-            || !reads[1].contains(&phi.value())
-            || phi.inputs().is_empty()
+        let Some(kind) = category(ssa.value(phi.value()).ty()) else {
+            return Ok(None);
+        };
+        let Some(part) = parts
+            .iter()
+            .enumerate()
+            .find_map(|(part, (found, (first, _)))| {
+                let end = parts.get(part + 1).map_or(u32::MAX, |(_, range)| range.0);
+                (*found == kind && *first <= phi.block().bci() && phi.block().bci() < end)
+                    .then_some(part)
+            })
+        else {
+            return Ok(None);
+        };
+        if phi.inputs().is_empty()
+            || (!canonical.handler_rows().is_empty()
+                && (part != 1 || monitor.is_none_or(|(owned, _)| owned.contains(phi.block()))))
         {
             return Ok(None);
         }
+        phi_parts.insert(phi.value(), part);
+    }
+    for phi in ssa
+        .phis()
+        .iter()
+        .filter(|phi| phi_parts.contains_key(&phi.value()))
+    {
+        let part = phi_parts[&phi.value()];
         for input in phi.inputs() {
             poll(budget, Some(phi.block().bci()))?;
             charge(
@@ -506,41 +546,43 @@ fn typed_split(
                 1,
                 Some(phi.block().bci()),
             )?;
-            let jarde_jvm::method_ir::PhiInput::Value(value) = input else {
+            let jarde_jvm::method_ir::PhiInput::Value(input) = input else {
+                continue;
+            };
+            let Some(input) = representative(ssa, *input, budget)? else {
                 return Ok(None);
             };
-            let Some(value) = representative(ssa, *value) else {
-                return Ok(None);
-            };
-            if !writes[1].contains(&value) {
+            if !writes[part].contains(&input) && phi_parts.get(&input) != Some(&part) {
                 return Ok(None);
             }
-            phi_inputs.insert(value);
+            dependents.entry(input).or_default().push(phi.value());
         }
-        phi_values.insert(phi.value());
-        phi_blocks.insert(phi.block().clone());
     }
-    if (0..2).any(|part| {
+    let mut rooted = BTreeSet::new();
+    let mut pending: Vec<_> = writes.iter().flatten().copied().collect();
+    while let Some(value) = pending.pop() {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        if rooted.insert(value) {
+            pending.extend(dependents.get(&value).into_iter().flatten().copied());
+        }
+    }
+    if (0..parts.len()).any(|part| {
         writes[part].is_empty()
             || reads[part].is_empty()
-            || writes[part].iter().any(|value| {
-                !reads[part].contains(value) && (part != 1 || !phi_inputs.contains(value))
-            })
             || reads[part].iter().any(|value| {
-                !writes[part].contains(value) && (part != 1 || !phi_values.contains(value))
+                !writes[part].contains(value)
+                    && (phi_parts.get(value) != Some(&part) || !rooted.contains(value))
             })
     }) {
         return Ok(None);
     }
-    // A local value loaded in the first lifetime can survive on the operand stack after the
-    // slot is overwritten. The split would then have to name that old value at a later source
-    // position; this first slice does not prove such a scope, so it refuses that shape.
-    for value in &writes[0] {
-        for use_ in ssa.value(*value).uses() {
-            let at = use_.bci().unwrap_or_else(|| use_.block().bci());
-            poll(budget, Some(at))?;
-            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
-            if at >= boundary {
+    // Follow loads and stack aliases, not just direct local reads: an old local carried on the
+    // operand stack must not be printed using the following lifetime's name at a later consumer.
+    for (part, values) in writes.iter().enumerate().take(parts.len() - 1) {
+        let boundary = parts[part + 1].1.0;
+        for value in values {
+            if !local_value_stays_before(ssa, operations, *value, boundary, budget)? {
                 return Ok(None);
             }
         }
@@ -569,26 +611,46 @@ fn typed_split(
             .or_insert_with(Vec::new)
             .push(edge.to().clone());
     }
-    let mut pending: Vec<_> = later_blocks.into_iter().collect();
-    pending.extend(phi_blocks);
-    let mut visited = BTreeSet::new();
-    while let Some(block) = pending.pop() {
-        poll(budget, Some(block.bci()))?;
-        charge(
-            budget,
-            CountedBudgetDimension::AnalysisSteps,
-            1,
-            Some(block.bci()),
-        )?;
-        if earlier_blocks.contains(&block) {
-            return Ok(None);
+    // A later access may follow an earlier one within one block. Only an actual outgoing
+    // path back to an earlier access makes that lifetime overlap.
+    let by_access = &by_bci;
+    for part in 1..parts.len() {
+        let earlier_blocks: BTreeSet<_> = typed
+            .iter()
+            .filter(|(access, _)| index(access) < part)
+            .map(|(access, _)| ssa.blocks()[access.block].block().clone())
+            .collect();
+        let mut pending = Vec::new();
+        for (access, _) in &typed {
+            if by_access[&access.bci] >= u16::try_from(part).expect("category count fits") {
+                pending.extend(
+                    edges
+                        .get(ssa.blocks()[access.block].block())
+                        .into_iter()
+                        .flatten()
+                        .cloned(),
+                );
+            }
         }
-        if visited.insert(block.clone()) {
-            pending.extend(edges.get(&block).into_iter().flatten().cloned());
+        let mut visited = BTreeSet::new();
+        while let Some(block) = pending.pop() {
+            poll(budget, Some(block.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(block.bci()),
+            )?;
+            if earlier_blocks.contains(&block) {
+                return Ok(None);
+            }
+            if visited.insert(block.clone()) {
+                pending.extend(edges.get(&block).into_iter().flatten().cloned());
+            }
         }
     }
 
-    let mut names = vec![None, None];
+    let mut names = vec![None; parts.len()];
     for record in records {
         let Some((start, end)) = record.range() else {
             return Ok(None);
@@ -597,24 +659,31 @@ fn typed_split(
             .reads
             .iter()
             .filter(|access| start <= access.bci && access.bci < end)
-            .filter_map(|access| category(ssa.value(access.value).ty()).map(index))
+            .map(index)
             .collect();
         if covered.len() > 1 {
             return Ok(None);
         }
         if let Some(part) = covered.iter().next() {
-            let name = &mut names[usize::from(*part)];
+            let name = &mut names[*part];
             if name.as_ref().is_some_and(|old| old != record.name()) {
                 return Ok(None);
             }
-            *name = Some(record.name().to_string());
+            *name = Some(record.name().clone());
         }
     }
     Ok(Some((
         names,
         Split {
             by_bci,
-            ranges: vec![(0, boundary), (boundary, u32::MAX)],
+            ranges: (0..parts.len())
+                .map(|part| {
+                    (
+                        if part == 0 { 0 } else { parts[part].1.0 },
+                        parts.get(part + 1).map_or(u32::MAX, |(_, range)| range.0),
+                    )
+                })
+                .collect(),
         },
     )))
 }
@@ -682,6 +751,9 @@ fn array_retype_split(
         };
         definitions.push((write.bci, write.value, shape));
     }
+    if definitions.windows(2).all(|pair| pair[0].2 == pair[1].2) {
+        return Ok(None);
+    }
     let Some(split) = owned_definition_split(ssa, accesses, definitions, None, budget)? else {
         return Ok(None);
     };
@@ -702,7 +774,7 @@ fn reference_retype_split(
     accesses: Option<&Accesses>,
     resources: &BTreeSet<u16>,
     budget: &mut Budget,
-) -> Result<Option<(Vec<Option<String>>, Split)>, StopReason> {
+) -> Result<Option<(Vec<Option<JvmBytes>>, Split)>, StopReason> {
     if slot < parameters || resources.contains(&slot) || !canonical.unreachable().is_empty() {
         return Ok(None);
     }
@@ -780,6 +852,109 @@ fn reference_retype_split(
 /// Attach LVT names only when rows and proven SSA identities agree exactly. Every read must be
 /// inside its SSA owner's row, and every row must fit that identity's range. An unread identity is
 /// named only when its one proven Store is the immediately preceding decoded instruction.
+/// Independently owned definitions in sibling branches need separate source scopes even when
+/// their JVM categories and source types agree. Every read must name one store, and neither
+/// store's block may reach another's. A joining phi therefore keeps one variable; the physical
+/// slot number and LVT spelling alone never decide the grouping.
+#[allow(clippy::too_many_arguments)]
+fn exclusive_definition_split(
+    ssa: &SsaTable,
+    canonical: &CanonicalCfg,
+    operations: &Operations,
+    slot: u16,
+    parameters: u16,
+    records: &[&DebugLocal],
+    accesses: Option<&Accesses>,
+    resources: &BTreeSet<u16>,
+    budget: &mut Budget,
+) -> Result<Option<(Vec<Option<JvmBytes>>, Split)>, StopReason> {
+    if slot < parameters || resources.contains(&slot) || !canonical.unreachable().is_empty() {
+        return Ok(None);
+    }
+    let Some(accesses) = accesses else {
+        return Ok(None);
+    };
+    if accesses.writes.len() < 2 || accesses.reads.is_empty() {
+        return Ok(None);
+    }
+    let mut blocks = BTreeSet::new();
+    let mut definitions = Vec::new();
+    for access in &accesses.writes {
+        poll(budget, Some(access.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(access.bci),
+        )?;
+        let block = ssa.blocks()[access.block].block();
+        if block.is_clone()
+            || !blocks.insert(block.clone())
+            || category(ssa.value(access.value).ty()).is_none()
+        {
+            return Ok(None);
+        }
+        definitions.push((access.bci, access.value, ()));
+    }
+    let Some(split) = owned_definition_split(ssa, accesses, definitions, Some(canonical), budget)?
+    else {
+        return Ok(None);
+    };
+    let mut edges: BTreeMap<_, Vec<_>> = BTreeMap::new();
+    for edge in canonical.edges() {
+        poll(budget, Some(edge.from().bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(edge.from().bci()),
+        )?;
+        if edge.kind() != CanonicalEdgeKind::Normal {
+            return Ok(None);
+        }
+        edges
+            .entry(edge.from().clone())
+            .or_default()
+            .push(edge.to().clone());
+    }
+    for owner in &blocks {
+        let mut pending = edges.get(owner).cloned().unwrap_or_default();
+        let mut seen = BTreeSet::new();
+        while let Some(block) = pending.pop() {
+            poll(budget, Some(block.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(block.bci()),
+            )?;
+            if blocks.contains(&block) {
+                return Ok(None);
+            }
+            if seen.insert(block.clone()) {
+                pending.extend(edges.get(&block).into_iter().flatten().cloned());
+            }
+        }
+    }
+    let mut writes: Vec<_> = accesses.writes.iter().collect();
+    writes.sort_by_key(|access| access.bci);
+    for pair in writes.windows(2) {
+        if !local_value_stays_before(ssa, operations, pair[0].value, pair[1].bci, budget)? {
+            return Ok(None);
+        }
+    }
+    let names = reference_split_names(
+        records,
+        accesses.reads.iter().map(|access| access.bci),
+        &accesses.writes,
+        Some(operations),
+        &split,
+        budget,
+    )?
+    .unwrap_or_else(|| vec![None; split.ranges.len()]);
+    Ok(Some((names, split)))
+}
+
 fn reference_split_names(
     records: &[&DebugLocal],
     read_bcis: impl IntoIterator<Item = u32>,
@@ -787,7 +962,7 @@ fn reference_split_names(
     operations: Option<&Operations>,
     split: &Split,
     budget: &mut Budget,
-) -> Result<Option<Vec<Option<String>>>, StopReason> {
+) -> Result<Option<Vec<Option<JvmBytes>>>, StopReason> {
     let segments = split.ranges.len();
     if records.is_empty() {
         return Ok(Some(vec![None; segments]));
@@ -809,7 +984,7 @@ fn reference_split_names(
         };
         if start >= end
             || row_map
-                .insert((start, end), record.name().to_string())
+                .insert((start, end), record.name().clone())
                 .is_some()
         {
             return Ok(None);
@@ -942,7 +1117,7 @@ fn reference_values_stay_before_boundaries(
             1,
             Some(*write_bci),
         )?;
-        let Some(value) = representative(ssa, *value) else {
+        let Some(value) = representative(ssa, *value, budget)? else {
             return Ok(false);
         };
         let mut pending = vec![value];
@@ -955,7 +1130,7 @@ fn reference_values_stay_before_boundaries(
                 1,
                 Some(*write_bci),
             )?;
-            let Some(value) = representative(ssa, value) else {
+            let Some(value) = representative(ssa, value, budget)? else {
                 return Ok(false);
             };
             if !visited.insert(value) {
@@ -998,6 +1173,115 @@ fn reference_values_stay_before_boundaries(
     Ok(true)
 }
 
+/// Check the complete alias chain before publishing a category boundary. A load, local copy,
+/// stack duplicate or cast can carry the old value beyond the last local access. Phis preserve
+/// that possibility too, including cycles; visiting each value once bounds the traversal.
+fn local_value_stays_before(
+    ssa: &SsaTable,
+    operations: &Operations,
+    value: ValueId,
+    boundary: u32,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let mut pending = vec![value];
+    let mut visited = BTreeSet::new();
+    while let Some(value) = pending.pop() {
+        poll(budget, Some(boundary))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(boundary),
+        )?;
+        let Some(value) = representative(ssa, value, budget)? else {
+            return Ok(false);
+        };
+        if !visited.insert(value) {
+            continue;
+        }
+        for use_ in ssa.value(value).uses() {
+            let at = use_.bci().unwrap_or_else(|| use_.block().bci());
+            poll(budget, Some(at))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+            if use_.bci().is_none() {
+                let outputs = live_phi_outputs(ssa, use_.block(), value, budget)?;
+                if outputs.is_empty() {
+                    continue;
+                }
+                if at >= boundary {
+                    return Ok(false);
+                }
+                pending.extend(outputs);
+                continue;
+            }
+            if at >= boundary {
+                return Ok(false);
+            }
+            let Some(instruction) = instruction_at_use(ssa, use_.block(), at, budget)? else {
+                return Ok(false);
+            };
+            if unsupported_stack_copy_uses_source(ssa, operations, instruction, value, budget)? {
+                return Ok(false);
+            }
+            // A store into another local has already materialized the copy at this BCI. Its
+            // later loads name that local, rather than this source variable. Any stack copy
+            // retained alongside the store is followed through its own SSA uses.
+            if matches!(operations.get(at), Some(Operation::Store { .. })) {
+                continue;
+            }
+            if let Some(forwarded) =
+                reference_forwarded_values(ssa, operations, instruction, value, budget)?
+            {
+                if forwarded.is_empty() {
+                    return Ok(false);
+                }
+                pending.extend(forwarded);
+            }
+        }
+    }
+    Ok(true)
+}
+
+/// A retained, unused SSA phi has no source-level consumer. Only live outputs extend a value's
+/// lifetime. Each operand visit is charged before it can be inspected, including replacement
+/// chains, so a many-predecessor merge cannot hide work in an iterator predicate.
+fn live_phi_outputs(
+    ssa: &SsaTable,
+    block: &CanonicalBlockId,
+    source: ValueId,
+    budget: &mut Budget,
+) -> Result<Vec<ValueId>, StopReason> {
+    let mut outputs = Vec::new();
+    for phi in ssa.phis() {
+        poll(budget, Some(block.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(block.bci()),
+        )?;
+        if phi.block() != block || ssa.value(phi.value()).uses().is_empty() {
+            continue;
+        }
+        for input in phi.inputs() {
+            poll(budget, Some(block.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(block.bci()),
+            )?;
+            if let jarde_jvm::method_ir::PhiInput::Value(value) = input
+                && representative(ssa, *value, budget)? == Some(source)
+            {
+                outputs.push(phi.value());
+                break;
+            }
+        }
+    }
+    Ok(outputs)
+}
+
 fn trivial_phi_outputs(
     ssa: &SsaTable,
     block: &CanonicalBlockId,
@@ -1016,7 +1300,7 @@ fn trivial_phi_outputs(
         if phi.block() != block {
             continue;
         }
-        let Some(output) = representative(ssa, phi.value()) else {
+        let Some(output) = representative(ssa, phi.value(), budget)? else {
             return Ok(None);
         };
         let mut contains_source = false;
@@ -1031,7 +1315,7 @@ fn trivial_phi_outputs(
             )?;
             let input = match input {
                 jarde_jvm::method_ir::PhiInput::Value(value) => {
-                    let Some(value) = representative(ssa, *value) else {
+                    let Some(value) = representative(ssa, *value, budget)? else {
                         return Ok(None);
                     };
                     value
@@ -1106,7 +1390,7 @@ fn unsupported_stack_copy_uses_source(
             1,
             Some(instruction.bci()),
         )?;
-        if matches!(slot, Slot::Stack(_)) && representative(ssa, *value) == Some(source) {
+        if matches!(slot, Slot::Stack(_)) && representative(ssa, *value, budget)? == Some(source) {
             return Ok(true);
         }
     }
@@ -1134,7 +1418,7 @@ fn reference_forwarded_values(
                 1,
                 Some(instruction.bci()),
             )?;
-            if *read_slot == slot && representative(ssa, *value) == Some(source) {
+            if *read_slot == slot && representative(ssa, *value, budget)? == Some(source) {
                 return Ok(true);
             }
         }
@@ -1149,7 +1433,9 @@ fn reference_forwarded_values(
                 1,
                 Some(instruction.bci()),
             )?;
-            if matches!(read_slot, Slot::Stack(_)) && representative(ssa, *value) == Some(source) {
+            if matches!(read_slot, Slot::Stack(_))
+                && representative(ssa, *value, budget)? == Some(source)
+            {
                 return Ok(true);
             }
         }
@@ -1183,14 +1469,14 @@ fn reference_forwarded_values(
             |required| *slot == required,
         );
         if selected
-            && matches!(ssa.value(*value).ty(), Value::Ref(_))
+            && category(ssa.value(*value).ty()).is_some()
             && matches!(
                 ssa.value(*value).def(),
                 jarde_jvm::method_ir::Definition::Instruction { bci, .. }
                     if *bci == instruction.bci()
             )
         {
-            if let Some(value) = representative(ssa, *value) {
+            if let Some(value) = representative(ssa, *value, budget)? {
                 forwarded.push(value);
             } else {
                 return Ok(None);
@@ -1214,9 +1500,6 @@ fn owned_definition_split<T: Eq>(
     if definitions
         .windows(2)
         .any(|window| window[0].0 == window[1].0)
-        || definitions
-            .windows(2)
-            .all(|window| window[0].2 == window[1].2)
     {
         return Ok(None);
     }
@@ -1228,13 +1511,18 @@ fn owned_definition_split<T: Eq>(
         let Some(boundary) = definitions.get(index + 1).map(|(bci, _, _)| *bci) else {
             break;
         };
-        let Some(value) = representative(ssa, *value) else {
+        let Some(value) = representative(ssa, *value, budget)? else {
             return Ok(None);
         };
         for use_ in ssa.value(value).uses() {
             let at = use_.bci().unwrap_or_else(|| use_.block().bci());
             poll(budget, Some(at))?;
             charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+            if use_.bci().is_none()
+                && live_phi_outputs(ssa, use_.block(), value, budget)?.is_empty()
+            {
+                continue;
+            }
             if at >= boundary {
                 return Ok(None);
             }
@@ -1244,9 +1532,19 @@ fn owned_definition_split<T: Eq>(
     // definition whose value it reads. A read whose value names no definition of this slot keeps
     // the slot one variable, and so does a definition two reads would claim.
     let mut by_bci: BTreeMap<u32, u16> = BTreeMap::new();
-    for (index, (bci, _, _)) in definitions.iter().enumerate() {
-        let index = u16::try_from(index).unwrap_or(u16::MAX);
+    let mut owners = BTreeMap::<ValueId, Option<u16>>::new();
+    for (index, (bci, value, _)) in definitions.iter().enumerate() {
+        let Ok(index) = u16::try_from(index) else {
+            return Ok(None);
+        };
+        let Some(value) = representative(ssa, *value, budget)? else {
+            return Ok(None);
+        };
         by_bci.insert(*bci, index);
+        owners
+            .entry(value)
+            .and_modify(|owner| *owner = None)
+            .or_insert(Some(index));
     }
     for read in &accesses.reads {
         poll(budget, Some(read.bci))?;
@@ -1256,22 +1554,12 @@ fn owned_definition_split<T: Eq>(
             1,
             Some(read.bci),
         )?;
-        let Some(value) = representative(ssa, read.value) else {
+        let Some(value) = representative(ssa, read.value, budget)? else {
             return Ok(None);
         };
-        let mut owners = definitions
-            .iter()
-            .enumerate()
-            .filter(|(_, (_, defined, _))| {
-                representative(ssa, *defined).is_some_and(|found| found == value)
-            });
-        let Some((index, _)) = owners.next() else {
+        let Some(index) = owners.get(&value).copied().flatten() else {
             return Ok(None);
         };
-        if owners.next().is_some() {
-            return Ok(None);
-        }
-        let index = u16::try_from(index).unwrap_or(u16::MAX);
         match by_bci.insert(read.bci, index) {
             // A read and a write at one BCI have to agree on the segment they touch.
             Some(assigned) if assigned != index => return Ok(None),
@@ -1295,7 +1583,9 @@ fn owned_definition_split<T: Eq>(
 
 /// Every later-segment access must remain outside all earlier-segment blocks on every normal
 /// path. Starting at outgoing edges makes an ordered pair of accesses in one block legal, while a
-/// real edge cycle back to that block is still found. Any exceptional/call-context edge refuses.
+/// real edge cycle back to that block is still found. A block-local lifetime can instead be
+/// re-created on every iteration: SSA already proved every read owns its store and no value
+/// survives its next definition. Any exceptional/call-context edge still refuses.
 fn normal_flow_stays_after_boundaries(
     ssa: &SsaTable,
     canonical: &CanonicalCfg,
@@ -1319,6 +1609,50 @@ fn normal_flow_stays_after_boundaries(
             .entry(edge.from().clone())
             .or_default()
             .push(edge.to().clone());
+    }
+    if let Some(first) = accesses.writes.first() {
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            (accesses.reads.len() + accesses.writes.len()) as u64,
+            Some(first.bci),
+        )?;
+        poll(budget, Some(first.bci))?;
+        if accesses
+            .reads
+            .iter()
+            .chain(&accesses.writes)
+            .all(|access| access.block == first.block)
+        {
+            let mut stores = BTreeMap::new();
+            for write in &accesses.writes {
+                poll(budget, Some(write.bci))?;
+                charge(budget, CountedBudgetDimension::IrItems, 1, Some(write.bci))?;
+                let Some(part) = by_bci.get(&write.bci) else {
+                    return Ok(false);
+                };
+                stores.insert(*part, write.bci);
+            }
+            // Entry is before all of this block's stores. A read before its own definition
+            // needs a loop-carried value and cannot use an iteration-local declaration.
+            for read in &accesses.reads {
+                poll(budget, Some(read.bci))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(read.bci),
+                )?;
+                if !by_bci
+                    .get(&read.bci)
+                    .and_then(|part| stores.get(part))
+                    .is_some_and(|store| *store <= read.bci)
+                {
+                    return Ok(false);
+                }
+            }
+            return Ok(true);
+        }
     }
     let max_segment = by_bci.values().copied().max().unwrap_or(0);
     for boundary in 1..=max_segment {
@@ -1397,18 +1731,18 @@ fn split(
     records: &[&DebugLocal],
     accesses: &BTreeMap<u16, Accesses>,
     resources: &BTreeSet<u16>,
-) -> Option<(Vec<String>, Split)> {
+) -> Option<(Vec<JvmBytes>, Split)> {
     if resources.contains(&slot) {
         return None;
     }
-    let mut sorted: Vec<(u32, u32, String)> = records
+    let mut sorted: Vec<(u32, u32, JvmBytes)> = records
         .iter()
         .map(|record| {
             let (start, end) = record.range()?;
-            Some((start, end, record.name().to_string()))
+            Some((start, end, record.name().clone()))
         })
         .collect::<Option<Vec<_>>>()?;
-    sorted.sort();
+    sorted.sort_by(|left, right| (left.0, left.1, &left.2.0).cmp(&(right.0, right.1, &right.2.0)));
     // Two ranges that touch (`end == next.start`) are disjoint; two that overlap are not, and a
     // record that covers no BCI states no range a variable is visible over.
     if sorted.windows(2).any(|window| window[0].1 > window[1].0)
@@ -1447,7 +1781,7 @@ fn split(
         .iter()
         .map(|(start, end, _)| (*start, *end))
         .collect();
-    let names: Vec<String> = sorted.into_iter().map(|(_, _, name)| name).collect();
+    let names: Vec<JvmBytes> = sorted.into_iter().map(|(_, _, name)| name).collect();
     Some((names, Split { by_bci, ranges }))
 }
 
@@ -1618,9 +1952,9 @@ mod reference_split_name_tests {
         records
             .iter()
             .map(|record| {
-                DebugLocal::over(
+                DebugLocal::over_raw(
                     record.slot,
-                    record.name_lossy(),
+                    record.name.clone(),
                     record.start_bci,
                     record.end_bci,
                 )
@@ -1754,6 +2088,24 @@ mod reference_split_name_tests {
             !matching_lvt_plan.splits.contains_key(&0),
             "matching non-overlapping rows must not bypass the actual alias refusal"
         );
+        let raw = [
+            JvmBytes(vec![0xed, 0xa0, 0x81]),
+            JvmBytes(vec![0xed, 0xa0, 0x82]),
+        ];
+        assert_eq!(
+            String::from_utf8_lossy(&raw[0].0),
+            String::from_utf8_lossy(&raw[1].0)
+        );
+        let raw_lvt = [
+            DebugLocal::over_raw(0, raw[0].clone(), 5, 12),
+            DebugLocal::over_raw(0, raw[1].clone(), 13, 17),
+        ];
+        let raw_plan = plan_for(&raw_lvt);
+        assert_eq!(
+            raw_plan.evidence[0],
+            SlotEvidence::Unnamed,
+            "distinct raw names cannot collapse to Whole when the actual surviving alias prevents splitting"
+        );
     }
 
     #[test]
@@ -1823,7 +2175,10 @@ mod reference_split_name_tests {
         };
         assert_eq!(
             run_names(&records, &slot.reads, &slot.writes).unwrap(),
-            Some(vec![Some("value".to_owned()), Some("value".to_owned())])
+            Some(vec![
+                Some(JvmBytes::from_unicode("value")),
+                Some(JvmBytes::from_unicode("value"))
+            ])
         );
 
         let non_adjacent = [records[0].clone(), DebugLocal::over(5, "value", 75, 82)];
@@ -1871,7 +2226,10 @@ mod reference_split_name_tests {
                 &mut budget,
             )
             .unwrap(),
-            Some(vec![Some("value".to_owned()), Some("value".to_owned())])
+            Some(vec![
+                Some(JvmBytes::from_unicode("value")),
+                Some(JvmBytes::from_unicode("value"))
+            ])
         );
         assert_eq!(split.by_bci.get(&30), Some(&0));
         assert_eq!(split.by_bci.get(&72), Some(&1));
@@ -1947,7 +2305,10 @@ mod reference_split_name_tests {
         let mut budget = test_budget(100);
         assert_eq!(
             reference_split_names(&records, read_bcis, &[], None, &split, &mut budget).unwrap(),
-            Some(vec![Some("value".to_owned()), Some("value".to_owned())])
+            Some(vec![
+                Some(JvmBytes::from_unicode("value")),
+                Some(JvmBytes::from_unicode("value"))
+            ])
         );
     }
 
@@ -1987,7 +2348,7 @@ mod reference_split_name_tests {
                 &mut stopped,
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 ..
             })
         ));

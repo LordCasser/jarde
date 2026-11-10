@@ -20,6 +20,7 @@ fn opened() -> (artifact::ArtifactSnapshot, ClassSourceRequest) {
         .open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("ArrayWrappedBinding"),
         },

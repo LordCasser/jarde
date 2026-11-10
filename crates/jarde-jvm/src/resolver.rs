@@ -36,6 +36,7 @@ use jarde_query::query::{ConsumerKind, ConsumerSchema, XrefItem, XrefOperation, 
 use jarde_reader::accounting::with_usage;
 use jarde_reader::artifact::{ArtifactSnapshot, budget_dimension_code};
 use jarde_reader::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
+use jarde_reader::classfile::ClassFacts;
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
     Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
@@ -44,6 +45,7 @@ use jarde_reader::model::{
 };
 use jarde_reader::view::{LoaderId, PhysicalScope};
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 /// Capability name of the resolution entry points while they are not implemented.
 ///
@@ -520,6 +522,24 @@ pub(crate) fn resolution_report(
     request: &ResolutionRequest,
     budget: &mut Budget,
 ) -> ResolutionReport {
+    resolution_report_with_ir(content, request, None, budget)
+}
+
+pub(crate) fn resolution_report_with_ir(
+    content: &[ArtifactSnapshot],
+    request: &ResolutionRequest,
+    ir: Option<&crate::method_ir::MethodIr>,
+    budget: &mut Budget,
+) -> ResolutionReport {
+    resolution_report_with_header(content, request, ir.and_then(|ir| ir.class_read()), budget)
+}
+
+pub(crate) fn resolution_report_with_header(
+    content: &[ArtifactSnapshot],
+    request: &ResolutionRequest,
+    known: Option<(&PhysicalDefinitionId, &Arc<ClassFacts>)>,
+    budget: &mut Budget,
+) -> ResolutionReport {
     let (problems, environment_identity) =
         validate_environment_with_caller(content, &request.environment, &request.caller);
     let mut diagnostics = environment_diagnostics(&problems);
@@ -559,6 +579,9 @@ pub(crate) fn resolution_report(
     };
 
     let mut closure = HeaderClosure::new(content, &request.environment);
+    if let Some((definition, facts)) = known {
+        closure = closure.with_header(definition, facts);
+    }
     // A refused charge during the publication of a resolution result: the entries already
     // published stay, and the stop is the execution the report has to name. It is recorded at
     // the phase that refused (2.3's rule diagnostics or the closure's own diagnostics), so the

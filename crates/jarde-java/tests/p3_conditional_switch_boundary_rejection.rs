@@ -304,21 +304,32 @@ fn recover_boundary(evidence: RecoveryEvidenceRequest, recovery_budget: Option<B
         )),
     )
     .with_debug_locals(reader_debug_locals(ir.code()));
-    let request = RecoveryRequest::new(ir, &facts, JAVA_8)
-        .with_evidence(evidence)
-        .with_subject(subject);
+    let request = RecoveryRequest::new(
+        ir,
+        &facts,
+        JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
+    )
+    .with_evidence(evidence)
+    .with_subject(subject);
     let report = match recovery_budget {
         Some(mut recovery_budget) => recover(&request, &mut recovery_budget),
         None => recover(&request, &mut budget),
     };
     if report.produced() {
-        let binding = report.artifact.binding().expect("produced result is bound");
-        assert_eq!(binding.method(), &method);
-        assert_eq!(binding.member_ordinal(), Some(ordinal));
         assert_eq!(
-            binding.environment(),
-            &analysis.report().environment_identity
+            report.input_origin,
+            jarde_java::report::RecoveryInputOrigin::CallerSupplied
         );
+        assert!(
+            report.artifact.binding().is_none(),
+            "caller subject metadata is not a verified read binding"
+        );
+        assert_eq!(analysis.ir().declaration().unwrap().identity(), &method);
     }
     Run {
         report,

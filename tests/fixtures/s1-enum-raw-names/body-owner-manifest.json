@@ -1,0 +1,73 @@
+{
+  "schema": "s1-enum-body-raw-owner-fixtures-v1",
+  "inputs": [
+    {
+      "case": "supplementary",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/s1-enum-raw-names/body-owner.jar",
+        "bytes": 2746,
+        "sha256": "29babd7eae92e26c36e900e6fe7c613dcd4530118f4657a81b99abb46b4e9e0b"
+      },
+      "initial_input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s1-raw-enum-owner-boundary-v1/initial/supplementary/input.jar",
+        "bytes": 2746,
+        "sha256": "29babd7eae92e26c36e900e6fe7c613dcd4530118f4657a81b99abb46b4e9e0b"
+      },
+      "build": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s1-raw-enum-owner-boundary-v1/initial/supplementary/input-build.json",
+        "bytes": 6426,
+        "sha256": "da74024d7813d31609f6a7351bf5c9edb71a4e28c81ad75df9746f26c85ca616"
+      }
+    },
+    {
+      "case": "unspellable",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/s1-enum-raw-names/body-owner-unspellable.jar",
+        "bytes": 2714,
+        "sha256": "298b2762ec0f4df2a848d2c48831823aef90449dbe097fc87fe99330aeb3e9c1"
+      },
+      "initial_input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s1-raw-enum-owner-boundary-v1/initial/unspellable/input.jar",
+        "bytes": 2714,
+        "sha256": "298b2762ec0f4df2a848d2c48831823aef90449dbe097fc87fe99330aeb3e9c1"
+      },
+      "build": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s1-raw-enum-owner-boundary-v1/initial/unspellable/input-build.json",
+        "bytes": 6346,
+        "sha256": "7a3ec7814fc176afac49ba7ff56e7b8ccaef700740eb886a19662967844e4fdc"
+      }
+    },
+    {
+      "case": "bad-mutf8",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/s1-enum-raw-names/body-owner-bad-mutf8.jar",
+        "bytes": 2708,
+        "sha256": "742787d4393e1de1d1c4666685fd97f608785e3435fe2926cff479927b74533e"
+      },
+      "initial_input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s1-raw-enum-owner-boundary-v1/initial/bad-mutf8/input.jar",
+        "bytes": 2708,
+        "sha256": "742787d4393e1de1d1c4666685fd97f608785e3435fe2926cff479927b74533e"
+      },
+      "build": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s1-raw-enum-owner-boundary-v1/initial/bad-mutf8/input-build.json",
+        "bytes": 6336,
+        "sha256": "3584df4fa22352b90e6258cd521d0f9b2bf22505ecd4cdc7bb7f6edea257cd7b"
+      }
+    }
+  ],
+  "source_family": "tests/fixtures/enum-string-field-name/demo/{LabeledOps,LabeledOps$1,LabeledOps$2,LabeledValue}.class",
+  "transformation": "只替换全部CP UTF8中的raw enum owner引用，Code及CP后class结构逐字节保持；ZIP名称标准UTF8",
+  "generator": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s1-raw-enum-owner-boundary-v1/initial/build-other-cases-r2.py",
+    "bytes": 3250,
+    "sha256": "067634ff253ee8078b4bad727c78e8a1b9e2064291b34539e1d95b9c82e4ae44"
+  },
+  "raw_cp_generator": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s1-raw-enum-owner-boundary-v1/initial/initial-builder-r1.py",
+    "bytes": 4856,
+    "sha256": "48159a9db19b1a3a235f54c3fd2a8d0113cb84a68083b7dd9fa3b86acc71bff1"
+  },
+  "target_execution": false,
+  "holdout": false
+}

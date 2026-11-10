@@ -153,9 +153,19 @@ fn recover(
         fixture.analysis.ir(),
         &fixture.facts,
         jarde_java::pass::JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
     )
     .with_evidence(evidence);
-    jarde_java::report::recover_for_class_source(&request, &mut Budget::new(limits()), false, false)
+    jarde_java::report::recover_for_class_source(
+        &request,
+        &mut Budget::new(limits()),
+        jarde_java::report::ClassSourceOptions::default(),
+        None,
+    )
 }
 
 fn allocation_for(
@@ -174,6 +184,7 @@ fn allocation_for(
     );
     assert!(result.report.produced(), "{:?}", result.report.outcome);
     let scan = result
+        .candidates
         .anonymous_allocations
         .expect("physical allocation scan");
     assert!(
@@ -183,7 +194,7 @@ fn allocation_for(
     let found: Vec<_> = scan
         .allocations
         .into_iter()
-        .filter(|allocation| allocation.class == target)
+        .filter(|allocation| allocation.class.0 == target.as_bytes())
         .collect();
     assert_eq!(found.len(), 1, "{target}");
     found.into_iter().next().expect("one target allocation")
@@ -249,8 +260,14 @@ fn same_run_new_sidecar_preserves_order_and_ignores_rule_details_selection() {
             slots,
             RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::RuleDetails),
         );
-        let essential_scan = essential.anonymous_allocations.expect("essential scan");
-        let detailed_scan = detailed.anonymous_allocations.expect("detailed scan");
+        let essential_scan = essential
+            .candidates
+            .anonymous_allocations
+            .expect("essential scan");
+        let detailed_scan = detailed
+            .candidates
+            .anonymous_allocations
+            .expect("detailed scan");
         assert_eq!(essential_scan, detailed_scan);
         assert!(essential.report.news.is_empty());
         assert!(
@@ -258,12 +275,12 @@ fn same_run_new_sidecar_preserves_order_and_ignores_rule_details_selection() {
                 .report
                 .news
                 .iter()
-                .any(|news| news.class == target && news.presented)
+                .any(|news| news.class.0 == target.as_bytes() && news.presented)
         );
         let candidate = essential_scan
             .allocations
             .iter()
-            .find(|entry| entry.class == target)
+            .find(|entry| entry.class.0 == target.as_bytes())
             .expect("candidate");
         assert!(candidate.verified);
         assert_eq!(candidate.argument_bcis.len(), expected_arguments);
@@ -285,6 +302,7 @@ fn frozen_anonymous_interface_return_bci_matches_its_allocation_scan() {
         recovered.report.outcome
     );
     let scan = recovered
+        .candidates
         .anonymous_allocations
         .as_ref()
         .expect("same-run anonymous allocation scan");
@@ -292,7 +310,11 @@ fn frozen_anonymous_interface_return_bci_matches_its_allocation_scan() {
     let [allocation] = scan.allocations.as_slice() else {
         panic!("expected one allocation BCI: {scan:?}");
     };
-    let ast = recovered.ast.as_ref().expect("direct-return AST sidecar");
+    let ast = recovered
+        .candidates
+        .ast
+        .as_ref()
+        .expect("direct-return AST sidecar");
     let (origin_bcis, target, argument_bcis, site_shape) =
         jarde_java::report::class_source_anonymous_return_site(ast)
             .expect("one direct return New from the method AST");
@@ -310,7 +332,7 @@ fn frozen_anonymous_interface_return_bci_matches_its_allocation_scan() {
     assert_eq!(allocation.constructor_bci, Some(4));
     assert!(allocation.argument_bcis.is_empty());
     assert_eq!(argument_bcis, allocation.argument_bcis);
-    assert_eq!(target.replace('.', "/"), allocation.class);
+    assert_eq!(target.replace('.', "/").as_bytes(), allocation.class.0);
 }
 
 #[test]
@@ -330,6 +352,7 @@ fn same_method_double_site_scan_preserves_both_bcis_without_rule_details() {
         RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::RuleDetails),
     );
     let scan = essential
+        .candidates
         .anonymous_allocations
         .as_ref()
         .expect("same-run allocation scan");
@@ -337,7 +360,7 @@ fn same_method_double_site_scan_preserves_both_bcis_without_rule_details() {
     let sites: Vec<_> = scan
         .allocations
         .iter()
-        .filter(|candidate| candidate.class == "AnonymousDoubleSite$1")
+        .filter(|candidate| candidate.class.0 == b"AnonymousDoubleSite$1")
         .collect();
     assert_eq!(
         sites.len(),
@@ -358,7 +381,7 @@ fn same_method_double_site_scan_preserves_both_bcis_without_rule_details() {
         "both sites keep the same physical method identity",
     );
     assert_eq!(
-        essential.anonymous_allocations, detailed.anonymous_allocations,
+        essential.candidates.anonymous_allocations, detailed.candidates.anonymous_allocations,
         "RuleDetails selection cannot change the sidecar",
     );
 }
@@ -374,13 +397,14 @@ fn allocation_candidates_include_new_expressions_reserved_by_concat() {
     );
     assert!(result.report.produced(), "{:?}", result.report.outcome);
     let scan = result
+        .candidates
         .anonymous_allocations
         .expect("physical allocation scan");
     assert!(scan.complete, "{scan:?}");
     let string_builders: Vec<_> = scan
         .allocations
         .iter()
-        .filter(|allocation| allocation.class == "java/lang/StringBuilder")
+        .filter(|allocation| allocation.class.0 == b"java/lang/StringBuilder")
         .collect();
     assert_eq!(
         string_builders.len(),
@@ -420,20 +444,25 @@ fn unresolved_new_constant_pool_entry_cannot_yield_a_complete_scan() {
         fixture.analysis.ir(),
         &fixture.facts,
         jarde_java::pass::JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
     )
     .with_evidence(RecoveryEvidenceRequest::essential());
     let result = jarde_java::report::recover_for_class_source(
         &request,
         &mut Budget::new(limits()),
-        false,
-        false,
+        jarde_java::report::ClassSourceOptions::default(),
+        None,
     );
     assert!(
         !result.report.produced(),
         "invalid new CP type stops frame analysis"
     );
     assert!(
-        result.anonymous_allocations.is_none(),
+        result.candidates.anonymous_allocations.is_none(),
         "a stopped recovery has no scan; callers must treat absent scan as incomplete"
     );
 }

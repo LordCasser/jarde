@@ -58,6 +58,8 @@
 //! back over it.
 
 use jarde_jvm::method_ir::{Slot, SsaInstruction, SsaTable, ValueId};
+use jarde_reader::classfile::{DescriptorComponent, DescriptorKind, descriptor_facts};
+use jarde_reader::model::JvmBytes;
 use serde::Serialize;
 
 use crate::ast::Type;
@@ -65,7 +67,7 @@ use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::evidence::Publication;
 use crate::facts::{ACC_STATIC, CallTarget, InvokeKind, MethodFacts, Operation};
-use crate::lambda::parse_method;
+use crate::lambda::parse_method_bytes;
 use crate::pass::{BRIDGE, Precondition, RuleVersion};
 use crate::refusal::{Gap, Refusal};
 
@@ -83,7 +85,76 @@ pub struct BridgeParameterCast {
     /// The cast instruction's BCI within the bridge body.
     pub bci: u32,
     /// The exact internal name the cast checks.
-    pub ty: String,
+    pub ty: JvmBytes,
+}
+
+/// One class-level bridge admission result and whether its complete-source projection committed.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassSourceBridgeProof {
+    /// The physical bridge method whose same-run plan entered this proof.
+    pub member: jarde_reader::model::PhysicalMethodId,
+    /// The unique source method when all forward and signature premises were established.
+    pub target: Option<jarde_reader::model::PhysicalMethodId>,
+    /// The invocation BCI retained by the same-run `bridge@1` candidate.
+    pub call_bci: Option<u32>,
+    /// Whether the bridge may be elided from Java source under the proved inherited contract.
+    pub admitted: bool,
+    /// Whether the complete source replaced this member's Java declaration with a proof note.
+    pub projected: bool,
+    /// The first conservative reason the complete proof refused admission.
+    pub refusal: Option<String>,
+}
+
+/// Prepare the whole class-source bridge projection before its owner charges output and commits.
+/// The supplier exposes physical member facts only; Java owns the joins and the source explanation.
+#[doc(hidden)]
+pub fn stage_class_source_projections<M>(
+    proofs: &[ClassSourceBridgeProof],
+    methods: &[M],
+    method_facts: impl Fn(
+        &M,
+    ) -> (
+        u64,
+        &jarde_reader::model::PhysicalMethodId,
+        &jarde_reader::model::JvmString,
+        &jarde_reader::model::JvmString,
+    ),
+) -> Option<Vec<(usize, String)>> {
+    let mut staged = Vec::new();
+    for proof in proofs.iter().filter(|proof| proof.admitted) {
+        let target = proof.target.as_ref()?;
+        let call_bci = proof.call_bci?;
+        let bridge_matches: Vec<_> = methods
+            .iter()
+            .enumerate()
+            .filter(|(_, method)| method_facts(method).1 == &proof.member)
+            .collect();
+        let [(bridge_index, bridge)] = bridge_matches.as_slice() else {
+            return None;
+        };
+        let target_matches: Vec<_> = methods
+            .iter()
+            .filter(|method| method_facts(method).1 == target)
+            .collect();
+        let [target_method] = target_matches.as_slice() else {
+            return None;
+        };
+        let (bridge_record, _, bridge_name, bridge_descriptor) = method_facts(bridge);
+        let (target_record, _, target_name, target_descriptor) = method_facts(target_method);
+        staged.push((
+            *bridge_index,
+            format!(
+                "// jarde: projected bridge `{}` at physical method record {}: bridge@1 proved a pure call at BCI {} to source declaration `{}` at method record {}; the resolved erased contract lets javac regenerate the bridge",
+                crate::source_proof::member_label(bridge_name, bridge_descriptor),
+                bridge_record,
+                call_bci,
+                crate::source_proof::member_label(target_name, target_descriptor),
+                target_record,
+            ),
+        ));
+    }
+    Some(staged)
 }
 
 /// What one body was decided to be, in the terms the builder reads.
@@ -168,6 +239,8 @@ impl Plan {
             pure_forward: self.pure_forward,
             presented: self.presented,
             refusal: self.refusal.clone(),
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
         };
         crate::stop::poll(budget, self.call_bci)?;
         Ok(candidate)
@@ -368,7 +441,7 @@ fn forward_shape(
     operations: &Operations,
 ) -> Result<Forward, Refusal> {
     let descriptor = facts.descriptor();
-    let Some((parameters, _)) = parse_method(descriptor) else {
+    let Some((parameters, _)) = parse_method_bytes(&facts.raw_descriptor().0) else {
         return Err(Refusal::shape(
             "jre_bridge_shape",
             format!("the member's own descriptor `{descriptor}` is not one this layer reads"),
@@ -424,7 +497,7 @@ fn forward_shape(
     // verified against the forwarded invocation's own descriptor right after, because that
     // descriptor is the source method's own signature and the bitwise comparison against it is
     // what makes the cast reconstructible rather than an extra check.
-    let mut parameter_casts: Vec<(u16, u32, String, ValueId)> = Vec::new();
+    let mut parameter_casts: Vec<(u16, u32, JvmBytes, ValueId)> = Vec::new();
     loop {
         let Some(next) = instructions.get(cursor) else {
             return Err(shape_error("the body ends before it forwards anything"));
@@ -488,22 +561,35 @@ fn forward_shape(
     // same parameter. Anything else is a check that can fail, which the source re-derives no
     // bridge from.
     if !parameter_casts.is_empty() {
-        let Some((invoked_parameters, _)) = parse_method(target.descriptor()) else {
+        let Ok(invoked) = descriptor_facts(&target.raw_descriptor().0, DescriptorKind::Method)
+        else {
             return Err(shape_error(format!(
                 "the forwarded invocation's descriptor `{}` is not one this layer reads",
                 target.descriptor()
             )));
         };
+        // Preserve the old parse_method_bytes gate over the complete invoked descriptor, not
+        // only the parameters that happen to carry casts. Identity comparison below stays raw.
+        if !invoked
+            .components()
+            .all(|component| crate::lambda::type_of_component(component).is_some())
+        {
+            return Err(shape_error(format!(
+                "the forwarded invocation's descriptor `{}` is not one this layer reads",
+                target.descriptor()
+            )));
+        }
         for (parameter, bci, ty, _) in &parameter_casts {
-            let canonical = matches!(
-                invoked_parameters.get(usize::from(*parameter)),
-                Some(Type::Reference(name)) if name == &source_name(ty)
-            );
+            let canonical = invoked
+                .parameters()
+                .get(usize::from(*parameter))
+                .is_some_and(|parameter| canonical_object_cast(ty, parameter));
             if !canonical {
+                let cast_name = ty.to_unicode().unwrap_or_else(|| format!("{:?}", ty.0));
                 return Err(Refusal::shape(
                     "jre_bridge_cast_not_erasure",
                     format!(
-                        "the cast at BCI {bci} casts parameter {parameter} to `{ty}` and the forwarded invocation `{}.{}` does not declare that type for the parameter: a value the erased signature declares as the wider type is not proven to be that narrower one, so that cast is a check that can fail — it is not the narrowing the source re-derives",
+                        "the cast at BCI {bci} casts parameter {parameter} to `{cast_name}` and the forwarded invocation `{}.{}` does not declare that type for the parameter: a value the erased signature declares as the wider type is not proven to be that narrower one, so that cast is a check that can fail — it is not the narrowing the source re-derives",
                         target.owner(),
                         target.name()
                     ),
@@ -581,15 +667,23 @@ fn forward_shape(
             // it to `C` neither throws nor changes it. What the bridge declares it returns is a
             // different question (it is the *erased* type, which is why the cast exists at all), and
             // it is not evidence about the cast.
-            let invocation_returns_the_cast = matches!(
-                parse_method(target.descriptor()).and_then(|(_, returns)| returns),
-                Some(Type::Reference(name)) if name == source_name(ty)
-            );
+            let invocation_returns_the_cast =
+                descriptor_facts(&target.raw_descriptor().0, DescriptorKind::Method).is_ok_and(
+                    |invoked| {
+                        invoked
+                            .components()
+                            .all(|component| crate::lambda::type_of_component(component).is_some())
+                            && invoked
+                                .result()
+                                .is_some_and(|result| canonical_object_cast(ty, result))
+                    },
+                );
             if !invocation_returns_the_cast {
+                let cast_name = ty.to_unicode().unwrap_or_else(|| format!("{:?}", ty.0));
                 return Err(Refusal::shape(
                     "jre_bridge_cast_not_erasure",
                     format!(
-                        "the cast at BCI {} casts to `{ty}` and the forwarded invocation `{}.{}` does not declare that as its return type, so the cast is not the erasure of the forwarded value: it is a check that can fail",
+                        "the cast at BCI {} casts to `{cast_name}` and the forwarded invocation `{}.{}` does not declare that as its return type, so the cast is not the erasure of the forwarded value: it is a check that can fail",
                         after.bci(),
                         target.owner(),
                         target.name()
@@ -650,13 +744,19 @@ fn forward_shape(
     Ok(Forward {
         target: target.clone(),
         call_bci: invoke.bci(),
-        cast_type: cast.as_ref().map(|(_, ty)| ty.clone()),
+        cast_type: cast.as_ref().and_then(|(_, ty)| ty.to_unicode()),
         cast_bci: cast.map(|(instruction, _)| instruction.bci()),
         parameter_casts: parameter_casts
             .into_iter()
             .map(|(parameter, bci, ty, _)| BridgeParameterCast { parameter, bci, ty })
             .collect(),
     })
+}
+
+/// The existing object-only bridge cast domain, compared before source spelling. Source
+/// expressibility is checked separately by the bridge plan; identity itself never uses display.
+pub(crate) fn canonical_object_cast(ty: &JvmBytes, component: &DescriptorComponent) -> bool {
+    component.dimensions() == 0 && component.object_name() == Some(ty)
 }
 
 /// A shape refusal that names the forward the body failed to be.
@@ -729,6 +829,8 @@ pub struct ClassSourceBridgeCandidate {
     pub presented: bool,
     /// The `bridge@1` refusal, when the shape or declaration precondition was not met.
     pub refusal: Option<BridgeRefusal>,
+    #[cfg(any(test, feature = "test-support"))]
+    pub(crate) observation: crate::observation::Token,
 }
 
 impl BridgeRecord {
@@ -775,11 +877,87 @@ impl BridgeRefusal {
 
 #[cfg(test)]
 mod tests {
-    use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+    use jarde_reader::budget::{Budget, CancellationToken, Limits};
 
     use crate::facts::{CallTarget, InvokeKind, MethodFacts};
 
-    use super::Plan;
+    use super::{BridgeParameterCast, Plan, canonical_object_cast};
+    use jarde_reader::classfile::{DescriptorKind, descriptor_facts};
+    use jarde_reader::model::JvmBytes;
+
+    #[test]
+    fn canonical_cast_and_class_recheck_share_raw_descriptor_identity() {
+        let bridge = b"(Ljava/lang/Object;)Ljava/lang/Object;";
+        let target = JvmBytes::from_unicode("(Lp/𐐀Value;)Lp/𐐀Value;");
+        let descriptor = descriptor_facts(&target.0, DescriptorKind::Method).unwrap();
+        let cast = BridgeParameterCast {
+            parameter: 0,
+            bci: 2,
+            ty: JvmBytes::from_unicode("p/𐐀Value"),
+        };
+        assert!(canonical_object_cast(&cast.ty, &descriptor.parameters()[0]));
+        assert!(canonical_object_cast(
+            &cast.ty,
+            descriptor.result().unwrap()
+        ));
+        assert!(!crate::source_proof::bridge_parameter_casts_mismatch(
+            std::slice::from_ref(&cast),
+            bridge,
+            &target.0,
+        ));
+        let misplaced = BridgeParameterCast {
+            parameter: 1,
+            ..cast.clone()
+        };
+        assert!(crate::source_proof::bridge_parameter_casts_mismatch(
+            &[misplaced],
+            bridge,
+            &target.0
+        ));
+        let wrong = BridgeParameterCast {
+            ty: JvmBytes::from_unicode("p/Other"),
+            ..cast
+        };
+        assert!(!canonical_object_cast(
+            &wrong.ty,
+            descriptor.result().unwrap()
+        ));
+        assert!(crate::source_proof::bridge_parameter_casts_mismatch(
+            &[wrong],
+            bridge,
+            &target.0
+        ));
+
+        // Preserve the existing object-only domain; no array or primitive cast is admitted.
+        for name in ["[Lp/𐐀Value;", "I"] {
+            let field = JvmBytes::from_unicode(name);
+            let component = descriptor_facts(&field.0, DescriptorKind::Field).unwrap();
+            let raw_cast = JvmBytes::from_unicode(name);
+            assert!(!canonical_object_cast(
+                &raw_cast,
+                component.single().unwrap()
+            ));
+        }
+        // A physical match and a source spelling are separate questions. The plan still refuses
+        // these names, while the class recheck's bitwise contract remains a raw comparison.
+        let field = JvmBytes::from_unicode("Lp/😀;");
+        let component = descriptor_facts(&field.0, DescriptorKind::Field).unwrap();
+        assert!(canonical_object_cast(
+            &JvmBytes::from_unicode("p/😀"),
+            component.single().unwrap()
+        ));
+        assert!(crate::lambda::type_of_component(component.single().unwrap()).is_none());
+        let raw_cast = JvmBytes(vec![b'p', b'/', 0xed, 0xa0, 0x80]);
+        let mut field = vec![b'L'];
+        field.extend_from_slice(&raw_cast.0);
+        field.push(b';');
+        let descriptor = descriptor_facts(&field, DescriptorKind::Field).unwrap();
+        assert!(canonical_object_cast(
+            &raw_cast,
+            descriptor.single().unwrap()
+        ));
+        assert!(crate::lambda::type_of_component(descriptor.single().unwrap()).is_none());
+    }
 
     #[test]
     fn only_a_declared_bridge_is_this_rules_business() {
@@ -823,7 +1001,7 @@ mod tests {
         assert!(matches!(
             plan.class_source_candidate(None, Some(0x1041), false, &mut bounded),
             Err(crate::stop::StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 ..
             })
         ));

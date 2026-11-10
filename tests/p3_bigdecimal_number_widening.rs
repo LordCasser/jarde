@@ -88,6 +88,7 @@ fn archive(files: &[(&str, &[u8])]) -> Vec<u8> {
 
 fn class_source(snapshot: &artifact::ArtifactSnapshot, class: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },

@@ -1,0 +1,42 @@
+[
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/GenericParent.java",
+    "bytes": 202,
+    "sha256": "edac44055d80564a4292fe064724183dd379caa49bfa7b09b083ec55b4c8d1d3"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/HeaderClosed.java",
+    "bytes": 228,
+    "sha256": "454b40cc0652278e730759096edb81fef90b86e5813babfa238c9862b6a1e426"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/HeaderUnclosed.java",
+    "bytes": 250,
+    "sha256": "ce033251357915b0cd19acb394e73fe96a0a02079a85edd5b39215787c0fee3c"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/src/flow/TypeTag.java",
+    "bytes": 265,
+    "sha256": "7d7fcebd1e2c9fe3ad854fea67c2ede340b47c096c0926457cd9aa2fa8579dba"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/classes/flow/GenericParent.class",
+    "bytes": 458,
+    "sha256": "fe362b0f07f9859c95aa84da1194f53103c6996121a8f283acfaef0445658979"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/classes/flow/HeaderClosed.class",
+    "bytes": 699,
+    "sha256": "cedb9ca5cdc635f128fc0f0e10a3eed53efade69494fbd3e1ddd54a37ac09aef"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/classes/flow/HeaderUnclosed.class",
+    "bytes": 786,
+    "sha256": "14e0dd5784510954ac5a49dd9b708f28aea22f10b3f57efa8f988c0ef6f203c8"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-header-unclosed-r1/classes/flow/TypeTag.class",
+    "bytes": 374,
+    "sha256": "34a9c02ba11df7d13e487abd872a8b9f042b998e56e9f15d7ec6003330e3ed97"
+  }
+]

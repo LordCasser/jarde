@@ -35,3 +35,7 @@ test-support = ["jarde-reader/test-support"]
 jarde-reader = { path = "../jarde-reader", version = "=0.1.0", features = ["test-support"] }
 rawzip = "=0.5.1"
 serde_json = "=1.0.151"
+
+[build-dependencies]
+# Build identity only; reuse the workspace-pinned pure Rust implementation.
+blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }

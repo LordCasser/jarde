@@ -43,6 +43,7 @@ fn report() -> ClassSourceReport {
         .open(ArtifactInput::bytes(CLASS.to_vec()), &mut b)
         .unwrap();
     let q = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("ActualStackJoin"),
         },

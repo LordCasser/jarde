@@ -153,6 +153,7 @@ fn recover_with_budget(
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             budget,
@@ -271,7 +272,7 @@ fn negation_emission_still_honors_the_output_budget() {
         matches!(
             report.outcome,
             RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: CountedBudgetDimension::OutputBytes,
+                dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
                 ..
             })
         ),

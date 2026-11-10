@@ -477,7 +477,7 @@ fn real_switch_return_certificate_and_target_boundaries_refuse_without_claims() 
                 if matches!(
                     result,
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         at: Some(SN_SWITCH_BCI),
                         ..
                     })
@@ -581,13 +581,14 @@ fn real_switch_return_certificate_and_target_boundaries_refuse_without_claims() 
                     panic!("deadline expires after complete Reader preparation, before proof work")
                 }
             };
-            assert_eq!(
+            assert!(matches!(
                 deadline,
-                StopReason::Interrupted {
-                    code: crate::stop::BUDGET_INTERRUPTED_CODE,
-                    at: Some(SN_SWITCH_BCI)
+                StopReason::Budget {
+                    dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
+                    at: Some(SN_SWITCH_BCI),
+                    ..
                 }
-            );
+            ));
             assert!(deadline_walker.visited.is_empty());
             assert!(deadline_walker.catch_joins.is_empty());
             assert!(deadline_walker.loop_catch_terminal_owners.is_empty());

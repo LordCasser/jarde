@@ -1,0 +1,9 @@
+crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/src/flow/CallBoxConsumer.java:13: 错误: 对set的引用不明确
+    public static void typedCollision(CallBox<String> box, String value) { box.set(value); }
+                                                                              ^
+  CallBox 中的方法 set(T) 和 CallBox 中的方法 set(String) 都匹配
+  其中, T是类型变量:
+    T扩展已在类 CallBox中声明的Object
+注: crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/src/flow/CallBoxConsumer.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+1 个错误

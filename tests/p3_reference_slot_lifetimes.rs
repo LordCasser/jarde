@@ -281,6 +281,7 @@ fn opened(bytes: &[u8], name: &str) -> (ArtifactSnapshot, ClassSourceRequest) {
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .expect("frozen Java 8 class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -335,6 +336,98 @@ fn assert_pair(text: &str, first_type: &str, second_type: &str) {
     );
 }
 
+/// The one method whose newly proved category-two reuse is allowed to differ from this negative
+/// class's frozen source. The four-space signature and method-closing boundary are specific to this
+/// class; this deliberately is not a Java parser.
+fn category2_adjacent_range(text: &str) -> std::ops::Range<usize> {
+    let signature = "    public static long category2Adjacent() {";
+    let start = text
+        .find(signature)
+        .expect("SlotReuseBoundaries has its frozen category2Adjacent signature");
+    let close = text[start..]
+        .find("\n    }\n")
+        .map(|offset| start + offset + "\n    }".len())
+        .expect("category2Adjacent has the four-space class-method closing brace");
+    start..close
+}
+
+/// Compare all of the frozen class output except the one method whose wider-local split is newly
+/// supported. Only the in-memory comparison is normalized; the baseline fixture remains untouched.
+fn restore_frozen_category2_method(actual: &str, baseline: &str) -> String {
+    let actual_range = category2_adjacent_range(actual);
+    let baseline_range = category2_adjacent_range(baseline);
+    format!(
+        "{}{}{}",
+        &actual[..actual_range.start],
+        &baseline[baseline_range],
+        &actual[actual_range.end..]
+    )
+}
+
+fn assert_category2_adjacent_presentation(report: &ClassSourceReport) {
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"category2Adjacent")
+        .expect("category2Adjacent remains in the class method table");
+    let ClassSourceOutcome::Recovered { report: method, .. } = &method.outcome else {
+        panic!("category2Adjacent is recovered as a method body");
+    };
+    let text = &method.text;
+    assert!(
+        !text.contains("@bytecode") && !text.contains("jarde_refused_body"),
+        "category2Adjacent no longer carries its previous fallback:\n{text}"
+    );
+
+    let arrays = declared_names(text, "int[]");
+    let wide = declared_names(text, "long");
+    let narrow = declared_names(text, "int");
+    assert_eq!(
+        arrays.len(),
+        1,
+        "the earlier reference lifetime is declared once:\n{text}"
+    );
+    assert_eq!(
+        wide.len(),
+        1,
+        "the category-two lifetime is declared once:\n{text}"
+    );
+    assert_eq!(
+        narrow.len(),
+        1,
+        "the later narrow lifetime is declared once:\n{text}"
+    );
+    assert_eq!(
+        wide[0],
+        format!("{}_2", arrays[0]),
+        "the wide lifetime owns the reused slot name:\n{text}"
+    );
+
+    assert!(
+        text.contains(&format!("if ({}[0] == 0)", arrays[0])),
+        "the condition reads the array lifetime:\n{text}"
+    );
+    assert!(
+        text.contains("return 0L;"),
+        "the zero branch keeps its return:\n{text}"
+    );
+    assert!(
+        text.contains(&format!("(int) {}", wide[0])),
+        "the narrow local is initialized from the wide value:\n{text}"
+    );
+    assert!(
+        text.contains(&format!("{} + (long) {}", wide[0], narrow[0])),
+        "the return reads both the wide and narrow locals:\n{text}"
+    );
+
+    // Other methods in this class still contain frozen refusal markers; this is a method-level
+    // recovery, not a claim that the complete negative class became Java or was compiled.
+    assert!(
+        report.text.contains("@bytecode"),
+        "the complete class retains its unrelated partial methods"
+    );
+}
+
 #[test]
 fn all_sixteen_no_debug_classes_keep_each_reference_lifetime_separate() {
     for (name, bytes, first_type, second_type) in CASES {
@@ -382,6 +475,30 @@ fn replace_once(source: &str, old: &str, new: &str) -> String {
         "expected one frozen source segment: {old}"
     );
     source.replacen(old, new, 1)
+}
+
+fn assert_one_local_declaration_refinement(
+    class_name: &str,
+    actual: &str,
+    baseline: &str,
+    current_declaration: &str,
+    old_declaration: &str,
+) {
+    assert_eq!(
+        actual.matches(current_declaration).count(),
+        1,
+        "{class_name}: exactly one current local declaration changed"
+    );
+    assert_eq!(
+        baseline.matches(old_declaration).count(),
+        1,
+        "{class_name}: exactly one corresponding old local declaration exists"
+    );
+    let restored = replace_once(actual, current_declaration, old_declaration);
+    assert_eq!(
+        restored, baseline,
+        "{class_name}: all other source bytes match the frozen baseline"
+    );
 }
 
 fn same_name_expected(name: &str, baseline: &str) -> String {
@@ -542,6 +659,65 @@ fn unsupported_reference_boundaries_keep_the_cli9_source_verbatim() {
     assert_eq!(NEGATIVE_CASES.len(), 7);
     for (name, bytes, baseline) in NEGATIVE_CASES {
         let report = recover(bytes, name, &RecoveryEvidenceRequest::all());
+        if *name == "SlotReuseBoundaries" {
+            assert_category2_adjacent_presentation(&report);
+            let normalized = restore_frozen_category2_method(&report.text, baseline);
+            assert_eq!(
+                normalized, *baseline,
+                "{name}: every byte outside category2Adjacent stays frozen"
+            );
+            continue;
+        }
+        if matches!(*name, "V3" | "V4") {
+            assert_one_local_declaration_refinement(
+                name,
+                &report.text,
+                baseline,
+                "        java.lang.Object local1;\n",
+                "        int[] local1;\n",
+            );
+            continue;
+        }
+        if *name == "HeldUse" {
+            assert_one_local_declaration_refinement(
+                name,
+                &report.text,
+                baseline,
+                "        java.lang.Object local0 = new java.lang.StringBuilder(\"old\");\n",
+                "        java.lang.StringBuilder local0 = new java.lang.StringBuilder(\"old\");\n",
+            );
+            continue;
+        }
+        if *name == "RefLoopBack" {
+            assert!(
+                report
+                    .methods
+                    .iter()
+                    .all(|method| method.markers.is_empty())
+            );
+            for method in &report.methods {
+                assert!(matches!(
+                    method.outcome,
+                    ClassSourceOutcome::Recovered { .. }
+                ));
+            }
+            let current_lifetime = concat!(
+                "            java.lang.StringBuilder local2_2 = new java.lang.StringBuilder(\"second\");\n",
+                "            local1 = local1 + local2_2.length();\n",
+            );
+            let old_lifetime = concat!(
+                "            local2 = new java.lang.StringBuilder(\"second\");\n",
+                "            local1 = local1 + local2.length();\n",
+            );
+            assert_eq!(report.text.matches(current_lifetime).count(), 1);
+            assert_eq!(baseline.matches(old_lifetime).count(), 1);
+            let restored = replace_once(&report.text, current_lifetime, old_lifetime);
+            assert_eq!(
+                restored, *baseline,
+                "{name}: only the proved RefLoopBack split changed"
+            );
+            continue;
+        }
         assert_eq!(
             report.text, *baseline,
             "{name}: unsupported-shape output changed"
@@ -606,7 +782,19 @@ fn held_reference_across_a_local_overwrite_is_not_published_as_a_slot_alias() {
         .find(|(name, _, _)| *name == "HeldUse")
         .expect("the frozen HeldUse negative is present");
     let report = recover(bytes, name, &RecoveryEvidenceRequest::all());
-    assert_eq!(report.text, *baseline, "HeldUse source stays verbatim");
+    assert_one_local_declaration_refinement(
+        name,
+        &report.text,
+        baseline,
+        "        java.lang.Object local0 = new java.lang.StringBuilder(\"old\");\n",
+        "        java.lang.StringBuilder local0 = new java.lang.StringBuilder(\"old\");\n",
+    );
+    assert!(
+        report
+            .text
+            .contains("the value at BCI 23 is the value local 0 held at BCI 10"),
+        "HeldUse still publishes the held-value refusal"
+    );
     let method = report
         .methods
         .iter()
@@ -634,9 +822,16 @@ fn held_reference_across_a_local_overwrite_is_not_published_as_a_slot_alias() {
 fn nonzero_stack_reference_forwarding_keeps_both_jdk_sources_and_metadata_unchanged() {
     for (bytes, baseline) in NONZERO_HELD_USE_CASES {
         let report = recover(bytes, "NonzeroHeldUse", &RecoveryEvidenceRequest::all());
-        assert_eq!(
-            report.text, *baseline,
-            "NonzeroHeldUse source stays verbatim"
+        assert_one_local_declaration_refinement(
+            "NonzeroHeldUse",
+            &report.text,
+            baseline,
+            "        java.lang.Object local0 = new java.lang.StringBuilder(\"old\");\n",
+            "        java.lang.StringBuilder local0 = new java.lang.StringBuilder(\"old\");\n",
+        );
+        assert!(
+            report.text.contains("// @bytecode 28 25 13 12"),
+            "NonzeroHeldUse still publishes its unresolved forwarding refusal"
         );
         let method = report
             .methods

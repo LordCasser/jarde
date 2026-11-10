@@ -62,6 +62,8 @@
 //! name reads.
 
 use jarde_reader::classfile::CpEntryFacts;
+use jarde_reader::classfile::{CpEntryKind, cp_entry};
+use jarde_reader::model::JvmBytes;
 use jarde_reader::model::PhysicalMethodId;
 use serde::Serialize;
 
@@ -71,7 +73,7 @@ use crate::facts::{
     ACC_STATIC, ACC_SYNTHETIC, CallTarget, ClassMembers, FieldAccess, InvokeKind, MemberBody,
     Operation,
 };
-use crate::lambda::parse_method;
+use crate::lambda::parse_method_bytes;
 use crate::pass::{ACCESSOR, IrTable, Precondition, RuleVersion};
 use crate::refusal::Refusal;
 
@@ -121,11 +123,11 @@ pub(crate) struct Evidence {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct AccessorField {
     /// The field's owner in internal form, exactly as the class file states it.
-    pub owner: String,
+    pub owner: JvmBytes,
     /// The field's name.
-    pub name: String,
+    pub name: JvmBytes,
     /// The field's descriptor.
-    pub descriptor: String,
+    pub descriptor: JvmBytes,
 }
 
 /// Which of the two verified bodies one accessor has.
@@ -162,7 +164,8 @@ pub(crate) struct Shape {
 /// the call sites it returns `true` for — so what a run reads the class's members *for* is what the
 /// rule would decide from, and never a second opinion about which calls matter.
 fn names_an_accessor(target: &CallTarget) -> bool {
-    matches!(target.kind(), InvokeKind::Static) && target.name().starts_with(MARKER)
+    matches!(target.kind(), InvokeKind::Static)
+        && target.raw_name().0.starts_with(MARKER.as_bytes())
 }
 
 /// One call site this rule would read a callee for, as the presented body's own decode states it.
@@ -178,11 +181,11 @@ pub struct AccessorCandidate {
     /// The BCI of the call site in the presented body.
     pub call_site: u32,
     /// The owner the call named, in internal form (`Test`), exactly as the class file spells it.
-    pub owner: String,
+    pub owner: JvmBytes,
     /// The member name the call named.
-    pub name: String,
+    pub name: JvmBytes,
     /// The member descriptor the call named.
-    pub descriptor: String,
+    pub descriptor: JvmBytes,
 }
 
 /// Every call site of one payload that would make this rule read a callee's body, in BCI order.
@@ -203,9 +206,9 @@ pub fn candidates(ir: &jarde_jvm::method_ir::MethodIr) -> Vec<AccessorCandidate>
             Some(Operation::Invoke(target)) if names_an_accessor(target) => {
                 Some(AccessorCandidate {
                     call_site: instruction.bci,
-                    owner: target.owner().to_string(),
-                    name: target.name().to_string(),
-                    descriptor: target.descriptor().to_string(),
+                    owner: target.raw_owner().clone(),
+                    name: target.raw_name().clone(),
+                    descriptor: target.raw_descriptor().clone(),
                 })
             }
             _ => None,
@@ -251,7 +254,7 @@ pub(crate) fn verify(
             ),
         };
     };
-    if members.owner() != target.owner() {
+    if members.raw_owner() != target.raw_owner() {
         return Verdict::Refused {
             evidence,
             refusal: not_a_member(
@@ -264,11 +267,11 @@ pub(crate) fn verify(
             ),
         };
     }
-    let Some(member) = members
-        .members()
-        .iter()
-        .find(|member| member.name() == name && member.descriptor() == target.descriptor())
-    else {
+    let Some(member) = members.members().iter().find(|member| {
+        member.raw_owner() == target.raw_owner()
+            && member.raw_name() == target.raw_name()
+            && member.raw_descriptor() == target.raw_descriptor()
+    }) else {
         return Verdict::Refused {
             evidence,
             refusal: not_a_member(
@@ -352,7 +355,7 @@ fn forward_shape(
             ),
         )
     };
-    let Some((parameters, returns)) = parse_method(&member.descriptor()) else {
+    let Some((parameters, returns)) = parse_method_bytes(&member.raw_descriptor().0) else {
         return Err(Refusal::shape(
             "jre_accessor_shape",
             format!(
@@ -422,17 +425,35 @@ fn forward_shape(
     else {
         unreachable!("the position was found by the same pattern");
     };
-    if field_owner != owner {
+    let raw_field = code
+        .instructions
+        .get(field_at)
+        .and_then(|instruction| instruction.constant_pool_index)
+        .and_then(|index| cp_entry(pool, index).ok())
+        .and_then(|entry| match &entry.kind {
+            CpEntryKind::FieldRef {
+                owner, descriptor, ..
+            } => Some((owner, descriptor)),
+            _ => None,
+        })
+        .ok_or_else(|| body("the field has no matching raw constant-pool reference"))?;
+    if raw_field.0 != member.raw_owner() {
         return Err(Refusal::shape(
             "jre_accessor_field",
             format!(
-                "the body of `{}{}` accesses the field `{field_owner}.{name}`, and the field an accessor reaches is its own class's",
+                "the body of `{}{}` accesses the field `{field_owner:?}.{name:?}`, and the field an accessor reaches is its own class's",
                 member.name(),
                 member.descriptor()
             ),
         ));
     }
-    let field_type = parse_method(&format!("(){descriptor}")).and_then(|(_, returns)| returns);
+    let field_descriptor = [b"()".as_slice(), &raw_field.1.0].concat();
+    let field_type = parse_method_bytes(&field_descriptor).and_then(|(_, returns)| returns);
+    if field_type.is_none() {
+        return Err(body(
+            "the raw field descriptor has no spellable source type",
+        ));
+    }
     let field_bci = at(field_at).expect("the field access's own BCI");
     let ends = bcis.len() == field_at + 2 && operation(field_at + 1) == Some(&Operation::Return);
     let kind = match access {
@@ -446,7 +467,7 @@ fn forward_shape(
                 return Err(Refusal::shape(
                     "jre_accessor_shape",
                     format!(
-                        "the body of `{}{}` reads the field `{name}` and takes {} parameter(s), and a read accessor is given the instance alone",
+                        "the body of `{}{}` reads the field `{name:?}` and takes {} parameter(s), and a read accessor is given the instance alone",
                         member.name(),
                         member.descriptor(),
                         parameters.len()
@@ -457,7 +478,7 @@ fn forward_shape(
                 return Err(Refusal::shape(
                     "jre_accessor_field",
                     format!(
-                        "the body of `{}{}` returns `{}` and reads the field `{name}` of type `{}`",
+                        "the body of `{}{}` returns `{}` and reads the field `{name:?}` of type `{}`",
                         member.name(),
                         member.descriptor(),
                         returns
@@ -481,7 +502,7 @@ fn forward_shape(
                 return Err(Refusal::shape(
                     "jre_accessor_field",
                     format!(
-                        "the body of `{}{}` writes the field `{name}` and returns a value, and the call site that used to spell it is a statement",
+                        "the body of `{}{}` writes the field `{name:?}` and returns a value, and the call site that used to spell it is a statement",
                         member.name(),
                         member.descriptor()
                     ),
@@ -491,7 +512,7 @@ fn forward_shape(
                 return Err(Refusal::shape(
                     "jre_accessor_shape",
                     format!(
-                        "the body of `{}{}` writes the field `{name}` and takes {} parameter(s), and a write accessor is given the instance and the value",
+                        "the body of `{}{}` writes the field `{name:?}` and takes {} parameter(s), and a write accessor is given the instance and the value",
                         member.name(),
                         member.descriptor(),
                         parameters.len()
@@ -502,7 +523,7 @@ fn forward_shape(
                 return Err(Refusal::shape(
                     "jre_accessor_field",
                     format!(
-                        "the body of `{}{}` writes the field `{name}`, and the value it is given is not that field's type",
+                        "the body of `{}{}` writes the field `{name:?}`, and the value it is given is not that field's type",
                         member.name(),
                         member.descriptor()
                     ),
@@ -519,7 +540,9 @@ fn forward_shape(
     evidence.shape = Some(kind);
     Ok(Shape {
         kind,
-        name: name.clone(),
+        name: name
+            .to_unicode()
+            .ok_or_else(|| body("the raw field name has no scalar source spelling"))?,
         field_bci,
         method: member.identity().clone(),
     })

@@ -11,8 +11,9 @@
 //! * a worker the operating system refuses to create closes the operation **before anything is
 //!   dispatched**: the result is `Failed`, no class is recovered, and nothing falls back to the
 //!   calling thread;
-//! * a worker that panics is a `Failed` operation too: the class it was working on states that it
-//!   did not finish, the records already delivered stand, and no second run is started.
+//! * a worker that panics is a `Failed` operation too: an unprepared class follows `Refused`, a
+//!   prepared class keeps its `Prepared` handoff and states that it did not finish, records already
+//!   delivered stand, and no second run is started.
 //!
 //! This target needs the `test-support` feature, because the faults it injects are compiled out of a
 //! production build (the root manifest states that beside the feature).
@@ -143,8 +144,9 @@ fn a_worker_the_system_refuses_to_create_fails_the_operation_before_dispatching(
 
 #[test]
 fn a_worker_that_panics_fails_the_operation_and_leaves_no_thread_behind() {
-    // The fault panics inside the class task of ordinal 2 before it prepares anything, so that class
-    // can never claim a method of its own. What is asserted below is deterministic under any
+    // The fault panics inside the class task of ordinal 2 before it prepares anything, so the class
+    // must use the unprepared Refused branch and cannot claim a method of its own. What is asserted
+    // below is deterministic under any
     // scheduling: the failure itself, the absence of leftover threads, the terminal record the
     // consumer gets, and the agreement between every class end the sink saw and the records it was
     // really handed. Whether the window had already reached the panicking class when the operation
@@ -196,13 +198,31 @@ fn a_worker_that_panics_fails_the_operation_and_leaves_no_thread_behind() {
         "complete",
         "and that record states the failure rather than a completion"
     );
+    assert!(
+        matches!(
+            &final_event.summary.execution,
+            ExecutionReport::Failed {
+                reason: TerminationReason::Error { code },
+                ..
+            } if code == "bulk_worker_panicked"
+        ),
+        "the final record preserves the worker panic as the operation's first cause: {:?}",
+        final_event.summary.execution
+    );
     // EOF and the worker panic can be observed in either order; traversal_complete describes
     // discovery reaching the scope end, not whether execution succeeded.
 
     // Every class end the sink saw is consistent with the records it was really handed: a class that
     // states it published N records was handed N of them, and a class that did not finish says so
-    // with the code of the failure that ended the operation.
+    // with the code of the failure that ended the operation. The Prepared set comes from callbacks
+    // that this sink confirmed; it is not inferred from the summary's prepared count.
     let delivered = case.sink.methods();
+    let prepared_ordinals: Vec<u64> = case
+        .sink
+        .prepared()
+        .into_iter()
+        .map(|prepared| prepared.class_ordinal)
+        .collect();
     for end in case.sink.class_ends() {
         let handed = delivered
             .iter()
@@ -225,10 +245,19 @@ fn a_worker_that_panics_fails_the_operation_and_leaves_no_thread_behind() {
                     "the class that stopped names the failure that stopped it"
                 );
             }
-            ClassCompletion::Refused { .. } => panic!(
-                "class {} was prepared, so it cannot be refused: {:?}",
-                end.class_ordinal, end.completion
+            ClassCompletion::Refused { .. } => assert!(
+                !prepared_ordinals.contains(&end.class_ordinal),
+                "class {} cannot be refused after its Prepared event was confirmed",
+                end.class_ordinal
             ),
+        }
+        if !matches!(end.completion, ClassCompletion::Refused { .. }) {
+            assert!(
+                prepared_ordinals.contains(&end.class_ordinal),
+                "non-Refused ClassEnd for ordinal {} requires a Prepared callback the sink confirmed; prepared ordinals: {:?}",
+                end.class_ordinal,
+                prepared_ordinals
+            );
         }
     }
     let ordinals: Vec<u64> = delivered
@@ -255,13 +284,72 @@ fn a_worker_that_panics_fails_the_operation_and_leaves_no_thread_behind() {
     {
         assert_eq!(
             end.completion,
-            ClassCompletion::Stopped {
-                methods: 0,
+            ClassCompletion::Refused {
                 code: "bulk_worker_panicked".to_owned()
             },
-            "the class that did not return claims nothing"
+            "the class that panicked before preparation takes the Refused branch and keeps its cause"
         );
     }
+}
+
+#[test]
+fn a_worker_that_panics_after_a_method_keeps_the_prepared_prefix_count() {
+    let case = run(
+        4,
+        BulkFaults {
+            panic_after_method: Some((0, 0)),
+            ..BulkFaults::default()
+        },
+        Recorder::new(),
+    );
+
+    assert_eq!(case.watch.alive(), 0, "all workers are joined after panic");
+    assert_eq!(
+        case.report.stop.as_ref().map(|stop| stop.kind),
+        Some(BulkStopKind::Infrastructure)
+    );
+    assert!(matches!(
+        &case.report.summary.execution,
+        ExecutionReport::Failed {
+            reason: TerminationReason::Error { code },
+            ..
+        } if code == "bulk_worker_panicked"
+    ));
+
+    let prepared = case
+        .sink
+        .prepared()
+        .into_iter()
+        .find(|event| event.class_ordinal == 0)
+        .expect("the panicking class's Prepared event was confirmed");
+    let methods: Vec<_> = case
+        .sink
+        .methods()
+        .into_iter()
+        .filter(|event| event.class_ordinal == 0)
+        .collect();
+    let end = case
+        .sink
+        .class_ends()
+        .into_iter()
+        .find(|event| event.class_ordinal == 0)
+        .expect("the panicking class has a terminal record");
+
+    assert_eq!(prepared.class_ordinal, end.class_ordinal);
+    assert_eq!(
+        methods.len(),
+        1,
+        "the injected panic follows one produced method"
+    );
+    assert!(matches!(
+        end.completion,
+        ClassCompletion::Stopped { methods: 1, ref code }
+            if code == "bulk_worker_panicked"
+    ));
+    assert!(
+        case.report.summary.methods_executed >= 1,
+        "the operation records the method work that preceded the panic"
+    );
 }
 
 #[test]

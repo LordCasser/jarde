@@ -140,7 +140,13 @@ fn recover_with(
     budget: &mut Budget,
 ) -> RecoveredMethod {
     engine
-        .recover_method_with_evidence(slice::from_ref(snapshot), request, evidence, budget)
+        .recover_method_with_evidence(
+            slice::from_ref(snapshot),
+            jarde::SourceTarget::JAVA_8,
+            request,
+            evidence,
+            budget,
+        )
         .expect("a legal request is answered, not raised")
 }
 
@@ -313,7 +319,12 @@ fn the_ordinary_entry_and_the_stated_essential_selection_answer_the_same_report(
     let request = request(&scope, &definition, b"simple", b"()I");
     let mut default_budget = Budget::new(limits());
     let by_default = engine
-        .recover_method(slice::from_ref(&scope), &request, &mut default_budget)
+        .recover_method(
+            slice::from_ref(&scope),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            &mut default_budget,
+        )
         .expect("a legal request is answered");
     let mut stated_budget = Budget::new(limits());
     let stated = recover_with(
@@ -647,7 +658,12 @@ fn a_range_over_a_body_with_no_code_is_refused_as_a_missing_table() {
     // it was simply not applied to a body that does not exist.
     let mut plain_budget = Budget::new(limits());
     let plain = engine
-        .recover_method(slice::from_ref(&scope), &request, &mut plain_budget)
+        .recover_method(
+            slice::from_ref(&scope),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            &mut plain_budget,
+        )
         .expect("a legal request is answered");
     assert_eq!(
         format!("{:?}", plain.recovery().outcome),
@@ -675,6 +691,7 @@ fn a_selected_category_that_stopped_states_its_prefix() {
         .class_source_with_evidence(
             slice::from_ref(&scope),
             &ClassSourceRequest {
+                source_target: jarde::SourceTarget::JAVA_8,
                 class: ClassRef::Definition {
                     definition: definition.clone(),
                 },
@@ -837,7 +854,12 @@ fn closing_the_rule_records_keeps_the_refusals_and_the_explanation() {
         );
         let mut budget = Budget::new(limits());
         let plain = engine
-            .recover_method(slice::from_ref(&scope), &request, &mut budget)
+            .recover_method(
+                slice::from_ref(&scope),
+                jarde::SourceTarget::JAVA_8,
+                &request,
+                &mut budget,
+            )
             .expect("a legal request is answered");
         let report = plain.recovery();
         assert!(

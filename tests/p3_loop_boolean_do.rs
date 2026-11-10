@@ -61,6 +61,7 @@ fn class_source_outcome(
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
         .expect("the Java class fixture opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },

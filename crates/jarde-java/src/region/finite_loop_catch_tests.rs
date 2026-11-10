@@ -315,7 +315,7 @@ fn finite_owner_proof_stops_atomically_at_budget_and_cancellation() {
             assert!(matches!(
                 proved_loop_catch_joins(canonical, view, ssa, operations, code, &mut stopped),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     ..
                 })
             ));
@@ -929,7 +929,7 @@ fn retry_proof_budget_used_minus_one_and_precancel_stop_inside_the_proof() {
                         &mut exhausted,
                     ),
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         ..
                     })
                 ));
@@ -1521,7 +1521,7 @@ fn loop2_retry_proof_used_minus_one_and_precancel_are_atomic() {
                         &mut short
                     ),
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         ..
                     })
                 ));
@@ -1840,7 +1840,7 @@ fn loop2_late_region_budget_stop_does_not_publish_a_partial_retry_loop() {
                             &mut short
                         ),
                         Err(StopReason::Budget {
-                            dimension: CountedBudgetDimension::AnalysisSteps,
+                            dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                             ..
                         })
                     ),

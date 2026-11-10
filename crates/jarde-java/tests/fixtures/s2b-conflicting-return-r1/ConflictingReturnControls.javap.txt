@@ -1,0 +1,65 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-conflicting-return-r1/classes/flow/ConflictingReturnControls.class
+  Last modified 2026-10-27; size 619 bytes
+  MD5 checksum fff164b705fd186887214f14d58da34e
+  Compiled from "ConflictingReturnControls.java"
+public final class flow.ConflictingReturnControls
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#21         // java/lang/Object."<init>":()V
+   #2 = Class              #22            // flow/ConflictingReturnControls
+   #3 = Class              #23            // java/lang/Object
+   #4 = Utf8               <init>
+   #5 = Utf8               ()V
+   #6 = Utf8               Code
+   #7 = Utf8               LineNumberTable
+   #8 = Utf8               LocalVariableTable
+   #9 = Utf8               this
+  #10 = Utf8               Lflow/ConflictingReturnControls;
+  #11 = Utf8               conflict
+  #12 = Utf8               (Ljava/util/List;)Ljava/util/List;
+  #13 = Utf8               source
+  #14 = Utf8               Ljava/util/List;
+  #15 = Utf8               LocalVariableTypeTable
+  #16 = Utf8               Ljava/util/List<Ljava/lang/String;>;
+  #17 = Utf8               Signature
+  #18 = Utf8               (Ljava/util/List<Ljava/lang/String;>;)Ljava/util/List<Lidentity/Foo;>;
+  #19 = Utf8               SourceFile
+  #20 = Utf8               ConflictingReturnControls.java
+  #21 = NameAndType        #4:#5          // "<init>":()V
+  #22 = Utf8               flow/ConflictingReturnControls
+  #23 = Utf8               java/lang/Object
+{
+  public flow.ConflictingReturnControls();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 6: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lflow/ConflictingReturnControls;
+
+  public static java.util.List<identity.Foo> conflict(java.util.List<java.lang.String>);
+    descriptor: (Ljava/util/List;)Ljava/util/List;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: areturn
+      LineNumberTable:
+        line 9: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0 source   Ljava/util/List;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0 source   Ljava/util/List<Ljava/lang/String;>;
+    Signature: #18                          // (Ljava/util/List<Ljava/lang/String;>;)Ljava/util/List<Lidentity/Foo;>;
+}
+SourceFile: "ConflictingReturnControls.java"

@@ -1,0 +1,94 @@
+{
+  "schema": "s2a-selected-parent-edge-fixture-pin-v1",
+  "input_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/selected-parent-edge-boundary-v1/input-manifest.json",
+  "input_manifest_sha256": "2af84554a85fd4b601a07434fa58f3622d9c9a9ac46e6c22f3d2311f0b34f6f6",
+  "source_files": [
+    {
+      "name": "EdgeTarget.java",
+      "bytes": 31,
+      "sha256": "0bac14fab436888777ad7807d965bc5cf29291b85ba09568b4bf1bc0df8e90fc"
+    },
+    {
+      "name": "ParentEdge.java",
+      "bytes": 180,
+      "sha256": "a6f34b86bfcd587377a294a0dc7a8059d735b146464b8f1548d4b19c3b6064d3"
+    },
+    {
+      "name": "ParentEdgeDriver.java",
+      "bytes": 309,
+      "sha256": "0ba5f8042fc30c3938afc374b9d6fc7b4b0edd166f5f91fd78d8b925ffabdf9e"
+    },
+    {
+      "name": "PhysicalEdge.java",
+      "bytes": 163,
+      "sha256": "eaef30c8b4fac8c4b82e9c21e499acdb003d6650cf9e6f10fa8b1ef470996ca4"
+    },
+    {
+      "name": "PhysicalEdgeDriver.java",
+      "bytes": 323,
+      "sha256": "0f08de2009d8d701eb6371aca6a63c7bfc68ec890870d9a3c82e6f46bbbcbd80"
+    }
+  ],
+  "binary_inputs": [
+    {
+      "role": "ParentEdge-single-class",
+      "repo_relative_path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/ParentEdge-corretto8-debug.class",
+      "bytes": 535,
+      "sha256": "0831f871e125e048dd48c3dedc4716e055cbb0a0505fdc5a09530be4fdadfaa8"
+    },
+    {
+      "role": "PhysicalEdge-target-only-jar",
+      "repo_relative_path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/PhysicalEdge-corretto8-debug.jar",
+      "bytes": 424,
+      "sha256": "1ccc2dd98c4a7b6c5f52907a2304ccef6080726db875720f677c25430085a2ea",
+      "members": [
+        "PhysicalEdge.class"
+      ]
+    },
+    {
+      "role": "ParentEdge-single-class",
+      "repo_relative_path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/ParentEdge-corretto8-no-debug.class",
+      "bytes": 306,
+      "sha256": "b0dd8e1db2b6648d21470bed1b418021589cd36aa6e12268a7f0286a9e04cd6c"
+    },
+    {
+      "role": "PhysicalEdge-target-only-jar",
+      "repo_relative_path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/PhysicalEdge-corretto8-no-debug.jar",
+      "bytes": 327,
+      "sha256": "245a9e8fb37f6d7904357d68dd5815ac08b566089205e5447dae87a8f8642315",
+      "members": [
+        "PhysicalEdge.class"
+      ]
+    },
+    {
+      "role": "ParentEdge-single-class",
+      "repo_relative_path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/ParentEdge-openjdk23-debug.class",
+      "bytes": 535,
+      "sha256": "7ebae3ce85017069e30945c9655334c196a2cccb084a2baeacdce371ff21bd3d"
+    },
+    {
+      "role": "PhysicalEdge-target-only-jar",
+      "repo_relative_path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/PhysicalEdge-openjdk23-debug.jar",
+      "bytes": 423,
+      "sha256": "c8c73d2f85ca39324a153bedaa71a9d94e30bbd36c6f4098fafe1ceab7ca585d",
+      "members": [
+        "PhysicalEdge.class"
+      ]
+    },
+    {
+      "role": "ParentEdge-single-class",
+      "repo_relative_path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/ParentEdge-openjdk23-no-debug.class",
+      "bytes": 306,
+      "sha256": "ff69eed296b9169297d6b491fad9bfa1c569b98d3e33d10858ae9179a7074213"
+    },
+    {
+      "role": "PhysicalEdge-target-only-jar",
+      "repo_relative_path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/PhysicalEdge-openjdk23-no-debug.jar",
+      "bytes": 328,
+      "sha256": "f9f43526efca82fae2e0f9fd1427fe11aa099d854eae0af4fac3e9115902ae9f",
+      "members": [
+        "PhysicalEdge.class"
+      ]
+    }
+  ]
+}

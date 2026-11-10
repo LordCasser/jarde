@@ -29,7 +29,7 @@
 //!
 //! [`RecoveryContent`] is not a second quality: it is read from the emission that committed the
 //! artifact — how many statements the emitter wrote that were not fallbacks — and no plane is read
-//! from it or writes it. It exists because `Produced` says only that an artifact was delivered: a
+//! from it or writes it. It exists because use `Produced` says only that an artifact was delivered: a
 //! report whose whole artifact is reasons and quoted bytecode is `Produced` too, and before this
 //! field a caller had to strip comments from [`RecoveryReport::text`] to guess which of the two it
 //! held. A stopped run holds no artifact, so the report of a stop states `NotProduced` without asking
@@ -46,15 +46,20 @@
 use jarde_jvm::ir::{CompileStatus, Quality, Representation, SemanticValidation, SyntaxStatus};
 use jarde_jvm::method_ir::{Definition, MethodIr, Slot, SsaTable};
 use jarde_reader::budget::{Budget, BudgetDimension, UsageSnapshot};
-use jarde_reader::classfile::{DescriptorKind, VerificationStatus, descriptor_facts};
+use jarde_reader::classfile::{
+    AttributeShell, DescriptorKind, ElementValueFacts, TypePathEntry, VerificationStatus,
+    descriptor_facts,
+};
+use jarde_reader::model::JvmBytes;
 use jarde_reader::model::{
     ContainerOriginStep, Diagnostic, DiagnosticSeverity, ExecutionReport, PhysicalClassLocation,
     PhysicalDefinitionId, PhysicalEntryId, PhysicalMethodId, PhysicalVariant, TerminationReason,
 };
+use jarde_reader::view::LoaderId;
 use serde::Serialize;
 
 use crate::accessor::AccessorRecord;
-use crate::artifact::{ArtifactBinding, ArtifactSubject, RecoveryArtifact};
+use crate::artifact::{ArtifactSubject, RecoveryArtifact};
 use crate::ast::{AssignOp, ConstructorTarget, Expr, ExprKind, StmtKind, Type};
 use crate::bridge::{self, BridgeRecord, ClassSourceBridgeCandidate};
 use crate::build;
@@ -81,16 +86,95 @@ use crate::lambda::LambdaRecord;
 use crate::names::NameTable;
 use crate::normal_flow::NormalFlowView;
 use crate::pass::{
-    ACCESSOR, BRIDGE, CONCAT, DECLARATION, ENUMSWITCH, FIELD, INIT, LAMBDA, NEW, RecoveryProfile,
-    RuleVersion,
+    ACCESSOR, BRIDGE, CONCAT, DECLARATION, ENUMSWITCH, FIELD, INIT, LAMBDA, NEW, RuleVersion,
+    SourceTarget,
 };
 use crate::region::{FallbackReason, Recovered, Region};
 use crate::reuse;
 use crate::source_map::{OriginSet, SourceMap};
 use crate::stop::StopReason;
 
-/// One recovery request: the payload of a P2 run, the facts that run did not publish, and the
-/// profile the presentation is written under.
+/// One class-level annotation attribute's original shell and its parsed annotation entries.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassAnnotationAttribute {
+    pub attribute: AttributeShell,
+    pub annotations: Vec<ElementValueFacts>,
+}
+
+/// One member's own `Runtime*Annotations` attribute, kept beside the spelling derived from it.
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MemberAnnotationUses {
+    pub attributes: Vec<MemberAnnotationAttribute>,
+    pub uses: Vec<String>,
+    pub refusals: Vec<String>,
+}
+
+/// The raw shell and complete annotation values of one field or method declaration attribute.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MemberAnnotationAttribute {
+    pub attribute: AttributeShell,
+    pub annotations: Vec<ElementValueFacts>,
+}
+
+/// One method's own `Runtime*ParameterAnnotations` attribute, including its leading `u1` count.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ParameterAnnotationAttribute {
+    pub attribute: AttributeShell,
+    /// `None` means the shell was retained after its content could not be read.
+    pub parameter_count: Option<u8>,
+    pub parameters: Vec<Vec<ElementValueFacts>>,
+}
+
+/// Parsed and source-spelled parameter annotations, aligned only by descriptor parameter position.
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ParameterAnnotationUses {
+    pub attributes: Vec<ParameterAnnotationAttribute>,
+    /// One list for each descriptor parameter, including positions with no annotation.
+    pub uses_by_position: Vec<Vec<String>>,
+    pub refusals: Vec<String>,
+}
+
+/// One type annotation shell and every entry it physically contains, with the attempted spelling.
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct TypeAnnotationUses {
+    pub attributes: Vec<TypeAnnotationAttribute>,
+    pub field_uses: Vec<String>,
+    pub return_uses: Vec<String>,
+    /// Descriptor parameter position to type-only source spellings.
+    pub parameter_uses: Vec<Vec<String>>,
+    /// Refusals retain the entry's owner, target and path in their text.
+    pub refusals: Vec<String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct TypeAnnotationAttribute {
+    pub attribute: AttributeShell,
+    pub annotations: Vec<TypeAnnotationUse>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct TypeAnnotationUse {
+    pub target_type: u8,
+    pub target_info: Vec<u8>,
+    pub type_path: Vec<TypePathEntry>,
+    pub annotation: ElementValueFacts,
+    pub spelling: Option<String>,
+    pub refusal: Option<String>,
+}
+
+/// Caller-supplied inputs for one method presentation.
+///
+/// This public structure does not authenticate facts, subject labels or source-edit claims.
+/// Public Java entries return `CallerSupplied` reports without a trusted artifact binding;
+/// the Engine supplies and checks its own handoff in private read orchestration.
 #[derive(Clone, Debug)]
 pub struct RecoveryRequest<'a> {
     /// The IR payload of the method-analysis run whose body is being presented.
@@ -100,41 +184,36 @@ pub struct RecoveryRequest<'a> {
     /// comparison performs, the slot a load names and the value a constant pushes have exactly one
     /// source, the run that decoded them.
     pub facts: &'a RecoveryFacts,
-    /// The recovery profile the run is presented under: the rule set whose passes the gate admits
-    /// ([`crate::pass`]). It is the request's own runtime profile, stated by the caller — the entry
-    /// point hands the environment's profile over — and it is a *policy* input, not evidence: unlike
-    /// the three tables above, it says nothing about what the bytes are.
-    pub profile: RecoveryProfile,
+    /// The output language whose syntax the recovery rules may emit. This is a presentation
+    /// preference; it does not select physical inputs or platform APIs.
+    pub source_target: SourceTarget,
+    /// Runtime API selection, independent of the output language.
+    pub runtime_profile: jarde_reader::view::RuntimeProfile,
     /// The class's **other members**, as the caller read them beside this body: the declaration and
     /// the decoded body of a member the payload cannot hold, because the payload is one method's
     /// (P3 2.2). A caller that did not read the class's members states `None`, and the accessor rule
     /// then records the table it is missing rather than guessing from a call's name.
     pub members: Option<&'a ClassMembers>,
-    /// Target definitions proved from the class-source request's selected physical environment.
-    /// Method-only recovery has none. `new@1` verifies each call site separately; this fact alone
-    /// carries no conclusion about any particular allocation.
-    pub member_inner_targets: &'a [ProvedMemberInnerTarget],
-    /// Exact static member targets selected by class-source relation proof.
-    pub static_member_target: Option<&'a ProvedStaticMemberTarget>,
-    /// Class-source-only direct functional return target. Method-only recovery has none.
-    pub typed_functional_target: Option<TypedFunctionalTarget>,
-    /// Exact interface-special targets whose Java source qualifier and default binding were proved
-    /// by the facade's selected-definition reads. Direct recovery has no such environment and
-    /// therefore leaves interface-qualified `super` calls refused.
-    pub interface_super_calls: &'a [ProvedInterfaceSuperCall],
-    /// Exact invocation sites whose source reference widening and target declaration were proved
-    /// against the selected class-source environment. A method-only request has none.
-    pub reference_overload_calls: &'a [ProvedReferenceOverloadCall],
-    /// Exact invocation arguments and reference-array store sites whose snapshot class-file
-    /// header chain proved the reference widening. A method-only request has none.
-    pub snapshot_hierarchy_widenings: &'a [ProvedSnapshotHierarchyWidening],
-    /// Exact superclass field writes proved by the selected class-source environment.
-    pub superclass_field_writes: &'a [ProvedSuperclassFieldWrite],
-    /// Exact captured-outer reads proved by the selected class-source family assembly.
-    /// A direct method request has no lexical family and supplies none.
-    pub captured_outer_reads: &'a [ProvedCapturedOuterRead],
-    /// Exact calls through a selected outer-super bridge, closed by the family proof.
-    pub outer_super_calls: &'a [ProvedOuterSuperCall],
+    /// Member target claims. Allocation, outer value and effect order are checked at each site.
+    pub member_inner_targets: &'a [MemberInnerTargetInput],
+    /// Static member source-path claim.
+    pub static_member_target: Option<&'a StaticMemberTargetInput>,
+    /// Direct functional return target claim for a class projection.
+    pub typed_functional_target: Option<FunctionalTargetInput>,
+    /// Claimed interface-special source qualifiers and default targets.
+    pub interface_super_calls: &'a [InterfaceSuperCallInput],
+    /// Claimed invocation-site source widening and overload targets.
+    pub reference_overload_calls: &'a [ReferenceOverloadCallInput],
+    /// Claimed invocation/store source widenings from a snapshot hierarchy.
+    pub reference_relations: &'a [ReferenceRelationInput],
+    /// Source-type assertions bound to this SSA; the final declaration plan still checks all uses.
+    pub declared_types: Option<&'a DeclaredGenericTypes>,
+    /// Claimed superclass field declarations at exact write sites.
+    pub superclass_field_writes: &'a [SuperclassFieldWriteInput],
+    /// Claimed family capture reads at exact child sites.
+    pub captured_outer_reads: &'a [CapturedOuterReadInput],
+    /// Claimed outer-super bridge calls at exact child sites.
+    pub outer_super_calls: &'a [OuterSuperCallInput],
     /// Whether this run's presentation keeps every member class in the pool's own `$` spelling —
     /// no fold projection will rewrite nested names to source nesting in the text this run's
     /// artifacts are placed into. Under that presentation a pool-spelled class literal is a
@@ -151,76 +230,75 @@ pub struct RecoveryRequest<'a> {
     /// necessary results: the artifact, the planes, the core gaps and the stops. The selection never
     /// decides whether a rule runs, whether a value is proven or whether a region is refused.
     pub evidence: RecoveryEvidenceRequest,
-    /// What the artifact this run commits is **of**, as the entry that performed the trusted read
-    /// states it (change `add-demand-driven-core-results`, D3'): the physical method identity, the
-    /// member record that read established and the environment the run is presented under.
-    ///
-    /// `None` is a run whose caller stated no subject — the direct entry over a payload it built
-    /// itself — and such a run publishes **no** artifact binding
-    /// ([`RecoveryReport::artifact`]): identity a caller did not state is never invented from the
-    /// request's own spelling.
+    /// Caller-supplied subject metadata. It is not a proof that this entry read the named
+    /// definition or established the supplied environment. Public Java recovery keeps its result
+    /// caller-supplied and unbound even when this label is present. The Engine owns trusted
+    /// binding construction beside its immutable analysis and private dependency proofs.
     pub subject: Option<ArtifactSubject>,
+    /// Necessary origins for a selected class projection; independent of optional publication.
+    pub projection_types: &'a [&'a [u8]],
 }
 
-/// Narrow, non-serialized physical target fact supplied by class-source assembly. It is a target
-/// declaration proof only; the allocation, outer value and effect order remain method-site work.
+/// Member target assertion supplied by a caller or the Engine's private family assembly.
+/// Its construction authenticates no declaration; allocation and effect checks remain site work.
 #[doc(hidden)]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProvedMemberInnerTarget {
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct MemberInnerTargetInput {
     pub definition: PhysicalDefinitionId,
-    pub owner: String,
-    pub outer: String,
+    pub owner: JvmBytes,
+    pub outer: JvmBytes,
     pub simple_name: String,
-    pub constructor_descriptor: String,
-    pub capture_field: String,
+    pub constructor_descriptor: JvmBytes,
+    pub capture_field: JvmBytes,
     /// Class and constructor signatures proved the source-level generic member tail.
     pub generic_diamond: bool,
     /// The selected, bidirectionally proved source type path from its top-level enclosing class to
     /// this member. The binary names stay attached so a consumer never splits `$` on its own.
-    pub source_type_path: Vec<ProvedMemberInnerSourceSegment>,
+    pub source_type_path: Vec<MemberInnerSourceSegmentInput>,
 }
 
-/// Source-path proof for a static member class. It intentionally has no capture-field identity.
+/// Static member source-path assertion, without a capture-field identity.
 #[doc(hidden)]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProvedStaticMemberTarget {
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct StaticMemberTargetInput {
     pub definition: PhysicalDefinitionId,
     pub constructor: PhysicalMethodId,
-    pub owner: String,
-    pub outer: String,
+    pub owner: JvmBytes,
+    pub outer: JvmBytes,
     pub simple_name: String,
-    pub constructor_descriptor: String,
-    pub source_type_path: Vec<ProvedMemberInnerSourceSegment>,
+    pub constructor_descriptor: JvmBytes,
+    pub source_type_path: Vec<MemberInnerSourceSegmentInput>,
 }
 
-/// Trusted, non-serialized handoff for one captured field read in one physical child method.
+/// Caller assertion about one captured field read in one physical child method.
+/// Local matching cannot authenticate the claimed constructor; the Engine establishes it privately.
 /// The constructor origin is retained for the family projection; it is never inserted into this
 /// method's source map, whose BCIs belong to `method` alone.
 #[doc(hidden)]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProvedCapturedOuterRead {
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct CapturedOuterReadInput {
     pub method: PhysicalMethodId,
     pub read_bci: u32,
-    pub field_owner: String,
-    pub field_name: String,
-    pub field_descriptor: String,
-    pub outer_internal_name: String,
+    pub field_owner: JvmBytes,
+    pub field_name: JvmBytes,
+    pub field_descriptor: JvmBytes,
+    pub outer_internal_name: JvmBytes,
     pub outer_source_name: String,
     pub constructor: PhysicalMethodId,
     pub constructor_write_bci: u32,
 }
 
-/// A physical capture-field read replaced by a root method's exactly proved parameter value.
+/// A caller-supplied capture-field replacement with a root method's parameter value.
 /// The superclass projection admits the same handoff for a root **local**: the slot is then the
 /// local's own, and the presented type is the one the same-run allocation argument carried.
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProvedCapturedParameterRead {
+pub struct CapturedParameterReadInput {
     pub method: PhysicalMethodId,
     pub read_bci: u32,
-    pub field_owner: String,
-    pub field_name: String,
-    pub field_descriptor: String,
+    pub field_owner: JvmBytes,
+    pub field_name: JvmBytes,
+    pub field_descriptor: JvmBytes,
     pub parameter_slot: u16,
     pub parameter_name: String,
     pub parameter_presented: Option<Type>,
@@ -228,11 +306,11 @@ pub struct ProvedCapturedParameterRead {
     pub constructor_write_bci: u32,
 }
 
-/// Trusted, non-serialized handoff for one physical static bridge call. The bridge instruction's
+/// Caller assertion about one physical static bridge call. The bridge instruction's
 /// BCI belongs to `bridge`, while `call_bci` and `capture_read_bci` belong to `caller`.
 #[doc(hidden)]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProvedOuterSuperCall {
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct OuterSuperCallInput {
     pub caller: PhysicalMethodId,
     pub call_bci: u32,
     pub capture_read_bci: u32,
@@ -240,70 +318,187 @@ pub struct ProvedOuterSuperCall {
     pub bridge: PhysicalMethodId,
     pub bridge_invoke_bci: u32,
     pub outer_source_name: String,
-    pub target_owner: String,
-    pub target_name: String,
-    pub target_descriptor: String,
+    pub target_owner: JvmBytes,
+    pub target_name: JvmBytes,
+    pub target_descriptor: JvmBytes,
 }
 
-/// One exact `invokespecial InterfaceMethodref` target proved writable as `I.super.m(...)`.
+/// A claim that an exact `invokespecial InterfaceMethodref` can be written as `I.super.m(...)`.
 #[doc(hidden)]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProvedInterfaceSuperCall {
-    pub owner: String,
-    pub name: String,
-    pub descriptor: String,
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct InterfaceSuperCallInput {
+    pub owner: JvmBytes,
+    pub name: JvmBytes,
+    pub descriptor: JvmBytes,
 }
 
-/// One selected invocation's safe upcast and unique source method binding.
+/// A caller assertion of an invocation's source upcast and unique overload target.
 #[doc(hidden)]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProvedReferenceOverloadCall {
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct ReferenceOverloadCallInput {
     pub bci: u32,
     pub source: String,
     pub target: String,
 }
 
-/// One invocation argument or reference-array store site's safe upcast, proved by the selected
-/// snapshot hierarchy. `bci` identifies the exact invocation/store whose descriptor or array
-/// component supplied the target. The source and target are complete Java type spellings; for
-/// reference arrays they retain the full rank while the producer proves the deepest class
-/// relation. Every intermediate class header is selected and read from the analyzed runtime
-/// environment. A target named directly by such a header need not itself be physical in the
-/// snapshot (for example, a platform interface); a missing intermediate header still proves no
-/// further edge.
+/// One reference relation at an exact local access or consuming instruction. Source and target
+/// retain the full binary type spelling and array rank. Load records carry actual descriptor-use
+/// requirements; Store records reconcile candidate declarations and copies. Named conversions
+/// use selected runtime Headers or an explicitly registered platform contract after clean absence.
+/// Missing, ambiguous, unknown and incompatible answers are retained and authorize no conversion.
+/// Low-level caller assertions remain unbound; only the Engine can bind selected-read inputs.
 #[doc(hidden)]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProvedSnapshotHierarchyWidening {
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct ReferenceRelationInput {
     pub bci: u32,
     pub source: String,
     pub target: String,
+    pub relation: ReferenceRelation,
+}
+
+/// Declared source-type facts for one immutable method's SSA. The value vector follows
+/// `SsaTable::values_with_ids` order and indexes the interned type nodes. It does not replace
+/// physical descriptors, variable identities or the builder's all-write/all-use admission.
+/// Like other low-level inputs, caller-supplied facts cannot authenticate an Engine artifact.
+#[doc(hidden)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, serde::Serialize)]
+pub struct DeclaredGenericTypes {
+    pub declaration: Option<jarde_jvm::resolver::ResolvedMemberRef>,
+    pub class_parameters: Vec<usize>,
+    pub method_parameters: Vec<usize>,
+    pub method_signature: Option<jarde_reader::signature::MethodSignature>,
+    pub receiver: Option<usize>,
+    pub parameters: Vec<(u16, usize)>,
+    pub result: Option<usize>,
+    /// This method's physical return descriptor, before Signature substitution.
+    pub erased_result: Option<usize>,
+    pub types: Vec<DeclaredGenericType>,
+    /// Declared bounds of class/method variables, with the same scoped node identity.
+    pub bounds: Vec<(usize, Vec<usize>)>,
+    /// Nodes whose actual declaration bounds were established; unproved nodes stay available
+    /// as facts but cannot authorize a source declaration or an inferred allocation argument.
+    pub admissible: Vec<usize>,
+    /// Name lookup in this method's actual source namespace. A type declared in another loader
+    /// may have no spellable name here, even when its raw binary name is equal.
+    pub spellings: Vec<(JvmBytes, jarde_jvm::resolver::ResolvedMemberRef)>,
+    /// None is unknown; an empty known bound is null-only. Phi inputs are never dropped.
+    pub values: Vec<Option<Vec<usize>>>,
+    /// Physical producer/descriptor bounds over that same SSA, before Signature substitution.
+    /// A generic source result is not a runtime check or a guarantee about heap contents.
+    pub runtime_values: Vec<Option<Vec<usize>>>,
+    /// Positive selected-header upcasts from a runtime bound to a source target's erasure.
+    pub runtime_upcasts: Vec<(usize, usize)>,
+    pub relations: Vec<(usize, usize)>,
+    pub members: Vec<(
+        jarde_jvm::method_ir::CanonicalBlockId,
+        DeclaredGenericMemberTypes,
+    )>,
+    /// Calls whose actual declaring application has a complete, unambiguous source overload
+    /// set for the substituted formal types. This does not prove argument conversions.
+    pub unique_calls: Vec<(jarde_jvm::method_ir::CanonicalBlockId, u32)>,
+    /// A physical checkcast may retain already-proved arguments at the same selected erasure.
+    /// Its original operation is still emitted; this supplies no new runtime cast.
+    pub casts: Vec<(jarde_jvm::method_ir::CanonicalBlockId, u32, usize)>,
+}
+
+/// A source type's identity precedes its spelling. Reference nodes bind to selected definitions;
+/// variable nodes identify the declaring class/method and ordinal, so equal names in two scopes
+/// or loaders cannot become the same type. Arguments and array components index this same arena.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash, serde::Serialize)]
+pub enum DeclaredGenericType {
+    Base(u8),
+    Array(usize),
+    Reference {
+        declaration: jarde_jvm::resolver::ResolvedMemberRef,
+        arguments: Vec<usize>,
+    },
+    Variable {
+        loader: jarde_reader::view::LoaderId,
+        owner: jarde_reader::model::PhysicalDefinitionId,
+        method: Option<(JvmBytes, JvmBytes)>,
+        ordinal: usize,
+        name: JvmBytes,
+        erasure: JvmBytes,
+    },
+}
+
+/// An original resolved member and its type under the receiver's declared class arguments.
+/// The physical member and BCI stay attached when Java formal/result types differ from erasure.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub enum DeclaredGenericMemberTypes {
+    Field {
+        bci: u32,
+        declaration: jarde_jvm::resolver::ResolvedMemberRef,
+        access_flags: u16,
+        application: usize,
+        ty: usize,
+        erased_ty: usize,
+    },
+    Method {
+        bci: u32,
+        declaration: jarde_jvm::resolver::ResolvedMemberRef,
+        application: usize,
+        parameters: Vec<usize>,
+        erased_parameters: Vec<usize>,
+        result: Option<usize>,
+        erased_result: Option<usize>,
+        throws: Vec<usize>,
+    },
+}
+
+/// A type relation belongs to this operation's selected environment. A platform contract is
+/// distinct from a physically read header; unresolved facts never authorize an upcast.
+#[doc(hidden)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, serde::Serialize)]
+#[serde(tag = "state", rename_all = "snake_case")]
+pub enum ReferenceRelation {
+    SelectedHeaders,
+    PlatformContract { java_release: u16 },
+    Incompatible,
+    Missing,
+    Ambiguous,
+    Unknown,
+}
+
+impl ReferenceRelation {
+    pub(crate) fn is_assignable(self, java_release: u16) -> bool {
+        match self {
+            Self::SelectedHeaders => true,
+            Self::PlatformContract {
+                java_release: proved,
+            } => proved == java_release,
+            Self::Incompatible | Self::Missing | Self::Ambiguous | Self::Unknown => false,
+        }
+    }
 }
 
 /// A selected parent declaration and one exact field instruction. The field plan still checks the
 /// receiver's SSA type at this BCI before claiming the write.
 #[doc(hidden)]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProvedSuperclassFieldWrite {
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct SuperclassFieldWriteInput {
     pub bci: u32,
-    pub source: String,
-    pub owner: String,
-    pub name: String,
-    pub descriptor: String,
+    pub source: JvmBytes,
+    pub owner: JvmBytes,
+    pub name: JvmBytes,
+    pub descriptor: JvmBytes,
 }
 
-/// One selected definition in a source type path proved by the class-source adapter.
+/// A caller-supplied definition and source type path segment.
 #[doc(hidden)]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProvedMemberInnerSourceSegment {
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct MemberInnerSourceSegmentInput {
     pub definition: PhysicalDefinitionId,
-    pub binary_name: String,
+    pub binary_name: JvmBytes,
     /// Fully-qualified Java source name through this segment, for example `matrix.Outer.A`.
     pub source_name: String,
     /// The class Signature's proven type parameter count; a raw use has no arguments, while a
     /// parameterized use must provide exactly this many.
     pub type_parameter_count: usize,
     /// The selected enclosing binary name, when this is a member type.
-    pub enclosing_binary_name: Option<String>,
+    pub enclosing_binary_name: Option<JvmBytes>,
     /// Whether the member relation is static. A non-static generic member requires its enclosing
     /// type segment to remain explicit in a Signature path.
     pub is_static: bool,
@@ -323,13 +518,13 @@ pub struct ClassInitializerFieldWrite {
     /// The exact field instruction this statement was built from.
     pub bci: u32,
     /// The constant-pool owner, in internal form.
-    pub owner: String,
+    pub owner: JvmBytes,
     /// The constant-pool field name.
-    pub name: String,
+    pub name: JvmBytes,
     /// The member name the recovery AST wrote for the assignment.
     pub spelled_name: String,
     /// The constant-pool field descriptor.
-    pub descriptor: String,
+    pub descriptor: JvmBytes,
     /// Whether this write names a static field.
     pub is_static: bool,
     /// Whether the emitted assignment carries a receiver expression.
@@ -352,11 +547,11 @@ pub struct ClassInitializerFieldRead {
     /// The field instruction's BCI in this `<clinit>` body.
     pub bci: u32,
     /// The constant-pool owner, in internal form.
-    pub owner: String,
+    pub owner: JvmBytes,
     /// The constant-pool field name.
-    pub name: String,
+    pub name: JvmBytes,
     /// The constant-pool field descriptor.
-    pub descriptor: String,
+    pub descriptor: JvmBytes,
     /// Whether this read names a static field.
     pub is_static: bool,
 }
@@ -425,6 +620,8 @@ pub struct ClassInitializerCandidates {
     pub steps: Vec<ClassInitializerStep>,
     /// Same-run AST nodes retained for an exact, bounded enum suffix projection.
     pub statements: Vec<crate::ast::Stmt>,
+    #[cfg(any(test, feature = "test-support"))]
+    observation: crate::observation::Token,
 }
 
 /// The minimal ordered AST handoff for one enum constructor recovered in this class-source run.
@@ -435,6 +632,8 @@ pub struct ClassEnumConstructorCandidates {
     pub complete: bool,
     pub has_exception_handlers: bool,
     pub steps: Vec<ClassEnumConstructorStep>,
+    #[cfg(any(test, feature = "test-support"))]
+    observation: crate::observation::Token,
 }
 
 /// One top-level constructor statement and the same-run AST shape the bytecode built.
@@ -474,9 +673,9 @@ pub enum ClassEnumConstructorStepKind {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ClassEnumConstructorField {
     pub bci: u32,
-    pub owner: String,
-    pub name: String,
-    pub descriptor: String,
+    pub owner: JvmBytes,
+    pub name: JvmBytes,
+    pub descriptor: JvmBytes,
     pub is_static: bool,
 }
 
@@ -484,38 +683,94 @@ pub struct ClassEnumConstructorField {
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ClassSourceRecovery {
-    /// The ordinary recovery report, unchanged from [`recover`].
     pub report: RecoveryReport,
-    /// The same-run `<clinit>` AST candidates, when the body was produced.
+    pub candidates: ClassSourceCandidates,
+}
+
+/// Same-run candidates owned only by the class-source consumer. No optional evidence lives here.
+/// Independent candidates may coexist; `None` means no candidate was proved, not that its
+/// consumer was absent. Requests belong to the collector rather than to these output fields.
+#[doc(hidden)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct ClassSourceCandidates {
     pub initializer: Option<ClassInitializerCandidates>,
-    /// The same-run AST candidates for an enum constructor, when this is a produced body.
     pub enum_constructor: Option<ClassEnumConstructorCandidates>,
-    /// The same-run `bridge@1` verdict, independent of the optional `RuleDetails` record.
     pub bridge: Option<ClassSourceBridgeCandidate>,
-    /// Same-run enum-table reads consumed by integer switches, for bounded class-level proof.
-    pub enum_switches: Vec<ClassSourceEnumSwitchCandidate>,
-    /// Same-run proved array-helper call sites, retained privately for atomic class-source
-    /// projection after the class-wide helper-use census.
-    pub array_constructors: Vec<ClassSourceArrayConstructorCandidate>,
-    /// Same-run unbound synthetic-lambda helper candidates for bounded class-source projection.
-    pub lambda_helpers: Vec<ClassSourceLambdaHelperCandidate>,
-    /// Same-run Fieldref operations of this physical method, used to reject mutable aliases of a
-    /// selected synthetic table in visible class-source members.
-    pub enum_switch_field_uses: Vec<ClassSourceEnumSwitchFieldUse>,
-    /// A bounded same-run AST/SSA proof for a direct parameter return.
+    pub enum_switches: Option<Vec<ClassSourceEnumSwitchCandidate>>,
+    pub array_constructors: Option<Vec<ClassSourceArrayConstructorCandidate>>,
+    pub lambda_helpers: Option<Vec<ClassSourceLambdaHelperCandidate>>,
+    pub enum_switch_field_uses: Option<Vec<ClassSourceEnumSwitchFieldUse>>,
     pub generic_return: Option<GenericReturnCandidate>,
-    /// A bounded same-run AST/SSA proof for an empty constructor that calls Object().
     pub generic_constructor: Option<GenericConstructorCandidate>,
-    /// Every visible allocation instruction in the recovered physical method. `None` means this
-    /// run stopped before retaining the scan or had no physical method identity; `complete=false`
-    /// means raw `new` opcode facts did not all resolve through the existing decoder.
     pub anonymous_allocations: Option<AnonymousAllocationScan>,
-    /// The same-run AST retained only for bounded class-source projection.
     pub ast: Option<ClassSourceMethodAst>,
-    /// The actual receiver expressions of committed own-field writes in this body.
-    pub field_receivers: Vec<ClassSourceFieldReceiverSite>,
-    /// Presented field-write accessors whose caller-side write selects the field type.
-    pub field_write_accessors: Vec<ClassSourceFieldWriteAccessor>,
+    /// A complete alternative over the same IR, held until its declarations are committed.
+    pub declared_ast: Option<ClassSourceMethodAst>,
+    pub field_receivers: Option<Vec<ClassSourceFieldReceiverSite>>,
+    pub field_write_accessors: Option<Vec<ClassSourceFieldWriteAccessor>>,
+}
+
+/// AST retention requested by the class-source consumer. Discovered projections still retain
+/// their required AST under `Required`; `GenericCalls` and `All` request broader consumers.
+#[doc(hidden)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum ClassSourceAstRetention {
+    #[default]
+    Required,
+    GenericCalls,
+    All,
+}
+
+/// Class-source consumers of the existing recovery stages, independent of evidence publication.
+#[doc(hidden)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct ClassSourceOptions {
+    pub prove_generic_return: bool,
+    pub collect_enum_constructor_candidates: bool,
+    pub ast_retention: ClassSourceAstRetention,
+    pub prove_empty_constructor: bool,
+}
+
+/// A class consumer owns its request and the candidates that request can produce. Method-only
+/// recovery has no collector, so it cannot accidentally collect class-source sidecars.
+struct ClassSourceCollector {
+    options: ClassSourceOptions,
+    candidates: ClassSourceCandidates,
+}
+
+impl ClassSourceCollector {
+    fn initializer(
+        &mut self,
+        request: &RecoveryRequest<'_>,
+    ) -> Option<&mut Option<ClassInitializerCandidates>> {
+        let method = request.facts.method();
+        let applicable = method.raw_name().0 == b"<clinit>"
+            && method.raw_descriptor().0 == b"()V"
+            && method.declaring_class().is_some_and(|class| {
+                let flags = class.access_flags();
+                (flags & ACC_INTERFACE != 0 && flags & ACC_ANNOTATION == 0)
+                    || flags & ACC_ENUM != 0
+                    || flags & (ACC_INTERFACE | ACC_ANNOTATION | ACC_ENUM | 0x8000) == 0
+            });
+        applicable.then_some(&mut self.candidates.initializer)
+    }
+
+    fn enum_constructor(
+        &mut self,
+        request: &RecoveryRequest<'_>,
+    ) -> Option<&mut Option<ClassEnumConstructorCandidates>> {
+        let method = request.facts.method();
+        let applicable = self.options.collect_enum_constructor_candidates
+            && method
+                .declaring_class()
+                .is_some_and(|class| class.access_flags() & ACC_ENUM != 0)
+            && method.raw_name().0 == b"<init>"
+            && matches!(
+                method.raw_descriptor().0.as_slice(),
+                b"(Ljava/lang/String;I)V" | b"(Ljava/lang/String;II)V"
+            );
+        applicable.then_some(&mut self.candidates.enum_constructor)
+    }
 }
 
 /// One actual emitted receiver, bound to a physical own-field write.
@@ -774,7 +1029,7 @@ fn same_class_field_receiver_sites(
             || member.descriptor.0.is_empty()
             || init.target != Some(crate::ast::ConstructorTarget::Super)
             || init.class.as_deref() != Some("java/lang/Object")
-            || init.declared.as_deref() != std::str::from_utf8(class_internal).ok()
+            || !init.declares_raw_class(class_internal)
             || !init.presented
             || slot != 0
         {
@@ -854,8 +1109,8 @@ fn same_class_field_receiver_sites(
     let Some(class) = request.facts.method().declaring_class() else {
         return Ok((Vec::new(), Vec::new()));
     };
-    let class_internal = class.name().replace('.', "/").into_bytes();
-    let class_source = String::from_utf8_lossy(&class_internal).replace('/', ".");
+    let class_internal = class.raw_name().0.as_slice();
+    let class_source = class.name().replace('/', ".");
     let method = declaration.identity().clone();
     let Ok(descriptor) = descriptor_facts(
         declaration.descriptor().0.as_slice(),
@@ -895,9 +1150,9 @@ fn same_class_field_receiver_sites(
         };
         accessors.push(ClassSourceFieldWriteAccessor {
             callee: callee.clone(),
-            owner: field.owner.as_bytes().to_vec(),
-            name: field.name.as_bytes().to_vec(),
-            descriptor: field.descriptor.as_bytes().to_vec(),
+            owner: field.owner.0.as_slice().to_vec(),
+            name: field.name.0.as_slice().to_vec(),
+            descriptor: field.descriptor.0.as_slice().to_vec(),
         });
     }
 
@@ -921,8 +1176,8 @@ fn same_class_field_receiver_sites(
         if fields.claim(*bci).is_some_and(|(evidence, shape)| {
             evidence.access == crate::facts::FieldAccess::Write
                 && !evidence.is_static
-                && evidence.owner.as_bytes() == class_internal
-                && matches!(evidence.descriptor.as_bytes().first(), Some(b'L' | b'['))
+                && evidence.owner.0.as_slice() == class_internal
+                && matches!(evidence.descriptor.0.as_slice().first(), Some(b'L' | b'['))
                 && shape.writes()
         }) {
             has_candidate = true;
@@ -1120,9 +1375,9 @@ fn same_class_field_receiver_sites(
         };
         if evidence.access != crate::facts::FieldAccess::Write
             || evidence.is_static
-            || evidence.owner.as_bytes() != class_internal
-            || evidence.name != *name
-            || !matches!(evidence.descriptor.as_bytes().first(), Some(b'L' | b'['))
+            || evidence.owner.0.as_slice() != class_internal
+            || evidence.name != JvmBytes::from_unicode(name)
+            || !matches!(evidence.descriptor.0.as_slice().first(), Some(b'L' | b'['))
             || !shape.writes()
         {
             continue;
@@ -1152,7 +1407,7 @@ fn same_class_field_receiver_sites(
                     init_record,
                     operations,
                     &method,
-                    &class_internal,
+                    class_internal,
                     slot,
                     local_value,
                     ssa,
@@ -1328,9 +1583,9 @@ fn same_class_field_receiver_sites(
         receivers.push(ClassSourceFieldReceiverSite {
             method: method.clone(),
             bci,
-            owner: evidence.owner.as_bytes().to_vec(),
-            name: evidence.name.as_bytes().to_vec(),
-            descriptor: evidence.descriptor.as_bytes().to_vec(),
+            owner: evidence.owner.0.as_slice().to_vec(),
+            name: evidence.name.0.as_slice().to_vec(),
+            descriptor: evidence.descriptor.0.as_slice().to_vec(),
             source,
         });
     }
@@ -1410,9 +1665,9 @@ pub struct ClassSourceInvokeAstSite {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ClassSourceInvokeFieldTarget {
     pub write_bci: u32,
-    pub owner: String,
-    pub name: String,
-    pub descriptor: String,
+    pub owner: JvmBytes,
+    pub name: JvmBytes,
+    pub descriptor: JvmBytes,
 }
 
 /// A finite classification of one direct AST use of an invocation result.
@@ -1632,10 +1887,10 @@ pub struct ClassSourceMethodBodyConsumers {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ClassSourceAnonymousConstructorInitializer {
     pub bci: u32,
-    pub super_owner: String,
-    pub owner: String,
-    pub name: String,
-    pub descriptor: String,
+    pub super_owner: JvmBytes,
+    pub owner: JvmBytes,
+    pub name: JvmBytes,
+    pub descriptor: JvmBytes,
 }
 
 /// The statement position that produced one proved anonymous allocation site.
@@ -1744,13 +1999,11 @@ pub fn class_source_allocation_argument_local(
 /// the same fact. The double-brace allocation point reads it in both layers: the recovery layer
 /// retains this body's AST for it, and the class-source admission selects the site with it.
 #[doc(hidden)]
-pub fn class_source_anonymous_child_name(root: &str, child: &str) -> bool {
+pub fn class_source_anonymous_child_name(root: &[u8], child: &[u8]) -> bool {
     child
         .strip_prefix(root)
-        .and_then(|rest| rest.strip_prefix('$'))
-        .is_some_and(|ordinal| {
-            !ordinal.is_empty() && ordinal.bytes().all(|byte| byte.is_ascii_digit())
-        })
+        .and_then(|rest| rest.strip_prefix(b"$"))
+        .is_some_and(|ordinal| !ordinal.is_empty() && ordinal.iter().all(u8::is_ascii_digit))
 }
 
 /// Whether this body's own allocation scan holds a verified allocation of one of the **declaring
@@ -1764,7 +2017,7 @@ fn allocates_an_anonymous_child(
         .facts
         .method()
         .declaring_class()
-        .map(|class| class.name().to_owned())
+        .map(|class| class.raw_name())
     else {
         return false;
     };
@@ -1772,7 +2025,7 @@ fn allocates_an_anonymous_child(
         .and_then(|scan| scan.as_ref())
         .is_some_and(|scan| {
             scan.allocations.iter().any(|site| {
-                site.verified && class_source_anonymous_child_name(&declaring, &site.class)
+                site.verified && class_source_anonymous_child_name(&declaring.0, &site.class.0)
             })
         })
 }
@@ -1997,7 +2250,7 @@ pub fn class_source_instruction_opcode(
 #[doc(hidden)]
 pub fn class_source_same_class_invoke_inventory_matches(
     ast: &ClassSourceMethodAst,
-    owner: &str,
+    owner: &[u8],
     expected_sites: &[ClassSourceInvokeKey],
     budget: &mut Budget,
 ) -> Result<Option<()>, crate::stop::StopReason> {
@@ -2054,7 +2307,7 @@ pub fn class_source_same_class_invoke_inventory_matches(
         {
             return Ok(None);
         }
-        if target.owner() != owner {
+        if target.raw_owner().0.as_slice() != owner {
             continue;
         }
         actual_sites.push((*bci, *opcode, target));
@@ -2063,7 +2316,7 @@ pub fn class_source_same_class_invoke_inventory_matches(
     let mut expected = Vec::with_capacity(expected_sites.len());
     for key in expected_sites {
         crate::stop::poll(budget, Some(key.call_bci))?;
-        if key.target.owner() != owner
+        if key.target.raw_owner().0.as_slice() != owner
             || instruction_bcis.binary_search(&key.call_bci).is_err()
             || !class_source_invoke_opcode_matches_target(key.opcode, &key.target)
         {
@@ -2175,7 +2428,7 @@ pub fn class_source_invoke_ast_sites(
                     .method()
                     .is_some_and(|method| method != &source.member)
                 || name != key.target.name()
-                || descriptor_parameter_count(key.target.descriptor()) != Some(args.len())
+                || descriptor_parameter_count(&key.target.raw_descriptor().0) != Some(args.len())
             {
                 return;
             }
@@ -2370,7 +2623,12 @@ pub fn class_source_exact_cast_call_children(
                         call_anchor_counts[index] = call_anchor_counts[index].saturating_add(1);
                     }
                 }
-                if let ExprKind::Cast { ty, value } = &expr.kind {
+                if let ExprKind::Cast {
+                    ty,
+                    value,
+                    source_type_name: None,
+                } = &expr.kind
+                {
                     if let Ok(index) = relations
                         .binary_search_by_key(&expr.origin.primary().bci(), |(_, cast_bci, _)| {
                             *cast_bci
@@ -2477,8 +2735,9 @@ pub fn class_source_exact_cast_call_children(
                                                 o.method().is_none_or(|m| m == &source.member)
                                             })
                                             && name == call.target.name()
-                                            && descriptor_parameter_count(call.target.descriptor())
-                                                == Some(args.len())
+                                            && descriptor_parameter_count(
+                                                &call.target.raw_descriptor().0,
+                                            ) == Some(args.len())
                                             && target_matches
                                         {
                                             counts[index] = counts[index].saturating_add(1);
@@ -2829,7 +3088,7 @@ pub fn class_source_invoke_result_uses(
     for target in field_targets {
         crate::stop::poll(budget, Some(target.write_bci))?;
         if field_targets_by_site
-            .insert((target.write_bci, target.name.clone()), target.clone())
+            .insert(target.write_bci, target.clone())
             .is_some()
         {
             return Ok(None);
@@ -2872,7 +3131,7 @@ pub fn class_source_invoke_result_uses(
                 .get(index + 1)
                 .is_some_and(|(next_bci, _, _)| *next_bci == bci)
             || target.name() != name
-            || descriptor_parameter_count(target.descriptor()) != Some(args.len())
+            || descriptor_parameter_count(&target.raw_descriptor().0) != Some(args.len())
         {
             return None;
         }
@@ -3098,7 +3357,7 @@ pub fn class_source_invoke_result_uses(
         source: &ClassSourceMethodAstSource,
         statements: &[Stmt],
         producer: &ClassSourceInvokeKey,
-        field_targets: &HashMap<(u32, String), ClassSourceInvokeFieldTarget>,
+        field_targets: &HashMap<u32, ClassSourceInvokeFieldTarget>,
         result: &mut Vec<ClassSourceInvokeResultUse>,
     ) {
         use crate::ast::StmtKind;
@@ -3109,7 +3368,10 @@ pub fn class_source_invoke_result_uses(
                     visit_expression(source, value, Consumer::Return(bci), producer, result)
                 }
                 StmtKind::FieldAssign { name, value, .. } => {
-                    let target = field_targets.get(&(bci, name.clone())).cloned();
+                    let target = field_targets
+                        .get(&bci)
+                        .filter(|target| target.name == JvmBytes::from_unicode(name))
+                        .cloned();
                     visit_expression(
                         source,
                         value,
@@ -3353,7 +3615,7 @@ pub fn class_source_method_body_consumers(
         );
         Ok(opcode_matches_kind
             && target.name() == name.as_str()
-            && descriptor_parameter_count(target.descriptor()) == Some(args.len()))
+            && descriptor_parameter_count(&target.raw_descriptor().0) == Some(args.len()))
     }
 
     fn visit(
@@ -3540,7 +3802,8 @@ pub fn class_source_method_body_consumers(
     Ok(Some(result))
 }
 
-/// Applies only casts whose exact invocation and argument position the caller has proved. The
+/// Applies caller-selected casts at matching invocation/argument positions; this helper does
+/// not authenticate the caller's source-type or overload claim. The
 /// outer cast presents its source target type; the original child keeps its own `presented` type
 /// and origins. This is a source-level upcast for overload selection, not a physical checkcast.
 #[doc(hidden)]
@@ -3553,7 +3816,7 @@ pub fn project_class_source_invoke_argument_casts(
 }
 
 /// Removes only explicitly selected descriptor-erasure reference presentation wrappers, then
-/// applies proved source upcasts in one AST clone and traversal.
+/// applies the caller's source upcast assertions in one AST clone and traversal.
 #[doc(hidden)]
 pub fn project_class_source_invoke_argument_edits(
     ast: &ClassSourceMethodAst,
@@ -3564,7 +3827,7 @@ pub fn project_class_source_invoke_argument_edits(
     project_class_source_generic_edits(ast, removals, edits, &[], budget)
 }
 
-/// Applies proved call-argument edits and typed foreach edits in one retained-AST transaction.
+/// Applies caller-selected argument/foreach edits in one retained-AST transaction.
 #[doc(hidden)]
 pub fn project_class_source_generic_edits(
     ast: &ClassSourceMethodAst,
@@ -3798,7 +4061,8 @@ pub fn project_class_source_generic_edits(
     charge_class_source_ast(&ast.projection, budget)?;
     let source_metadata_items = ast
         .projection
-        .nested_class_members
+        .source_names()
+        .inner_classes
         .len()
         .saturating_add(ast.projection.parameter_names.len())
         .saturating_add(ast.projection.parameter_slots.len())
@@ -3847,7 +4111,7 @@ pub fn project_class_source_generic_edits(
             return;
         };
         if name != site_key.target.name()
-            || descriptor_parameter_count(site_key.target.descriptor()) != Some(args.len())
+            || descriptor_parameter_count(&site_key.target.raw_descriptor().0) != Some(args.len())
         {
             return;
         }
@@ -3889,7 +4153,7 @@ pub fn project_class_source_generic_edits(
                 || site_key.opcode != edit.opcode
                 || site_key.target != edit.target
                 || name != edit.target.name()
-                || descriptor_parameter_count(edit.target.descriptor()) != Some(args.len())
+                || descriptor_parameter_count(&edit.target.raw_descriptor().0) != Some(args.len())
                 || edit.argument_index >= args.len()
             {
                 continue;
@@ -3907,6 +4171,7 @@ pub fn project_class_source_generic_edits(
                 ExprKind::Cast {
                     ty: edit.ty.clone(),
                     value: Box::new(old),
+                    source_type_name: None,
                 },
                 original_origin,
             );
@@ -3956,7 +4221,7 @@ pub fn project_class_source_generic_edits(
                                         && cast_is_owned
                                         && matches!(
                                             &value.kind,
-                                            ExprKind::Cast { ty: cast_ty, value: cast_value }
+                                            ExprKind::Cast { ty: cast_ty, value: cast_value, source_type_name: None }
                                                 if cast_ty == &edit.ty
                                                     && value.origin == edit.cast_origin
                                                     && value.origin.primary().bci() == edit.cast_bci
@@ -4355,9 +4620,9 @@ pub fn project_class_source_generic_edits(
     }
     let projection = ClassSourceMethodAstSource {
         program,
+        declared_types: ast.projection.declared_types.clone(),
         member: ast.projection.member.clone(),
-        current_class: ast.projection.current_class.clone(),
-        nested_class_members: ast.projection.nested_class_members.clone(),
+        declaring_class: ast.projection.declaring_class.clone(),
         parameter_names: ast.projection.parameter_names.clone(),
         parameter_slots: ast.projection.parameter_slots.clone(),
         complete_code: ast.projection.complete_code,
@@ -4372,6 +4637,8 @@ pub fn project_class_source_generic_edits(
             .clone(),
         generic_call_init: ast.projection.generic_call_init.clone(),
         instance_field_write_evidence: ast.projection.instance_field_write_evidence.clone(),
+        #[cfg(any(test, feature = "test-support"))]
+        observation: crate::observation::Token::new(crate::observation::Kind::MethodAstSource),
     };
     Ok(Some(ClassSourceMethodAst {
         projection: Arc::new(projection),
@@ -4579,7 +4846,11 @@ pub fn class_source_local_assignments(
                 name: name.clone(),
                 value_bci: value.origin.primary().bci(),
                 cast_type: match &value.kind {
-                    crate::ast::ExprKind::Cast { ty, .. } => Some(ty.clone()),
+                    crate::ast::ExprKind::Cast {
+                        ty,
+                        source_type_name: None,
+                        ..
+                    } => Some(ty.clone()),
                     _ => None,
                 },
                 scope_anchors: scopes,
@@ -4697,7 +4968,12 @@ pub fn class_source_for_each_local_iterables(
                         _ => return None,
                     };
                     let cast = value;
-                    let ExprKind::Cast { ty, value } = &cast.kind else {
+                    let ExprKind::Cast {
+                        ty,
+                        value,
+                        source_type_name: None,
+                    } = &cast.kind
+                    else {
                         return None;
                     };
                     let ExprKind::Local(local) = &value.kind else {
@@ -5051,6 +5327,7 @@ pub fn class_source_typed_foreach_binding_site<'a>(
                     let ExprKind::Cast {
                         ty: cast_ty,
                         value: child,
+                        source_type_name: None,
                     } = &value.kind
                     else {
                         return Ok(None);
@@ -5931,7 +6208,7 @@ fn charge_class_source_ast(
                     .saturating_add(items.iter().fold(0u64, |total, item| {
                         total.saturating_add(
                             u64::try_from(
-                                item.owner.len() + item.name.len() + item.descriptor.len(),
+                                item.owner.0.len() + item.name.0.len() + item.descriptor.0.len(),
                             )
                             .unwrap_or(u64::MAX),
                         )
@@ -6091,8 +6368,13 @@ fn class_source_exact_reference_presentation_wrapper<'a>(
         return None;
     }
     let required_type =
-        class_source_descriptor_reference_parameter(target.descriptor(), argument_index)?;
-    let ExprKind::Cast { ty, value } = &argument.kind else {
+        class_source_descriptor_reference_parameter(&target.raw_descriptor().0, argument_index)?;
+    let ExprKind::Cast {
+        ty,
+        value,
+        source_type_name: None,
+    } = &argument.kind
+    else {
         return None;
     };
     if ty != &Type::Reference(required_type)
@@ -6148,11 +6430,18 @@ fn class_source_expression_reference_presentation_wrapper<'a>(
     {
         return None;
     }
-    let ExprKind::Cast { ty, value } = &argument.kind else {
+    let ExprKind::Cast {
+        ty,
+        value,
+        source_type_name: None,
+    } = &argument.kind
+    else {
         return None;
     };
-    let required_type =
-        class_source_descriptor_reference_parameter(key.target.descriptor(), argument_index)?;
+    let required_type = class_source_descriptor_reference_parameter(
+        &key.target.raw_descriptor().0,
+        argument_index,
+    )?;
     if ty != &Type::Reference(required_type)
         || argument.presented.as_ref() != Some(ty)
         || !matches!(
@@ -6278,40 +6567,14 @@ fn class_source_origin_belongs_to_method(
 }
 
 fn class_source_descriptor_reference_parameter(
-    descriptor: &str,
+    descriptor: &[u8],
     argument_index: usize,
 ) -> Option<String> {
-    use jarde_reader::classfile::Base;
-
-    let bytes = descriptor.as_bytes();
-    let facts = descriptor_facts(bytes, DescriptorKind::Method).ok()?;
-    let component = facts.parameters().get(argument_index)?;
-    let component_bytes = component.bytes(bytes)?;
-    let dimensions = usize::try_from(component.dimensions()).ok()?;
-    let base = match component.base() {
-        Base::Object(name) => {
-            let name = std::str::from_utf8(name.0.as_slice()).ok()?;
-            if name.is_empty() {
-                return None;
-            }
-            name.replace('/', ".")
-        }
-        Base::Primitive(primitive) if dimensions > 0 => match primitive {
-            jarde_reader::classfile::BaseType::Boolean => "boolean".to_owned(),
-            jarde_reader::classfile::BaseType::Byte => "byte".to_owned(),
-            jarde_reader::classfile::BaseType::Char => "char".to_owned(),
-            jarde_reader::classfile::BaseType::Short => "short".to_owned(),
-            jarde_reader::classfile::BaseType::Int => "int".to_owned(),
-            jarde_reader::classfile::BaseType::Long => "long".to_owned(),
-            jarde_reader::classfile::BaseType::Float => "float".to_owned(),
-            jarde_reader::classfile::BaseType::Double => "double".to_owned(),
-        },
-        Base::Primitive(_) => return None,
-    };
-    if component_bytes.is_empty() {
-        return None;
+    let facts = descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
+    match crate::lambda::type_of_component(facts.parameters().get(argument_index)?)? {
+        crate::ast::Type::Reference(name) => Some(name),
+        _ => None,
     }
-    Some(format!("{base}{}", "[]".repeat(dimensions)))
 }
 
 fn class_source_invoke_ast_expression_anchor_count(expression: &crate::ast::Expr) -> usize {
@@ -6338,8 +6601,8 @@ fn class_source_ast_anchor(
     }
 }
 
-fn descriptor_parameter_count(descriptor: &str) -> Option<usize> {
-    let facts = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Method).ok()?;
+fn descriptor_parameter_count(descriptor: &[u8]) -> Option<usize> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
     Some(facts.parameters().len())
 }
 
@@ -6354,11 +6617,372 @@ pub fn emit_class_source_method_ast(
     crate::emit::emit_class_source_statements(
         &ast.projection.program.stmts,
         &ast.projection.member,
-        ast.projection.current_class.as_deref(),
-        &ast.projection.nested_class_members,
+        ast.projection.source_names(),
         indentation,
         budget,
     )
+}
+
+/// The bound arena of a complete private source alternative. Indices remain local to this AST.
+#[doc(hidden)]
+pub fn class_source_declared_types(ast: &ClassSourceMethodAst) -> Option<&DeclaredGenericTypes> {
+    ast.projection
+        .complete_code
+        .then_some(ast.projection.declared_types.as_deref())
+        .flatten()
+}
+
+/// A positive binding fact alone does not prove the emitted call consumed its final source
+/// declaration. Reuse the ordinary AST walk to require one actually adapted call at this BCI.
+#[doc(hidden)]
+pub fn class_source_declared_call_consumed(
+    ast: &ClassSourceMethodAst,
+    bci: u32,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    if class_source_declared_types(ast).is_none() {
+        return Ok(false);
+    }
+    charge_class_source_ast(&ast.projection, budget)?;
+    let mut matches = 0usize;
+    let mut consumed = false;
+    for_each_statement_expression(&ast.projection.program.stmts, &mut |expression| {
+        if matches!(&expression.kind, ExprKind::Call { .. })
+            && expression.origin.primary().bci() == bci
+            && expression
+                .origin
+                .primary()
+                .method()
+                .is_none_or(|member| member == &ast.projection.member)
+        {
+            matches += 1;
+            consumed = expression.declared_call;
+        }
+    });
+    crate::stop::poll(budget, Some(bci))?;
+    Ok(matches == 1 && consumed)
+}
+
+/// A bound field fact alone does not prove that the final typed AST consumed it. Reads must be
+/// represented by the exact declared Field expression; writes carry a builder marker only after
+/// the typed field-write path succeeds.
+#[doc(hidden)]
+pub fn class_source_declared_field_consumed(
+    ast: &ClassSourceMethodAst,
+    bci: u32,
+    write: bool,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let Some(types) = class_source_declared_types(ast) else {
+        return Ok(false);
+    };
+    charge_class_source_ast(&ast.projection, budget)?;
+    let mut facts = 0usize;
+    let mut expected_type = None;
+    for (_, member) in &types.members {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(bci),
+        )?;
+        if let DeclaredGenericMemberTypes::Field {
+            bci: member_bci,
+            ty,
+            ..
+        } = member
+            && *member_bci == bci
+        {
+            facts += 1;
+            expected_type = Some(*ty);
+        }
+    }
+    if facts != 1 {
+        crate::stop::poll(budget, Some(bci))?;
+        return Ok(false);
+    }
+
+    let mut matches = 0usize;
+    let mut consumed = false;
+    if write {
+        for_each_statement(&ast.projection.program.stmts, &mut |statement| {
+            if matches!(&statement.kind, crate::ast::StmtKind::FieldAssign { .. })
+                && statement.origin.primary().bci() == bci
+                && statement
+                    .origin
+                    .primary()
+                    .method()
+                    .is_none_or(|member| member == &ast.projection.member)
+            {
+                matches += 1;
+                consumed = statement.declared_field;
+            }
+        });
+    } else {
+        for_each_statement_expression(&ast.projection.program.stmts, &mut |expression| {
+            if matches!(&expression.kind, ExprKind::Field { .. })
+                && expression.origin.primary().bci() == bci
+                && expression
+                    .origin
+                    .primary()
+                    .method()
+                    .is_none_or(|member| member == &ast.projection.member)
+            {
+                matches += 1;
+                consumed = expression.declared_type == expected_type;
+            }
+        });
+    }
+    crate::stop::poll(budget, Some(bci))?;
+    Ok(matches == 1 && consumed)
+}
+
+/// Walks every statement, including nested bodies, without inspecting or changing expressions.
+fn for_each_statement<'a>(
+    statements: &'a [crate::ast::Stmt],
+    visit: &mut dyn FnMut(&'a crate::ast::Stmt),
+) {
+    use crate::ast::StmtKind;
+    for statement in statements {
+        visit(statement);
+        match &statement.kind {
+            StmtKind::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                for_each_statement(then_body, visit);
+                for_each_statement(else_body, visit);
+            }
+            StmtKind::While { body, .. } | StmtKind::DoWhile { body, .. } => {
+                for_each_statement(body, visit)
+            }
+            StmtKind::For {
+                init, update, body, ..
+            } => {
+                for_each_statement(std::slice::from_ref(init), visit);
+                for_each_statement(std::slice::from_ref(update), visit);
+                for_each_statement(body, visit);
+            }
+            StmtKind::ForEach { body, .. } => for_each_statement(body, visit),
+            StmtKind::Switch { arms, .. } => {
+                for arm in arms {
+                    for_each_statement(&arm.body, visit);
+                }
+            }
+            StmtKind::Try {
+                catches,
+                body,
+                finally_body,
+                ..
+            } => {
+                for catch in catches {
+                    for_each_statement(&catch.body, visit);
+                }
+                for_each_statement(body, visit);
+                if let Some(body) = finally_body {
+                    for_each_statement(body, visit);
+                }
+            }
+            StmtKind::Synchronized { body, .. } => for_each_statement(body, visit),
+            _ => {}
+        }
+    }
+}
+
+/// Check affected inherited consumers against this same typed AST before a class transaction
+/// changes its Header. This supplies no publication decision and performs no dependency reads.
+#[doc(hidden)]
+pub fn class_source_declared_header_consumers(
+    ast: &ClassSourceMethodAst,
+    parent: &crate::source_proof::ReferenceClassHeader,
+    class_internal: &[u8],
+    parent_internal: &[u8],
+    invokes: &[crate::generic_source_proof::SameClassInvokeUse],
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    use DeclaredGenericMemberTypes as Member;
+    let Some(types) = class_source_declared_types(ast) else {
+        return Ok(false);
+    };
+    let Some(actual) = &types.declaration else {
+        return Ok(false);
+    };
+    if actual.definition != ast.projection.member.owner {
+        return Ok(false);
+    }
+    charge_class_source_ast(&ast.projection, budget)?;
+    if ast.projection.member.name.0 == b"<init>" {
+        let Some(consumers) = class_source_method_body_consumers(ast, budget)? else {
+            return Ok(false);
+        };
+        let Some(init) = consumers.init_record.as_ref() else {
+            return Ok(false);
+        };
+        if !init.presented
+            || init.target != Some(crate::ast::ConstructorTarget::Super)
+            || !init.declares_raw_class(class_internal)
+            || !init
+                .class
+                .as_ref()
+                .is_some_and(|name| JvmBytes::from_unicode(name).0 == parent_internal)
+            || consumers.constructor_calls.len() != 1
+        {
+            return Ok(false);
+        }
+        let prologue = &consumers.constructor_calls[0];
+        if Some(prologue.bci) != init.bci
+            || !prologue.arguments.is_empty()
+            || !prologue.catch_scopes.is_empty()
+            || prologue.target != crate::ast::ConstructorTarget::Super
+        {
+            return Ok(false);
+        }
+        charge_class_source_metadata(
+            budget,
+            invokes.len().saturating_add(parent.methods.len()),
+            Some(prologue.bci),
+        )?;
+        if !invokes.iter().any(|invoke| invoke.physical_caller == ast.projection.member
+            && invoke.bci == prologue.bci && invoke.opcode == 0xb7 && invoke.owner == parent_internal
+            && invoke.name == b"<init>" && invoke.descriptor == b"()V"
+            && invoke.constructor_receiver == Some(crate::generic_source_proof::SameClassConstructorReceiver::UninitializedThis)) { return Ok(false); }
+        let mut constructors = parent.methods.iter().enumerate().filter(|(_, member)| {
+            member.name.raw().0 == b"<init>" && member.descriptor.raw().0 == b"()V"
+        });
+        let Some((position, constructor)) = constructors.next() else {
+            return Ok(false);
+        };
+        if constructors.next().is_some() {
+            return Ok(false);
+        }
+        let accessible = constructor.access_flags & (crate::facts::ACC_PUBLIC | 0x0004) != 0
+            || (constructor.access_flags & crate::facts::ACC_PRIVATE == 0
+                && actual.loader == parent.loader
+                && crate::source_proof::internal_package(class_internal)
+                    == crate::source_proof::internal_package(parent_internal));
+        if !accessible
+            || parent
+                .generic_signatures
+                .as_ref()
+                .and_then(|signatures| signatures.methods.get(position))
+                .is_none_or(Option::is_some)
+        {
+            return Ok(false);
+        }
+    }
+    for (_, member) in &types.members {
+        let (bci, application, field) = match member {
+            Member::Field {
+                bci, application, ..
+            } => (*bci, *application, true),
+            Member::Method {
+                bci, application, ..
+            } => (*bci, *application, false),
+        };
+        charge_class_source_metadata(budget, types.relations.len().saturating_add(1), Some(bci))?;
+        let inherited = types.receiver.is_some_and(|receiver| {
+            receiver == application || types.relations.contains(&(receiver, application))
+        });
+        if !inherited
+            || !crate::generic_types::has_source_arguments(types, application, budget)
+                .map_err(|error| crate::stop::stop_from_error(budget, error, Some(bci)))?
+        {
+            continue;
+        }
+        let consumed = if field {
+            let Some(opcode @ (0xb2 | 0xb3 | 0xb4 | 0xb5)) =
+                class_source_instruction_opcode(ast, bci, budget)?
+            else {
+                return Ok(false);
+            };
+            class_source_declared_field_consumed(ast, bci, matches!(opcode, 0xb3 | 0xb5), budget)?
+        } else {
+            class_source_declared_call_consumed(ast, bci, budget)?
+        };
+        if !consumed {
+            return Ok(false);
+        }
+    }
+    for invoke in invokes {
+        charge_class_source_metadata(
+            budget,
+            types.members.len().saturating_add(1),
+            Some(invoke.bci),
+        )?;
+        if invoke.name == b"<init>" {
+            continue;
+        }
+        if invoke.receiver_value_fact.as_ref().is_some_and(|fact| {
+            matches!(
+                fact.definition,
+                jarde_jvm::method_ir::Definition::Entry {
+                    slot: jarde_jvm::method_ir::Slot::Local(0),
+                    ..
+                }
+            )
+        }) && !types
+            .members
+            .iter()
+            .any(|(_, member)| matches!(member, Member::Method { bci, .. } if *bci == invoke.bci))
+        {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+/// Re-emit a retained program through the ordinary artifact writer and its exact replay. The
+/// owning class adapter supplies the same physical declaration facts; no new recovery is run.
+#[doc(hidden)]
+pub fn emit_class_source_method_artifact(
+    ast: &ClassSourceMethodAst,
+    access_flags: u16,
+    profile: SourceTarget,
+    budget: &mut Budget,
+) -> Result<(String, SourceMap), StopReason> {
+    let source = &ast.projection;
+    let parameter_slots = descriptor_facts(&source.member.descriptor.0, DescriptorKind::Method)
+        .ok()
+        .and_then(|descriptor| descriptor.parameter_slots())
+        .ok_or(StopReason::Interrupted {
+            code: "jre_class_source_ast_descriptor",
+            at: None,
+        })?
+        + u16::from(access_flags & crate::facts::ACC_STATIC == 0);
+    let mut method = crate::MethodFacts::from_raw(
+        source.member.name.clone(),
+        source.member.descriptor.clone(),
+        parameter_slots,
+    )
+    .with_access_flags(access_flags);
+    if let Some(declaring) = &source.declaring_class {
+        method = method.with_declaring_class(declaring.clone());
+    }
+    let facts = RecoveryFacts::new(method);
+    let declaration = declaration::plan(facts.method(), profile);
+    let emitted = emit(
+        &source.program.stmts,
+        &facts,
+        declaration.declaration(),
+        Some(&source.member),
+        budget,
+    )?;
+    let mut phase = EvidencePhase::new();
+    let (map, materialized) = emit_source_map(
+        &source.program.stmts,
+        &facts,
+        declaration.declaration(),
+        Some(&source.member),
+        SegmentPublication::Whole,
+        &emitted,
+        &mut phase,
+        budget,
+    )?;
+    if materialized != Materialized::Complete {
+        return Err(phase.reason());
+    }
+    Ok((emitted.text, map))
 }
 
 /// One direct-super constructor's same-run contiguous primitive-array write prefix.
@@ -6374,9 +6998,9 @@ pub struct ClassSourceInstanceArrayConstructorProjection {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ClassSourceInstanceArrayFieldWrite {
     pub bci: u32,
-    pub owner: String,
-    pub name: String,
-    pub descriptor: String,
+    pub owner: JvmBytes,
+    pub name: JvmBytes,
+    pub descriptor: JvmBytes,
     pub element: Type,
 }
 
@@ -6427,8 +7051,9 @@ pub fn class_source_instance_array_constructor_projection(
         source.instruction_bcis.first().copied(),
     )?;
     let mut by_bci = std::collections::HashMap::with_capacity(inventory.len());
-    let mut by_field =
-        std::collections::HashMap::<(&str, &str, &str), Vec<u32>>::with_capacity(inventory.len());
+    let mut by_field = std::collections::HashMap::<(&[u8], &[u8], &[u8]), Vec<u32>>::with_capacity(
+        inventory.len(),
+    );
     for write in inventory {
         crate::stop::poll(budget, Some(write.bci))?;
         crate::stop::charge(
@@ -6437,12 +7062,14 @@ pub fn class_source_instance_array_constructor_projection(
             1,
             Some(write.bci),
         )?;
-        by_bci.insert(write.bci, write);
+        if by_bci.insert(write.bci, write).is_some() {
+            return Ok(None);
+        }
         by_field
             .entry((
-                write.owner.as_str(),
-                write.name.as_str(),
-                write.descriptor.as_str(),
+                write.owner.0.as_slice(),
+                write.name.0.as_slice(),
+                write.descriptor.0.as_slice(),
             ))
             .or_default()
             .push(write.bci);
@@ -6477,13 +7104,13 @@ pub fn class_source_instance_array_constructor_projection(
         let Some(evidence) = by_bci.get(&bci).copied() else {
             break;
         };
-        if evidence.is_static || evidence.name != *name {
+        if evidence.is_static || evidence.name != JvmBytes::from_unicode(name) {
             break;
         }
         let key = (
-            evidence.owner.as_str(),
-            evidence.name.as_str(),
-            evidence.descriptor.as_str(),
+            evidence.owner.0.as_slice(),
+            evidence.name.0.as_slice(),
+            evidence.descriptor.0.as_slice(),
         );
         let Some(all) = by_field.get(&key) else {
             return Ok(None);
@@ -6493,9 +7120,10 @@ pub fn class_source_instance_array_constructor_projection(
         }
         let fact_cost = evidence
             .owner
+            .0
             .len()
-            .saturating_add(evidence.name.len())
-            .saturating_add(evidence.descriptor.len())
+            .saturating_add(evidence.name.0.len())
+            .saturating_add(evidence.descriptor.0.len())
             .saturating_add(1);
         crate::stop::charge(
             budget,
@@ -6581,18 +7209,21 @@ fn primitive_array_value(
             | ExprKind::Long(_)
             | ExprKind::Float(_)
             | ExprKind::Double(_) => return Ok(true),
-            ExprKind::Cast { ty, value }
-                if matches!(
-                    ty,
-                    Type::Boolean
-                        | Type::Byte
-                        | Type::Char
-                        | Type::Short
-                        | Type::Int
-                        | Type::Long
-                        | Type::Float
-                        | Type::Double
-                ) =>
+            ExprKind::Cast {
+                ty,
+                value,
+                source_type_name: None,
+            } if matches!(
+                ty,
+                Type::Boolean
+                    | Type::Byte
+                    | Type::Char
+                    | Type::Short
+                    | Type::Int
+                    | Type::Long
+                    | Type::Float
+                    | Type::Double
+            ) =>
             {
                 current = value
             }
@@ -6632,18 +7263,21 @@ fn primitive_array_literal(
             | ExprKind::Long(_)
             | ExprKind::Float(_)
             | ExprKind::Double(_) => return Ok(true),
-            ExprKind::Cast { ty, value }
-                if matches!(
-                    ty,
-                    Type::Boolean
-                        | Type::Byte
-                        | Type::Char
-                        | Type::Short
-                        | Type::Int
-                        | Type::Long
-                        | Type::Float
-                        | Type::Double
-                ) =>
+            ExprKind::Cast {
+                ty,
+                value,
+                source_type_name: None,
+            } if matches!(
+                ty,
+                Type::Boolean
+                    | Type::Byte
+                    | Type::Char
+                    | Type::Short
+                    | Type::Int
+                    | Type::Long
+                    | Type::Float
+                    | Type::Double
+            ) =>
             {
                 current = value
             }
@@ -6767,9 +7401,18 @@ fn compare_array_value(
             (ExprKind::Long(x), ExprKind::Long(y)) if x == y => {}
             (ExprKind::Float(x), ExprKind::Float(y)) if x == y => {}
             (ExprKind::Double(x), ExprKind::Double(y)) if x == y => {}
-            (ExprKind::Cast { ty: x, value: xv }, ExprKind::Cast { ty: y, value: yv })
-                if x == y =>
-            {
+            (
+                ExprKind::Cast {
+                    ty: x,
+                    value: xv,
+                    source_type_name: xs,
+                },
+                ExprKind::Cast {
+                    ty: y,
+                    value: yv,
+                    source_type_name: ys,
+                },
+            ) if x == y && xs == ys => {
                 crate::stop::charge(
                     budget,
                     jarde_reader::budget::CountedBudgetDimension::IrItems,
@@ -6946,8 +7589,7 @@ pub fn emit_class_source_instance_array_initializer(
     Ok(Some(emit_class_initializer_value(
         value,
         &ast.projection.member,
-        ast.projection.current_class.as_deref(),
-        &ast.projection.nested_class_members,
+        ast.projection.source_names(),
         budget,
     )?))
 }
@@ -7000,8 +7642,7 @@ pub fn emit_class_source_instance_array_constructor_body(
     crate::emit::emit_class_source_statements(
         &stmts,
         &ast.projection.member,
-        ast.projection.current_class.as_deref(),
-        &ast.projection.nested_class_members,
+        ast.projection.source_names(),
         1,
         budget,
     )
@@ -7081,9 +7722,12 @@ mod instance_array_prefix_tests {
                 lambdas_presented: 0,
                 accessors_presented: 0,
             },
+            declared_types: None,
             member,
-            current_class: Some("sample.ArrayFieldStore".into()),
-            nested_class_members: Vec::new(),
+            declaring_class: Some(crate::facts::DeclaringClass::new(
+                "sample.ArrayFieldStore".replace('.', "/"),
+                0x20,
+            )),
             parameter_names: Vec::new(),
             parameter_slots: Vec::new(),
             complete_code: true,
@@ -7102,6 +7746,8 @@ mod instance_array_prefix_tests {
                 refusal: None,
             }),
             instance_field_write_evidence: evidence,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::MethodAstSource),
         };
         ClassSourceMethodAst {
             projection: std::sync::Arc::new(source),
@@ -7127,9 +7773,9 @@ mod instance_array_prefix_tests {
             bci: 2,
             access: crate::facts::FieldAccess::Write,
             is_static: false,
-            owner: "sample/ArrayFieldStore".into(),
-            name: "bytes".into(),
-            descriptor: "[B".into(),
+            owner: jarde_reader::model::JvmBytes::from_unicode("sample/ArrayFieldStore"),
+            name: jarde_reader::model::JvmBytes::from_unicode("bytes"),
+            descriptor: jarde_reader::model::JvmBytes::from_unicode("[B"),
         }]
     }
     fn budget() -> Budget {
@@ -7380,8 +8026,7 @@ pub fn emit_class_source_assert_statements(
     crate::emit::emit_class_source_statements(
         statements,
         &ast.projection.member,
-        ast.projection.current_class.as_deref(),
-        &ast.projection.nested_class_members,
+        ast.projection.source_names(),
         1,
         budget,
     )
@@ -7398,8 +8043,7 @@ pub fn class_source_assert_member_current(
     crate::emit::emit_class_source_statements(
         &ast.projection.program.stmts,
         &ast.projection.member,
-        ast.projection.current_class.as_deref(),
-        &ast.projection.nested_class_members,
+        ast.projection.source_names(),
         1,
         budget,
     )
@@ -7851,8 +8495,7 @@ pub fn project_class_source_integer_constants(
     let body = crate::emit::emit_class_source_statements(
         &program.stmts,
         &ast.projection.member,
-        ast.projection.current_class.as_deref(),
-        &ast.projection.nested_class_members,
+        ast.projection.source_names(),
         1,
         budget,
     )?;
@@ -7860,8 +8503,7 @@ pub fn project_class_source_integer_constants(
         let map = crate::emit::replay_class_source_statement_segments(
             &program.stmts,
             &ast.projection.member,
-            ast.projection.current_class.as_deref(),
-            &ast.projection.nested_class_members,
+            ast.projection.source_names(),
             1,
             &body,
             budget,
@@ -7932,8 +8574,7 @@ pub fn project_class_source_integer_constants(
         Some(crate::emit::emit_class_source_statements(
             &ast.projection.program.stmts,
             &ast.projection.member,
-            ast.projection.current_class.as_deref(),
-            &ast.projection.nested_class_members,
+            ast.projection.source_names(),
             1,
             budget,
         )?)
@@ -7974,8 +8615,7 @@ pub fn emit_class_source_anonymous_constructor_initializer(
     crate::emit::emit_class_source_statements(
         std::slice::from_ref(statement),
         &ast.projection.member,
-        ast.projection.current_class.as_deref(),
-        &ast.projection.nested_class_members,
+        ast.projection.source_names(),
         4,
         budget,
     )
@@ -8028,7 +8668,7 @@ pub struct ClassSourceAnonymousInstanceBlock {
 pub fn emit_class_source_anonymous_instance_block(
     ast: &ClassSourceMethodAst,
     capture_write_bci: Option<u32>,
-    capture_reads: &[ProvedCapturedParameterRead],
+    capture_reads: &[CapturedParameterReadInput],
     reserved_names: &[String],
     indentation: usize,
     budget: &mut Budget,
@@ -8136,8 +8776,7 @@ pub fn emit_class_source_anonymous_instance_block(
     let text = crate::emit::emit_class_source_statements(
         &projected_body,
         &projected.projection.member,
-        projected.projection.current_class.as_deref(),
-        &projected.projection.nested_class_members,
+        projected.projection.source_names(),
         indentation,
         budget,
     )?;
@@ -8357,7 +8996,7 @@ fn instance_block_findings(
 #[doc(hidden)]
 pub fn project_class_source_captured_outer_reads(
     ast: &ClassSourceMethodAst,
-    reads: &[ProvedCapturedOuterRead],
+    reads: &[CapturedOuterReadInput],
     budget: &mut Budget,
 ) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
     let reads = reads
@@ -8371,7 +9010,7 @@ pub fn project_class_source_captured_outer_reads(
 #[doc(hidden)]
 pub fn project_class_source_captured_parameter_reads(
     ast: &ClassSourceMethodAst,
-    reads: &[ProvedCapturedParameterRead],
+    reads: &[CapturedParameterReadInput],
     budget: &mut Budget,
 ) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
     let reads = reads
@@ -8388,7 +9027,7 @@ pub fn project_class_source_captured_parameter_reads(
 #[doc(hidden)]
 pub fn project_class_source_converted_parameter_reads(
     ast: &ClassSourceMethodAst,
-    reads: &[ProvedCapturedParameterRead],
+    reads: &[CapturedParameterReadInput],
     budget: &mut Budget,
 ) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
     let reads = reads
@@ -8399,8 +9038,8 @@ pub fn project_class_source_converted_parameter_reads(
 }
 
 enum CapturedReadReplacement<'a> {
-    Outer(&'a ProvedCapturedOuterRead),
-    Parameter(&'a ProvedCapturedParameterRead),
+    Outer(&'a CapturedOuterReadInput),
+    Parameter(&'a CapturedParameterReadInput),
 }
 
 /// Which node a proved capture read's anchor may sit on, as the containment pattern every
@@ -8641,12 +9280,12 @@ fn project_captured_expr(
     crate::stop::poll(budget, Some(expr.origin.primary().bci()))?;
     if let Some(read) = expected.get(&expr.origin.primary().bci()) {
         let valid_field = match read {
-            CapturedReadReplacement::Outer(read) => read.field_name.as_str(),
-            CapturedReadReplacement::Parameter(read) => read.field_name.as_str(),
+            CapturedReadReplacement::Outer(read) => &read.field_name,
+            CapturedReadReplacement::Parameter(read) => &read.field_name,
         };
         if let ExprKind::Field { receiver, name } = &expr.kind
             && matches!(receiver.kind, ExprKind::Local(ref local) if local == "this")
-            && name == valid_field
+            && &JvmBytes::from_unicode(name) == valid_field
         {
             match read {
                 CapturedReadReplacement::Outer(read) => {
@@ -8815,8 +9454,7 @@ pub fn emit_class_source_anonymous_return_at(
     let (text, matched, range) = crate::emit::emit_class_source_anonymous_return(
         &ast.projection.program.stmts,
         &ast.projection.member,
-        ast.projection.current_class.as_deref(),
-        &ast.projection.nested_class_members,
+        ast.projection.source_names(),
         indentation,
         allocation_bci,
         allocation_type,
@@ -8839,15 +9477,11 @@ pub fn emit_class_source_anonymous_return_at(
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ClassSourceMethodAstSource {
     pub(crate) program: crate::build::Program,
+    /// Node identities in this alternative belong only to this owned arena.
+    pub(crate) declared_types: Option<std::sync::Arc<DeclaredGenericTypes>>,
     pub(crate) member: jarde_reader::model::PhysicalMethodId,
-    /// The class this run's body belongs to, in the source spelling (`p.Outer`), when the run
-    /// stated one. Every emitter that re-emits this retained AST spells nested type references
-    /// against it ([`crate::names::nested_member_reference_spelling`]), so a fragment written by
-    /// the class-source adapter and the body of a plain recovery nest the same class the same way.
-    pub(crate) current_class: Option<String>,
-    /// The member classes that class's own `InnerClasses` attribute states, in the source
-    /// spelling: the row set the nested source spelling is gated on.
-    pub(crate) nested_class_members: Vec<String>,
+    /// The same-read declaration shares its complete raw row set with every re-emission.
+    pub(crate) declaring_class: Option<crate::facts::DeclaringClass>,
     /// The presentation name assigned to each descriptor parameter slot, in descriptor order.
     /// `None` means a reused slot did not have one unambiguous whole-slot name.
     pub(crate) parameter_names: Vec<Option<String>>,
@@ -8872,6 +9506,8 @@ pub(crate) struct ClassSourceMethodAstSource {
     /// Complete same-run instance-field write inventory, present only when every physical write
     /// was claimed. `None` means unavailable or incomplete.
     pub(crate) instance_field_write_evidence: Option<Vec<crate::field::Evidence>>,
+    #[cfg(any(test, feature = "test-support"))]
+    observation: crate::observation::Token,
 }
 
 #[doc(hidden)]
@@ -8884,6 +9520,8 @@ pub struct ClassSourceArrayConstructorCandidate {
     pub implementation_index: u16,
     pub sites: Vec<ArrayConstructorProjectionSite>,
     pub(crate) projection: std::sync::Arc<ArrayConstructorProjectionSource>,
+    #[cfg(any(test, feature = "test-support"))]
+    observation: crate::observation::Token,
 }
 
 #[doc(hidden)]
@@ -8898,6 +9536,8 @@ pub struct ClassSourceLambdaHelperCandidate {
     pub site_cp: u16,
     pub(crate) implementation_kind: u8,
     pub(crate) projection: std::sync::Arc<LambdaHelperProjectionSource>,
+    #[cfg(any(test, feature = "test-support"))]
+    observation: crate::observation::Token,
 }
 
 impl ClassSourceLambdaHelperCandidate {
@@ -8933,6 +9573,15 @@ pub(crate) struct ArrayConstructorProjectionSource {
     pub(crate) member: jarde_reader::model::PhysicalMethodId,
 }
 
+impl ClassSourceMethodAstSource {
+    pub(crate) fn source_names(&self) -> crate::names::SourceClassNames<'_> {
+        self.declaring_class
+            .as_ref()
+            .map(crate::facts::DeclaringClass::source_names)
+            .unwrap_or_default()
+    }
+}
+
 /// The complete same-run census, with an explicit marker for allocation opcodes not decoded as
 /// `Operation::Allocate` by the existing decoder.
 #[doc(hidden)]
@@ -8940,6 +9589,9 @@ pub(crate) struct ArrayConstructorProjectionSource {
 pub struct AnonymousAllocationScan {
     pub complete: bool,
     pub allocations: Vec<AnonymousAllocationCandidate>,
+    #[cfg(any(test, feature = "test-support"))]
+    #[doc(hidden)]
+    pub observation: crate::observation::Token,
 }
 
 /// One allocation candidate carried to bounded class-source proofs.
@@ -8951,7 +9603,7 @@ pub struct AnonymousAllocationCandidate {
     /// The allocation instruction's BCI.
     pub head_bci: u32,
     /// The target class in internal form, from the `new` instruction's pool entry.
-    pub class: String,
+    pub class: JvmBytes,
     /// Whether the same-run `new@1` plan verified the allocation as a complete construction site.
     /// False includes rejected shapes and allocations owned by another rule.
     pub verified: bool,
@@ -8962,6 +9614,9 @@ pub struct AnonymousAllocationCandidate {
     /// Constructor arguments that are direct, unmodified entry parameters with no other SSA use.
     /// One `None` means that argument could not be closed to one such parameter.
     pub argument_parameter_slots: Vec<Option<u16>>,
+    #[cfg(any(test, feature = "test-support"))]
+    #[doc(hidden)]
+    pub observation: crate::observation::Token,
 }
 
 fn anonymous_direct_double_parameter_slot(
@@ -9003,20 +9658,23 @@ fn anonymous_direct_double_parameter_slot(
 pub struct GenericReturnCandidate {
     pub parameters: Vec<(u16, String)>,
     pub value: GenericReturnValue,
+    #[cfg(any(test, feature = "test-support"))]
+    #[doc(hidden)]
+    pub observation: crate::observation::Token,
 }
 
 /// A narrow class-source target selected from a proved method Signature and a complete direct
 /// return Code shape. The site is still checked against the same-run bootstrap and AST.
 #[doc(hidden)]
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct TypedFunctionalTarget {
+#[derive(Clone, Copy, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct FunctionalTargetInput {
     pub kind: TypedFunctionalKind,
     pub use_site: u32,
     pub site_cp: u16,
 }
 
 #[doc(hidden)]
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, serde::Serialize)]
 pub enum TypedFunctionalKind {
     FunctionStringInteger,
     SupplierString,
@@ -9037,6 +9695,8 @@ pub struct GenericConstructorCandidate {
     pub field_writes: Vec<GenericConstructorFieldWrite>,
     /// The `init@1` record derived from the same run's prologue decision.
     pub init: InitRecord,
+    #[cfg(any(test, feature = "test-support"))]
+    observation: crate::observation::Token,
 }
 
 /// One proved `this.field = parameter` operation in a generic constructor body.
@@ -9044,9 +9704,9 @@ pub struct GenericConstructorCandidate {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GenericConstructorFieldWrite {
     pub bci: u32,
-    pub owner: String,
-    pub name: String,
-    pub descriptor: String,
+    pub owner: JvmBytes,
+    pub name: JvmBytes,
+    pub descriptor: JvmBytes,
     pub parameter_slot: u16,
 }
 
@@ -9083,12 +9743,12 @@ pub enum GenericReturnValue {
     /// The method returns the same-run verified member creation, whose enclosing value is a
     /// parameter slot. The complete selected target is carried to class-source projection.
     MemberCreation {
-        target: Box<ProvedMemberInnerTarget>,
+        target: Box<MemberInnerTargetInput>,
         qualifier_slot: u16,
     },
     /// Same-run direct creation of the selected static member type.
     StaticMemberCreation {
-        target: Box<ProvedStaticMemberTarget>,
+        target: Box<StaticMemberTargetInput>,
         allocation_bci: u32,
         copy_bci: u32,
         constructor_bci: u32,
@@ -9102,7 +9762,7 @@ pub enum GenericReturnValue {
     },
     /// Exact same-run direct LambdaMetafactory return, including its physical site.
     TypedFunctional {
-        target: TypedFunctionalTarget,
+        target: FunctionalTargetInput,
     },
 }
 
@@ -9121,9 +9781,9 @@ pub struct GenericVoidParameterReceiverCall {
 pub struct ClassSourceEnumSwitchFieldUse {
     pub member: Option<PhysicalMethodId>,
     pub bci: u32,
-    pub owner: String,
-    pub name: String,
-    pub descriptor: String,
+    pub owner: JvmBytes,
+    pub name: JvmBytes,
+    pub descriptor: JvmBytes,
     pub is_static: bool,
     pub write: bool,
 }
@@ -9134,11 +9794,10 @@ pub struct ClassSourceEnumSwitchFieldUse {
 pub fn emit_class_initializer_value(
     value: &crate::ast::Expr,
     member: &PhysicalMethodId,
-    current_class: Option<&str>,
-    nested_class_members: &[String],
+    source_names: crate::names::SourceClassNames<'_>,
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
-    emit_initializer_value(value, member, current_class, nested_class_members, budget)
+    emit_initializer_value(value, member, source_names, budget)
 }
 
 /// Emits only statement nodes selected by a completed enum suffix certificate.
@@ -9146,18 +9805,10 @@ pub fn emit_class_initializer_value(
 pub fn emit_class_enum_initializer_statements(
     statements: &[crate::ast::Stmt],
     member: &PhysicalMethodId,
-    current_class: Option<&str>,
-    nested_class_members: &[String],
+    source_names: crate::names::SourceClassNames<'_>,
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
-    crate::emit::emit_class_source_statements(
-        statements,
-        member,
-        current_class,
-        nested_class_members,
-        2,
-        budget,
-    )
+    crate::emit::emit_class_source_statements(statements, member, source_names, 2, budget)
 }
 
 /// Re-emits the two user statements of a proved enum terminal constructor after mapping the
@@ -9170,8 +9821,7 @@ pub fn emit_class_enum_initializer_statements(
 pub fn emit_class_enum_constructor_body(
     candidate: &ClassEnumConstructorCandidates,
     member: &PhysicalMethodId,
-    current_class: Option<&str>,
-    nested_class_members: &[String],
+    source_names: crate::names::SourceClassNames<'_>,
     budget: &mut Budget,
 ) -> Result<Option<String>, StopReason> {
     use crate::ast::{AssignOp, ConstructorTarget, ExprKind, Stmt, StmtKind};
@@ -9276,14 +9926,8 @@ pub fn emit_class_enum_constructor_body(
             field_step.source.clone(),
         ),
     ];
-    crate::emit::emit_class_enum_constructor_statements(
-        &statements,
-        member,
-        current_class,
-        nested_class_members,
-        budget,
-    )
-    .map(Some)
+    crate::emit::emit_class_enum_constructor_statements(&statements, member, source_names, budget)
+        .map(Some)
 }
 
 /// Re-emits one same-run method AST with a proved enum selector and constant labels.
@@ -9536,6 +10180,47 @@ pub fn emit_class_source_enum_switch_group(
     Ok(Some(emitted.text))
 }
 
+/// Whether the final erased method declaration can receive the proved array reference.
+/// The candidate owns the same physical member selected by the class assembler.
+#[doc(hidden)]
+pub fn array_target_declaration_matches(
+    candidate: &ClassSourceArrayConstructorCandidate,
+    declaration: Option<&str>,
+) -> bool {
+    let (Some(declaration), Some(method_name)) = (
+        declaration,
+        crate::names::source_method_name(&candidate.member.name),
+    ) else {
+        return false;
+    };
+    if declaration.contains('<') || declaration.contains('>') {
+        return false;
+    }
+    let Some(header) = declaration.split('(').next() else {
+        return false;
+    };
+    let Some((return_prefix, _)) = header.rsplit_once(method_name.as_str()) else {
+        return false;
+    };
+    let Some(spelled_type) = return_prefix.split_whitespace().last() else {
+        return false;
+    };
+    let Some((_, Some(crate::ast::Type::Reference(return_type)))) =
+        crate::lambda::parse_method_bytes(&candidate.member.descriptor.0)
+    else {
+        return false;
+    };
+    candidate.sites.iter().all(|site| {
+        let target_simple = site
+            .target_type
+            .rsplit('.')
+            .next()
+            .unwrap_or(&site.target_type);
+        return_type == site.target_type
+            && (spelled_type == site.target_type || spelled_type == target_simple)
+    })
+}
+
 /// Re-emits the same-run typed body after replacing only the array-constructor sites selected by
 /// the class-wide proof. The AST, not previously rendered text, is the input to this projection.
 pub fn emit_class_source_array_constructors(
@@ -9547,10 +10232,8 @@ pub fn emit_class_source_array_constructors(
         return Ok(None);
     }
     let site = &candidate.sites[0];
-    let helper_owner = std::str::from_utf8(&candidate.helper_owner.0)
-        .ok()
-        .map(|owner| owner.replace('/', "."));
-    let helper_name = std::str::from_utf8(&candidate.helper.name.0).ok();
+    let helper_owner = crate::names::source_class_name(&candidate.helper_owner);
+    let helper_name = crate::names::source_method_name(&candidate.helper.name);
     let (Some(helper_owner), Some(helper_name)) = (helper_owner, helper_name) else {
         return Ok(None);
     };
@@ -9573,7 +10256,7 @@ pub fn emit_class_source_array_constructors(
                 name,
                 args,
             } if args.len() == 1
-            && name == helper_name
+            && name == &helper_name
                 && matches!(&receiver.kind, crate::ast::ExprKind::Path(owner) if owner == &helper_owner)
                 && matches!(
                     (params.first(), args.first().map(|argument| &argument.kind)),
@@ -9730,8 +10413,16 @@ pub fn plan_class_source_lambda_inline(
     if helper.parameter_names.iter().any(Option::is_none) {
         return Ok(None);
     }
-    let helper_name = String::from_utf8_lossy(&candidate.helper.name.0).to_string();
-    let helper_owner = String::from_utf8_lossy(&candidate.helper_owner.0).replace('/', ".");
+    let Some(helper_name) = candidate.helper.name.to_unicode() else {
+        return Ok(None);
+    };
+    let Some(helper_owner) = candidate
+        .helper_owner
+        .to_unicode()
+        .and_then(|name| crate::build::spell_reference(&name))
+    else {
+        return Ok(None);
+    };
     let Some(lambda) =
         locate_lambda_expression(&caller.program.stmts, candidate.use_site, candidate.site_cp)
     else {
@@ -9771,7 +10462,12 @@ pub fn plan_class_source_lambda_inline(
     // site's adaptation proof wrote: substituting it is a rebinding of that one parameter.
     for (arg, param) in parameter_args.iter().zip(lambda_params) {
         let mut inner = arg;
-        while let crate::ast::ExprKind::Cast { value, .. } = &inner.kind {
+        while let crate::ast::ExprKind::Cast {
+            value,
+            source_type_name: None,
+            ..
+        } = &inner.kind
+        {
             inner = value;
         }
         if !matches!(&inner.kind, crate::ast::ExprKind::Local(local) if local == &param.name) {
@@ -9888,11 +10584,16 @@ fn rebind_site_parameter(
     declared: crate::ast::Type,
 ) -> crate::ast::Expr {
     match &arg.kind {
-        crate::ast::ExprKind::Cast { ty, value } => rekind(
+        crate::ast::ExprKind::Cast {
+            ty,
+            value,
+            source_type_name,
+        } => rekind(
             arg,
             crate::ast::ExprKind::Cast {
                 ty: ty.clone(),
                 value: Box::new(rebind_site_parameter(value, from, to, declared)),
+                source_type_name: source_type_name.clone(),
             },
         ),
         crate::ast::ExprKind::Local(local) if local == from => crate::ast::Expr::new(
@@ -10152,12 +10853,17 @@ fn substitute_lambda_donor(
             }
             Some(ExprKind::Concat { parts: rebuilt })
         }
-        ExprKind::Cast { ty, value } => {
+        ExprKind::Cast {
+            ty,
+            value,
+            source_type_name,
+        } => {
             let rebuilt =
                 substitute_lambda_donor(value, bindings, this_is_bound, use_site, budget)?;
             rebuilt.map(|value| ExprKind::Cast {
                 ty: ty.clone(),
                 value: Box::new(value),
+                source_type_name: source_type_name.clone(),
             })
         }
         ExprKind::Not { value } => {
@@ -10587,8 +11293,13 @@ pub fn emit_class_source_lambda_member(
     if caller.program.ragged || edits.is_empty() {
         return Ok(None);
     }
+    let unmodified_quote = unclosed_lambda_quote(&caller.program, &[], budget)?;
+    let unmodified_stmts = unmodified_quote
+        .as_ref()
+        .map(|(statement, _)| std::slice::from_ref(statement))
+        .unwrap_or(&caller.program.stmts);
     let unmodified_emitted = crate::emit::emit(
-        &caller.program.stmts,
+        unmodified_stmts,
         &caller.facts,
         caller.declaration.as_ref(),
         Some(&caller.member),
@@ -10601,6 +11312,13 @@ pub fn emit_class_source_lambda_member(
         applied += usize::from(apply_lambda_site_edit(&mut program.stmts, edit));
     }
     if applied != edits.len() {
+        return Ok(None);
+    }
+    let closed: Vec<_> = edits
+        .iter()
+        .map(|edit| (edit_site(edit), edit_cp(edit)))
+        .collect();
+    if unclosed_lambda_quote(&program, &closed, budget)?.is_some() {
         return Ok(None);
     }
     let edited_emitted = crate::emit::emit(
@@ -10623,6 +11341,186 @@ pub fn emit_class_source_lambda_member(
     .map(|(map, _)| map)
     .unwrap_or_default();
     Ok(Some((unmodified, edited_emitted.text, edited_map)))
+}
+
+/// The public method and the unmodified side of a class edit share this decision. The private
+/// candidate may carry a provisional expression, but neither entry may publish its raw name.
+fn unclosed_lambda_quote(
+    program: &build::Program,
+    closed: &[(u32, u16)],
+    budget: &mut Budget,
+) -> Result<
+    Option<(crate::ast::Stmt, Vec<(usize, crate::lambda::LambdaRefusal)>)>,
+    crate::stop::StopReason,
+> {
+    use crate::ast::{ExprKind, Stmt, StmtKind};
+    use crate::source_map::{Origin, OriginSet};
+    let mut pending: std::collections::BTreeMap<_, _> = program
+        .lambdas
+        .iter()
+        .enumerate()
+        .filter(|(_, site)| {
+            site.form.is_some()
+                && site.unclosed_body_bcis.is_some()
+                && !closed.contains(&(site.use_site, site.site_cp))
+        })
+        .map(|(index, site)| ((site.use_site, site.site_cp), index))
+        .collect();
+    if pending.is_empty() {
+        return Ok(None);
+    }
+    let mut present = std::collections::BTreeSet::new();
+    let mut stop = None;
+    for_each_statement_expression(&program.stmts, &mut |expression| {
+        if stop.is_some() {
+            return;
+        }
+        if let Err(error) = crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(expression.origin.primary().bci()),
+        ) {
+            stop = Some(error);
+            return;
+        }
+        if (matches!(&expression.kind, ExprKind::Lambda { .. })
+            || matches!(&expression.kind, ExprKind::MethodReference { name, .. } if name != "new"))
+            && let Some(cp) = expression.origin.primary().cp()
+        {
+            present.insert((expression.origin.primary().bci(), cp));
+        }
+    });
+    if let Some(stop) = stop {
+        return Err(stop);
+    }
+    pending.retain(|key, _| present.contains(key));
+    let Some(&first) = pending.values().next() else {
+        return Ok(None);
+    };
+    let site = &program.lambdas[first];
+    let bcis = site
+        .unclosed_body_bcis
+        .as_ref()
+        .expect("pending site retains its same-run envelope");
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(bcis.len())
+            .unwrap_or(u64::MAX)
+            .saturating_add(1),
+        Some(site.use_site),
+    )?;
+    let mut origin = OriginSet::new(Origin::direct(site.use_site).with_cp(site.site_cp));
+    for bci in bcis.iter().copied() {
+        crate::stop::poll(budget, Some(bci))?;
+        if bci != site.use_site {
+            origin = origin.plus_derived(Origin::derived(bci));
+        }
+    }
+    let refusals: Vec<_> = pending
+        .values()
+        .map(|&index| {
+            let site = &program.lambdas[index];
+            let member = site
+                .evidence
+                .implementation
+                .as_ref()
+                .expect("pending site retains its raw target");
+            (
+                index,
+                crate::lambda::LambdaRefusal::of(
+                    &member.unclosed_name_refusal(site.use_site, site.site_cp),
+                    site.use_site,
+                ),
+            )
+        })
+        .collect();
+    let reason = format!(
+        "{}; the complete same-run method instruction envelope is quoted",
+        refusals
+            .iter()
+            .map(|(_, refusal)| refusal.message.as_str())
+            .collect::<Vec<_>>()
+            .join("; ")
+    );
+    Ok(Some((
+        Stmt::new(
+            StmtKind::Fallback {
+                reason,
+                bcis: bcis.to_vec(),
+            },
+            origin,
+        ),
+        refusals,
+    )))
+}
+
+fn finalize_lambda_names(
+    program: &mut build::Program,
+    budget: &mut Budget,
+) -> Result<(), crate::stop::StopReason> {
+    if let Some((statement, refusals)) = unclosed_lambda_quote(program, &[], budget)? {
+        program.stmts = vec![statement];
+        program.statements = 1;
+        program.ragged = true;
+        for (index, refusal) in refusals {
+            let site = &mut program.lambdas[index];
+            program.lambdas_presented -= 1;
+            program.lambda_refusals.push(crate::refusal::Gap::at(
+                refusal.code,
+                site.use_site,
+                refusal.message.clone(),
+            ));
+            site.form = None;
+            site.typed_reference = false;
+            site.refusal = Some(refusal);
+        }
+        // This quote removed the entire public body, including independently legal sites.
+        // Their proofs remain in the private class candidate, but the public records must
+        // describe this body's actual presentation rather than the discarded provisional AST.
+        for site in &mut program.lambdas {
+            crate::stop::poll(budget, Some(site.use_site))?;
+            if site.form.is_none() {
+                continue;
+            }
+            let refusal = crate::lambda::LambdaRefusal::of(
+                &crate::refusal::Refusal::shape(
+                    "jre_lambda_enclosing_body_quoted",
+                    "the enclosing method is quoted because another source reference has no committed spelling".to_owned(),
+                ), site.use_site);
+            program.lambdas_presented -= 1;
+            program.lambda_refusals.push(crate::refusal::Gap::at(
+                refusal.code,
+                site.use_site,
+                refusal.message.clone(),
+            ));
+            site.form = None;
+            site.typed_reference = false;
+            site.refusal = Some(refusal);
+        }
+        for site in &mut program.accessors {
+            crate::stop::poll(budget, Some(site.call_site))?;
+            if !site.presented {
+                continue;
+            }
+            let refusal = crate::accessor::AccessorRefusal::of(
+                &crate::refusal::Refusal::shape(
+                    "jre_accessor_enclosing_body_quoted",
+                    "the enclosing method is quoted because a source reference has no committed spelling".to_owned(),
+                ), site.call_site);
+            program.accessors_presented -= 1;
+            program.accessor_refusals.push(crate::refusal::Gap::at(
+                refusal.code,
+                site.call_site,
+                refusal.message.clone(),
+            ));
+            site.presented = false;
+            site.refusal = Some(refusal);
+        }
+        program.array_constructor_sites.clear();
+    }
+    Ok(())
 }
 
 /// Applies one edit to the lambda expression whose site matches, reporting whether it did.
@@ -11115,25 +12013,40 @@ impl<'a> RecoveryRequest<'a> {
     /// The evidence selection is [`RecoveryEvidenceRequest::essential`]: the ordinary recovery, which
     /// delivers the necessary results and materializes no optional detail record. A caller that
     /// wants detail states it with [`RecoveryRequest::with_evidence`].
-    pub fn new(ir: &'a MethodIr, facts: &'a RecoveryFacts, profile: RecoveryProfile) -> Self {
+    pub fn new(
+        ir: &'a MethodIr,
+        facts: &'a RecoveryFacts,
+        source_target: SourceTarget,
+        runtime_profile: jarde_reader::view::RuntimeProfile,
+    ) -> Self {
         Self {
             ir,
             facts,
-            profile,
+            source_target,
+            runtime_profile,
             members: None,
             member_inner_targets: &[],
             static_member_target: None,
             typed_functional_target: None,
             interface_super_calls: &[],
             reference_overload_calls: &[],
-            snapshot_hierarchy_widenings: &[],
+            reference_relations: &[],
+            declared_types: None,
             superclass_field_writes: &[],
             captured_outer_reads: &[],
             outer_super_calls: &[],
             pool_spelled_members: false,
             evidence: RecoveryEvidenceRequest::essential(),
             subject: None,
+            projection_types: &[],
         }
+    }
+
+    /// Request a same-write origin index for a class projection. No AST is retained by this flag.
+    #[doc(hidden)]
+    pub fn with_projection_types(mut self, types: &'a [&'a [u8]]) -> Self {
+        self.projection_types = types;
+        self
     }
 
     /// The same request, under a presentation that keeps member classes pool-spelled: the flag
@@ -11151,66 +12064,65 @@ impl<'a> RecoveryRequest<'a> {
         self
     }
 
-    /// Supply only definitions whose target-side relation and constructor prologue were proved.
-    pub fn with_member_inner_targets(mut self, targets: &'a [ProvedMemberInnerTarget]) -> Self {
+    /// Supply member target assertions; this setter authenticates no relation or constructor.
+    pub fn with_member_inner_targets(mut self, targets: &'a [MemberInnerTargetInput]) -> Self {
         self.member_inner_targets = targets;
         self
     }
 
     #[doc(hidden)]
-    pub fn with_static_member_target(mut self, target: &'a ProvedStaticMemberTarget) -> Self {
+    pub fn with_static_member_target(mut self, target: &'a StaticMemberTargetInput) -> Self {
         self.static_member_target = Some(target);
         self
     }
 
     #[doc(hidden)]
-    pub fn with_typed_functional_target(mut self, target: TypedFunctionalTarget) -> Self {
+    pub fn with_typed_functional_target(mut self, target: FunctionalTargetInput) -> Self {
         self.typed_functional_target = Some(target);
         self
     }
 
-    /// Supply only interface-special targets proved against this request's selected environment.
-    pub fn with_interface_super_calls(mut self, calls: &'a [ProvedInterfaceSuperCall]) -> Self {
+    /// Supply interface-special target assertions, without granting read provenance.
+    pub fn with_interface_super_calls(mut self, calls: &'a [InterfaceSuperCallInput]) -> Self {
         self.interface_super_calls = calls;
         self
     }
 
-    /// Supply only invocation sites proved against the selected source hierarchy.
+    /// Supply invocation-site source widening assertions.
     pub fn with_reference_overload_calls(
         mut self,
-        calls: &'a [ProvedReferenceOverloadCall],
+        calls: &'a [ReferenceOverloadCallInput],
     ) -> Self {
         self.reference_overload_calls = calls;
         self
     }
 
-    /// Supply only exact invocation/store sites proved against this snapshot's own class-file
-    /// headers.
-    pub fn with_snapshot_hierarchy_widenings(
-        mut self,
-        widenings: &'a [ProvedSnapshotHierarchyWidening],
-    ) -> Self {
-        self.snapshot_hierarchy_widenings = widenings;
+    /// Supply exact invocation/store widening assertions; no headers are read here.
+    pub fn with_reference_relations(mut self, widenings: &'a [ReferenceRelationInput]) -> Self {
+        self.reference_relations = widenings;
         self
     }
 
-    /// Supply only exact owner and declaration proofs from the selected source environment.
-    pub fn with_superclass_field_writes(
-        mut self,
-        writes: &'a [ProvedSuperclassFieldWrite],
-    ) -> Self {
+    #[doc(hidden)]
+    pub fn with_declared_types(mut self, types: &'a DeclaredGenericTypes) -> Self {
+        self.declared_types = Some(types);
+        self
+    }
+
+    /// Supply superclass field declaration assertions.
+    pub fn with_superclass_field_writes(mut self, writes: &'a [SuperclassFieldWriteInput]) -> Self {
         self.superclass_field_writes = writes;
         self
     }
 
-    /// Supply only the exact child reads closed by the selected family's capture certificate.
-    pub fn with_captured_outer_reads(mut self, reads: &'a [ProvedCapturedOuterRead]) -> Self {
+    /// Supply child capture-read assertions; constructor claims are not authenticated here.
+    pub fn with_captured_outer_reads(mut self, reads: &'a [CapturedOuterReadInput]) -> Self {
         self.captured_outer_reads = reads;
         self
     }
 
-    /// Supply only call sites closed by the selected family's outer-super bridge proof.
-    pub fn with_outer_super_calls(mut self, calls: &'a [ProvedOuterSuperCall]) -> Self {
+    /// Supply outer-super bridge call assertions.
+    pub fn with_outer_super_calls(mut self, calls: &'a [OuterSuperCallInput]) -> Self {
         self.outer_super_calls = calls;
         self
     }
@@ -11225,13 +12137,8 @@ impl<'a> RecoveryRequest<'a> {
         self
     }
 
-    /// The same request, stating what the artifact it presents is **of** (D3').
-    ///
-    /// The entry that performed the trusted read is the one that can state this: it holds the
-    /// physical identity the run is bound to, the member record the read established and the
-    /// environment it was validated under. A run presented with a subject publishes the binding of
-    /// the artifact it commits ([`RecoveryReport::artifact`]), which is what makes a later request's
-    /// `expected_artifact` checkable at all.
+    /// Attach a caller-supplied subject label. This does not validate facts or authorize a
+    /// trusted binding. Public Java recovery stays unbound even when this label is supplied.
     pub fn with_subject(mut self, subject: ArtifactSubject) -> Self {
         self.subject = Some(subject);
         self
@@ -11310,13 +12217,39 @@ pub struct RegionRecord {
     pub rule: Option<RuleVersion>,
 }
 
+/// Minimal same-run decisions consumed by class projections, captured before optional evidence.
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct ProjectionProof {
+    origins: Vec<crate::source_map::Segment>,
+    allocations: Vec<NewRecord>,
+    declaration_presented: bool,
+    structured_regions: bool,
+    has_own_origin: bool,
+    #[cfg(any(test, feature = "test-support"))]
+    observation: crate::observation::Token,
+}
+
+/// Who supplied the semantic inputs, independently of syntax quality or equivalence.
+/// Public Java entries always state `CallerSupplied`; the read-owning Engine adapter states
+/// `SelectedReads` for its private read/proof path, including a stop before presentation.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RecoveryInputOrigin {
+    CallerSupplied,
+    SelectedReads,
+}
+
 /// The result of one recovery run: one artifact, or the reason there is none.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct RecoveryReport {
+    /// Provenance of the inputs, not a claim of semantic equivalence.
+    pub input_origin: RecoveryInputOrigin,
     /// The method this report is about, as its facts state it.
     pub method: String,
     /// The recovery profile this run was presented under, echoed from the request.
-    pub profile: RecoveryProfile,
+    pub source_target: SourceTarget,
+    /// Runtime API selection, independent of the output language.
+    pub runtime_profile: jarde_reader::view::RuntimeProfile,
     /// Every rule that produced a region of this method, each once, in the order it first did —
     /// how "which rule produced this output" is answered by the run's own record.
     pub rules: Vec<RuleVersion>,
@@ -11345,6 +12278,9 @@ pub struct RecoveryReport {
     pub text: String,
     /// The segment table of [`Self::text`], empty when the run stopped.
     pub source_map: SourceMap,
+    /// Same-run necessary proof. It is never public evidence or part of serialized reports.
+    #[serde(skip)]
+    projection_proof: Option<ProjectionProof>,
     /// Every region the run recovered, in method order.
     pub regions: Vec<RegionRecord>,
     /// Every `invokedynamic` site of the body, in BCI order, with the bootstrap, SAM, implementation
@@ -11407,7 +12343,7 @@ pub struct RecoveryReport {
     /// never deletes this run's own artifact.
     pub artifact: RecoveryArtifact,
     /// The names the presentation decided, when the run reached the naming step.
-    pub aliased_names: Vec<String>,
+    pub aliased_names: Vec<crate::names::RenderedName>,
     /// The same naming table's whole parameter spellings for a class-source declaration.
     /// This handoff is not serialized as recovery evidence.
     #[serde(skip)]
@@ -11417,6 +12353,39 @@ pub struct RecoveryReport {
 }
 
 impl RecoveryReport {
+    /// Necessary same-write origins; an unrequested or stopped proof supplies none.
+    #[doc(hidden)]
+    pub fn projection_origins(&self) -> &[crate::source_map::Segment] {
+        self.projection_proof
+            .as_ref()
+            .map_or(&[], |proof| &proof.origins)
+    }
+    #[doc(hidden)]
+    pub fn projection_has_own_origin(&self) -> bool {
+        self.projection_proof
+            .as_ref()
+            .is_some_and(|proof| proof.has_own_origin)
+    }
+    /// Accepted allocation facts for the exact supplied class targets, independent of RuleDetails.
+    #[doc(hidden)]
+    pub fn projection_allocations(&self) -> &[NewRecord] {
+        self.projection_proof
+            .as_ref()
+            .map_or(&[], |proof| &proof.allocations)
+    }
+    #[doc(hidden)]
+    pub fn projection_declaration_presented(&self) -> bool {
+        self.projection_proof
+            .as_ref()
+            .is_some_and(|proof| proof.declaration_presented)
+    }
+    #[doc(hidden)]
+    pub fn projection_regions_structured(&self) -> bool {
+        self.projection_proof
+            .as_ref()
+            .is_some_and(|proof| proof.structured_regions)
+    }
+
     /// Whether the artifact is Java text this run wrote.
     pub fn produced(&self) -> bool {
         self.outcome.produced()
@@ -11457,10 +12426,19 @@ impl RecoveryReport {
 /// `AnalysisSteps`, the text to `OutputBytes`. Every charge happens before the work it pays for, so a
 /// refusal leaves no work half done — see [`crate::stop`].
 pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryReport {
-    recover_inner(
-        request, budget, None, None, None, None, None, None, None, None, None, None, None, None,
-        None, false, false, true,
-    )
+    recover_with_evidence_gate(request, budget, None)
+}
+
+/// Permit an adapter to suppress optional evidence at the source-commit boundary.
+/// The callback receives the exact committed text and semantic input identity. It grants no
+/// provenance: this entry still returns caller-supplied inputs with no artifact binding.
+#[doc(hidden)]
+pub fn recover_with_evidence_gate(
+    request: &RecoveryRequest<'_>,
+    budget: &mut Budget,
+    gate: Option<&mut dyn FnMut(&str, crate::ArtifactConfiguration) -> bool>,
+) -> RecoveryReport {
+    recover_inner(request, budget, None, gate)
 }
 
 /// Collect unused physical parameter slots from one complete void body. Code, SSA
@@ -11518,7 +12496,8 @@ fn generic_void_invoke_receiver_value(
         u64::try_from(target.descriptor().len()).unwrap_or(u64::MAX),
         Some(bci),
     )?;
-    let Ok(descriptor) = descriptor_facts(target.descriptor().as_bytes(), DescriptorKind::Method)
+    let Ok(descriptor) =
+        descriptor_facts(target.raw_descriptor().0.as_slice(), DescriptorKind::Method)
     else {
         return Ok(None);
     };
@@ -12054,19 +13033,21 @@ fn generic_return_candidate(
         return Ok(Some(GenericReturnCandidate {
             parameters,
             value: GenericReturnValue::EmptyVoid,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
         }));
     }
     // This candidate records a complete structured void or primitive body and unchanged parameter
     // locals. It reuses the existing whole-Code census; the physical descriptor and actual return
     // opcode determine the result category.
-    let descriptor_bytes = request.facts.method().descriptor().as_bytes();
+    let descriptor_bytes = request.facts.method().raw_descriptor().0.as_slice();
     crate::stop::charge(
         budget,
         jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
         u64::try_from(descriptor_bytes.len()).unwrap_or(u64::MAX),
         None,
     )?;
-    let physical_result = build::return_type(request.facts.method().descriptor());
+    let physical_result = request.facts.method().return_type();
     let expected_return_opcode = match physical_result.as_ref() {
         None => Some(0xb1),
         Some(Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int) => Some(0xac),
@@ -12172,6 +13153,8 @@ fn generic_return_candidate(
                 parameter_read_bcis,
                 parameter_receiver_calls,
             },
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
         }));
     }
     let StmtKind::Return { value: Some(value) } = &program.stmts[0].kind else {
@@ -12217,17 +13200,17 @@ fn generic_return_candidate(
                     && site.refusal.is_none()
                     && match target.kind {
                         TypedFunctionalKind::FunctionStringInteger =>
-                            site.sam_name == "apply"
-                                && site.evidence.sam_method_type.as_deref()
-                                    == Some("(Ljava/lang/Object;)Ljava/lang/Object;")
-                                && site.evidence.instantiated_method_type.as_deref()
-                                    == Some("(Ljava/lang/String;)Ljava/lang/Integer;"),
+                            site.sam_name.0.as_slice() == b"apply"
+                                && site.evidence.sam_method_type.as_ref().map(|value| value.0.as_slice())
+                                    == Some(b"(Ljava/lang/Object;)Ljava/lang/Object;".as_slice())
+                                && site.evidence.instantiated_method_type.as_ref().map(|value| value.0.as_slice())
+                                    == Some(b"(Ljava/lang/String;)Ljava/lang/Integer;".as_slice()),
                         TypedFunctionalKind::SupplierString =>
-                            site.sam_name == "get"
-                                && site.evidence.sam_method_type.as_deref()
-                                    == Some("()Ljava/lang/Object;")
-                                && site.evidence.instantiated_method_type.as_deref()
-                                    == Some("()Ljava/lang/String;"),
+                            site.sam_name.0.as_slice() == b"get"
+                                && site.evidence.sam_method_type.as_ref().map(|value| value.0.as_slice())
+                                    == Some(b"()Ljava/lang/Object;".as_slice())
+                                && site.evidence.instantiated_method_type.as_ref().map(|value| value.0.as_slice())
+                                    == Some(b"()Ljava/lang/String;".as_slice()),
                     }
                     && site.captures.len() == usize::from(bound)
                     && (!bound || site.captures[0].bci == Some(0)));
@@ -12300,6 +13283,8 @@ fn generic_return_candidate(
             return Ok(Some(GenericReturnCandidate {
                 parameters: Vec::new(),
                 value: GenericReturnValue::TypedFunctional { target },
+                #[cfg(any(test, feature = "test-support"))]
+                observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
             }));
         }
         return Ok(None);
@@ -12384,6 +13369,8 @@ fn generic_return_candidate(
         return Ok(Some(GenericReturnCandidate {
             parameters: Vec::new(),
             value: GenericReturnValue::NullLiteral,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
         }));
     }
     let mut parameters = Vec::new();
@@ -12459,75 +13446,74 @@ fn generic_return_candidate(
         }
         Some(*slot)
     };
-    let member_creation = || -> Option<(ProvedMemberInnerTarget, u16)> {
-        if !branch_bcis.is_empty()
-            || !code.exception_handlers.is_empty()
-            || code.exception_handler_count != 0
-            || ssa.blocks().len() != 1
-            || !ssa.phis().is_empty()
-            || code.stopped_at.is_some()
-            || program.statements != 1
-            || code.instructions.last().is_none_or(|instruction| {
-                instruction.opcode != 0xb0
-                    || instruction.bci != program.stmts[0].origin.primary().bci()
-            })
-        {
-            return None;
-        }
-        let ExprKind::New {
-            qualifier: Some(qualifier),
-            member_name: Some(member_name),
-            diamond,
-            ..
-        } = &value.kind
-        else {
-            return None;
-        };
-        let qualifier_slot = local(qualifier, false)?;
-        let qualifier_type = parameter_types.get(&qualifier_slot)?;
-        let mut anchors = std::collections::BTreeSet::new();
-        anchors.extend(program.stmts[0].origin.bcis());
-        collect_expression_anchors(value, &mut anchors);
-        // A source-level return candidate may only replace a complete same-run body. Every
-        // physical instruction must have an AST anchor; a NOP is the only instruction whose
-        // absence from Java text has no effect.
-        if code
-            .instructions
-            .iter()
-            .any(|instruction| instruction.opcode != 0x00 && !anchors.contains(&instruction.bci))
-        {
-            return None;
-        }
-        let site = value
-            .origin
-            .derived()
-            .iter()
-            .filter_map(|origin| sites.site_at_head(origin.bci()))
-            .find(|site| {
-                site.constructor == value.origin.primary().bci()
-                    && site.member_inner.as_ref().is_some_and(|member| {
-                        member.qualifier == qualifier.origin.primary().bci()
-                            && member.simple_name == *member_name
-                            && member.generic_diamond == *diamond
-                    })
-            })?;
-        let selected = request.member_inner_targets.iter().find(|target| {
-            target.owner == site.class
-                && target.simple_name == *member_name
-                && target.outer
-                    == site
+    let member_creation =
+        || -> Option<(MemberInnerTargetInput, u16)> {
+            if !branch_bcis.is_empty()
+                || !code.exception_handlers.is_empty()
+                || code.exception_handler_count != 0
+                || ssa.blocks().len() != 1
+                || !ssa.phis().is_empty()
+                || code.stopped_at.is_some()
+                || program.statements != 1
+                || code.instructions.last().is_none_or(|instruction| {
+                    instruction.opcode != 0xb0
+                        || instruction.bci != program.stmts[0].origin.primary().bci()
+                })
+            {
+                return None;
+            }
+            let ExprKind::New {
+                qualifier: Some(qualifier),
+                member_name: Some(member_name),
+                diamond,
+                ..
+            } = &value.kind
+            else {
+                return None;
+            };
+            let qualifier_slot = local(qualifier, false)?;
+            let qualifier_type = parameter_types.get(&qualifier_slot)?;
+            let mut anchors = std::collections::BTreeSet::new();
+            anchors.extend(program.stmts[0].origin.bcis());
+            collect_expression_anchors(value, &mut anchors);
+            // A source-level return candidate may only replace a complete same-run body. Every
+            // physical instruction must have an AST anchor; a NOP is the only instruction whose
+            // absence from Java text has no effect.
+            if code.instructions.iter().any(|instruction| {
+                instruction.opcode != 0x00 && !anchors.contains(&instruction.bci)
+            }) {
+                return None;
+            }
+            let site = value
+                .origin
+                .derived()
+                .iter()
+                .filter_map(|origin| sites.site_at_head(origin.bci()))
+                .find(|site| {
+                    site.constructor == value.origin.primary().bci()
+                        && site.member_inner.as_ref().is_some_and(|member| {
+                            member.qualifier == qualifier.origin.primary().bci()
+                                && member.simple_name == *member_name
+                                && member.generic_diamond == *diamond
+                        })
+                })?;
+            let selected = request.member_inner_targets.iter().find(|target| {
+                target.owner == site.class
+                    && target.simple_name == *member_name
+                    && site
                         .member_inner
                         .as_ref()
-                        .map_or("", |member| member.outer.as_str())
-                && target.source_type_path.iter().any(|segment| {
-                    segment.binary_name == target.outer
-                        && qualifier_type == &Type::Reference(segment.binary_name.replace('/', "."))
-                })
-        })?;
-        Some((selected.clone(), qualifier_slot))
-    };
+                        .is_some_and(|member| target.outer == member.outer)
+                    && target.source_type_path.iter().any(|segment| {
+                        segment.binary_name == target.outer
+                            && crate::names::source_class_name(&segment.binary_name)
+                                .is_some_and(|name| qualifier_type == &Type::Reference(name))
+                    })
+            })?;
+            Some((selected.clone(), qualifier_slot))
+        };
     let static_member_creation =
-        || -> Option<(ProvedStaticMemberTarget, &crate::init::Site)> {
+        || -> Option<(StaticMemberTargetInput, &crate::init::Site)> {
             if !branch_bcis.is_empty()
                 || !code.exception_handlers.is_empty()
                 || code.exception_handler_count != 0
@@ -12573,10 +13559,11 @@ fn generic_return_candidate(
                 })?;
             let target = request.static_member_target.filter(|target| {
                 target.owner == site.class
-                    && target.constructor_descriptor == "()V"
+                    && target.constructor_descriptor.0 == b"()V"
                     && target.source_type_path.last().is_some_and(|segment| {
                         segment.binary_name == site.class
-                            && (segment.binary_name.replace('/', ".") == *ty
+                            && (crate::names::source_class_name(&segment.binary_name).as_deref()
+                                == Some(ty.as_str())
                                 || segment.source_name == *ty)
                     })
             })?;
@@ -12625,7 +13612,12 @@ fn generic_return_candidate(
         },
         _ => return Ok(None),
     };
-    Ok(Some(GenericReturnCandidate { parameters, value }))
+    Ok(Some(GenericReturnCandidate {
+        parameters,
+        value,
+        #[cfg(any(test, feature = "test-support"))]
+        observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
+    }))
 }
 
 /// Prove the exact single-return array creation handed to class-source Signature projection.
@@ -12700,8 +13692,7 @@ fn generic_array_creation_return_candidate(
     );
     let actual_array_type = Type::Reference(array_type.clone());
     if expression.presented.as_ref() != Some(&actual_array_type)
-        || build::return_type(request.facts.method().descriptor()).as_ref()
-            != Some(&actual_array_type)
+        || request.facts.method().return_type().as_ref() != Some(&actual_array_type)
         || expression.origin.primary().provenance() != crate::source_map::Provenance::Direct
         || program.stmts[0].origin.primary().bci() != return_bci
         || program.stmts[0].origin.primary().provenance() != crate::source_map::Provenance::Direct
@@ -12814,6 +13805,8 @@ fn generic_array_creation_return_candidate(
             allocation_bci,
             return_bci,
         },
+        #[cfg(any(test, feature = "test-support"))]
+        observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
     }))
 }
 
@@ -13148,7 +14141,7 @@ fn generic_constructor_candidate(
     code: &jarde_reader::classfile::MethodCodeFacts,
     prologues: &init::Prologues,
     parameter_types: &std::collections::BTreeMap<u16, Type>,
-    constructor_descriptor: &str,
+    constructor_descriptor: &[u8],
     declaring_class: Option<&[u8]>,
     budget: &mut Budget,
 ) -> Result<Option<GenericConstructorCandidate>, StopReason> {
@@ -13233,9 +14226,9 @@ fn generic_constructor_candidate(
         || if unused_parameters {
             target.owner() != "java/lang/Object" || target.descriptor() != "()V"
         } else {
-            target.descriptor() != constructor_descriptor
+            target.raw_descriptor().0 != constructor_descriptor
         }
-        || !constructor_descriptor.ends_with(")V")
+        || !constructor_descriptor.ends_with(b")V")
         || target.is_interface_reference()
     {
         no_candidate!("ssa-receiver");
@@ -13369,6 +14362,8 @@ fn generic_constructor_candidate(
         forwarded_parameter_slots: forwarded_parameter_slots.to_vec(),
         field_writes: Vec::new(),
         init,
+        #[cfg(any(test, feature = "test-support"))]
+        observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
     }))
 }
 
@@ -13382,7 +14377,7 @@ fn generic_constructor_field_writes_candidate(
     code: &jarde_reader::classfile::MethodCodeFacts,
     prologues: &init::Prologues,
     parameter_types: &std::collections::BTreeMap<u16, Type>,
-    constructor_descriptor: &str,
+    constructor_descriptor: &[u8],
     declaring_class: Option<&[u8]>,
     budget: &mut Budget,
 ) -> Result<Option<GenericConstructorCandidate>, StopReason> {
@@ -13420,11 +14415,10 @@ fn generic_constructor_field_writes_candidate(
     {
         no_candidate!();
     }
-    let descriptor =
-        match descriptor_facts(constructor_descriptor.as_bytes(), DescriptorKind::Method) {
-            Ok(descriptor) if constructor_descriptor.ends_with(")V") => descriptor,
-            _ => no_candidate!(),
-        };
+    let descriptor = match descriptor_facts(constructor_descriptor, DescriptorKind::Method) {
+        Ok(descriptor) if constructor_descriptor.ends_with(b")V") => descriptor,
+        _ => no_candidate!(),
+    };
     if descriptor.parameters().len() != parameter_types.len() {
         no_candidate!();
     }
@@ -13435,10 +14429,10 @@ fn generic_constructor_field_writes_candidate(
     let mut parameter_descriptors = std::collections::BTreeMap::new();
     for (component, slot) in descriptor.parameters().iter().zip(slots) {
         crate::stop::poll(budget, None)?;
-        let Some(bytes) = component.bytes(constructor_descriptor.as_bytes()) else {
+        let Some(bytes) = component.bytes(constructor_descriptor) else {
             no_candidate!();
         };
-        let Ok(spelling) = std::str::from_utf8(bytes) else {
+        let Some(spelling) = jarde_reader::model::JvmBytes(bytes.to_vec()).to_unicode() else {
             no_candidate!();
         };
         if !parameter_types.contains_key(&slot) {
@@ -13457,13 +14451,10 @@ fn generic_constructor_field_writes_candidate(
     let Some(declaring_class) = declaring_class else {
         no_candidate!();
     };
-    let Ok(this_class) = std::str::from_utf8(declaring_class) else {
-        no_candidate!();
-    };
     if !init.presented
         || init.target != Some(ConstructorTarget::Super)
         || init.class.as_deref() != Some("java/lang/Object")
-        || init.declared.as_deref() != Some(this_class)
+        || !init.declares_raw_class(declaring_class)
         || init_bci != program.stmts[0].origin.primary().bci()
     {
         no_candidate!();
@@ -13626,8 +14617,8 @@ fn generic_constructor_field_writes_candidate(
         else {
             no_candidate!();
         };
-        if owner != this_class
-            || descriptor != parameter_descriptor
+        if owner.0.as_slice() != declaring_class
+            || descriptor != &JvmBytes::from_unicode(parameter_descriptor)
             || field_instruction.opcode() != 0xb5
             || !field_instruction.writes().is_empty()
             || field_instruction.reads().len() != 2
@@ -13663,7 +14654,7 @@ fn generic_constructor_field_writes_candidate(
         let Some(parameter_name) = parameter_names.get(parameter_slot).copied() else {
             no_candidate!();
         };
-        if ast_name != name
+        if &JvmBytes::from_unicode(ast_name) != name
             || stmt.origin.primary().bci() != field_bci
             || !matches!(&receiver.kind, crate::ast::ExprKind::Local(local) if local == "this")
             || receiver.origin.primary().bci() != receiver_bci
@@ -13701,6 +14692,8 @@ fn generic_constructor_field_writes_candidate(
         forwarded_parameter_slots: Vec::new(),
         field_writes,
         init,
+        #[cfg(any(test, feature = "test-support"))]
+        observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
     }))
 }
 
@@ -13745,6 +14738,7 @@ fn anonymous_constructor_initializer_bci(
                     args,
                 },
             origin: super_origin,
+            ..
         },
         crate::ast::Stmt {
             kind:
@@ -13755,6 +14749,7 @@ fn anonymous_constructor_initializer_bci(
                     value,
                 },
             origin: write_origin,
+            ..
         },
         crate::ast::Stmt {
             kind: StmtKind::Return { value: None },
@@ -13825,9 +14820,13 @@ fn anonymous_constructor_initializer_bci(
         || target.descriptor() != "()V"
         || target.owner() == "java/lang/Object"
         || target.is_interface_reference()
-        || descriptor != "I"
-        || name != field_name
-        || receiver_text(receiver).as_deref() != Some(owner.replace('/', ".").as_str())
+        || descriptor.0.as_slice() != b"I"
+        || JvmBytes::from_unicode(name) != *field_name
+        || receiver_text(receiver).as_deref()
+            != owner
+                .to_unicode()
+                .map(|name| name.replace('/', "."))
+                .as_deref()
     {
         return Ok(None);
     }
@@ -13846,7 +14845,7 @@ fn anonymous_constructor_initializer_bci(
     }
     Ok(Some(ClassSourceAnonymousConstructorInitializer {
         bci: code.instructions[3].bci,
-        super_owner: target.owner().to_owned(),
+        super_owner: target.raw_owner().clone(),
         owner: owner.clone(),
         name: field_name.clone(),
         descriptor: descriptor.clone(),
@@ -13861,157 +14860,163 @@ fn receiver_text(expression: &Expr) -> Option<String> {
 }
 
 /// The same recovery for the class-source assembler, with same-run class-source sidecars.
-///
-/// The ordinary report follows exactly the same path as [`recover`]. Sidecars are available only
-/// to the adapter that assembles one class and are never serialized as report evidence.
+/// Ordinary method recovery uses the same kernel without a class-source collector.
 #[doc(hidden)]
 pub fn recover_for_class_source(
     request: &RecoveryRequest<'_>,
     budget: &mut Budget,
-    prove_generic_return: bool,
-    collect_enum_constructor_candidates: bool,
+    options: ClassSourceOptions,
+    gate: Option<&mut dyn FnMut(&str, crate::ArtifactConfiguration) -> bool>,
 ) -> ClassSourceRecovery {
-    recover_for_class_source_with_anonymous_ast(
-        request,
-        budget,
-        prove_generic_return,
-        collect_enum_constructor_candidates,
-        false,
-        false,
-        false,
-    )
-}
-
-/// Same class-source recovery with private AST retention for a class already selected as the
-/// anonymous implementation, and an optional exact empty-constructor proof.
-#[doc(hidden)]
-pub fn recover_for_class_source_with_anonymous_ast(
-    request: &RecoveryRequest<'_>,
-    budget: &mut Budget,
-    prove_generic_return: bool,
-    collect_enum_constructor_candidates: bool,
-    retain_all_method_asts: bool,
-    retain_generic_call_asts: bool,
-    prove_empty_constructor: bool,
-) -> ClassSourceRecovery {
-    let is_clinit =
-        request.facts.method().name() == "<clinit>" && request.facts.method().descriptor() == "()V";
-    let is_ordinary_interface = request
-        .facts
-        .method()
-        .declaring_class()
-        .is_some_and(|class| {
-            let flags = class.access_flags();
-            flags & ACC_INTERFACE != 0 && flags & ACC_ANNOTATION == 0
-        });
-    let is_enum = request
-        .facts
-        .method()
-        .declaring_class()
-        .is_some_and(|class| class.access_flags() & ACC_ENUM != 0);
-    let is_ordinary_class = request
-        .facts
-        .method()
-        .declaring_class()
-        .is_some_and(|class| {
-            class.access_flags() & (ACC_INTERFACE | ACC_ANNOTATION | ACC_ENUM | 0x8000) == 0
-        });
-    let collect_initializer = is_clinit && (is_ordinary_interface || is_ordinary_class || is_enum);
-    let collect_enum_constructor = collect_enum_constructor_candidates
-        && is_enum
-        && request.facts.method().name() == "<init>"
-        && matches!(
-            request.facts.method().descriptor(),
-            "(Ljava/lang/String;I)V" | "(Ljava/lang/String;II)V"
-        );
-    let mut initializer = None;
-    let mut enum_constructor = None;
-    let mut bridge = None;
-    let mut enum_switches = None;
-    let mut enum_switch_field_uses = None;
-    let mut array_constructors = None;
-    let mut lambda_helpers = None;
-    let mut generic_return = None;
-    let mut generic_constructor = None;
-    let mut anonymous_allocations = None;
-    let mut ast = None;
-    let mut field_receivers = None;
-    let mut field_write_accessors = None;
-    let report = recover_inner(
-        request,
-        budget,
-        collect_initializer.then_some(&mut initializer),
-        collect_enum_constructor.then_some(&mut enum_constructor),
-        Some(&mut bridge),
-        Some(&mut enum_switches),
-        Some(&mut array_constructors),
-        Some(&mut lambda_helpers),
-        Some(&mut enum_switch_field_uses),
-        prove_generic_return.then_some(&mut generic_return),
-        (prove_generic_return || prove_empty_constructor).then_some(&mut generic_constructor),
-        Some(&mut anonymous_allocations),
-        Some(&mut ast),
-        Some(&mut field_receivers),
-        Some(&mut field_write_accessors),
-        retain_all_method_asts,
-        retain_generic_call_asts,
-        false,
-    );
+    let mut collector = ClassSourceCollector {
+        options,
+        candidates: ClassSourceCandidates::default(),
+    };
+    let report = recover_inner(request, budget, Some(&mut collector), gate);
     if !report.produced() || !matches!(&report.execution, ExecutionReport::Complete { .. }) {
-        if !is_enum {
-            initializer = None;
-        }
-        enum_constructor = None;
-        bridge = None;
-        enum_switches = None;
-        array_constructors = None;
-        lambda_helpers = None;
-        enum_switch_field_uses = None;
-        generic_return = None;
-        generic_constructor = None;
-        anonymous_allocations = None;
-        ast = None;
-        field_receivers = None;
-        field_write_accessors = None;
+        // The enum prefix's independently proved refusal path may consume its initializer facts.
+        let initializer = if request
+            .facts
+            .method()
+            .declaring_class()
+            .is_some_and(|class| class.access_flags() & ACC_ENUM != 0)
+        {
+            collector.candidates.initializer.take()
+        } else {
+            None
+        };
+        collector.candidates = ClassSourceCandidates {
+            initializer,
+            ..ClassSourceCandidates::default()
+        };
     }
     ClassSourceRecovery {
         report,
-        initializer,
-        enum_constructor,
-        bridge,
-        enum_switches: enum_switches.unwrap_or_default(),
-        array_constructors: array_constructors.unwrap_or_default(),
-        lambda_helpers: lambda_helpers.unwrap_or_default(),
-        enum_switch_field_uses: enum_switch_field_uses.unwrap_or_default(),
-        generic_return,
-        generic_constructor,
-        anonymous_allocations,
-        ast,
-        field_receivers: field_receivers.unwrap_or_default(),
-        field_write_accessors: field_write_accessors.unwrap_or_default(),
+        candidates: collector.candidates,
     }
+}
+
+/// The header backend of the direct recovery path.
+///
+/// A direct [`RecoveryRequest`] states no resolution environment: there is no snapshot, loader
+/// graph or platform archive this entry may read. Every physical header lookup is therefore a
+/// clean `Missing`, and the only proofs the relation walk can reach are the platform's own
+/// closed rows (the transcribed release hierarchy the assignability predicates own) inside the
+/// walk's single declared domain. A pair that needs a snapshot header keeps its typed `Missing`
+/// — exactly the refusal the walk states for it.
+struct DirectPathHeaderReads {
+    loader: LoaderId,
+}
+
+impl crate::source_proof::RecoveryHeaders for DirectPathHeaderReads {
+    type Error = jarde_reader::error::Error;
+
+    fn caller_loader(&self) -> &LoaderId {
+        &self.loader
+    }
+
+    fn selected_from(
+        &mut self,
+        _initiating_loader: &LoaderId,
+        _owner: &[u8],
+        budget: &mut Budget,
+    ) -> std::result::Result<
+        crate::source_proof::DependencyResult<crate::source_proof::ReferenceClassHeader>,
+        Self::Error,
+    > {
+        budget.poll()?;
+        Ok(crate::source_proof::DependencyResult::Missing)
+    }
+
+    fn platform_unprovided(
+        &mut self,
+        _owner: &[u8],
+        budget: &mut Budget,
+    ) -> std::result::Result<bool, Self::Error> {
+        budget.poll()?;
+        Ok(true)
+    }
+}
+
+/// The relation supply of the direct path: the same walk the Engine runs over this payload,
+/// with every physical header lookup answered `Missing`. The payload's own invocation operands
+/// and array-store shapes state the sites; the closed platform rows prove the pairs they name.
+/// The walk's loader is the payload's own — the one loader the SSA values name, which is also
+/// the value the array-store pair check compares against. A payload that names no single loader
+/// runs under this entry's own inert name, whose array-store pairs the loader check then
+/// declines; the call-site rows stay loader-free facts.
+fn collect_reference_relations(
+    request: &RecoveryRequest<'_>,
+    budget: &mut Budget,
+) -> std::result::Result<Vec<crate::report::ReferenceRelationInput>, jarde_reader::error::Error> {
+    use jarde_jvm::method_ir::{RefType, Value};
+    use jarde_reader::budget::CountedBudgetDimension;
+    use jarde_reader::view::{
+        DelegationPolicy, LoadDomain, ModuleMode, PhysicalScope, PhysicalView, RuntimeUncertainty,
+        RuntimeView,
+    };
+    let ir = request.ir;
+    let Some(declaration) = ir.declaration() else {
+        return Ok(Vec::new());
+    };
+    let mut loaders = std::collections::BTreeSet::new();
+    if let Some(ssa) = ir.ssa() {
+        for (_, value) in ssa.values_with_ids() {
+            budget.poll()?;
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if let Value::Ref(RefType::Named { loader, .. }) = value.ty() {
+                loaders.insert(loader.0.clone());
+            }
+        }
+    }
+    let loader = match loaders.len() {
+        1 => LoaderId(loaders.into_iter().next().expect("exactly one loader")),
+        _ => LoaderId("direct".to_owned()),
+    };
+    // The direct request states no loader graph: one clean parent-first class-path domain is the
+    // whole namespace the walk sees, and every physical lookup inside it is answered `Missing`
+    // by the backend above. The name never crosses a loader boundary and reaches no report field.
+    let domain = LoadDomain {
+        loader: loader.clone(),
+        parent_loader: None,
+        delegation: DelegationPolicy::ParentFirst,
+        roots: Vec::new(),
+        module_mode: ModuleMode::ClassPath,
+        external_override: RuntimeUncertainty::None,
+        runtime_transformation: RuntimeUncertainty::None,
+    };
+    let analysis = jarde_jvm::ir::MethodAnalysisRequest {
+        environment: jarde_jvm::environment::ResolutionEnvironment {
+            runtime: RuntimeView {
+                physical: PhysicalView {
+                    snapshot: jarde_reader::model::SnapshotId("direct".to_owned()),
+                    scope: PhysicalScope::SnapshotAll,
+                },
+                profile: request.runtime_profile.clone(),
+                load_domain: domain.clone(),
+            },
+            domains: vec![domain],
+            providers: Vec::new(),
+        },
+        method: declaration.identity().clone(),
+        stages: jarde_jvm::ir::AnalysisStage::ALL.to_vec(),
+    };
+    let mut headers = DirectPathHeaderReads { loader };
+    crate::source_proof::prove_reference_relations(&analysis, ir, &mut headers, budget)
 }
 
 fn recover_inner(
     request: &RecoveryRequest<'_>,
     budget: &mut Budget,
-    initializer: Option<&mut Option<ClassInitializerCandidates>>,
-    mut enum_constructor: Option<&mut Option<ClassEnumConstructorCandidates>>,
-    mut bridge_candidate: Option<&mut Option<ClassSourceBridgeCandidate>>,
-    mut enum_switch_candidate: Option<&mut Option<Vec<ClassSourceEnumSwitchCandidate>>>,
-    array_constructor_candidate: Option<&mut Option<Vec<ClassSourceArrayConstructorCandidate>>>,
-    mut lambda_helper_candidate: Option<&mut Option<Vec<ClassSourceLambdaHelperCandidate>>>,
-    mut enum_switch_field_use: Option<&mut Option<Vec<ClassSourceEnumSwitchFieldUse>>>,
-    generic_return: Option<&mut Option<GenericReturnCandidate>>,
-    generic_constructor: Option<&mut Option<GenericConstructorCandidate>>,
-    mut anonymous_allocations: Option<&mut Option<AnonymousAllocationScan>>,
-    mut class_source_ast: Option<&mut Option<ClassSourceMethodAst>>,
-    mut field_receiver_sites: Option<&mut Option<Vec<ClassSourceFieldReceiverSite>>>,
-    mut field_write_accessors: Option<&mut Option<Vec<ClassSourceFieldWriteAccessor>>>,
-    retain_all_method_asts: bool,
-    retain_generic_call_asts: bool,
-    allow_array_constructor_method_references: bool,
+    mut class_source: Option<&mut ClassSourceCollector>,
+    mut gate: Option<&mut dyn FnMut(&str, crate::ArtifactConfiguration) -> bool>,
 ) -> RecoveryReport {
+    let ast_retention = class_source
+        .as_ref()
+        .map_or(ClassSourceAstRetention::Required, |source| {
+            source.options.ast_retention
+        });
+    let allow_array_constructor_method_references = class_source.is_none();
     let method = format!(
         "{}{}",
         request.facts.method().name(),
@@ -14020,7 +15025,8 @@ fn recover_inner(
     // The profile the presentation is written under, taken once: every path of this function —
     // including the ones that stop before any pass runs — echoes the request's own profile, so a
     // stopped report cannot claim a rule set the request did not declare.
-    let profile = request.profile.clone();
+    let profile = request.source_target;
+    let runtime_profile = request.runtime_profile.clone();
     // The selection this run is presented under, taken once: every path below — the refusals, the
     // stopped reports and the report itself — echoes the request's own statement, so no report can
     // claim an evidence selection the request did not make.
@@ -14028,7 +15034,8 @@ fn recover_inner(
     let Some(canonical) = request.ir.canonical() else {
         return stopped(
             method,
-            profile.clone(),
+            profile,
+            runtime_profile.clone(),
             &selection,
             StopReason::IrTableMissing { table: "canonical" },
             budget,
@@ -14037,7 +15044,8 @@ fn recover_inner(
     let Some(frames) = request.ir.frames() else {
         return stopped(
             method,
-            profile.clone(),
+            profile,
+            runtime_profile.clone(),
             &selection,
             StopReason::IrTableMissing { table: "frames" },
             budget,
@@ -14046,7 +15054,8 @@ fn recover_inner(
     let Some(ssa) = request.ir.ssa() else {
         return stopped(
             method,
-            profile.clone(),
+            profile,
+            runtime_profile.clone(),
             &selection,
             StopReason::IrTableMissing { table: "ssa" },
             budget,
@@ -14059,7 +15068,8 @@ fn recover_inner(
     let Some(code) = request.ir.code() else {
         return stopped(
             method,
-            profile.clone(),
+            profile,
+            runtime_profile.clone(),
             &selection,
             StopReason::IrTableMissing { table: "code" },
             budget,
@@ -14070,10 +15080,73 @@ fn recover_inner(
     // read this run already performed still charged. An unsupported or illegal selection is never
     // widened into a full-evidence delivery.
     if let Err(refusal) = selection.check(code) {
-        return refused(method, profile.clone(), &selection, refusal, budget);
+        return refused(
+            method,
+            profile,
+            runtime_profile.clone(),
+            &selection,
+            refusal,
+            budget,
+        );
     }
+    // The relations this entry states about its own payload. A request that carries a caller's
+    // supply keeps it untouched; a direct request states none, so the walk over this payload —
+    // every physical header lookup answered `Missing` — supplies the platform-row facts the
+    // presentation consumes. A budget refusal here stops the run like any other proof.
+    let collected_relations;
+    let injected_request;
+    let request: &RecoveryRequest<'_> = if request.reference_relations.is_empty() {
+        match collect_reference_relations(request, budget) {
+            Ok(relations) => {
+                collected_relations = relations;
+                injected_request = RecoveryRequest {
+                    reference_relations: &collected_relations,
+                    ..request.clone()
+                };
+                &injected_request
+            }
+            Err(error) => {
+                let reason = crate::stop::stop_from_error(budget, error, None);
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    reason,
+                    budget,
+                );
+            }
+        }
+    } else {
+        request
+    };
+    // Compute core identity before source commitment, independently of optional evidence.
+    let artifact_configuration = if gate.is_some() {
+        match crate::artifact::ArtifactConfiguration::of(
+            request,
+            allow_array_constructor_method_references,
+            budget,
+        ) {
+            Ok(configuration) => Some(configuration),
+            Err(stop) => {
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
+            }
+        }
+    } else {
+        None
+    };
     let operations = Operations::of(code, request.ir.constant_pool());
-    if let Some(field_uses_slot) = enum_switch_field_use.as_deref_mut() {
+    if let Some(field_uses_slot) = class_source
+        .as_deref_mut()
+        .map(|source| &mut source.candidates.enum_switch_field_uses)
+    {
         let member = request
             .ir
             .declaration()
@@ -14094,10 +15167,24 @@ fn recover_inner(
                     1,
                     Some(*bci),
                 ) {
-                    return stopped(method, profile.clone(), &selection, stop, budget);
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
                 }
                 if let Err(stop) = crate::stop::poll(budget, Some(*bci)) {
-                    return stopped(method, profile.clone(), &selection, stop, budget);
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
                 }
                 field_uses.push(ClassSourceEnumSwitchFieldUse {
                     member: member.clone(),
@@ -14115,7 +15202,8 @@ fn recover_inner(
     if canonical.blocks().is_empty() {
         return stopped(
             method,
-            profile.clone(),
+            profile,
+            runtime_profile.clone(),
             &selection,
             StopReason::IrTableMissing {
                 table: "canonical blocks",
@@ -14125,7 +15213,16 @@ fn recover_inner(
     }
     let view = match NormalFlowView::build(canonical, budget) {
         Ok(view) => view,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
     // `MethodCodeFacts` describes only the Code attribute; a missing method flag must not be read
     // as proof that the JVM's implicit synchronized-method monitor is absent.
@@ -14137,26 +15234,43 @@ fn recover_inner(
     // The two-terminal-return claim may commit ownership only when the descriptor's own result
     // is `boolean` — the same reading of the descriptor the builder re-checks (P3 1.4: an
     // `int` method's shared `iconst_0; ireturn` leaf belongs to the one-armed `if` walk).
-    let return_is_boolean = build::return_type(request.facts.method().descriptor())
+    let return_is_boolean = request
+        .facts
+        .method()
+        .return_type()
         .is_some_and(|ty| matches!(ty, crate::ast::Type::Boolean));
     // These plans depend only on this run's decoded SSA facts. Build them before Region because
     // Guard needs read-only access to verified construction sites while proving resource headers.
     // The field plan is handed the one receiver reading it cannot take itself: an element read's
     // type, which the array operand's own shape states and [`build`] reads (`element_receiver_type`).
+    let baseline_declared_types = class_source
+        .is_none()
+        .then_some(request.declared_types)
+        .flatten();
     let element_receiver_type = |value| build::element_receiver_type(ssa, &operations, value);
     let fields = match field::plan(
         ssa,
         &operations,
         &element_receiver_type,
         request.facts.method().declaring_class(),
-        request.facts.method().name(),
-        request.facts.method().descriptor(),
+        request.facts.method().raw_name().0.as_slice(),
+        request.facts.method().raw_descriptor().0.as_slice(),
         request.ir.class_fields(),
         request.superclass_field_writes,
+        baseline_declared_types,
         budget,
     ) {
         Ok(fields) => fields,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
     // The copies whose consumers are field instructions (`recover-chained-field-assignment`): the
     // chained field assignment's copies and the receiver copies of the compound assignments the
@@ -14171,7 +15285,16 @@ fn recover_inner(
         budget,
     ) {
         Ok(field_copies) => field_copies,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
     let chains = match concat::plan_with_ordered_field_operands(
         ssa,
@@ -14183,7 +15306,16 @@ fn recover_inner(
         budget,
     ) {
         Ok(chains) => chains,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
     let reserved_for_arrays = chains.owned();
     let array_composition = init::ArrayCompositionContext {
@@ -14201,7 +15333,16 @@ fn recover_inner(
         budget,
     ) {
         Ok(arrays) => arrays,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
     let sites = match init::sites_after_array_composition(
         ssa,
@@ -14216,7 +15357,16 @@ fn recover_inner(
         budget,
     ) {
         Ok(sites) => sites,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
     let mut recovered: Recovered = match crate::region::recover(
         canonical,
@@ -14229,14 +15379,30 @@ fn recover_inner(
         code,
         method_synchronized,
         return_is_boolean,
-        &request.profile,
+        &request.source_target,
         budget,
     ) {
         Ok(recovered) => recovered,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
     if let Err(stop) = crate::region::project_string_switches(&mut recovered, request.ir, budget) {
-        return stopped(method, profile.clone(), &selection, stop, budget);
+        return stopped(
+            method,
+            profile,
+            runtime_profile.clone(),
+            &selection,
+            stop,
+            budget,
+        );
     }
     // The slots the names are decided for are the body's own local slots: the frames table states
     // how many there are, and a local the debug metadata never named still needs a name.
@@ -14256,14 +15422,32 @@ fn recover_inner(
         budget,
     ) {
         Ok(reuse) => reuse,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
     // Field declarations are borrowed from the same class facts as the body. The field plan keeps
     // the proof that lets a blank same-class static final write lose its qualifier, and the same
     // proof supplies the names the local naming walk must reserve.
     let mut reserved_names = match fields.simple_static_final_names(budget) {
         Ok(names) => names,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
     // A static member of another type is spelled with its type path. Its first component must
     // remain a type/package name in Java expression context, rather than becoming a generated
@@ -14271,13 +15455,13 @@ fn recover_inner(
     for (bci, operation) in operations.iter() {
         let owner = match operation {
             Operation::Invoke(target) if target.kind() == crate::facts::InvokeKind::Static => {
-                Some(target.owner())
+                target.raw_owner().to_unicode()
             }
             Operation::Field {
                 is_static: true,
                 owner,
                 ..
-            } => Some(owner.as_str()),
+            } => owner.to_unicode(),
             _ => None,
         };
         if let Some(owner) = owner {
@@ -14287,7 +15471,14 @@ fn recover_inner(
                 1,
                 Some(*bci),
             ) {
-                return stopped(method, profile.clone(), &selection, stop, budget);
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
             }
             if let Some(root) = owner
                 .split('/')
@@ -14326,7 +15517,12 @@ fn recover_inner(
     // record. The records the request selected are materialized from these plans *after* the artifact
     // is committed (the evidence phase below), so a run that stops inside the evidence keeps its text.
     let bridge = bridge::plan(request.facts.method(), ssa, &operations);
-    if let (Some(plan), Some(candidate_slot)) = (bridge.as_ref(), bridge_candidate.as_deref_mut()) {
+    if let (Some(plan), Some(candidate_slot)) = (
+        bridge.as_ref(),
+        class_source
+            .as_deref_mut()
+            .map(|source| &mut source.candidates.bridge),
+    ) {
         let member = request
             .subject
             .as_ref()
@@ -14349,7 +15545,16 @@ fn recover_inner(
                 budget,
             ) {
                 Ok(candidate) => candidate,
-                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+                Err(stop) => {
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
+                }
             },
         );
     }
@@ -14363,7 +15568,10 @@ fn recover_inner(
     // The construction sites reserve the concatenation chains' instructions, because one instruction
     // is never two shapes: the allocation a verified chain builds is written inside the `+` expression
     // and not a second time as a `new`.
-    if let Some(output) = anonymous_allocations.as_deref_mut() {
+    if let Some(output) = class_source
+        .as_deref_mut()
+        .map(|source| &mut source.candidates.anonymous_allocations)
+    {
         let member = request
             .subject
             .as_ref()
@@ -14381,7 +15589,14 @@ fn recover_inner(
                 u64::try_from(code.instructions.len()).unwrap_or(u64::MAX),
                 None,
             ) {
-                return stopped(method, profile.clone(), &selection, stop, budget);
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
             }
             let raw_new_count = code
                 .instructions
@@ -14396,10 +15611,24 @@ fn recover_inner(
                     1,
                     Some(candidate.head),
                 ) {
-                    return stopped(method, profile.clone(), &selection, stop, budget);
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
                 }
                 if let Err(stop) = crate::stop::poll(budget, Some(candidate.head)) {
-                    return stopped(method, profile.clone(), &selection, stop, budget);
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
                 }
                 let site = sites.site_at_head(candidate.head);
                 let argument_parameter_slots = site.map_or_else(Vec::new, |site| {
@@ -14418,11 +15647,17 @@ fn recover_inner(
                     constructor_bci: site.map(|site| site.constructor),
                     argument_bcis: site.map_or_else(Vec::new, |site| site.arguments.clone()),
                     argument_parameter_slots,
+                    #[cfg(any(test, feature = "test-support"))]
+                    observation: crate::observation::Token::new(
+                        crate::observation::Kind::Candidate,
+                    ),
                 });
             }
             *output = Some(AnonymousAllocationScan {
                 complete: code.stopped_at.is_none() && raw_new_count == allocations.len(),
                 allocations,
+                #[cfg(any(test, feature = "test-support"))]
+                observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
             });
         }
     }
@@ -14431,7 +15666,7 @@ fn recover_inner(
     // The declaration is read from the two facts the caller stated and decides the artifact's
     // envelope; it never decides a statement, and it is the only shape of this slice that is read
     // without an instruction to read it from.
-    let declaration = declaration::plan(request.facts.method());
+    let declaration = declaration::plan(request.facts.method(), request.source_target);
     // The type each parameter slot holds, as the member's own **descriptor** states it (P3-R5): the
     // frames cannot tell a `boolean` parameter from an `int` one, and the descriptor can.
     let parameter_types = request.facts.method().parameter_types();
@@ -14440,71 +15675,118 @@ fn recover_inner(
     // are the same fact) and the conversion every other `return` type requires of its value. The
     // builder reads it as this run's fact — like the parameter types, it is derived here rather than
     // re-read out of a descriptor inside the layer that writes the statements.
-    let return_type = build::return_type(request.facts.method().descriptor());
-    let mut program = match build::build(
-        canonical,
-        ssa,
-        &operations,
-        build::Inputs {
-            code,
-            pool: request.ir.constant_pool(),
-            bootstrap: request.ir.bootstrap_methods(),
-            profile: request.profile.clone(),
-            parameters: request.facts.method().parameters(),
-            has_receiver: request.facts.method().has_receiver(),
-            parameter_types: &parameter_types,
-            return_type,
-            method_access_flags: request.facts.method().access_flags(),
-            debug_locals: request.facts.debug_locals(),
-            names: &names,
-            reuse: &reuse,
-            chains: &chains,
-            field_copies: &field_copies,
-            members: request.members,
-            member_inner_targets: request.member_inner_targets,
-            typed_functional_target: request.typed_functional_target,
-            interface_super_calls: request.interface_super_calls,
-            reference_overload_calls: request.reference_overload_calls,
-            snapshot_hierarchy_widenings: request.snapshot_hierarchy_widenings,
-            captured_outer_reads: request.captured_outer_reads,
-            outer_super_calls: request.outer_super_calls,
-            // The declaring class's own member rows, in the spelling the pool names are compared
-            // with: the structural-reflection refusal reads them beside the literal's own class.
-            nested_class_members: request
-                .facts
-                .method()
-                .declaring_class()
-                .map(|declaring| declaring.inner_class_members())
-                .unwrap_or(&[]),
-            pool_spelled_members: request.pool_spelled_members,
-            physical_method: request.ir.declaration().map(|member| member.identity()),
-            // The class this body belongs to, as the run's own member declaration states it: the
-            // fact a static call's pool owner is compared against, so that a call to this class is
-            // written unqualified and a call to another class names it (P3 4.4). A run that read no
-            // member declaration states none, and then no static call gains a qualifier.
-            declaring_class: request
-                .facts
-                .method()
-                .declaring_class()
-                .map(|declaring| declaring.name()),
-            direct_super_class: request.ir.direct_super_class(),
-            direct_interfaces: request.ir.direct_interfaces(),
-            class_methods: request.ir.class_methods(),
-            class_fields: request.ir.class_fields(),
-            class_attributes: request.ir.class_attributes(),
-            bridge: bridge.as_ref(),
-            sites: &sites,
-            prologues: &prologues,
-            fields: &fields,
-            array_initializers,
-            enums: &enums,
-            allow_array_constructor_method_references,
-        },
-        &recovered.regions,
-        budget,
-    ) {
+    let return_type = request.facts.method().return_type();
+    let build_program = |fields: &field::Plan, declared_types, budget: &mut Budget| {
+        build::build(
+            canonical,
+            ssa,
+            &operations,
+            build::Inputs {
+                code,
+                pool: request.ir.constant_pool(),
+                bootstrap: request.ir.bootstrap_methods(),
+                profile: request.source_target,
+                runtime_release: request.runtime_profile.java_release,
+                parameters: request.facts.method().parameters(),
+                has_receiver: request.facts.method().has_receiver(),
+                parameter_types: &parameter_types,
+                return_type: return_type.clone(),
+                method_access_flags: request.facts.method().access_flags(),
+                debug_locals: request.facts.debug_locals(),
+                names: &names,
+                reuse: &reuse,
+                chains: &chains,
+                field_copies: &field_copies,
+                members: request.members,
+                member_inner_targets: request.member_inner_targets,
+                typed_functional_target: request.typed_functional_target,
+                interface_super_calls: request.interface_super_calls,
+                reference_overload_calls: request.reference_overload_calls,
+                reference_relations: request.reference_relations,
+                declared_types,
+                captured_outer_reads: request.captured_outer_reads,
+                outer_super_calls: request.outer_super_calls,
+                // The declaring class's own member rows, in the spelling the pool names are compared
+                // with: the structural-reflection refusal reads them beside the literal's own class.
+                source_names: request
+                    .facts
+                    .method()
+                    .declaring_class()
+                    .map(crate::facts::DeclaringClass::source_names)
+                    .unwrap_or_default(),
+                pool_spelled_members: request.pool_spelled_members,
+                physical_method: request.ir.declaration().map(|member| member.identity()),
+                // The class this body belongs to, as the run's own member declaration states it: the
+                // fact a static call's pool owner is compared against, so that a call to this class is
+                // written unqualified and a call to another class names it (P3 4.4). A run that read no
+                // member declaration states none, and then no static call gains a qualifier.
+                declaring_class: request
+                    .facts
+                    .method()
+                    .declaring_class()
+                    .map(|declaring| declaring.name()),
+                direct_super_class: request.ir.direct_super_class(),
+                direct_interfaces: request.ir.direct_interfaces(),
+                class_methods: request.ir.class_methods(),
+                class_fields: request.ir.class_fields(),
+                class_attributes: request.ir.class_attributes(),
+                bridge: bridge.as_ref(),
+                sites: &sites,
+                prologues: &prologues,
+                fields,
+                array_initializers: &array_initializers,
+                enums: &enums,
+                allow_array_constructor_method_references,
+            },
+            &recovered.regions,
+            budget,
+        )
+    };
+    let mut program = match build_program(&fields, baseline_declared_types, budget) {
         Ok(program) => program,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
+    };
+    let mut declared_program = if class_source.is_some() && request.declared_types.is_some() {
+        let alternative = (|| {
+            let fields = field::plan(
+                ssa,
+                &operations,
+                &element_receiver_type,
+                request.facts.method().declaring_class(),
+                request.facts.method().raw_name().0.as_slice(),
+                request.facts.method().raw_descriptor().0.as_slice(),
+                request.ir.class_fields(),
+                request.superclass_field_writes,
+                request.declared_types,
+                budget,
+            )?;
+            build_program(&fields, request.declared_types, budget)
+        })();
+        match alternative {
+            Ok(program) if !program.ragged => Some(program),
+            Ok(_) => None,
+            Err(stop) => {
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
+            }
+        }
+    } else {
+        None
     };
     let dead_loop_handler = match crate::guard::prove_dead_loop_transfer_handler(
         canonical,
@@ -14513,7 +15795,7 @@ fn recover_inner(
         &operations,
         code,
         &sites,
-        &request.profile,
+        &request.source_target,
         budget,
     ) {
         Ok(Some(proof)) => match build::project_dead_loop_transfer_handler(
@@ -14525,11 +15807,102 @@ fn recover_inner(
         ) {
             Ok(true) => Some(proof),
             Ok(false) => None,
-            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            Err(stop) => {
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
+            }
         },
         Ok(None) => None,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
+    // Preserve only the demanded lambda candidate before closing source names. All other AST
+    // consumers receive the same safe body as the public method entry.
+    if let Some(lambda_helpers) = class_source
+        .as_deref_mut()
+        .map(|source| &mut source.candidates.lambda_helpers)
+        && let (Some(member), Some(member_declaration)) = (
+            request
+                .ir
+                .declaration()
+                .map(|member| member.identity().clone()),
+            request.ir.declaration(),
+        )
+        && !program.lambdas.is_empty()
+    {
+        let exact_helpers = crate::lambda::synthetic_lambda_helper_candidates(request.ir);
+        let projection = std::sync::Arc::new(LambdaHelperProjectionSource {
+            program: program.clone(),
+            facts: request.facts.clone(),
+            declaration: declaration.declaration().cloned(),
+            member: member.clone(),
+        });
+        let mut candidates = Vec::new();
+        for site in &program.lambdas {
+            let Some(helper) = exact_helpers.iter().find(|helper| {
+                helper.call_site == site.use_site
+                    && helper.site_cp == site.site_cp
+                    && helper.owner.0 == member_declaration.class_name().0
+            }) else {
+                continue;
+            };
+            let helper_identity = jarde_reader::model::PhysicalMethodId {
+                owner: member.owner.clone(),
+                name: helper.name.clone(),
+                descriptor: helper.descriptor.clone(),
+            };
+            candidates.push(ClassSourceLambdaHelperCandidate {
+                member: member.clone(),
+                helper: helper_identity,
+                helper_owner: helper.owner.clone(),
+                bootstrap_index: helper.bootstrap_index,
+                implementation_index: helper.implementation_index,
+                use_site: helper.call_site,
+                site_cp: helper.site_cp,
+                implementation_kind: helper.implementation_kind,
+                projection: projection.clone(),
+                #[cfg(any(test, feature = "test-support"))]
+                observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
+            });
+        }
+        *lambda_helpers = Some(candidates);
+    }
+    if let Err(stop) = finalize_lambda_names(&mut program, budget) {
+        return stopped(
+            method,
+            profile,
+            runtime_profile.clone(),
+            &selection,
+            stop,
+            budget,
+        );
+    }
+    if let Some(program) = &mut declared_program {
+        if let Err(stop) = finalize_lambda_names(program, budget) {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
+    }
     // The AST is retained for three reasons, each a consumer that cannot re-derive it: the
     // class-source assembler's own full retention, the site scan's two statement shapes (the
     // companion-body projections read the node the scan found), and — since change
@@ -14537,11 +15910,14 @@ fn recover_inner(
     // anonymous child** (`X$N`), whose allocation point the double-brace presentation re-emits
     // wherever the statement sits (the site scan does not own the assignment position the static
     // initializer's field write is).
-    if let Some(slot) = class_source_ast.as_deref_mut()
-        && (retain_all_method_asts
-            || retain_generic_call_asts
+    if let Some(source) = class_source.as_deref_mut()
+        && (ast_retention != ClassSourceAstRetention::Required
+            || declared_program.is_some()
             || class_source_anonymous_site(&program).is_some()
-            || allocates_an_anonymous_child(request, anonymous_allocations.as_deref()))
+            || allocates_an_anonymous_child(
+                request,
+                Some(&source.candidates.anonymous_allocations),
+            ))
         && let Some(member) = request
             .ir
             .declaration()
@@ -14570,7 +15946,8 @@ fn recover_inner(
                     .map(|rendered| rendered.text().to_owned())
             })
             .collect();
-        let retain_complete_invocation_ast = retain_all_method_asts || retain_generic_call_asts;
+        let retain_complete_invocation_ast =
+            ast_retention != ClassSourceAstRetention::Required || declared_program.is_some();
         if retain_complete_invocation_ast {
             let scan_items = u64::try_from(code.instructions.len())
                 .unwrap_or(u64::MAX)
@@ -14581,7 +15958,14 @@ fn recover_inner(
                 scan_items,
                 code.instructions.first().map(|instruction| instruction.bci),
             ) {
-                return stopped(method, profile.clone(), &selection, stop, budget);
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
             }
         }
         let opcode_by_bci: std::collections::HashMap<u32, u8> = if retain_complete_invocation_ast {
@@ -14647,20 +16031,36 @@ fn recover_inner(
                 .first()
                 .map(|statement| statement.origin.primary().bci()),
         ) {
-            return stopped(method, profile.clone(), &selection, stop, budget);
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
         }
-        let anonymous_constructor_initializer_bci = if retain_all_method_asts
-            && request.facts.method().name() == "<init>"
+        let anonymous_constructor_initializer_bci = if ast_retention == ClassSourceAstRetention::All
+            && request.facts.method().raw_name().0 == b"<init>"
         {
             match anonymous_constructor_initializer_bci(&program, ssa, &operations, code, budget) {
                 Ok(candidate) => candidate,
-                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+                Err(stop) => {
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
+                }
             }
         } else {
             None
         };
-        let generic_call_init = if (retain_generic_call_asts || retain_all_method_asts)
-            && request.facts.method().name() == "<init>"
+        let generic_call_init = if ast_retention != ClassSourceAstRetention::Required
+            && request.facts.method().raw_name().0 == b"<init>"
             && let Some(prologue) = prologues.prologue()
         {
             let record_cost = prologue
@@ -14676,80 +16076,94 @@ fn recover_inner(
                     Some(prologue.bci),
                 )
             }) {
-                return stopped(method, profile.clone(), &selection, stop, budget);
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
             }
             Some(prologues.record())
         } else {
             None
         };
-        let instance_field_write_evidence =
-            if retain_all_method_asts && request.facts.method().name() == "<init>" {
-                let mut evidence = Vec::new();
-                let mut complete = true;
-                for (bci, operation) in operations.iter() {
-                    if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
-                        crate::stop::charge(
-                            budget,
-                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
-                            1,
-                            Some(*bci),
-                        )
-                    }) {
-                        return stopped(method, profile.clone(), &selection, stop, budget);
-                    }
-                    let crate::facts::Operation::Field {
-                        access: crate::facts::FieldAccess::Write,
-                        is_static: false,
-                        ..
-                    } = operation
-                    else {
-                        continue;
-                    };
-                    let Some((field, shape)) = fields.claim(*bci) else {
-                        complete = false;
-                        continue;
-                    };
-                    if !shape.writes() || field.is_static {
-                        complete = false;
-                        continue;
-                    }
-                    let item_cost = field
-                        .owner
-                        .len()
-                        .saturating_add(field.name.len())
-                        .saturating_add(field.descriptor.len())
-                        .saturating_add(1);
-                    if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
-                        crate::stop::charge(
-                            budget,
-                            jarde_reader::budget::CountedBudgetDimension::IrItems,
-                            u64::try_from(item_cost).unwrap_or(u64::MAX),
-                            Some(*bci),
-                        )
-                    }) {
-                        return stopped(method, profile.clone(), &selection, stop, budget);
-                    }
-                    evidence.push(field.clone());
+        let instance_field_write_evidence = if ast_retention == ClassSourceAstRetention::All
+            && request.facts.method().raw_name().0 == b"<init>"
+        {
+            let mut evidence = Vec::new();
+            let mut complete = true;
+            for (bci, operation) in operations.iter() {
+                if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
+                    crate::stop::charge(
+                        budget,
+                        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(*bci),
+                    )
+                }) {
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
                 }
-                complete.then_some(evidence)
-            } else {
-                None
-            };
-        *slot = Some(ClassSourceMethodAst {
+                let crate::facts::Operation::Field {
+                    access: crate::facts::FieldAccess::Write,
+                    is_static: false,
+                    ..
+                } = operation
+                else {
+                    continue;
+                };
+                let Some((field, shape)) = fields.claim(*bci) else {
+                    complete = false;
+                    continue;
+                };
+                if !shape.writes() || field.is_static {
+                    complete = false;
+                    continue;
+                }
+                let item_cost = field
+                    .owner
+                    .0
+                    .len()
+                    .saturating_add(field.name.0.len())
+                    .saturating_add(field.descriptor.0.len())
+                    .saturating_add(1);
+                if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
+                    crate::stop::charge(
+                        budget,
+                        jarde_reader::budget::CountedBudgetDimension::IrItems,
+                        u64::try_from(item_cost).unwrap_or(u64::MAX),
+                        Some(*bci),
+                    )
+                }) {
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
+                }
+                evidence.push(field.clone());
+            }
+            complete.then_some(evidence)
+        } else {
+            None
+        };
+        source.candidates.ast = Some(ClassSourceMethodAst {
             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
                 program: program.clone(),
+                declared_types: None,
                 member,
-                current_class: request
-                    .facts
-                    .method()
-                    .declaring_class()
-                    .map(|declaring| declaring.name().replace('/', ".")),
-                nested_class_members: request
-                    .facts
-                    .method()
-                    .declaring_class()
-                    .map(|declaring| declaring.inner_class_members().to_vec())
-                    .unwrap_or_default(),
+                declaring_class: request.facts.method().declaring_class().cloned(),
                 parameter_names,
                 parameter_slots,
                 complete_code: request.ir.code().is_some_and(|code| {
@@ -14766,10 +16180,64 @@ fn recover_inner(
                 anonymous_constructor_initializer_bci,
                 generic_call_init,
                 instance_field_write_evidence,
+                #[cfg(any(test, feature = "test-support"))]
+                observation: crate::observation::Token::new(
+                    crate::observation::Kind::MethodAstSource,
+                ),
             }),
         });
     }
-    if let Some(slot) = generic_return {
+    if let Some(collector) = class_source.as_deref_mut()
+        && let (Some(program), Some(source), Some(types)) = (
+            declared_program,
+            collector.candidates.ast.as_ref(),
+            request.declared_types,
+        )
+    {
+        let cost = program_node_count(&program)
+            .saturating_add(source.projection.instruction_bcis.len() as u64)
+            .saturating_add(source.projection.instruction_opcodes.len() as u64)
+            .saturating_add(source.projection.call_targets.len() as u64)
+            .saturating_add(types.types.len() as u64)
+            .saturating_add(types.values.iter().flatten().map(Vec::len).sum::<usize>() as u64)
+            .saturating_add(
+                types
+                    .runtime_values
+                    .iter()
+                    .flatten()
+                    .map(Vec::len)
+                    .sum::<usize>() as u64,
+            )
+            .saturating_add(types.members.len() as u64)
+            .saturating_add(types.relations.len() as u64)
+            .saturating_add(types.runtime_upcasts.len() as u64);
+        if let Err(stop) = crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            cost,
+            None,
+        ) {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
+        let mut projection = (*source.projection).clone();
+        projection.program = program;
+        projection.declared_types = Some(std::sync::Arc::new(types.clone()));
+        collector.candidates.declared_ast = Some(ClassSourceMethodAst {
+            projection: std::sync::Arc::new(projection),
+        });
+    }
+    if let Some(slot) = class_source
+        .as_deref_mut()
+        .filter(|source| source.options.prove_generic_return)
+        .map(|source| &mut source.candidates.generic_return)
+    {
         let try_scope = if (code.exception_handler_count != 0
             || !code.exception_handlers.is_empty())
             && matches!(
@@ -14778,7 +16246,16 @@ fn recover_inner(
             ) {
             match crate::region::ordinary_try_list_scope(&recovered, canonical, code, budget) {
                 Ok(scope) => scope,
-                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+                Err(stop) => {
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
+                }
             }
         } else {
             None
@@ -14794,11 +16271,26 @@ fn recover_inner(
             budget,
         ) {
             Ok(candidate) => *slot = candidate,
-            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            Err(stop) => {
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
+            }
         }
     }
-    if let Some(slot) = generic_constructor {
-        if request.facts.method().name() == "<init>" {
+    if let Some(slot) = class_source
+        .as_deref_mut()
+        .filter(|source| {
+            source.options.prove_generic_return || source.options.prove_empty_constructor
+        })
+        .map(|source| &mut source.candidates.generic_constructor)
+    {
+        if request.facts.method().raw_name().0 == b"<init>" {
             match generic_constructor_candidate(
                 &program,
                 &names,
@@ -14807,7 +16299,7 @@ fn recover_inner(
                 code,
                 &prologues,
                 &parameter_types,
-                request.facts.method().descriptor(),
+                request.facts.method().raw_descriptor().0.as_slice(),
                 request
                     .ir
                     .declaration()
@@ -14815,25 +16307,61 @@ fn recover_inner(
                 budget,
             ) {
                 Ok(candidate) => *slot = candidate,
-                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+                Err(stop) => {
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
+                }
             }
         }
     }
-    if let Some(slot) = enum_constructor.as_deref_mut() {
-        if request.facts.method().name() == "<init>" {
+    if let Some(slot) = class_source
+        .as_deref_mut()
+        .and_then(|source| source.enum_constructor(request))
+    {
+        if request.facts.method().raw_name().0 == b"<init>" {
             match class_enum_constructor_candidates(request, &program, &fields, code, budget) {
                 Ok(candidates) => *slot = Some(candidates),
-                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+                Err(stop) => {
+                    return stopped(
+                        method,
+                        profile,
+                        runtime_profile.clone(),
+                        &selection,
+                        stop,
+                        budget,
+                    );
+                }
             }
         }
     }
-    if let Some(initializer) = initializer {
+    if let Some(initializer) = class_source
+        .as_deref_mut()
+        .and_then(|source| source.initializer(request))
+    {
         match class_initializer_candidates(request, &program, &fields, budget) {
             Ok(candidates) => *initializer = Some(candidates),
-            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            Err(stop) => {
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
+            }
         }
     }
-    if let Some(enum_switches) = enum_switch_candidate.as_deref_mut() {
+    if let Some(enum_switches) = class_source
+        .as_deref_mut()
+        .map(|source| &mut source.candidates.enum_switches)
+    {
         let member = request
             .ir
             .declaration()
@@ -14847,13 +16375,27 @@ fn recover_inner(
                         u64::try_from(program.statements.max(1)).unwrap_or(u64::MAX),
                         candidates.first().map(|candidate| candidate.switch_bci),
                     ) {
-                        return stopped(method, profile.clone(), &selection, stop, budget);
+                        return stopped(
+                            method,
+                            profile,
+                            runtime_profile.clone(),
+                            &selection,
+                            stop,
+                            budget,
+                        );
                     }
                     if let Err(stop) = crate::stop::poll(
                         budget,
                         candidates.first().map(|candidate| candidate.switch_bci),
                     ) {
-                        return stopped(method, profile.clone(), &selection, stop, budget);
+                        return stopped(
+                            method,
+                            profile,
+                            runtime_profile.clone(),
+                            &selection,
+                            stop,
+                            budget,
+                        );
                     }
                     let projection = std::sync::Arc::new(enumswitch::EnumSwitchProjectionSource {
                         program: program.clone(),
@@ -14867,10 +16409,21 @@ fn recover_inner(
                 }
                 *enum_switches = Some(candidates);
             }
-            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            Err(stop) => {
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
+            }
         }
     }
-    if let Some(array_constructors) = array_constructor_candidate
+    if let Some(array_constructors) = class_source
+        .as_deref_mut()
+        .map(|source| &mut source.candidates.array_constructors)
         && !program.array_constructor_sites.is_empty()
     {
         let Some(member) = request
@@ -14880,7 +16433,8 @@ fn recover_inner(
         else {
             return stopped(
                 method,
-                profile.clone(),
+                profile,
+                runtime_profile.clone(),
                 &selection,
                 StopReason::IrTableMissing {
                     table: "declaration",
@@ -14897,7 +16451,14 @@ fn recover_inner(
                 .first()
                 .map(|site| site.use_site),
         ) {
-            return stopped(method, profile.clone(), &selection, stop, budget);
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
         }
         if let Err(stop) = crate::stop::poll(
             budget,
@@ -14906,7 +16467,14 @@ fn recover_inner(
                 .first()
                 .map(|site| site.use_site),
         ) {
-            return stopped(method, profile.clone(), &selection, stop, budget);
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
         }
         let projection = std::sync::Arc::new(ArrayConstructorProjectionSource {
             program: program.clone(),
@@ -14917,6 +16485,9 @@ fn recover_inner(
         let exact_helpers = crate::lambda::array_helper_candidates(request.ir);
         let mut candidates = Vec::new();
         for site in &program.array_constructor_sites {
+            // Both the proved site and this handle inventory come from request.ir. Each
+            // instruction contributes at most one handle, so BCI/CP joins its raw target
+            // without reconstructing physical name or descriptor bytes from source text.
             let Some(helper) = exact_helpers.iter().find(|helper| {
                 helper.call_site == site.use_site
                     && helper.site_cp == site.site_cp
@@ -14924,9 +16495,6 @@ fn recover_inner(
                         .ir
                         .declaration()
                         .is_some_and(|declaration| helper.owner.0 == declaration.class_name().0)
-                    && std::str::from_utf8(&helper.name.0).ok() == Some(site.helper_name.as_str())
-                    && std::str::from_utf8(&helper.descriptor.0).ok()
-                        == Some(site.helper_descriptor.as_str())
             }) else {
                 continue;
             };
@@ -14948,54 +16516,11 @@ fn recover_inner(
                     helper_name: helper.name.clone(),
                 }],
                 projection: projection.clone(),
+                #[cfg(any(test, feature = "test-support"))]
+                observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
             });
         }
         *array_constructors = Some(candidates);
-    }
-    if let Some(lambda_helpers) = lambda_helper_candidate.as_deref_mut()
-        && let (Some(member), Some(member_declaration)) = (
-            request
-                .ir
-                .declaration()
-                .map(|member| member.identity().clone()),
-            request.ir.declaration(),
-        )
-        && !program.lambdas.is_empty()
-    {
-        let exact_helpers = crate::lambda::synthetic_lambda_helper_candidates(request.ir);
-        let projection = std::sync::Arc::new(LambdaHelperProjectionSource {
-            program: program.clone(),
-            facts: request.facts.clone(),
-            declaration: declaration.declaration().cloned(),
-            member: member.clone(),
-        });
-        let mut candidates = Vec::new();
-        for site in &program.lambdas {
-            let Some(helper) = exact_helpers.iter().find(|helper| {
-                helper.call_site == site.use_site
-                    && helper.site_cp == site.site_cp
-                    && helper.owner.0 == member_declaration.class_name().0
-            }) else {
-                continue;
-            };
-            let helper_identity = jarde_reader::model::PhysicalMethodId {
-                owner: member.owner.clone(),
-                name: helper.name.clone(),
-                descriptor: helper.descriptor.clone(),
-            };
-            candidates.push(ClassSourceLambdaHelperCandidate {
-                member: member.clone(),
-                helper: helper_identity,
-                helper_owner: helper.owner.clone(),
-                bootstrap_index: helper.bootstrap_index,
-                implementation_index: helper.implementation_index,
-                use_site: helper.call_site,
-                site_cp: helper.site_cp,
-                implementation_kind: helper.implementation_kind,
-                projection: projection.clone(),
-            });
-        }
-        *lambda_helpers = Some(candidates);
     }
     // The identity of the body being presented, as the payload's own declaration states it: the
     // member every anchor of this artifact belongs to (P3 3.2). A run that read no member header
@@ -15004,15 +16529,44 @@ fn recover_inner(
         .ir
         .declaration()
         .map(|declaration| declaration.identity());
-    let emitted: Emitted = match emit(
+    let needs_projection_proof =
+        !request.projection_types.is_empty() || !request.member_inner_targets.is_empty();
+    let projection_needles = if needs_projection_proof {
+        match projection_needles(request, budget) {
+            Ok(needles) => needles,
+            Err(stop) => {
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
+            }
+        }
+    } else {
+        Vec::new()
+    };
+    let mut emitted: Emitted = match crate::emit::emit_for_projection(
         &program.stmts,
         request.facts,
         declaration.declaration(),
         member,
+        &projection_needles,
         budget,
     ) {
         Ok(emitted) => emitted,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
     let committed_presentations = match field::committed_presentations(
         &program,
@@ -15021,9 +16575,18 @@ fn recover_inner(
         budget,
     ) {
         Ok(presentations) => presentations,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        Err(stop) => {
+            return stopped(
+                method,
+                profile,
+                runtime_profile.clone(),
+                &selection,
+                stop,
+                budget,
+            );
+        }
     };
-    if let Some(receiver_slot) = field_receiver_sites.as_deref_mut() {
+    if let Some(source) = class_source.as_deref_mut() {
         // A non-constructor holds only the empty NotThisRule record. It has no owning
         // initialization facts to copy, so it does not pay for this constructor-only handoff.
         if prologues.answered() {
@@ -15041,7 +16604,14 @@ fn recover_inner(
                 )
             });
             if let Err(stop) = charged {
-                return stopped(method, profile.clone(), &selection, stop, budget);
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
             }
         }
         let init_record = prologues.record();
@@ -15058,12 +16628,19 @@ fn recover_inner(
             budget,
         ) {
             Ok((receivers, accessors)) => {
-                *receiver_slot = Some(receivers);
-                if let Some(accessor_slot) = field_write_accessors.as_deref_mut() {
-                    *accessor_slot = Some(accessors);
-                }
+                source.candidates.field_receivers = Some(receivers);
+                source.candidates.field_write_accessors = Some(accessors);
             }
-            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            Err(stop) => {
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
+            }
         }
     }
     // What the artifact that was just committed holds. The classification is taken here, from the
@@ -15365,26 +16942,20 @@ fn recover_inner(
         ));
     }
     // ---------------------------------------------------------------------------------------
-    // The artifact binding and the judgement about the artifact the request named (D3', tasks
-    // 5.1/5.2). It is taken here — the artifact is committed and every diagnostic of this run is
-    // stated, and no evidence record has been materialized yet — because the phase below is exactly
-    // what the judgement gates. The caller's `expected_artifact` is a **candidate for verification**:
-    // the value it is compared against is this run's own binding, and only an agreement lets this
-    // run's evidence describe the text the caller holds. A mismatch refuses the *materialization* and
-    // nothing else — the text committed above stays, its planes and its gaps stay, and the categories
-    // the request selected stay `NotPerformed`, the state for a selection that was refused.
-    //
-    // A run whose entry stated no subject publishes no binding at all: identity this layer was not
-    // given is never invented from the request's spelling, and a request that names an artifact for
-    // such a run is answered `Unverifiable` rather than with a comparison nobody performed.
-    // ---------------------------------------------------------------------------------------
-    let artifact = match &request.subject {
-        Some(subject) => RecoveryArtifact::of(
-            ArtifactBinding::of(subject, &request.profile, &emitted.text),
-            selection.expected_artifact(),
+    // The exact source is committed. Only the read-owning adapter can compare its binding before
+    // optional publication; a public Java request supplies assertions and cannot acquire that
+    // authority by constructing a subject or matching a method-site shape.
+    // A supplied subject is a caller label, not proof that this entry read a physical method.
+    // The read-owning adapter compares its own binding here, before optional materialization,
+    // and attaches that metadata to its selected-read result after we return.
+    let publish = match gate.as_mut() {
+        Some(gate) => gate(
+            &emitted.text,
+            artifact_configuration.expect("a publication gate computed semantic inputs"),
         ),
-        None => RecoveryArtifact::unbound(selection.expected_artifact()),
+        None => true,
     };
+    let artifact = RecoveryArtifact::unbound(selection.expected_artifact());
     if let (Some(refusal), Some(code)) =
         (artifact.agreement().refusal(), artifact.agreement().code())
     {
@@ -15393,7 +16964,38 @@ fn recover_inner(
         // refuses is the attachment of this run's evidence to another artifact.
         diagnostics.push(diagnostic(code, DiagnosticSeverity::Warning, refusal));
     }
-    let attaches = artifact.attaches();
+    let projection_proof = if needs_projection_proof {
+        let allocations = match sites.projection_records(
+            &committed_presentations,
+            request.member_inner_targets,
+            budget,
+        ) {
+            Ok(records) => records,
+            Err(stop) => {
+                return stopped(
+                    method,
+                    profile,
+                    runtime_profile.clone(),
+                    &selection,
+                    stop,
+                    budget,
+                );
+            }
+        };
+        Some(ProjectionProof {
+            origins: std::mem::take(&mut emitted.projection_origins),
+            has_own_origin: emitted.has_own_origin,
+            allocations,
+            declaration_presented: declaration.declaration().is_some(),
+            structured_regions: structured
+                && (!recovered.regions.is_empty() || dead_loop_handler.is_some()),
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
+        })
+    } else {
+        None
+    };
+    let attaches = artifact.attaches() && publish;
     // ---------------------------------------------------------------------------------------
     // The evidence phase: the artifact is committed and every diagnostic of this run is stated, and
     // what the request selected is materialized now — one owning record at a time, within the same
@@ -15537,7 +17139,7 @@ fn recover_inner(
     // The stop of the evidence phase, when it stopped — and the one the source-map gate states when
     // the replayed writes disagreed with the committed artifact: both are stated in the same
     // vocabulary every other stop of this layer uses, and neither is a claim about the artifact.
-    let stop = gate_stop.or_else(|| phase.stopped().then(|| phase.reason(budget)));
+    let stop = gate_stop.or_else(|| phase.stopped().then(|| phase.reason()));
     let execution = match &stop {
         Some(reason) => {
             diagnostics.push(stop_diagnostic(reason));
@@ -15548,7 +17150,9 @@ fn recover_inner(
         },
     };
     let report = RecoveryReport {
-        profile: request.profile.clone(),
+        input_origin: RecoveryInputOrigin::CallerSupplied,
+        source_target: request.source_target,
+        runtime_profile: request.runtime_profile.clone(),
         representation: if structured {
             Representation::Java
         } else {
@@ -15572,6 +17176,7 @@ fn recover_inner(
         content,
         text: emitted.text,
         source_map,
+        projection_proof,
         regions,
         lambdas,
         concats,
@@ -15608,6 +17213,76 @@ fn recover_inner(
 /// The only caller AST shape this class-source slice retains: a sole direct `return new T()`.
 /// Counts retained statements, expressions, and class-source side tables before cloning a full
 /// selected child AST. The iterative walk bounds stack use independently of source nesting depth.
+/// A conservative lexical demand filter only. A hit retains the emitting node's real origins;
+/// later projection proofs still verify exact tokens and physical CP/SSA facts. No hit proves a
+/// class relation. Ordinary recovery never constructs this list or retains the index.
+fn projection_needles(
+    request: &RecoveryRequest<'_>,
+    budget: &mut Budget,
+) -> Result<Vec<String>, StopReason> {
+    let mut names = Vec::new();
+    let raw = request.projection_types.iter().copied().chain(
+        request
+            .member_inner_targets
+            .iter()
+            .flat_map(|target| [target.owner.0.as_slice(), target.outer.0.as_slice()]),
+    );
+    for name in raw {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            name.len() as u64,
+            None,
+        )?;
+        let Some(name) = jarde_reader::model::JvmBytes(name.to_vec()).to_unicode() else {
+            continue;
+        };
+        let Some(leaf) = name
+            .rsplit(['/', '$'])
+            .next()
+            .filter(|name| !name.is_empty())
+        else {
+            continue;
+        };
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1 + leaf.len() as u64,
+            None,
+        )?;
+        names.push(leaf.to_owned());
+    }
+    // Capture stores can be removed only at their own exact statement origin. Their names come
+    // from the selected class's already supplied synthetic field declarations, never from a guess.
+    for field in request.ir.class_fields().unwrap_or(&[]) {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            None,
+        )?;
+        if field.access_flags & 0x1000 == 0 {
+            continue;
+        }
+        let Some(name) = field.name.raw().to_unicode() else {
+            continue;
+        };
+        if name.is_empty() {
+            continue;
+        }
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1 + name.len() as u64,
+            None,
+        )?;
+        names.push(name);
+    }
+    names.sort();
+    names.dedup();
+    Ok(names)
+}
+
 fn program_node_count(program: &build::Program) -> u64 {
     let mut count = u64::try_from(program.statements).unwrap_or(u64::MAX);
     count = count
@@ -15993,6 +17668,8 @@ fn class_initializer_candidates(
         has_exception_handlers,
         steps,
         statements: enum_statements,
+        #[cfg(any(test, feature = "test-support"))]
+        observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
     })
 }
 
@@ -16101,6 +17778,8 @@ fn class_enum_constructor_candidates(
         complete,
         has_exception_handlers,
         steps,
+        #[cfg(any(test, feature = "test-support"))]
+        observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
     })
 }
 
@@ -16481,14 +18160,9 @@ impl Delivery {
 }
 
 /// One replaced name, as a selected `NameDetails` category states it.
-fn aliased_name(name: &crate::names::RenderedName) -> String {
+fn aliased_name(name: &crate::names::RenderedName) -> crate::names::RenderedName {
     crate::demand_counts::record_built(RecoveryEvidenceKind::NameDetails);
-    format!(
-        "slot {} written as `{}` (source spelling `{}`)",
-        name.slot(),
-        name.text(),
-        name.raw().unwrap_or("")
-    )
+    name.clone()
 }
 
 /// One count as the report states it.
@@ -16822,6 +18496,127 @@ mod generic_void_parameter_census_tests {
     }
 
     #[test]
+    fn projection_core_is_same_run_bounded_and_independent_of_evidence() {
+        let class = include_bytes!(
+            "../../../tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
+        );
+        let (analysis, _) = analyzed(class, "finContinue", "([I)I", 1);
+        let facts = crate::facts::RecoveryFacts::new(
+            crate::facts::MethodFacts::new("finContinue", "([I)I", 1)
+                .with_access_flags(8)
+                .with_declaring_class(crate::facts::DeclaringClass::new(
+                    "LoopTransferFinally",
+                    0x21,
+                )),
+        );
+        let base = RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            crate::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        );
+        let ordinary = recover_for_class_source(
+            &base,
+            &mut Budget::new(limits()),
+            ClassSourceOptions::default(),
+            None,
+        );
+        assert!(ordinary.report.produced());
+        assert!(ordinary.report.projection_proof.is_none());
+        assert!(
+            ordinary.candidates.ast.is_none(),
+            "no requested AST consumer"
+        );
+        // A conservative filter may retain a lexical false positive, but cannot prove a class
+        // relation. These raw names are supplied facts, not evidence publication options.
+        let types: &[&[u8]] = &[b"p/int"];
+        let request = base.with_projection_types(types);
+        let before = crate::demand_counts::snapshot();
+        let essential = recover(&request, &mut Budget::new(limits()));
+        let built = before.since(crate::demand_counts::snapshot());
+        assert_eq!(
+            built,
+            crate::demand_counts::Built::default(),
+            "no optional owning records"
+        );
+        assert!(
+            essential.source_map.is_empty()
+                && essential.regions.is_empty()
+                && essential.news.is_empty()
+        );
+        for kind in [
+            RecoveryEvidenceKind::SourceMap,
+            RecoveryEvidenceKind::RegionDetails,
+            RecoveryEvidenceKind::RuleDetails,
+        ] {
+            assert_eq!(
+                essential.evidence.state(kind),
+                crate::evidence::EvidenceState::NotRequested
+            );
+        }
+        assert!(!essential.projection_origins().is_empty());
+        assert!(essential.projection_regions_structured());
+        assert!(essential.projection_has_own_origin());
+        assert!(essential.projection_declaration_presented());
+        for selection in [
+            RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+            RecoveryEvidenceRequest::all(),
+            RecoveryEvidenceRequest::all()
+                .with_driver_bci_range(crate::evidence::BytecodeRange::new(45, 47)),
+        ] {
+            let report = recover(
+                &request.clone().with_evidence(selection),
+                &mut Budget::new(limits()),
+            );
+            assert_eq!(essential.text, report.text);
+            assert_eq!(essential.projection_proof, report.projection_proof);
+        }
+        assert_eq!(ordinary.report.text, essential.text);
+        // Physically missing origins remain missing; public SourceMap cannot fill them in.
+        let mut missing = recover(
+            &request.with_evidence(RecoveryEvidenceRequest::all()),
+            &mut Budget::new(limits()),
+        );
+        assert!(!missing.source_map.is_empty());
+        let member = analysis.ir().declaration().unwrap().identity();
+        let bci = missing
+            .projection_origins()
+            .iter()
+            .find_map(|segment| {
+                let bci = segment.origin().primary().bci();
+                crate::source_proof::family_recovery_token_span(
+                    member,
+                    &missing,
+                    bci,
+                    bci,
+                    "int",
+                    &mut Budget::new(limits()),
+                )
+                .unwrap()
+                .is_some()
+                .then_some(bci)
+            })
+            .expect("a real own-method token is proved before removing its necessary origins");
+        missing.projection_proof.as_mut().unwrap().origins.clear();
+        assert!(
+            crate::source_proof::family_recovery_token_span(
+                member,
+                &missing,
+                bci,
+                bci,
+                "int",
+                &mut Budget::new(limits())
+            )
+            .unwrap()
+            .is_none()
+        );
+    }
+
+    #[test]
     fn loop_transfer_handler_evidence_obeys_selection_and_driver_block_range() {
         let class = include_bytes!(
             "../../../tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
@@ -16836,7 +18631,16 @@ mod generic_void_parameter_census_tests {
                         0x0021,
                     )),
             );
-            let request = RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8);
+            let request = RecoveryRequest::new(
+                analysis.ir(),
+                &facts,
+                crate::pass::JAVA_8,
+                jarde_reader::view::RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: jarde_reader::view::LayoutMode::Generic,
+                },
+            );
             let all = recover(
                 &request
                     .clone()
@@ -17112,7 +18916,7 @@ mod generic_void_parameter_census_tests {
                 &mut Budget::new(late_ir_limits),
             ),
             Err(StopReason::Budget {
-                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 ..
             })
         ));
@@ -17329,20 +19133,29 @@ mod generic_void_parameter_census_tests {
                         0x0021,
                     )),
             );
-            let request = RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8);
-            let recovered = recover_for_class_source_with_anonymous_ast(
+            let request = RecoveryRequest::new(
+                analysis.ir(),
+                &facts,
+                crate::pass::JAVA_8,
+                jarde_reader::view::RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: jarde_reader::view::LayoutMode::Generic,
+                },
+            );
+            let recovered = recover_for_class_source(
                 &request,
                 &mut Budget::new(limits()),
-                true,
-                false,
-                false,
-                false,
-                false,
+                ClassSourceOptions {
+                    prove_generic_return: true,
+                    ..ClassSourceOptions::default()
+                },
+                None,
             );
             let Some(GenericReturnCandidate {
                 value: GenericReturnValue::CompleteBody { .. },
                 ..
-            }) = recovered.generic_return
+            }) = recovered.candidates.generic_return
             else {
                 panic!(
                     "{name}{descriptor} must enter the ordinary typed Try/prefix+foreach census: {:?}",
@@ -17383,7 +19196,7 @@ mod generic_void_parameter_census_tests {
                 &mut Budget::new(low_inventory),
             ),
             Err(StopReason::Budget {
-                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 ..
             })
         ));
@@ -17643,6 +19456,28 @@ mod generic_call_ast_projection_tests {
     };
     use std::collections::BTreeMap;
 
+    #[test]
+    fn class_source_reference_parameter_spelling_uses_raw_descriptor() {
+        for (descriptor, expected) in [
+            (JvmBytes::from_unicode("(Lp/𐐀;)V"), Some("p.𐐀")),
+            (JvmBytes::from_unicode("([[Lp/𐐀;)V"), Some("p.𐐀[][]")),
+            (JvmBytes::from_unicode("([I)V"), Some("int[]")),
+            (JvmBytes::from_unicode("(I)V"), None),
+            (JvmBytes(b"(Lp/\xed\xa0\x81;)V".to_vec()), None),
+            (JvmBytes(b"(Lp/\xed\xa0\x82;)V".to_vec()), None),
+        ] {
+            assert_eq!(
+                class_source_descriptor_reference_parameter(&descriptor.0, 0).as_deref(),
+                expected,
+            );
+            assert_eq!(descriptor_parameter_count(&descriptor.0), Some(1));
+            assert_eq!(
+                class_source_descriptor_reference_parameter(&descriptor.0, 1),
+                None
+            );
+        }
+    }
+
     fn ast() -> (ClassSourceMethodAst, ClassSourceInvokeKey) {
         let member = PhysicalMethodId {
             owner: PhysicalDefinitionId {
@@ -17701,9 +19536,12 @@ mod generic_call_ast_projection_tests {
         };
         let source = ClassSourceMethodAstSource {
             program,
+            declared_types: None,
             member,
-            current_class: Some("sample.Box".to_owned()),
-            nested_class_members: Vec::new(),
+            declaring_class: Some(crate::facts::DeclaringClass::new(
+                "sample.Box".replace('.', "/"),
+                0x20,
+            )),
             parameter_names: vec![Some("value".to_owned())],
             parameter_slots: vec![1],
             complete_code: true,
@@ -17715,6 +19553,8 @@ mod generic_call_ast_projection_tests {
             anonymous_constructor_initializer_bci: None,
             generic_call_init: None,
             instance_field_write_evidence: None,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::MethodAstSource),
         };
         (
             ClassSourceMethodAst {
@@ -17827,6 +19667,7 @@ mod generic_call_ast_projection_tests {
                 ExprKind::Cast {
                     ty: Type::Reference("java.lang.Object".to_owned()),
                     value: Box::new(child.clone()),
+                    source_type_name: None,
                 },
                 3,
             )
@@ -17835,6 +19676,7 @@ mod generic_call_ast_projection_tests {
                 ExprKind::Cast {
                     ty: Type::Reference("java.lang.Object".to_owned()),
                     value: Box::new(child.clone()),
+                    source_type_name: None,
                 },
                 OriginSet::new(crate::source_map::Origin::direct(2))
                     .plus_derived(crate::source_map::Origin::derived(consumer_bci)),
@@ -17876,9 +19718,12 @@ mod generic_call_ast_projection_tests {
         };
         let source = ClassSourceMethodAstSource {
             program,
+            declared_types: None,
             member,
-            current_class: Some("sample.Box".to_owned()),
-            nested_class_members: Vec::new(),
+            declaring_class: Some(crate::facts::DeclaringClass::new(
+                "sample.Box".replace('.', "/"),
+                0x20,
+            )),
             parameter_names: Vec::new(),
             parameter_slots: Vec::new(),
             complete_code: true,
@@ -17902,6 +19747,8 @@ mod generic_call_ast_projection_tests {
             anonymous_constructor_initializer_bci: None,
             generic_call_init: None,
             instance_field_write_evidence: None,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::MethodAstSource),
         };
         (
             ClassSourceMethodAst {
@@ -17989,7 +19836,12 @@ mod generic_call_ast_projection_tests {
         let [argument] = args.as_slice() else {
             panic!("the consumer has one argument")
         };
-        let ExprKind::Cast { ty, value } = &argument.kind else {
+        let ExprKind::Cast {
+            ty,
+            value,
+            source_type_name: None,
+        } = &argument.kind
+        else {
             panic!("the approved source upcast remains")
         };
         assert_eq!(ty, &Type::Reference("java.lang.Number".to_owned()));
@@ -18023,6 +19875,10 @@ mod generic_call_ast_projection_tests {
             kind: ExprKind::Local("value".to_owned()),
             origin: child_origin,
             presented: child_presented,
+            declared_type: None,
+            declared_call: false,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::Expr),
         });
         (
             ClassSourceMethodAst {
@@ -18333,7 +20189,12 @@ mod generic_call_ast_projection_tests {
                 panic!("fixture returns the consumer call")
             };
             let argument = &mut args[0];
-            let ExprKind::Cast { ty, value } = &mut argument.kind else {
+            let ExprKind::Cast {
+                ty,
+                value,
+                source_type_name: None,
+            } = &mut argument.kind
+            else {
                 panic!("fixture argument is source-presentation cast")
             };
             let source_type = Type::Reference(source_type.to_owned());
@@ -18469,7 +20330,12 @@ mod generic_call_ast_projection_tests {
         }) else {
             panic!("call node remains a call")
         };
-        let ExprKind::Cast { ty, value } = &args[0].kind else {
+        let ExprKind::Cast {
+            ty,
+            value,
+            source_type_name: None,
+        } = &args[0].kind
+        else {
             panic!("source upcast is projected around the argument")
         };
         assert_eq!(ty, &Type::Reference("java.lang.Number".to_owned()));
@@ -18919,7 +20785,7 @@ mod generic_call_ast_projection_tests {
         assert_eq!(
             class_source_same_class_invoke_inventory_matches(
                 &ast,
-                "sample/Box",
+                b"sample/Box",
                 &keys,
                 &mut budget
             )
@@ -18931,7 +20797,7 @@ mod generic_call_ast_projection_tests {
         assert!(
             class_source_same_class_invoke_inventory_matches(
                 &ast,
-                "sample/Box",
+                b"sample/Box",
                 &keys[..1],
                 &mut omitted_one
             )
@@ -18942,7 +20808,7 @@ mod generic_call_ast_projection_tests {
         assert!(
             class_source_same_class_invoke_inventory_matches(
                 &ast,
-                "sample/Box",
+                b"sample/Box",
                 &[],
                 &mut omitted_all
             )
@@ -18962,7 +20828,7 @@ mod generic_call_ast_projection_tests {
         assert!(
             class_source_same_class_invoke_inventory_matches(
                 &ast,
-                "sample/Box",
+                b"sample/Box",
                 &wrong_target,
                 &mut wrong_target_budget
             )
@@ -18976,7 +20842,7 @@ mod generic_call_ast_projection_tests {
         assert!(
             class_source_same_class_invoke_inventory_matches(
                 &ast,
-                "sample/Box",
+                b"sample/Box",
                 &wrong_opcode,
                 &mut wrong_opcode_budget
             )
@@ -18996,7 +20862,7 @@ mod generic_call_ast_projection_tests {
         assert!(
             class_source_same_class_invoke_inventory_matches(
                 &ast,
-                "sample/Box",
+                b"sample/Box",
                 &foreign_owner,
                 &mut foreign_owner_budget
             )
@@ -19010,7 +20876,7 @@ mod generic_call_ast_projection_tests {
         assert!(
             class_source_same_class_invoke_inventory_matches(
                 &ast,
-                "sample/Box",
+                b"sample/Box",
                 &duplicate_expected,
                 &mut duplicate_expected_budget
             )
@@ -19028,7 +20894,7 @@ mod generic_call_ast_projection_tests {
         assert!(
             class_source_same_class_invoke_inventory_matches(
                 &duplicate_actual,
-                "sample/Box",
+                b"sample/Box",
                 &keys,
                 &mut duplicate_actual_budget
             )
@@ -19045,7 +20911,7 @@ mod generic_call_ast_projection_tests {
         assert!(
             class_source_same_class_invoke_inventory_matches(
                 &unknown_opcode,
-                "sample/Box",
+                b"sample/Box",
                 &keys,
                 &mut unknown_opcode_budget
             )
@@ -19062,7 +20928,7 @@ mod generic_call_ast_projection_tests {
         assert!(
             class_source_same_class_invoke_inventory_matches(
                 &incomplete,
-                "sample/Box",
+                b"sample/Box",
                 &keys,
                 &mut incomplete_budget
             )
@@ -19080,7 +20946,7 @@ mod generic_call_ast_projection_tests {
         assert!(
             class_source_same_class_invoke_inventory_matches(
                 &duplicate_bci,
-                "sample/Box",
+                b"sample/Box",
                 &keys,
                 &mut duplicate_bci_budget
             )
@@ -19104,13 +20970,86 @@ mod generic_call_ast_projection_tests {
         assert_eq!(
             class_source_same_class_invoke_inventory_matches(
                 &no_calls,
-                "sample/Box",
+                b"sample/Box",
                 &[],
                 &mut budget
             )
             .unwrap(),
             Some(())
         );
+    }
+
+    #[test]
+    fn same_class_invoke_inventory_matches_raw_owner_name_and_descriptor() {
+        use jarde_reader::model::JvmBytes;
+        let (ast, mut keys) = two_site_ast();
+        let owner = JvmBytes::from_unicode("sample/𐐀Owner");
+        let name = JvmBytes::from_unicode("𐐀Call");
+        let descriptor = JvmBytes::from_unicode("(Lsample/𐐀Type;)Lsample/𐐀Type;");
+        for key in &mut keys {
+            key.target = crate::facts::CallTarget::from_raw(
+                key.target.kind(),
+                owner.clone(),
+                name.clone(),
+                descriptor.clone(),
+                false,
+            );
+        }
+        let mut source = (*ast.projection).clone();
+        source.call_targets = keys
+            .iter()
+            .map(|key| (key.call_bci, key.opcode, key.target.clone()))
+            .collect();
+        let ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        assert_eq!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                &owner.0,
+                &keys,
+                &mut fresh_budget()
+            )
+            .unwrap(),
+            Some(())
+        );
+        assert!(
+            class_source_same_class_invoke_inventory_matches(
+                &ast,
+                "sample/𐐀Owner".as_bytes(),
+                &keys,
+                &mut fresh_budget()
+            )
+            .unwrap()
+            .is_none()
+        );
+        for (bad_name, bad_descriptor) in [
+            (JvmBytes("𐐀Call".as_bytes().to_vec()), descriptor.clone()),
+            (
+                name.clone(),
+                JvmBytes("(Lsample/𐐀Type;)Lsample/𐐀Type;".as_bytes().to_vec()),
+            ),
+            (JvmBytes(vec![0xed, 0xa0, 0x80]), descriptor.clone()),
+        ] {
+            let mut wrong = keys.clone();
+            wrong[0].target = crate::facts::CallTarget::from_raw(
+                wrong[0].target.kind(),
+                owner.clone(),
+                bad_name,
+                bad_descriptor,
+                false,
+            );
+            assert!(
+                class_source_same_class_invoke_inventory_matches(
+                    &ast,
+                    &owner.0,
+                    &wrong,
+                    &mut fresh_budget()
+                )
+                .unwrap()
+                .is_none()
+            );
+        }
     }
 
     #[test]
@@ -19125,7 +21064,7 @@ mod generic_call_ast_projection_tests {
         assert!(matches!(
             class_source_same_class_invoke_inventory_matches(
                 &ast,
-                "sample/Box",
+                b"sample/Box",
                 &keys,
                 &mut exhausted
             ),
@@ -19138,7 +21077,7 @@ mod generic_call_ast_projection_tests {
         assert!(matches!(
             class_source_same_class_invoke_inventory_matches(
                 &ast,
-                "sample/Box",
+                b"sample/Box",
                 &keys,
                 &mut cancelled
             ),
@@ -19241,6 +21180,7 @@ mod generic_call_ast_projection_tests {
                             ExprKind::Local("element".to_owned()),
                             OriginSet::new(crate::source_map::Origin::direct(next_bci)),
                         )),
+                        source_type_name: None,
                     },
                     cast_origin.clone(),
                 )),
@@ -19325,6 +21265,7 @@ mod generic_call_ast_projection_tests {
         let Stmt {
             kind: StmtKind::ForEach { ty, name, body, .. },
             origin,
+            ..
         } = &projected.projection.program.stmts[0]
         else {
             panic!("foreach remains")
@@ -19339,6 +21280,7 @@ mod generic_call_ast_projection_tests {
                     ..
                 },
             origin: store,
+            ..
         } = &body[0]
         else {
             panic!("original first declaration remains")
@@ -19956,8 +21898,8 @@ mod generic_call_ast_projection_tests {
                 &[first_edit.clone(), second_edit.clone()],
                 &mut elapsed
             ),
-            Err(crate::stop::StopReason::Interrupted {
-                code: "jre_budget_interrupted",
+            Err(crate::stop::StopReason::Budget {
+                dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
                 ..
             })
         ));
@@ -19999,7 +21941,8 @@ mod generic_call_ast_projection_tests {
 /// The report of a run that stopped: no text, no segments, and an execution plane that says so.
 fn stopped(
     method: String,
-    profile: RecoveryProfile,
+    profile: SourceTarget,
+    runtime_profile: jarde_reader::view::RuntimeProfile,
     selection: &RecoveryEvidenceRequest,
     reason: StopReason,
     budget: &Budget,
@@ -20009,6 +21952,7 @@ fn stopped(
     stopped_report(
         method,
         profile,
+        runtime_profile,
         selection,
         reason,
         execution,
@@ -20037,7 +21981,8 @@ pub fn stopped_before_recovery(
             request.facts.method().name(),
             request.facts.method().descriptor()
         ),
-        request.profile.clone(),
+        request.source_target,
+        request.runtime_profile.clone(),
         &request.evidence,
         reason,
         execution,
@@ -20047,15 +21992,18 @@ pub fn stopped_before_recovery(
 
 fn stopped_report(
     method: String,
-    profile: RecoveryProfile,
+    profile: SourceTarget,
+    runtime_profile: jarde_reader::view::RuntimeProfile,
     selection: &RecoveryEvidenceRequest,
     reason: StopReason,
     execution: ExecutionReport,
     diagnostics: Vec<Diagnostic>,
 ) -> RecoveryReport {
     RecoveryReport {
+        input_origin: RecoveryInputOrigin::CallerSupplied,
         method,
-        profile,
+        source_target: profile,
+        runtime_profile,
         rules: Vec::new(),
         representation: Representation::Bytecode,
         quality: Quality::Fallback,
@@ -20070,6 +22018,7 @@ fn stopped_report(
         content: RecoveryContent::NotProduced,
         text: String::new(),
         source_map: SourceMap::default(),
+        projection_proof: None,
         regions: Vec::new(),
         lambdas: Vec::new(),
         concats: Vec::new(),
@@ -20102,7 +22051,8 @@ fn stopped_report(
 /// selected states `NotPerformed`, and the report carries the refusal's own code and position.
 fn refused(
     method: String,
-    profile: RecoveryProfile,
+    profile: SourceTarget,
+    runtime_profile: jarde_reader::view::RuntimeProfile,
     selection: &RecoveryEvidenceRequest,
     refusal: EvidenceRefusal,
     budget: &Budget,
@@ -20113,8 +22063,10 @@ fn refused(
         message: refusal.message,
     };
     RecoveryReport {
+        input_origin: RecoveryInputOrigin::CallerSupplied,
         method,
-        profile,
+        source_target: profile,
+        runtime_profile,
         rules: Vec::new(),
         representation: Representation::Bytecode,
         quality: Quality::Fallback,
@@ -20127,6 +22079,7 @@ fn refused(
         content: RecoveryContent::NotProduced,
         text: String::new(),
         source_map: SourceMap::default(),
+        projection_proof: None,
         regions: Vec::new(),
         lambdas: Vec::new(),
         concats: Vec::new(),
@@ -20165,7 +22118,7 @@ fn stop_execution(reason: &StopReason, usage: UsageSnapshot) -> ExecutionReport 
         },
         StopReason::Budget { dimension, .. } => ExecutionReport::Partial {
             reason: TerminationReason::BudgetExceeded {
-                dimension: BudgetDimension::from(*dimension),
+                dimension: *dimension,
             },
             usage,
         },
@@ -20185,6 +22138,13 @@ fn stop_diagnostic(reason: &StopReason) -> Diagnostic {
     let (code, severity) = match reason {
         StopReason::IrTableMissing { .. } => ("jre_ir_table_missing", DiagnosticSeverity::Error),
         StopReason::EvidenceRefused { code, .. } => (*code, DiagnosticSeverity::Error),
+        StopReason::Budget {
+            dimension: BudgetDimension::ElapsedMillis,
+            ..
+        } => (
+            crate::stop::BUDGET_INTERRUPTED_CODE,
+            DiagnosticSeverity::Error,
+        ),
         StopReason::Budget { .. } => ("jre_output_budget", DiagnosticSeverity::Error),
         StopReason::Cancelled { .. } => ("jre_cancelled", DiagnosticSeverity::Warning),
         StopReason::Interrupted { code, .. } => (*code, DiagnosticSeverity::Error),
@@ -20198,6 +22158,7 @@ fn stop_diagnostic(reason: &StopReason) -> Diagnostic {
             written,
             limit,
             at,
+            ..
         } => format!(
             "the run stopped on {dimension:?} after {written} byte(s) of {limit}, at {}",
             at.map_or("no node".to_string(), |bci| format!("BCI {bci}"))
@@ -20311,6 +22272,7 @@ mod exact_cast_call_batch_tests {
                 ExprKind::Cast {
                     ty: Type::Reference("java.lang.String".into()),
                     value: Box::new(call),
+                    source_type_name: None,
                 },
                 OriginSet::new(crate::source_map::Origin::direct(cast_bci)),
             );
@@ -20334,9 +22296,9 @@ mod exact_cast_call_batch_tests {
         };
         let source = ClassSourceMethodAstSource {
             program,
+            declared_types: None,
             member,
-            current_class: None,
-            nested_class_members: Vec::new(),
+            declaring_class: None,
             parameter_names: vec![Some("values".into())],
             parameter_slots: vec![0],
             complete_code: true,
@@ -20348,6 +22310,8 @@ mod exact_cast_call_batch_tests {
             anonymous_constructor_initializer_bci: None,
             generic_call_init: None,
             instance_field_write_evidence: None,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::MethodAstSource),
         };
         (
             ClassSourceMethodAst {
@@ -20732,9 +22696,9 @@ mod lambda_helper_instruction_coverage_tests {
         };
         ClassSourceMethodAstSource {
             program,
+            declared_types: None,
             member,
-            current_class: None,
-            nested_class_members: Vec::new(),
+            declaring_class: None,
             parameter_names: Vec::new(),
             parameter_slots: Vec::new(),
             complete_code: true,
@@ -20746,6 +22710,8 @@ mod lambda_helper_instruction_coverage_tests {
             anonymous_constructor_initializer_bci: None,
             generic_call_init: None,
             instance_field_write_evidence: None,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::MethodAstSource),
         }
     }
 
@@ -20826,9 +22792,9 @@ mod anonymous_capture_projection_tests {
         ClassSourceMethodAst {
             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
                 program,
+                declared_types: None,
                 member,
-                current_class: None,
-                nested_class_members: Vec::new(),
+                declaring_class: None,
                 parameter_names: Vec::new(),
                 parameter_slots: Vec::new(),
                 complete_code: false,
@@ -20840,18 +22806,22 @@ mod anonymous_capture_projection_tests {
                 anonymous_constructor_initializer_bci: None,
                 generic_call_init: None,
                 instance_field_write_evidence: None,
+                #[cfg(any(test, feature = "test-support"))]
+                observation: crate::observation::Token::new(
+                    crate::observation::Kind::MethodAstSource,
+                ),
             }),
         }
     }
 
-    fn read(ast: &ClassSourceMethodAst, bci: u32, field_name: &str) -> ProvedCapturedOuterRead {
-        ProvedCapturedOuterRead {
+    fn read(ast: &ClassSourceMethodAst, bci: u32, field_name: &str) -> CapturedOuterReadInput {
+        CapturedOuterReadInput {
             method: ast.projection.member.clone(),
             read_bci: bci,
-            field_owner: "Inner$1".to_owned(),
-            field_name: field_name.to_owned(),
-            field_descriptor: "LInner;".to_owned(),
-            outer_internal_name: "Inner".to_owned(),
+            field_owner: jarde_reader::model::JvmBytes::from_unicode("Inner$1"),
+            field_name: jarde_reader::model::JvmBytes::from_unicode(field_name),
+            field_descriptor: jarde_reader::model::JvmBytes::from_unicode("LInner;"),
+            outer_internal_name: jarde_reader::model::JvmBytes::from_unicode("Inner"),
             outer_source_name: "Inner".to_owned(),
             constructor: PhysicalMethodId {
                 owner: ast.projection.member.owner.clone(),
@@ -20919,7 +22889,7 @@ mod anonymous_capture_projection_tests {
         assert!(matches!(
             project_class_source_captured_outer_reads(&ast, &[proof.clone()], &mut bounded),
             Err(crate::stop::StopReason::Budget {
-                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 ..
             })
         ));
@@ -21076,7 +23046,16 @@ mod raw_receiver_site_budget_tests {
                 0x1031,
             )),
         );
-        let request = RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8);
+        let request = RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            crate::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        );
         let ir = request.ir;
         let ssa = ir.ssa().expect("the analyzed method has SSA");
         let canonical = ir.canonical().expect("the analyzed method has a CFG");
@@ -21093,10 +23072,11 @@ mod raw_receiver_site_budget_tests {
             &operations,
             &element_receiver_type,
             Some(declaring),
-            "access$set",
-            "(LSyntheticAccessorGuard;Ljava/lang/Object;)V",
+            b"access$set",
+            b"(LSyntheticAccessorGuard;Ljava/lang/Object;)V",
             ir.class_fields(),
             &[],
+            None,
             &mut setup_budget,
         )
         .expect("the fixture's own field write is claimed");
@@ -21251,7 +23231,9 @@ mod raw_receiver_site_budget_tests {
         assert_eq!(
             stopped,
             StopReason::Budget {
-                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
+                consumed: u64::try_from(instruction_count).expect("fixture instruction count fits"),
+                requested: 1,
                 written: 0,
                 limit: u64::try_from(instruction_count).expect("fixture instruction count fits"),
                 at: Some(WRITE_BCI),
@@ -21332,6 +23314,42 @@ mod generic_array_return_candidate_tests {
         }
     }
 
+    // This caller-supplied test has no physical platform archive. Header reads therefore report
+    // clean absence, allowing the same analyzed operation's Java 8 contract facts to be supplied.
+    struct MissingHeaders {
+        loader: LoaderId,
+    }
+
+    impl crate::source_proof::RecoveryHeaders for MissingHeaders {
+        type Error = jarde_reader::error::Error;
+
+        fn caller_loader(&self) -> &LoaderId {
+            &self.loader
+        }
+
+        fn selected_from(
+            &mut self,
+            _initiating_loader: &LoaderId,
+            _owner: &[u8],
+            budget: &mut Budget,
+        ) -> std::result::Result<
+            crate::source_proof::DependencyResult<crate::source_proof::ReferenceClassHeader>,
+            Self::Error,
+        > {
+            budget.poll()?;
+            Ok(crate::source_proof::DependencyResult::Missing)
+        }
+
+        fn platform_unprovided(
+            &mut self,
+            _owner: &[u8],
+            budget: &mut Budget,
+        ) -> std::result::Result<bool, Self::Error> {
+            budget.poll()?;
+            Ok(true)
+        }
+    }
+
     fn root_array_expression(program: &mut build::Program) -> &mut Expr {
         let StmtKind::Return {
             value: Some(expression),
@@ -21379,31 +23397,29 @@ mod generic_array_return_candidate_tests {
                 name: JvmBytes(b"collectionGridDirect".to_vec()),
                 descriptor: JvmBytes(b"()[[Ljava/util/Collection;".to_vec()),
             };
-            let analysis = analyze_method_ir(
-                &[snapshot.clone()],
-                &MethodAnalysisRequest {
-                    environment: ResolutionEnvironment {
-                        runtime: RuntimeView {
-                            physical: PhysicalView {
-                                snapshot: snapshot.id().clone(),
-                                scope: PhysicalScope::SnapshotAll,
-                            },
-                            profile: RuntimeProfile {
-                                java_release: 8,
-                                multi_release: MultiReleasePolicy::Disabled,
-                                layout: LayoutMode::Generic,
-                            },
-                            load_domain: domain.clone(),
+            let analysis_request = MethodAnalysisRequest {
+                environment: ResolutionEnvironment {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: snapshot.id().clone(),
+                            scope: PhysicalScope::SnapshotAll,
                         },
-                        domains: vec![domain],
-                        providers: Vec::new(),
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
                     },
-                    method,
-                    stages: AnalysisStage::ALL.to_vec(),
+                    domains: vec![domain],
+                    providers: Vec::new(),
                 },
-                &mut setup_budget,
-            )
-            .expect("the frozen method analyzes");
+                method,
+                stages: AnalysisStage::ALL.to_vec(),
+            };
+            let analysis =
+                analyze_method_ir(&[snapshot.clone()], &analysis_request, &mut setup_budget)
+                    .expect("the frozen method analyzes");
             let facts = crate::facts::RecoveryFacts::new(
                 crate::facts::MethodFacts::new(
                     "collectionGridDirect",
@@ -21413,16 +23429,41 @@ mod generic_array_return_candidate_tests {
                 .with_access_flags(0x0009)
                 .with_declaring_class(crate::facts::DeclaringClass::new("Main", 0x0021)),
             );
-            let request = RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8);
+            let reference_relations = crate::source_proof::prove_reference_relations(
+                &analysis_request,
+                analysis.ir(),
+                &mut MissingHeaders {
+                    loader: analysis_request
+                        .environment
+                        .runtime
+                        .load_domain
+                        .loader
+                        .clone(),
+                },
+                &mut setup_budget,
+            )
+            .expect("the caller test's missing-header relation walk completes");
+            let request = RecoveryRequest::new(
+                analysis.ir(),
+                &facts,
+                crate::pass::JAVA_8,
+                jarde_reader::view::RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: jarde_reader::view::LayoutMode::Generic,
+                },
+            )
+            .with_reference_relations(&reference_relations);
             let mut recovery_budget = Budget::new(limits());
-            let recovered = recover_for_class_source_with_anonymous_ast(
+            let recovered = recover_for_class_source(
                 &request,
                 &mut recovery_budget,
-                true,
-                false,
-                true,
-                false,
-                false,
+                ClassSourceOptions {
+                    prove_generic_return: true,
+                    ast_retention: ClassSourceAstRetention::All,
+                    ..ClassSourceOptions::default()
+                },
+                None,
             );
             let expected = GenericReturnCandidate {
                 parameters: Vec::new(),
@@ -21431,13 +23472,16 @@ mod generic_array_return_candidate_tests {
                     allocation_bci: 1,
                     return_bci: 38,
                 },
+                #[cfg(any(test, feature = "test-support"))]
+                observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
             };
             assert_eq!(
-                recovered.generic_return,
+                recovered.candidates.generic_return,
                 Some(expected.clone()),
                 "{snapshot_name}"
             );
             let program = recovered
+                .candidates
                 .ast
                 .expect("class-source recovery retains the same-run AST")
                 .projection
@@ -21530,7 +23574,7 @@ mod generic_array_return_candidate_tests {
                     &mut lookup_stopped,
                 ),
                 Err(StopReason::Budget {
-                    dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    dimension: jarde_reader::budget::BudgetDimension::IrItems,
                     at: Some(37),
                     ..
                 })
@@ -21549,7 +23593,7 @@ mod generic_array_return_candidate_tests {
                     &mut exhausted,
                 ),
                 Err(StopReason::Budget {
-                    dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    dimension: jarde_reader::budget::BudgetDimension::IrItems,
                     at: Some(1),
                     ..
                 })
@@ -21664,9 +23708,9 @@ mod integer_array_name_projection_tests {
         ClassSourceMethodAst {
             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
                 program,
+                declared_types: None,
                 member,
-                current_class: None,
-                nested_class_members: Vec::new(),
+                declaring_class: None,
                 parameter_names: Vec::new(),
                 parameter_slots: Vec::new(),
                 complete_code: true,
@@ -21682,6 +23726,10 @@ mod integer_array_name_projection_tests {
                 anonymous_constructor_initializer_bci: None,
                 generic_call_init: None,
                 instance_field_write_evidence: None,
+                #[cfg(any(test, feature = "test-support"))]
+                observation: crate::observation::Token::new(
+                    crate::observation::Kind::MethodAstSource,
+                ),
             }),
         }
     }
@@ -21768,10 +23816,11 @@ mod integer_array_name_projection_tests {
                 &mut catch_ir_limited,
             ),
             Err(crate::stop::StopReason::Budget {
-                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(0),
                 written: 0,
                 limit: 8,
+                ..
             })
         ));
         assert_eq!(catch_ir_limited.usage().ir_items, 8);
@@ -21793,10 +23842,11 @@ mod integer_array_name_projection_tests {
                 &mut catch_analysis_limited,
             ),
             Err(crate::stop::StopReason::Budget {
-                dimension: jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 at: Some(0),
                 written: 0,
                 limit: 7,
+                ..
             })
         ));
         assert_eq!(catch_analysis_limited.usage().analysis_steps, 7);
@@ -21818,10 +23868,11 @@ mod integer_array_name_projection_tests {
                 &mut resource_limited,
             ),
             Err(crate::stop::StopReason::Budget {
-                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(0),
                 written: 0,
                 limit: 2,
+                ..
             })
         ));
         assert_eq!(resource_limited.usage().ir_items, 2);

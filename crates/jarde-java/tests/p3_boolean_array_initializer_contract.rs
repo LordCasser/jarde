@@ -135,8 +135,17 @@ fn proven_boolean_initializer_uses_each_real_bastore_as_low_bit_origin() {
     let facts = facts(BOOL_INIT, b"values");
     let mut budget = Budget::new(limits());
     let report = recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         &mut budget,
     );
 
@@ -202,8 +211,17 @@ fn effectful_boolean_elements_stay_ordered_once_and_keep_their_three_store_origi
     let facts = facts(EFFECTFUL_BOOL_INIT, b"values");
     let mut budget = Budget::new(limits());
     let report = recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         &mut budget,
     );
     assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
@@ -272,8 +290,17 @@ fn a_store_with_the_wrong_opcode_does_not_enter_the_boolean_initializer() {
     let facts = facts(&malformed, b"values");
     let mut budget = Budget::new(limits());
     let report = recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         &mut budget,
     );
     assert!(report.produced(), "{:?}", report.outcome);
@@ -290,19 +317,46 @@ fn essential_and_all_evidence_select_the_same_initializer_body() {
     let facts = facts(BOOL_INIT, b"values");
     let mut essential_budget = Budget::new(limits());
     let essential = recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        ),
         &mut essential_budget,
     );
     let mut all_budget = Budget::new(limits());
     let all = recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         &mut all_budget,
     );
     let mut replay_budget = Budget::new(limits());
     let replay = recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         &mut replay_budget,
     );
     assert!(essential.produced() && all.produced());
@@ -320,7 +374,16 @@ fn budget_and_cancellation_do_not_publish_a_partial_initializer() {
     tiny_limits.output_bytes = 8;
     let mut tiny_budget = Budget::new(tiny_limits);
     let stopped = recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        ),
         &mut tiny_budget,
     );
     assert!(!stopped.produced());
@@ -331,7 +394,16 @@ fn budget_and_cancellation_do_not_publish_a_partial_initializer() {
     token.cancel();
     let mut cancelled_budget = Budget::with_cancellation_token(limits(), token);
     let cancelled = recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8),
+        &RecoveryRequest::new(
+            payload.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        ),
         &mut cancelled_budget,
     );
     assert!(!cancelled.produced());

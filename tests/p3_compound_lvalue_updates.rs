@@ -132,6 +132,7 @@ fn request_with_policy(
     policy: EnvironmentPolicy,
 ) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -619,6 +620,7 @@ fn multiply_public_recovery_keeps_output_budget_and_cancellation_atomic() {
     let full = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &evidence,
             &mut full_budget,
@@ -637,6 +639,7 @@ fn multiply_public_recovery_keeps_output_budget_and_cancellation_atomic() {
     let stopped = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &evidence,
             &mut output_budget,
@@ -649,7 +652,7 @@ fn multiply_public_recovery_keeps_output_budget_and_cancellation_atomic() {
     assert!(matches!(
         stopped_report.stop(),
         Some(StopReason::Budget {
-            dimension: jarde::budget::CountedBudgetDimension::OutputBytes,
+            dimension: jarde::budget::BudgetDimension::OutputBytes,
             ..
         })
     ));
@@ -663,6 +666,7 @@ fn multiply_public_recovery_keeps_output_budget_and_cancellation_atomic() {
     let cancelled = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &evidence,
             &mut cancelled_budget,
@@ -690,6 +694,7 @@ fn compound_recovery_keeps_output_evidence_and_cancellation_stops() {
     let full = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &evidence,
             &mut full_budget,
@@ -720,6 +725,7 @@ fn compound_recovery_keeps_output_evidence_and_cancellation_stops() {
     let stopped_output = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &evidence,
             &mut output_budget,
@@ -733,7 +739,7 @@ fn compound_recovery_keeps_output_evidence_and_cancellation_stops() {
         matches!(
             stopped_report.stop(),
             Some(StopReason::Budget {
-                dimension: jarde::budget::CountedBudgetDimension::OutputBytes,
+                dimension: jarde::budget::BudgetDimension::OutputBytes,
                 ..
             })
         ),
@@ -748,6 +754,7 @@ fn compound_recovery_keeps_output_evidence_and_cancellation_stops() {
     let partial_map = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &evidence,
             &mut map_budget,
@@ -773,6 +780,7 @@ fn compound_recovery_keeps_output_evidence_and_cancellation_stops() {
     let cancelled = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &evidence,
             &mut cancelled_budget,

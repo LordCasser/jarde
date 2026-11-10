@@ -113,6 +113,7 @@ fn open(bytes: Vec<u8>) -> ArtifactSnapshot {
 
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -246,6 +247,87 @@ fn declaration_of(report: &ClassSourceReport) -> String {
         .expect("a class report carries its declaration")
         .declaration
         .clone()
+}
+
+#[test]
+fn selected_parent_names_have_faithful_mutf8_source_spellings() {
+    let scratch = Scratch::new("selected-parent-names");
+    for (index, (parent, variable, interface)) in [
+        ("𐐀", "T", false),
+        ("Base", "T𐐀", false),
+        ("𐐀", "T𐐀", false),
+        ("_", "T", false),
+        ("Base", "_", false),
+        ("_", "T", true),
+        ("𐐀", "T", true),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let directory = scratch.child(&index.to_string());
+        let parent_source = directory.join(format!("{parent}.java"));
+        let child_source = directory.join("Child.java");
+        let kind = if interface { "interface" } else { "class" };
+        let relation = if interface { "implements" } else { "extends" };
+        fs::write(
+            &parent_source,
+            format!("package p; public {kind} {parent}<{variable}> {{}}"),
+        )
+        .unwrap();
+        fs::write(
+            &child_source,
+            format!("package p; public class Child {relation} {parent}<String> {{}}"),
+        )
+        .unwrap();
+        let compiled = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-encoding", "UTF-8", "-d"])
+            .arg(&directory)
+            .args([&parent_source, &child_source])
+            .output()
+            .unwrap();
+        assert!(
+            compiled.status.success(),
+            "{}",
+            String::from_utf8_lossy(&compiled.stderr)
+        );
+        let parent_path = format!("p/{parent}.class");
+        let parent_bytes = fs::read(directory.join(&parent_path)).unwrap();
+        let child_bytes = fs::read(directory.join("p/Child.class")).unwrap();
+        let snapshot = open(zip_of(&[
+            (parent_path.as_bytes(), &parent_bytes),
+            (b"p/Child.class", &child_bytes),
+        ]));
+        let report = class_source_of(&snapshot, "p/Child");
+        let declaration = report.declaration.as_ref().unwrap();
+        assert!(
+            declaration.generic_refusal.is_none(),
+            "{index}: {:?}",
+            declaration.generic_refusal
+        );
+        assert!(
+            declaration
+                .declaration
+                .contains(&format!("{relation} p.{parent}<java.lang.String>")),
+            "{}",
+            report.text
+        );
+        assert!(declaration.generic_signature.is_some());
+        assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+        let owner = class_source_of(&snapshot, &format!("p/{parent}"));
+        let owner_declaration = owner.declaration.as_ref().unwrap();
+        assert!(
+            owner_declaration.generic_refusal.is_none(),
+            "{index}: {:?}",
+            owner_declaration.generic_refusal
+        );
+        assert!(
+            owner_declaration
+                .declaration
+                .contains(&format!("{kind} {parent}<{variable}>")),
+            "{}",
+            owner.text
+        );
+    }
 }
 
 #[test]

@@ -497,6 +497,7 @@ fn opened(bytes: &[u8], class: &str) -> (artifact::ArtifactSnapshot, ClassSource
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
         .expect("one same-archive class family opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -517,6 +518,7 @@ fn opened(bytes: &[u8], class: &str) -> (artifact::ArtifactSnapshot, ClassSource
 
 fn class_source(snapshot: &artifact::ArtifactSnapshot, class: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -848,8 +850,17 @@ fn method_only_own_grid(class: &[u8]) -> RecoveryReport {
             )),
     );
     recover(
-        &RecoveryRequest::new(analysis.ir(), &recovery_facts, JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::essential()),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &recovery_facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::essential()),
         &mut analysis_budget,
     )
 }
@@ -1185,7 +1196,7 @@ fn direct_new_family_pins_recovered_constructor_methods_and_remaining_controls()
                     expected.head
                 );
                 let record = matching[0];
-                assert_eq!(record.class, expected.class);
+                assert_eq!(record.class.0, expected.class.as_bytes());
                 assert_eq!(record.dup, Some(expected.dup));
                 assert_eq!(record.constructor, Some(expected.constructor));
                 assert_eq!(record.arguments.as_slice(), &[expected.argument]);

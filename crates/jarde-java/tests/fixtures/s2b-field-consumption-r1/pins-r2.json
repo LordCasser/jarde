@@ -1,0 +1,72 @@
+{
+  "schema": "s2b-field-consumption-r1-pins",
+  "javac": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+  "javac_args": [
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-g",
+    "-classpath",
+    "crates/jarde-java/tests/fixtures/s2b-bound-type-identities-r1/identity-a/classes",
+    "-d",
+    "crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/classes"
+  ],
+  "javap": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+  "javap_args": [
+    "-p",
+    "-s",
+    "-v",
+    "-c",
+    "flow.<Class>"
+  ],
+  "r1_invalid_control": "versions/r1 preserves wildcard primitive method source/class and first Unknown type-facts native log; no method conclusions were drawn from it",
+  "r2_current": true,
+  "files": [
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/src/flow/FieldBox.java",
+      "size": 192,
+      "sha256": "918645fb9b5fe8db2dc702adc974a73938decb666bf4b818f8b0bffbe242853b"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/src/flow/FieldConsumer.java",
+      "size": 764,
+      "sha256": "9c5b8775a39e8c17d2df1ae40528a3a9d099b86387378dc594e369364fc146e8"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/src/flow/FieldDerived.java",
+      "size": 149,
+      "sha256": "20fa5981a9de6ef5158b316015ab283d709f69cc7c72c695a22af31c86c0acd0"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/classes/flow/FieldBox.class",
+      "size": 575,
+      "sha256": "c1cb61fa8ed5790edef4ccb60a8318585a52ae15863535bacbf9fc649820f6fc"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/classes/flow/FieldConsumer.class",
+      "size": 1810,
+      "sha256": "047da56ff7f553b8145518e4dae14a29e31328b44f54398638d180b9fb83d727"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/classes/flow/FieldDerived.class",
+      "size": 377,
+      "sha256": "124d299a97ffdbc6a5cd88918e53e12a2673909dc68bfebf1c42457880eaa6bb"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/FieldBox-r2.javap.txt",
+      "size": 2832,
+      "sha256": "386494e05e5df771e93c3b4ec1c2811f7e9735a96bb4f5f80cf786d127a0caf5"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/FieldConsumer-r2.javap.txt",
+      "size": 9040,
+      "sha256": "d8a4744047a91d67cb6bd43b3a6a99c4a805496f7ffbcf55a7a13143b21b1c5d"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/FieldDerived-r2.javap.txt",
+      "size": 1964,
+      "sha256": "148caf82e12dd1541781e6fa3a8b90f927cec2f6669858f5e69288a5cd2d3baa"
+    }
+  ]
+}

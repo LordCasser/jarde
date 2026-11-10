@@ -55,6 +55,7 @@ fn opened(class: &[u8]) -> (ArtifactSnapshot, ClassSourceRequest) {
         .open(ArtifactInput::bytes(class.to_vec()), &mut budget)
         .expect("frozen Java 8 class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("ChainExtraBoundary"),
         },

@@ -24,6 +24,7 @@ fn snapshot(bytes: &[u8]) -> ArtifactSnapshot {
 
 fn request(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -141,6 +142,7 @@ fn evidence_modes_and_replay_keep_the_same_body() {
         Engine::new()
             .recover_method_with_evidence(
                 slice::from_ref(&snapshot),
+                jarde::SourceTarget::JAVA_8,
                 &recovery_request,
                 &RecoveryEvidenceRequest::all(),
                 &mut budget(),
@@ -221,6 +223,7 @@ fn tight_output_budget_and_precancellation_publish_no_partial_conversion() {
     let full = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &recovery_request,
             &RecoveryEvidenceRequest::all(),
             &mut full_budget,
@@ -237,6 +240,7 @@ fn tight_output_budget_and_precancellation_publish_no_partial_conversion() {
     let stopped = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &recovery_request,
             &RecoveryEvidenceRequest::all(),
             &mut limited,
@@ -248,7 +252,7 @@ fn tight_output_budget_and_precancellation_publish_no_partial_conversion() {
     assert!(matches!(
         stopped.recovery().stop(),
         Some(StopReason::Budget {
-            dimension: jarde::budget::CountedBudgetDimension::OutputBytes,
+            dimension: jarde::budget::BudgetDimension::OutputBytes,
             ..
         })
     ));
@@ -260,6 +264,7 @@ fn tight_output_budget_and_precancellation_publish_no_partial_conversion() {
     let stopped = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &recovery_request,
             &RecoveryEvidenceRequest::all(),
             &mut cancelled,

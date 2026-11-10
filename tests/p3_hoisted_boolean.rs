@@ -140,6 +140,7 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut Budget::new(limits()),
@@ -177,6 +178,7 @@ fn recovered_with_budget(
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             budget,
@@ -228,9 +230,13 @@ fn quoted_bcis(text: &str) -> Vec<u32> {
 }
 
 /// The facts a refusal is, as in `tests/p3_boolean_contexts.rs`: the planes that say Java is not
-/// claimed, the quote that names the bytecode, its anchor in the segment table, the reason that
-/// states the index, and the member the answer belongs to.
-fn assert_refused(report: &RecoveryReport, name: &str, bci: u32) {
+/// claimed, the quote that names the bytecode, its anchor in the segment table, and the member the
+/// answer belongs to. A refused required write of an elevated variable adds its own facts: the
+/// reason names the refused variable and states that its declarations, reads and dependent effects
+/// are quoted together, and every read that lost its declaration keeps a per-read explanation. The
+/// write's own bytecode index is stated by the grouped `// @bytecode` quotes and anchored in the
+/// segment table; the prose no longer spells it.
+fn assert_refused(report: &RecoveryReport, name: &str, variable: &str, bci: u32) {
     assert!(
         report.produced(),
         "`{name}`: a refusal is still an answer: {:?}",
@@ -261,8 +267,17 @@ fn assert_refused(report: &RecoveryReport, name: &str, bci: u32) {
         report.text
     );
     assert!(
-        report.text.contains(&format!("BCI {bci}")),
-        "`{name}`: the refusal states the bytecode index it could not type:\n{}",
+        report.text.contains(&format!(
+            "a required write of the elevated source variable `{variable}` was refused; its declarations, reads and dependent effects are quoted together"
+        )),
+        "`{name}`: the refusal names the elevated variable whose required write was refused and states the grouping:\n{}",
+        report.text
+    );
+    assert!(
+        report
+            .text
+            .contains("no statement of this body declared that local"),
+        "`{name}`: every read that lost its declaration keeps a per-read explanation:\n{}",
         report.text
     );
     assert!(
@@ -392,6 +407,12 @@ fn a_copy_chain_through_another_boolean_local_stays_boolean() {
     // order, would meet `z = y` before `y` was decided — and both variables were declared `int`
     // before this change, with the return refused. The decision reaches a fixpoint over the chain
     // before any statement is built, so every variable on it is boolean.
+    //
+    // Recorded presentation change: the accepted exclusive split (`crates/jarde-java/src/reuse.rs`
+    // `exclusive_definition_split`, which requires no LocalVariableTable evidence) shows the two
+    // provably exclusive per-arm copies as per-arm declarations with initializers instead of one
+    // hoisted declaration; the same fixpoint decision colors both copies boolean; and the join-read
+    // variable keeps one whole declaration, hoisted above the branch.
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);
     let text = whole_body(&engine, &fixture, b"relayed", b"(Z)Z");
@@ -401,8 +422,19 @@ fn a_copy_chain_through_another_boolean_local_stays_boolean() {
         "the chain's first variable is declared from its own descriptor evidence:\n{text}"
     );
     assert!(
-        text.contains("boolean local2;") && text.contains("boolean local3;"),
-        "and the two the reads reach are declared boolean too:\n{text}"
+        text.contains("boolean local2 = local1;") && text.contains("boolean local2_2 = local1;"),
+        "the two provably exclusive per-arm copies are declared, with initializers, in their own arms:\n{text}"
+    );
+    let declaration = text
+        .find("boolean local3;")
+        .expect("the join-read local is declared");
+    assert!(
+        text.matches("boolean local3;").count() == 1,
+        "the join-read slot is declared once, not per arm:\n{text}"
+    );
+    assert!(
+        declaration < text.find("if (arg0)").expect("the branch is written"),
+        "and that one declaration is hoisted above the branch:\n{text}"
     );
     assert!(
         text.contains("local2 = local1;") && text.contains("local3 = local2;"),
@@ -428,37 +460,25 @@ fn a_write_that_cannot_be_spelled_as_the_decided_type_terminates_its_structure()
     // `0`/`1` literal may not initiate a boolean decision — `int x = 0;` and `boolean c = true;` are
     // the same bytes), and the other arm stores a `boolean` parameter's load, which cannot be spelled
     // as an `int`. Before this change the second write was published as it was
-    // (`int local2; … local2 = arg0; …`, javac: `boolean cannot be converted to int`); now the write
-    // is refused, its bytecode is quoted, and the assignment it would have carried is not written.
+    // (`int local2; … local2 = arg0; …`, javac: `boolean cannot be converted to int`). The refusal is
+    // the elevated upgrade's: a required write of an elevated variable cannot be spelled, so the
+    // whole body falls back — every instruction is quoted under grouped `// @bytecode` lists, each
+    // read that lost its declaration keeps its own explanation, and no statement of the body is
+    // published as source.
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);
     let report = recover(&engine, &fixture, b"conflicted", b"(ZI)I");
-    assert_refused(&report, "conflicted", 10);
+    assert_refused(&report, "conflicted", "local2", 10);
 
-    // What the artifact does hold: the declaration the first write states, that write, the quote that
-    // names the refused store, and the member's own remaining statements.
+    // What the artifact does hold is asserted with the shared facts above: the refusal that names
+    // the elevated variable and quotes its declarations, reads and dependent effects together, and
+    // one explanation per read that lost its declaration. What it does not hold: any statement of
+    // the terminated body — not even the declaration and the write the `int` decision could spell.
     assert!(
-        report.text.contains("int local2;"),
-        "the declaration the first write states is written:\n{}",
+        !report.text.contains("int local2;") && !report.text.contains("local2 = 1;"),
+        "the whole structure terminated: the quoted body publishes no statement of it:\n{}",
         report.text
     );
-    assert!(
-        report.text.contains("local2 = 1;"),
-        "and the first write, which the decision can be spelled as, is written:\n{}",
-        report.text
-    );
-    assert!(
-        report.text.contains("if (local2 != 0) {"),
-        "the member's own uses keep the spelling of the decided type:\n{}",
-        report.text
-    );
-    assert!(
-        report.text.contains("decided holds `int`"),
-        "the refusal states the type the variable's own first write decided:\n{}",
-        report.text
-    );
-    // What it does not hold: the assignment that could not be spelled as that type, and any boolean
-    // spelling the decision excludes.
     assert!(
         !report.text.contains("local2 = arg0;"),
         "a refused write is not followed by its assignment:\n{}",
@@ -573,8 +593,14 @@ fn the_type_decision_is_billed_and_a_stopped_run_commits_nothing() {
     // Both counts carry the field-copy proof's own scan of the body
     // (`recover-chained-field-assignment`), which runs before the plan and charges the same
     // `IrItems` dimension: it adds 15 items to each, so the cutoff still lands on BCI 1.
-    const RELAYED_IR_ITEMS: u64 = 479;
-    const IR_ITEMS_BEFORE_THE_PLAN: u64 = 389;
+    // 2026-11-07: 479 → 497, this run's own measured charge after this day's accepted mechanism
+    // rounds (+18; the type-decision and local-planner scans bill more on this shape). The
+    // cutoff below is measured the same way; only counts move here: the cutoff budget moves
+    // 389 → 401, the measured pre-plan consumption, at which the cutoff stop again anchors on
+    // the plan's first entry (BCI 1) — probed across the window, 400 anchors one node earlier
+    // (BCI 0) and 407 lands inside the pre-plan sequence (BCI 9).
+    const RELAYED_IR_ITEMS: u64 = 497;
+    const IR_ITEMS_BEFORE_THE_PLAN: u64 = 401;
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);
     let ample = recover(&engine, &fixture, b"relayed", b"(Z)Z");
@@ -595,7 +621,7 @@ fn the_type_decision_is_billed_and_a_stopped_run_commits_nothing() {
         matches!(
             stopped.outcome,
             RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(1),
                 ..
             })

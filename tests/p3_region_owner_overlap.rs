@@ -14,6 +14,7 @@ fn transfer_gateway_is_owned_by_one_structured_field_chain() {
         .open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
         .expect("frozen Java 8 class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("ChainExtraBoundary"),
         },

@@ -136,18 +136,46 @@ fn ordinary_try_prefix_loop_keeps_default_all_output_and_every_physical_origin()
     let (analysis, facts) = analyzed();
     let mut default_budget = Budget::new(limits());
     let default = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        ),
         &mut default_budget,
     );
     let mut all_budget = Budget::new(limits());
     let all = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         &mut all_budget,
     );
     let mut source_map_budget = Budget::new(limits());
     let source_map_only = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8).with_evidence(
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(
             RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
         ),
         &mut source_map_budget,
@@ -223,8 +251,17 @@ fn cancellation_during_the_selected_recovery_commits_no_partial_region_or_source
         cancellation,
     );
     let stopped = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         &mut budget,
     );
     assert!(matches!(stopped.outcome, RecoveryOutcome::Stopped(_)));

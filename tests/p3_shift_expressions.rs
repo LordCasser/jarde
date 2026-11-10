@@ -15,6 +15,7 @@ fn source(bytes: &[u8], class: &str) -> ClassSourceReport {
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .expect("frozen class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -53,6 +54,7 @@ fn source_with_evidence(
         )
         .expect("frozen class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },

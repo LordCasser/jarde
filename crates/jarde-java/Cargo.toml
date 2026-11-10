@@ -6,7 +6,13 @@ rust-version = "1.88"
 license = "MIT OR Apache-2.0"
 description = "Java 8 recovery: normal-flow regions, a minimal Java AST, and a position-recording emitter"
 
+[features]
+test-support = []
+
 [dependencies]
+# Stable streaming semantic-input digests; both packages are already pinned in the workspace.
+blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }
+serde_json = "=1.0.151"
 # The read-only IR handoff of one method-analysis run (P3 1.1). This is the payload the recovery
 # layer reads a method's structure from; nothing below names a Region, an AST node or a segment.
 jarde-jvm = { path = "../jarde-jvm", version = "=0.1.0" }
@@ -33,4 +39,8 @@ jarde-reader = { path = "../jarde-reader", version = "=0.1.0", features = ["test
 # The identity of a class definition is a digest of its bytes (the provider layer binds a header to
 # the identity it claims by hashing the bytes it read), so a test that names a definition has to
 # hash one. The same crate and feature set the workspace's own tests use — no new package.
+blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }
+
+[build-dependencies]
+# Build identity only; reuse the workspace-pinned pure Rust implementation.
 blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }

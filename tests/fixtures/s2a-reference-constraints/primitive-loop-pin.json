@@ -1,0 +1,7 @@
+{
+  "source_manifest": "openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/primitive-loop-boundary-v1/input-manifest.json",
+  "source_sha256": "a638139471738f590401a74b79ddc63e1b30bf7072a4ae4493a86717d6ec8446",
+  "class_source": "openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/primitive-loop-boundary-v1/classes/PrimitiveLoop.class",
+  "class_sha256": "60f9b8f28014714f59fe41e01c9f9b65e620444867aaaf8c0dcbe2ef31ea6309",
+  "scope": "dev adversarial numeric-kind boundary; not holdout or new source recovery gain"
+}

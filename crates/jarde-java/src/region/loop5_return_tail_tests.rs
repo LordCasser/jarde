@@ -792,7 +792,7 @@ fn loop5_return_tail_certificate_refuses_drift_duplicate_owners_and_stops_cleanl
                     &mut short,
                 ),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     ..
                 })
             ));
@@ -949,7 +949,7 @@ fn loop5_try_level_late_analysis_stop_restores_candidate_checkpoint() {
             assert!(matches!(
                 stopped,
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     at: Some(106),
                     ..
                 })

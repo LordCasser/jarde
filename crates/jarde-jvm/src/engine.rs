@@ -18,7 +18,8 @@ use jarde_reader::classfile::{
 };
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
-    Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason,
+    Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, PhysicalDefinitionId,
+    TerminationReason,
 };
 use jarde_reader::prepared::{PreparedClass, PreparedClassRead};
 
@@ -52,6 +53,47 @@ pub fn resolve_symbol(
 ) -> Result<crate::resolver::ResolutionReport> {
     crate::resolver::validate_request(content, request)?;
     Ok(crate::resolver::resolution_report(content, request, budget))
+}
+
+/// The same resolution with the physical header already held by a method IR read.
+///
+/// Only a search position holding that exact immutable definition reuses its facts. Search
+/// order, caller validation and defining-loader decisions are unchanged. Reused facts are not
+/// reported as new reads; unavailable IR header facts simply leave the ordinary search intact.
+pub fn resolve_symbol_from_ir(
+    content: &[ArtifactSnapshot],
+    request: &crate::resolver::ResolutionRequest,
+    ir: &MethodIr,
+    budget: &mut Budget,
+) -> Result<crate::resolver::ResolutionReport> {
+    crate::resolver::validate_request(content, request)?;
+    Ok(crate::resolver::resolution_report_with_ir(
+        content,
+        request,
+        Some(ir),
+        budget,
+    ))
+}
+
+/// Resolve a symbol using the header facts already established by a matching prepared read.
+/// This is a read-sharing entry only: request validation and the resolver's declared searches
+/// remain unchanged, and the prepared binding must identify the supplied physical definition.
+#[doc(hidden)]
+pub fn resolve_symbol_from_prepared(
+    content: &[ArtifactSnapshot],
+    request: &crate::resolver::ResolutionRequest,
+    prepared: &PreparedClass<'_>,
+    definition: &PhysicalDefinitionId,
+    budget: &mut Budget,
+) -> Result<crate::resolver::ResolutionReport> {
+    crate::resolver::validate_request(content, request)?;
+    crate::providers::require_prepared_definition(prepared, definition)?;
+    Ok(crate::resolver::resolution_report_with_header(
+        content,
+        request,
+        Some((definition, prepared.facts_handle())),
+        budget,
+    ))
 }
 
 /// Declaration-reference scan under an explicit environment (P2 entry point).
@@ -394,6 +436,7 @@ fn run_method_analysis(
     scheduled: &[PassDescriptor],
     budget: &mut Budget,
 ) -> (crate::ir::AnalysisRun, MethodIr, Option<PreparedClassRead>) {
+    crate::observation::started(crate::observation::PIPELINE);
     let mut run = crate::ir::AnalysisRun {
         body: MethodBodyState::NotInspected,
         stages: scheduled
@@ -413,7 +456,7 @@ fn run_method_analysis(
     };
     let mut ledger = FactLedger::new();
     let mut stop: Option<ExecutionReport> = None;
-    let mut facts: Option<MethodCodeFacts> = None;
+    let mut facts: Option<Arc<MethodCodeFacts>> = None;
     // The class file's version, as the reader classifies it, and the raw graph of this run:
     // `legacy_normalization` reads both, and both are facts of the passes that already completed.
     // The classification travels with the read instead of the two version fields coming back
@@ -469,7 +512,7 @@ fn run_method_analysis(
                         declaration = Some(read_declaration);
                         member = read_member;
                         read = class_read;
-                        *facts
+                        facts
                     }
                     Ok(DriverRead::DeclaredWithoutBody(class_read)) => {
                         // The member declares no body: no pass can run, and the request is
@@ -529,6 +572,7 @@ fn run_method_analysis(
                     }
                     break;
                 };
+                crate::observation::started(crate::observation::RAW_CFG);
                 match crate::cfg::raw_cfg(decoded, budget) {
                     Ok(outcome) => {
                         if let Err(error) = ledger.apply(pass) {
@@ -549,6 +593,7 @@ fn run_method_analysis(
                         // stay out of the handoff of P3 1.1, which publishes the canonical tables of
                         // this run instead of this raw one. The payload stays in this run because
                         // the next pass reads it.
+                        crate::observation::published(crate::observation::RAW_CFG);
                         raw = Some(outcome);
                     }
                     Err(error) => {
@@ -607,6 +652,7 @@ fn run_method_analysis(
                     }));
                     break;
                 }
+                crate::observation::started(crate::observation::CONTEXTS);
                 match crate::call_context::call_contexts(
                     decoded,
                     raw,
@@ -634,6 +680,7 @@ fn run_method_analysis(
                         // canonical CFG pass consumes exactly this payload instead of re-deriving
                         // any return point (3.5), and the read-only handoff of P3 1.1 publishes the
                         // canonical graph rather than the contexts it was built from.
+                        crate::observation::published(crate::observation::CONTEXTS);
                         contexts = Some(established);
                     }
                     Ok(crate::call_context::CallContextOutcome::Forbidden { message }) => {
@@ -694,6 +741,7 @@ fn run_method_analysis(
                     }
                     break;
                 };
+                crate::observation::started(crate::observation::CANONICAL);
                 match crate::canonical::canonical_cfg(
                     decoded,
                     raw,
@@ -721,6 +769,7 @@ fn run_method_analysis(
                         // The graph is the first table of the read-only handoff (P3 1.1): the run
                         // keeps it for the passes above and hands it over in its payload, and the
                         // report's quality plane is about the fact that it exists and nothing else.
+                        crate::observation::published(crate::observation::CANONICAL);
                         canonical_cfg = Some(graph);
                     }
                     Ok(crate::canonical::CanonicalOutcome::Fallback { message }) => {
@@ -767,6 +816,7 @@ fn run_method_analysis(
                     break;
                 };
                 let method = frame_method(request, declaration);
+                crate::observation::started(crate::observation::FRAMES);
                 match crate::frame::frames(decoded, graph, &method, budget) {
                     Ok(FrameOutcome::Frames(table)) => {
                         if let Err(error) = ledger.apply(pass) {
@@ -788,6 +838,7 @@ fn run_method_analysis(
                         // The table is a table of the read-only handoff (P3 1.1): 4.2 reads it, and
                         // the run hands it over in its payload beside the graph it was derived
                         // from.
+                        crate::observation::published(crate::observation::FRAMES);
                         frame_table = Some(table);
                     }
                     Ok(FrameOutcome::Unsupported { message }) => {
@@ -859,6 +910,7 @@ fn run_method_analysis(
                     break;
                 };
                 let method = frame_method(request, declaration);
+                crate::observation::started(crate::observation::SSA);
                 match crate::ssa::ssa(decoded, graph, published, &method, budget) {
                     Ok(SsaOutcome::Ssa(names)) => {
                         if let Err(error) = ledger.apply(pass) {
@@ -880,6 +932,7 @@ fn run_method_analysis(
                         // over in its payload, and the effect facts it carries are the canonical
                         // graph's own `Effects`, which this pass re-publishes — the
                         // canonicalization invalidated the raw pass's copy.
+                        crate::observation::published(crate::observation::SSA);
                         ssa_table = Some(names);
                     }
                     Ok(SsaOutcome::Inconsistent { message }) => {
@@ -968,17 +1021,19 @@ fn run_method_analysis(
         canonical_cfg,
         frame_table,
         ssa_table,
-        facts.map(Box::new),
+        facts,
         fact_bundle,
         bootstrap_methods,
         member,
     );
+    crate::observation::published(crate::observation::PIPELINE);
     (run, ir, read)
 }
 
 /// What the `raw_facts` pass found for the driver method.
 ///
-/// The decoded facts are boxed because they are much larger than the alternative: the enum is
+/// 完整解码事实由当前类任务共享，IR 仅持有同一 Arc；派生表仍属于各次 run。
+/// The decoded facts are indirect because they are much larger than the alternative: the enum is
 /// built once per request and passed on to the next pass, and the indirection keeps the common
 /// path from moving a `MethodCodeFacts` by value twice. The class file's version travels with them
 /// — as the reader classifies it, which is what the format's own version rule needs — because the
@@ -987,7 +1042,7 @@ fn run_method_analysis(
 enum DriverRead {
     /// The member has a body and the reader decoded (at least a prefix of) it.
     Decoded {
-        facts: Box<MethodCodeFacts>,
+        facts: Arc<MethodCodeFacts>,
         version: VersionCapability,
         /// The declaration facts the later passes need beside the body.
         declaration: FrameDeclaration,
@@ -1148,7 +1203,11 @@ fn read_driver_method(
     // fails is a failure of this pass, not a missing body.
     budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
     run.body = MethodBodyState::Present;
-    let decoded = jarde_reader::classfile::method_code_facts(read.read.bytes(), member, budget)?;
+    let decoded = Arc::new(jarde_reader::classfile::method_code_facts(
+        read.read.bytes(),
+        member,
+        budget,
+    )?);
     // The facts of the very read the body came from, as the tail of the pass reads them: the
     // class file's version (the dialect of every later pass is this and nothing else, classified
     // once by the reader's own rule over the two version fields), the class's own name and flags,
@@ -1262,7 +1321,7 @@ fn finish_driver_read(
     run: &mut crate::ir::AnalysisRun,
     class: DriverClass<'_>,
     record: &MemberHeader,
-    decoded: MethodCodeFacts,
+    decoded: Arc<MethodCodeFacts>,
     identity: jarde_reader::model::PhysicalMethodId,
     class_read: Option<PreparedClassRead>,
     budget: &mut Budget,
@@ -1292,25 +1351,27 @@ fn finish_driver_read(
         }
         None => Vec::new(),
     };
-    // The member classes the declaring class's own `InnerClasses` attribute states, read once from
-    // the same bytes the bootstrap table came from. This row set is the only fact that tells a
-    // nested binary name from a top-level name that merely carries `$`, which is what the recovery
-    // layer's nested source spelling needs; a class file that declares no attribute states none.
-    let inner_class_members = match facts
+    // Decode this selected method preparation's complete InnerClasses rows from the same bytes
+    // as the bootstrap table. Preserve outer/inner boundaries for source consumers; an absent
+    // attribute states no rows. This existing path runs per method, not once per prepared class.
+    let inner_classes = match facts
         .attributes
         .iter()
         .find(|shell| shell.name.raw().0.as_slice() == b"InnerClasses")
     {
-        Some(shell) => jarde_reader::classfile::attribute_facts(
-            bytes,
-            &[shell.clone()],
-            &facts.constant_pool,
-            budget,
-        )?
-        .inner_classes
-        .iter()
-        .map(|row| jarde_reader::classfile::cp_class_name(&facts.constant_pool, row.class_index))
-        .collect::<std::result::Result<Vec<_>, _>>()?,
+        Some(shell) => {
+            let attributes = jarde_reader::classfile::attribute_facts(
+                bytes,
+                std::slice::from_ref(shell),
+                &facts.constant_pool,
+                budget,
+            )?;
+            jarde_reader::classfile::resolve_inner_classes(
+                &facts.constant_pool,
+                &attributes.inner_classes,
+                budget,
+            )?
+        }
         None => Vec::new(),
     };
     // The declaration facts the `frame` pass reads beside the body and the graph. The class's own
@@ -1322,7 +1383,7 @@ fn finish_driver_read(
         bootstrap_methods,
     };
     Ok(DriverRead::Decoded {
-        facts: Box::new(decoded),
+        facts: decoded,
         version,
         declaration,
         // The member's own declaration (P3 3.1), taken from the member the read located rather than
@@ -1344,7 +1405,7 @@ fn finish_driver_read(
             identity,
             this_class,
             access_flags,
-            inner_class_members,
+            inner_classes.into(),
         )
         .map(Box::new),
         class_read,
@@ -1501,9 +1562,8 @@ fn read_prepared_driver_method(
     // The same charge the direct read makes, before the same decode: the member has a body, so the
     // attempt is a body the request really demands, and a decode that fails is a failure of this
     // pass rather than a missing body.
-    budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
     run.body = MethodBodyState::Present;
-    let decoded = prepared.method_code(ordinal, budget)?;
+    let decoded = prepared.shared_method_code(ordinal, budget)?;
     // The class facts as the prepared read established them, taken as the **shared handle** the
     // preparation produced: every method of this class reads one constant pool and one member table
     // through it, and the payload of each method holds that handle instead of a copy of the class.

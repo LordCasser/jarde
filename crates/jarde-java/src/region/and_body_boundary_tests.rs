@@ -717,7 +717,7 @@ fn stop_at_later_candidate_does_not_publish_partial_loop_ownership() {
                 matches!(
                     &result,
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         ..
                     })
                 ),
@@ -775,7 +775,7 @@ fn budget_stop_at_body_boundary_does_not_publish_partial_ownership() {
                     &reason
                 ),
                 Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     ..
                 })
             ));

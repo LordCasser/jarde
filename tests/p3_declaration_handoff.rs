@@ -214,6 +214,7 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut budget,
@@ -261,6 +262,7 @@ fn recover_with(
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             budget,
@@ -1047,6 +1049,7 @@ fn a_stopped_run_publishes_no_declaration_and_no_class_facts() {
         &jarde_java::RecoveryRequest::new(
             analyzed.ir(),
             &facts,
+            jarde_java::SourceTarget::JAVA_8,
             request.environment.runtime.profile.clone(),
         )
         .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
@@ -1225,9 +1228,9 @@ fn the_prepared_driver_read_consumes_the_class_the_caller_already_read() {
         "and builds no second decoder"
     );
     assert_eq!(
-        pass.matches("prepared.method_code(").count(),
+        pass.matches("prepared.shared_method_code(").count(),
         1,
-        "it decodes each body through the prepared class's own decoder, the one the single-method \
+        "it obtains each body through the prepared class's shared decode, the one the single-method \
          path delegates to"
     );
     assert_eq!(
@@ -1237,8 +1240,8 @@ fn the_prepared_driver_read_consumes_the_class_the_caller_already_read() {
     );
     assert_eq!(
         pass.matches("CountedBudgetDimension::MethodBodies").count(),
-        1,
-        "while the one body attempt of the request is still charged, before its decode"
+        0,
+        "the shared prepared decoder owns the actual body-attempt charge; the driver must not charge it twice"
     );
     assert!(
         pass.contains("require_prepared_definition(prepared, &request.method.owner)"),
@@ -1327,9 +1330,9 @@ fn the_prepared_callee_read_needs_no_second_class_read() {
         "one decode for a class this entry read itself"
     );
     assert_eq!(
-        source.matches("prepared.method_code(").count(),
+        source.matches("prepared.shared_method_code(").count(),
         1,
-        "and one for a class the caller prepared, which is the same implementation"
+        "and one shared-facts entry for the prepared class; runtime decode counts are covered by s1_shared_prepared_callee_decode"
     );
 }
 

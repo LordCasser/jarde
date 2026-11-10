@@ -79,6 +79,7 @@ fn report_from_named_with_evidence(
         .open(ArtifactInput::bytes(bytes), &mut budget)
         .expect("frozen family jar opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -475,7 +476,7 @@ fn selected_family_keeps_two_physical_reports_under_one_budget() {
     let ClassSourceMemberCapture::Proved { proof } = capture else {
         unreachable!()
     };
-    assert_eq!(proof.field_name, "this$0");
+    assert_eq!(proof.field_name, JvmBytes::from_unicode("this$0"));
     assert_eq!(proof.field_index, 0);
     assert_eq!(proof.constructor.owner, child.class);
     assert_eq!(proof.write_bci, 2);
@@ -554,11 +555,20 @@ fn selected_family_keeps_two_physical_reports_under_one_budget() {
     assert!(child.text.contains("class NamedMemberFamilyStage1$Member"));
 }
 
-fn compile_and_verify(source: &str) -> String {
+fn compile_and_verify(class_name: &str, source: &str) -> String {
     let temp = TestDirectory::new();
-    std::fs::write(temp.path().join("NamedMemberFamilyStage1.java"), source).unwrap();
+    std::fs::write(temp.path().join(format!("{class_name}.java")), source).unwrap();
     let compile = Command::new("javac")
-        .args(["--release", "8", "-g:none", "NamedMemberFamilyStage1.java"])
+        .args([
+            "--release",
+            "8",
+            "-g:none",
+            "-classpath",
+            ".",
+            "-sourcepath",
+            ".",
+        ])
+        .arg(format!("{class_name}.java"))
         .current_dir(temp.path())
         .output()
         .unwrap();
@@ -568,7 +578,8 @@ fn compile_and_verify(source: &str) -> String {
         String::from_utf8_lossy(&compile.stderr)
     );
     let run = Command::new("java")
-        .args(["-Xverify:all", "-cp", ".", "NamedMemberFamilyStage1"])
+        .args(["-Xverify:all", "-cp", "."])
+        .arg(class_name)
         .current_dir(temp.path())
         .output()
         .unwrap();
@@ -597,7 +608,10 @@ fn projected_stage1_compiles_and_matches_original_and_jadx_java8_behavior() {
         "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/recompiled-jadx/NamedMemberFamilyStage1.java"
     );
     for source in [original, jadx, &report.text] {
-        assert_eq!(compile_and_verify(source), "2011\n20\n");
+        assert_eq!(
+            compile_and_verify("NamedMemberFamilyStage1", source),
+            "2011\n20\n"
+        );
     }
     let temp = TestDirectory::new();
     let jar = temp.path().join("fixture.jar");
@@ -740,6 +754,7 @@ fn static_member_projects_as_nested_and_keeps_dollar_top_level_independent() {
         )
         .expect("the frozen archive opens before the request is cancelled");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("StaticMemberBasic"),
         },
@@ -1209,6 +1224,7 @@ fn declaration_pair_near_misses_never_publish_half_a_root() {
         .open(ArtifactInput::bytes(jar), &mut open_budget)
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("em01/Shape"),
         },
@@ -1585,90 +1601,138 @@ fn member_call_without_early_null_check_retains_physical_source() {
         .to_vec(),
         task_limits(&[]).unwrap(),
     );
-    let ClassSourceMemberFamily::Prepared {
-        child: child_report,
-        capture: ClassSourceMemberCapture::Proved { .. },
-        calls: ClassSourceMemberCalls::Refused {
-            sites, refusals, ..
-        },
-        ..
-    } = &report.member_family
+    let ClassSourceMemberFamily::PreparedFold { members, projection: _ } = &report.member_family
     else {
         panic!(
-            "null-check removal must refuse only the call: {:?}",
+            "null-check removal must fold the family: {:?}",
             report.member_family
         );
     };
-    assert!(sites.is_empty());
-    assert_eq!(refusals.len(), 1);
-    assert_eq!(refusals[0].allocation_bci, 27);
-    assert_eq!(refusals[0].caller.owner, report.class);
+    // The original pin read the separated `Prepared` certificate and asserted the calls refusal
+    // (`new Member` at BCI 27 unprovable once requireNonNull's check was nopped). The fold's own
+    // proofs — capture, access bridges, external-use census — are independent of that calls
+    // certificate: the fold plans and presents the family on them alone, and the unproved
+    // construction stays exactly as refused, carried by main's physical body inside the folded
+    // text (`jarde_refused_body()` beside the BCI 27 quote, asserted below) — no unproved
+    // statement and no dangling reference is invented for it. `javap` checks the folded
+    // presentation point by point (`read` is `other.state * 100 + access$000(this$0)`,
+    // `access$000` reads `secret`), and the root run's own main outcome is byte-identical to the
+    // frozen record in both versions — only the projection plane moved from `refused` to the
+    // fold's `projected` (the fold-path-first-execution family, as for the write-accessor
+    // recovery).
     assert!(report.text.contains("class NamedMemberFamilyStage1"));
     assert!(report.methods.iter().any(|method| {
         method.item.identity.name.0 == b"main"
             && matches!(method.outcome, ClassSourceOutcome::Recovered { .. })
     }));
-    assert!(child_report.text.contains("this$0"));
+    // The separated child keeps its physical text: the capture field and its write are only
+    // hidden inside the fold's own scope, so `this$0` stays stated there.
+    let child = &members[0].child;
+    assert!(child.text.contains("this$0"));
     assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
     let serialized = serde_json::to_value(&report).unwrap();
     assert_eq!(
         serialized["member_family"]["projection"]["state"],
-        "refused"
+        "projected"
     );
     assert!(
         serialized["member_family"]["projection"]
             .get("derived")
-            .is_none()
+            .is_some()
     );
+    // The folded scope's own presentation: the nested `Member` declaration, the access bridge
+    // re-spelled to the qualified-this field read, and the unproved construction kept refused.
+    assert!(report.text.contains("class Member"));
+    assert!(report.text.contains("NamedMemberFamilyStage1.this.secret"));
+    assert!(report.text.contains("jarde_refused_body()"));
+    assert!(report.text.contains("@bytecode 27"));
 }
 
 #[test]
 fn qualified_member_call_preserves_internal_and_preceding_effect_positions() {
-    let report = report_from_named(
-        include_bytes!(
-            "../openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/qualified-effects.jar"
-        )
-        .to_vec(),
+    let jar = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/qualified-effects.jar"
+    );
+    let essential = report_from_named(
+        jar.to_vec(),
         "NamedMemberFamilyCalls",
         task_limits(&[]).unwrap(),
     );
-    let ClassSourceMemberFamily::Prepared {
-        child,
-        capture: ClassSourceMemberCapture::Proved { proof },
-        calls: ClassSourceMemberCalls::Proved { sites },
-        ..
+    let report = report_from_named_source_mapped(
+        jar.to_vec(),
+        "NamedMemberFamilyCalls",
+        task_limits(&[]).unwrap(),
+    );
+    assert_eq!(
+        essential.text, report.text,
+        "optional source maps do not authorize the fold"
+    );
+    let ClassSourceMemberFamily::PreparedFold {
+        members,
+        projection: ClassSourceMemberProjection::Projected { .. },
     } = &report.member_family
     else {
         panic!(
-            "effect fixture must prove both calls: {:?}",
+            "the current family assembly folds the proved member: {:?}",
             report.member_family
         );
     };
-    assert_eq!(child.class, proof.constructor.owner);
-    assert_eq!(sites.len(), 2);
-    let internal = sites
-        .iter()
-        .find(|site| site.caller.name.0 == b"internal")
-        .unwrap();
-    assert_eq!((internal.allocation_bci, internal.null_check_bci), (0, 6));
-    assert_eq!(internal.ordinary_argument_bcis, [13]);
-    let before = sites
-        .iter()
-        .find(|site| site.caller.name.0 == b"before")
-        .unwrap();
-    assert_eq!((before.allocation_bci, before.null_check_bci), (7, 13));
-    assert_eq!(before.ordinary_argument_bcis, [17]);
-    let projection = match &report.member_family {
-        ClassSourceMemberFamily::Prepared { projection, .. } => projection,
-        _ => unreachable!(),
-    };
+    assert_eq!(members.len(), 1);
+    let child = &members[0].child;
+    for (name, points) in [
+        (b"internal".as_slice(), [0, 6, 13]),
+        (b"before".as_slice(), [7, 13, 17]),
+    ] {
+        let method = report
+            .methods
+            .iter()
+            .find(|method| method.item.identity.name.0 == name)
+            .unwrap();
+        let class_source::ClassSourceOutcome::Recovered {
+            report: physical, ..
+        } = &method.outcome
+        else {
+            panic!("the physical method report remains queryable");
+        };
+        for bci in points {
+            assert!(
+                physical
+                    .source_map
+                    .segments()
+                    .iter()
+                    .any(|segment| segment.mentions(bci).is_some()
+                        && segment.origin().primary().method() == Some(&method.item.identity)),
+                "the allocation/null-check/ordinary-argument point {bci} belongs to this method"
+            );
+        }
+    }
     assert!(
-        matches!(projection, ClassSourceMemberProjection::Refused { .. }),
-        "{projection:?}"
+        report
+            .text
+            .contains("return arg1.new Member(mark(\"I\", arg2));")
     );
-    assert!(!report.text.contains("class Member"));
-    assert!(report.text.contains("class NamedMemberFamilyCalls"));
+    assert!(report.text.contains("int local3 = mark(\"P\", arg2);"));
+    assert!(report.text.contains("return arg1.new Member(local3);"));
+    assert!(report.text.contains("class Member"));
     assert!(child.text.contains("class NamedMemberFamilyCalls$Member"));
+    assert_eq!(
+        compile_and_verify("NamedMemberFamilyCalls", &report.text),
+        "P\n7\n7\nPIP\n"
+    );
+    let temp = TestDirectory::new();
+    let original_jar = temp.path().join("original.jar");
+    std::fs::write(&original_jar, jar).unwrap();
+    let original = Command::new("java")
+        .args(["-Xverify:all", "-cp"])
+        .arg(&original_jar)
+        .arg("NamedMemberFamilyCalls")
+        .output()
+        .unwrap();
+    assert!(original.status.success());
+    assert_eq!(
+        String::from_utf8(original.stdout).unwrap(),
+        "P\n7\n7\nPIP\n"
+    );
 }
 
 #[test]
@@ -1923,17 +1987,40 @@ fn outer_super_overload_requires_direct_source_parameter_and_complete_subclass_c
             "em12/Case",
             task_limits(&[]).unwrap(),
         );
-        let ClassSourceMemberFamily::Prepared {
-            projection: ClassSourceMemberProjection::Refused { reason },
-            ..
-        } = &refused.member_family
-        else {
-            panic!("variant should refuse projection: {case}");
-        };
-        assert!(
-            !must_reach_binding || reason.contains("Outer.super source binding refused"),
-            "{reason}"
-        );
+        match &refused.member_family {
+            ClassSourceMemberFamily::Prepared {
+                projection: ClassSourceMemberProjection::Refused { reason },
+                ..
+            } => {
+                assert!(
+                    !must_reach_binding || reason.contains("Outer.super source binding refused"),
+                    "{reason}"
+                );
+            }
+            ClassSourceMemberFamily::PreparedFold {
+                projection: ClassSourceMemberProjection::Projected { derived },
+                ..
+            } => {
+                // The general member fold is independent of the unproved Outer.super bridge.
+                assert!(!derived.iter().any(
+                    |entry| entry.kind == class_source::MemberFamilyDerivedKind::OuterSuperCall
+                ));
+                let bridge = refused
+                    .methods
+                    .iter()
+                    .find(|method| method.item.identity.name.0.starts_with(b"access$"))
+                    .unwrap();
+                assert_eq!(bridge.item.identity.owner, refused.class);
+                assert!(
+                    !bridge.markers.is_empty(),
+                    "the unproved bridge stays an explicit gap"
+                );
+                assert!(refused.text.contains("static java.lang.String access$"));
+            }
+            other => panic!(
+                "variant has neither a binding refusal nor an explicit bridge gap: {other:?}"
+            ),
+        }
         assert!(!refused.text.contains("Case.super.pick("));
     }
 }

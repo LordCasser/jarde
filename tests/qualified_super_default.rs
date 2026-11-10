@@ -90,6 +90,7 @@ fn open(bytes: Vec<u8>) -> ArtifactSnapshot {
 
 fn class_source_of(snapshot: &ArtifactSnapshot, class: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },

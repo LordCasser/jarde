@@ -980,7 +980,12 @@ fn run_single_member_with(
         .expect("the subject opens");
     let request = single_member_request(&snapshot, premise);
     let recovered = engine
-        .recover_method(slice::from_ref(&snapshot), &request, &mut budget)
+        .recover_method(
+            slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            &mut budget,
+        )
         .expect("a legal request is answered, not raised");
     let wall_micros = started.elapsed().as_micros();
     let form = published(&recovered);
@@ -5401,7 +5406,7 @@ fn boundary_run(corpus: &Corpus, boundary: &Boundary, cache: Option<&FactsCache>
                 .chain(providers.iter().cloned())
                 .collect();
             let recovered = engine
-                .recover_method(&content, &request, &mut budget)
+                .recover_method(&content, jarde::SourceTarget::JAVA_8, &request, &mut budget)
                 .expect("a legal request is answered, not raised");
             (
                 outcome_recovery(&recovered),

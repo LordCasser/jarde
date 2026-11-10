@@ -313,6 +313,8 @@ pub struct SsaInstruction {
     /// One record per write, in the order the instruction performed them; a category-2 write is
     /// one record at the value's first slot.
     pub(crate) writes: Vec<(Slot, ValueId)>,
+    /// Output-to-input identities of stack copies, from the frame replay that performed them.
+    pub(crate) copies: Vec<(ValueId, ValueId)>,
 }
 
 impl SsaInstruction {
@@ -334,6 +336,12 @@ impl SsaInstruction {
     /// One record per write, in the order the instruction performed them.
     pub fn writes(&self) -> &[(Slot, ValueId)] {
         &self.writes
+    }
+
+    /// Each `(output, input)` is a value copied by this instruction's verified stack permutation.
+    /// The original write definitions, reads and physical instruction remain independently visible.
+    pub fn copies(&self) -> &[(ValueId, ValueId)] {
+        &self.copies
     }
 }
 
@@ -1575,6 +1583,7 @@ impl Assigner {
             }
             let mut reads: Vec<(Slot, ValueId)> = Vec::new();
             let mut writes: Vec<(Slot, ValueId)> = Vec::new();
+            let mut copies = Vec::new();
             for touch in instruction.accesses {
                 let slot = Slot::of(touch.region, touch.slot);
                 if touch.write {
@@ -1611,6 +1620,20 @@ impl Assigner {
                         self.point(instruction.bci),
                         budget,
                     )?;
+                    if let Some(source_slot) = touch.copied_from {
+                        let Some((_, source)) = reads
+                            .iter()
+                            .find(|(slot, _)| *slot == Slot::Stack(source_slot))
+                        else {
+                            return inconsistent(format!(
+                                "the stack copy at BCI {} names unread input slot {source_slot}",
+                                instruction.bci
+                            ));
+                        };
+                        budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                        budget.charge(CountedBudgetDimension::IrEdges, 1)?;
+                        copies.push((value, *source));
+                    }
                     budget.charge(CountedBudgetDimension::IrItems, 1)?;
                     write_slot(&mut self.blocks[position].defs, slot, value, width);
                     writes.push((slot, value));
@@ -1679,6 +1702,7 @@ impl Assigner {
                 opcode: instruction.opcode,
                 reads,
                 writes,
+                copies,
             });
         }
         let exit: BTreeMap<Slot, ValueId> = self.blocks[position]
@@ -2010,6 +2034,7 @@ impl Assigner {
                     .reads
                     .len()
                     .saturating_add(instruction.writes.len())
+                    .saturating_add(instruction.copies.len())
                     .saturating_add(1);
                 budget.charge(
                     CountedBudgetDimension::IrItems,
@@ -2026,6 +2051,10 @@ impl Assigner {
                     }
                     for write in renamed.writes.iter_mut() {
                         write.1 = self.target(write.1);
+                    }
+                    for (output, input) in &mut renamed.copies {
+                        *output = self.target(*output);
+                        *input = self.target(*input);
                     }
                     renamed
                 })
@@ -2482,8 +2511,12 @@ mod tests {
                 let mut items =
                     u64::try_from(block.entry.len() + block.exit.len()).expect("a small fixture");
                 for instruction in &block.instructions {
-                    items += u64::try_from(1 + instruction.reads.len() + instruction.writes.len())
-                        .expect("a small fixture");
+                    items += u64::try_from(
+                        1 + instruction.reads.len()
+                            + instruction.writes.len()
+                            + instruction.copies.len(),
+                    )
+                    .expect("a small fixture");
                 }
                 items
             }))
@@ -3017,6 +3050,7 @@ mod tests {
             width: 1,
             write: true,
             value: Some(value),
+            copied_from: None,
         }
     }
 

@@ -1,0 +1,27 @@
+[
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-owned-field-cycle-r1/src/flow/OwnedFieldCycle.java",
+    "bytes": 263,
+    "sha256": "0aa48e0054b383f182346349f95a2237a0b980659fd43821614931de4ce30c93"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-owned-field-cycle-r1/classes/flow/OwnedFieldCycle.class",
+    "bytes": 867,
+    "sha256": "d276353c77c3094e2825b0fc871dcf68c53531a228ac149e05d818fb26dd2192"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-declared-local-consumer-r5/classes/flow/Base.class",
+    "bytes": 565,
+    "sha256": "1c1e893fbc92e1b941cd1396ce359c94049b8656d4bdf6ed086761b62b0d3e88"
+  },
+  {
+    "path": "crates/jarde-java/tests/fixtures/s2b-bound-type-identities-r1/identity-a/classes/identity/Foo.class",
+    "bytes": 349,
+    "sha256": "96d648ea785ae03101917c65039409cf125ad6228f6e1ddf8e873ee231111bec"
+  },
+  {
+    "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+    "bytes": 152128,
+    "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+  }
+]

@@ -54,6 +54,7 @@ fn class_source_with_evidence(
     evidence: &RecoveryEvidenceRequest,
 ) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },

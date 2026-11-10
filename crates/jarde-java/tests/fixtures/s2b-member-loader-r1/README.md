@@ -1,0 +1,5 @@
+# Member defining-loader control
+
+`ParentOwned.class` is compiled against the parent-domain `identity/Foo`; a separate child-domain `identity/Foo` has the same `label()Ljava/lang/String;` member but different code. Source hashes, compiler flags, class hashes, and the original loader plan are recorded in the corresponding change evidence. `javap` confirms the constant-pool reference and the different return string constants. No fixture method is executed.
+
+The first test setup attempted to analyze this parent-owned physical body while claiming the child loader as the runtime caller. The engine correctly refused it with `resolution_definition_unbound` before publishing MethodIr. This is the existing definition-binding contract, not a newly exposed CP-resolution defect. The revised control keeps that refusal as an assertion, then analyzes the same body with `parentLoader` as runtime domain and probes its member reference with a zero-method-body budget. A separate child caller with no enclosing method demonstrates that the competing child Foo exists without claiming the parent method's CP reference belongs to it.

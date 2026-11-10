@@ -9,12 +9,16 @@ const CHILD: &[u8] = include_bytes!(
 );
 
 fn jar(root: &[u8], child: &[u8]) -> Vec<u8> {
+    jar_named(root, child, "em01/Generic")
+}
+
+fn jar_named(root: &[u8], child: &[u8], owner: &str) -> Vec<u8> {
     let mut output = Cursor::new(Vec::new());
     {
         let mut zip = ZipArchiveWriter::new(&mut output);
         for (name, bytes) in [
-            (b"em01/Generic.class".as_slice(), root),
-            (b"em01/Generic$A.class".as_slice(), child),
+            (format!("{owner}.class").into_bytes(), root),
+            (format!("{owner}$A.class").into_bytes(), child),
         ] {
             let (mut entry, config) = zip
                 .new_file(EntryPath::verbatim(name.to_vec()))
@@ -32,14 +36,22 @@ fn jar(root: &[u8], child: &[u8]) -> Vec<u8> {
 }
 
 fn class_report(root: &[u8], child: &[u8], limits: Limits) -> ClassSourceReport {
+    class_report_named(root, child, "em01/Generic", limits)
+}
+
+fn class_report_named(root: &[u8], child: &[u8], owner: &str, limits: Limits) -> ClassSourceReport {
     let engine = Engine::new();
     let mut budget = Budget::new(limits);
     let snapshot = engine
-        .open(ArtifactInput::bytes(jar(root, child)), &mut budget)
+        .open(
+            ArtifactInput::bytes(jar_named(root, child, owner)),
+            &mut budget,
+        )
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
-            class: ClassNameQuery::internal("em01/Generic"),
+            class: ClassNameQuery::internal(owner),
         },
         environment: EnvironmentRequest {
             snapshot: snapshot.id().clone(),
@@ -60,6 +72,55 @@ fn class_report(root: &[u8], child: &[u8], limits: Limits) -> ClassSourceReport 
         OperationOutcome::Performed(report) => report,
         other => panic!("Generic selection failed: {other:?}"),
     }
+}
+
+fn renamed_owner(bytes: &[u8], owner: &str) -> Vec<u8> {
+    let old = b"em01/Generic";
+    let new = JvmBytes::from_unicode(owner).0;
+    let count = u16::from_be_bytes([bytes[8], bytes[9]]);
+    let mut result = bytes[..10].to_vec();
+    let mut offset = 10;
+    let mut index = 1;
+    while index < count {
+        let start = offset;
+        let tag = bytes[offset];
+        offset += 1;
+        if tag == 1 {
+            let length = usize::from(u16::from_be_bytes([bytes[offset], bytes[offset + 1]]));
+            offset += 2;
+            let payload = &bytes[offset..offset + length];
+            let mut renamed = Vec::new();
+            let mut cursor = 0;
+            while cursor < payload.len() {
+                if payload[cursor..].starts_with(old) {
+                    renamed.extend_from_slice(&new);
+                    cursor += old.len();
+                } else {
+                    renamed.push(payload[cursor]);
+                    cursor += 1;
+                }
+            }
+            result.push(tag);
+            result.extend_from_slice(&u16::try_from(renamed.len()).unwrap().to_be_bytes());
+            result.extend_from_slice(&renamed);
+            offset += length;
+        } else {
+            offset += match tag {
+                3 | 4 | 9 | 10 | 11 | 12 | 17 | 18 => 4,
+                5 | 6 => {
+                    index += 1;
+                    8
+                }
+                7 | 8 | 16 | 19 | 20 => 2,
+                15 => 3,
+                _ => panic!("unexpected frozen constant-pool tag {tag}"),
+            };
+            result.extend_from_slice(&bytes[start..offset]);
+        }
+        index += 1;
+    }
+    result.extend_from_slice(&bytes[offset..]);
+    result
 }
 
 fn changed(bytes: &[u8], from: &[u8], to: &[u8]) -> Vec<u8> {
@@ -149,6 +210,26 @@ fn generic_static_member_is_atomic_and_keeps_physical_child() {
     assert!(derived.iter().any(|entry| entry.anchors.iter().any(|anchor| matches!(anchor,
         MemberFamilyPhysicalAnchor::MethodPoint { method, .. } if method.name.0 == b"compareTo" && method.descriptor.0 == b"(Ljava/lang/Object;)I"))));
 
+    let owner = "em01/𐐀Generic";
+    let root = renamed_owner(ROOT, owner);
+    let child = renamed_owner(CHILD, owner);
+    let unicode = class_report_named(&root, &child, owner, task_limits(&[]).unwrap());
+    assert!(is_projected(&unicode), "{:?}", unicode.member_family);
+    assert!(unicode.text.contains("class 𐐀Generic"));
+    assert!(unicode.text.contains("compareTo(A<T> arg1)"));
+    let ClassSourceMemberFamily::Prepared { child, .. } = &unicode.member_family else {
+        unreachable!()
+    };
+    assert!(child.text.contains("class 𐐀Generic$A"));
+    let typed = child
+        .methods
+        .iter()
+        .find(|method| {
+            method.item.identity.descriptor.0 == JvmBytes::from_unicode("(Lem01/𐐀Generic$A;)I").0
+        })
+        .unwrap();
+    assert_eq!(typed.item.identity.name.0, b"compareTo");
+
     let mut output_limited = task_limits(&[]).unwrap();
     output_limited.output_bytes = report.usage.output_bytes.saturating_sub(1);
     let stopped = class_report(ROOT, CHILD, output_limited);
@@ -169,6 +250,7 @@ fn generic_static_member_is_atomic_and_keeps_physical_child() {
         )
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("em01/Generic"),
         },

@@ -136,6 +136,7 @@ fn source_of(jar: &[u8], class: &str) -> ClassSourceReport {
         .open(ArtifactInput::bytes(jar.to_vec()), &mut budget)
         .expect("the fixture jar opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },

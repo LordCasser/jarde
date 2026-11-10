@@ -1,0 +1,71 @@
+{
+  "schema": "jarde-s0-existing-regressions-v1",
+  "cases": [
+    {
+      "id": "old-CM",
+      "family": "E1",
+      "split": "existing_regression",
+      "class_name": "CM",
+      "source_file": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-postfix-old-value-snapshot/CM.java",
+      "source_sha256": "ccae230b26bf9368c1168c46d2486c5f866d61b30b2b434e9b9e8a3a2b0ca4ea",
+      "driver": "CMBaselineDriver",
+      "driver_source": "CMBaselineDriver.java",
+      "expected_role": "existing full-class regression"
+    },
+    {
+      "id": "old-NG",
+      "family": "E1",
+      "split": "existing_regression",
+      "class_name": "NG",
+      "source_file": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-postfix-old-value-snapshot/NG.java",
+      "source_sha256": "c4d8caa1511f198fe6dfeaea3832354e91ae18fb6964350696ec770d7fad44b6",
+      "driver": "NGBaselineDriver",
+      "driver_source": "NGBaselineDriver.java",
+      "expected_role": "refusal boundary"
+    },
+    {
+      "id": "old-RP",
+      "family": "T1",
+      "split": "existing_regression",
+      "class_name": "RP",
+      "source_file": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-array-element-field-receiver/RP.java",
+      "source_sha256": "dc87a88dc1e51c3c90b06c165921598ef874bc86387016f5fa064e217f210bf7",
+      "driver": "RPBaselineDriver",
+      "driver_source": "RPBaselineDriver.java",
+      "expected_role": "refusal boundary"
+    },
+    {
+      "id": "old-SG",
+      "family": "C1",
+      "split": "existing_regression",
+      "class_name": "SG",
+      "source_file": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-static-generic-field-init-text/SG.java",
+      "source_sha256": "a4ea63d3e9c0392a9a58107c19a34d5c07b3a141d5f9216d04504bceef89f9a9",
+      "driver": "SGBaselineDriver",
+      "driver_source": "SGBaselineDriver.java",
+      "expected_role": "existing full-class regression"
+    },
+    {
+      "id": "old-finally",
+      "family": "R2",
+      "split": "existing_regression",
+      "class_name": "LoopTransferFinally",
+      "source_file": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-loop-transfer-finally-handler/LoopTransferFinally.java",
+      "source_sha256": "c5745c0b5d6c28e6241c73bfd499d9c83c2417457d53a924bcc89b2594cdae00",
+      "driver": "LoopTransferFinallyProbe",
+      "driver_source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-loop-transfer-finally-handler/LoopTransferFinallyProbe.java",
+      "expected_role": "existing full-class regression"
+    },
+    {
+      "id": "old-anonymous",
+      "family": "C2",
+      "split": "existing_regression",
+      "class_name": "AnonymousCaptureCases",
+      "source_file": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-java-structure/anonymous-capture/AnonymousCaptureCases.java",
+      "source_sha256": "cb6de6b00004b9cf6bd027d2b49a3be646a3c7bfd89284ddb26eca554d539887",
+      "driver": "AnonymousCaptureCasesBaselineDriver",
+      "driver_source": "AnonymousCaptureCasesBaselineDriver.java",
+      "expected_role": "existing full-class regression"
+    }
+  ]
+}

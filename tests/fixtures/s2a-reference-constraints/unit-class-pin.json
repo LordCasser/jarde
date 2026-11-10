@@ -1,0 +1,8 @@
+{
+  "jar": "jars/corretto8-no-debug.jar",
+  "jar_sha256": "6e435a94b60517d22b0aa0470442cc0dc90356a9a9abaed7ba666ae5e23cf876",
+  "entry": "ReferenceCases.class",
+  "copied_to": "corretto8-no-debug.class",
+  "class_sha256": "9a8749699c372848c3d64f58ef26196cd4375a636473d9c3ab13929de5c09e1c",
+  "reason": "Exact member bytes for private SSA/variable-plan tests without adding an archive dependency to jarde-java."
+}

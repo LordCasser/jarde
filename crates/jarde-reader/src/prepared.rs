@@ -51,14 +51,15 @@
 //!
 //! A prepared class is not a cache and not a second reader. It does not consult the facts cache (one
 //! class is prepared once per class task and its facts are shared by handle, so a lookup keyed by a
-//! re-hash of the same bytes would buy nothing here), it does not decode a body nobody asked for,
+//! re-hash of the same bytes would buy nothing here). Complete demanded bodies may share one handle
+//! within this prepared class; no finished class task is retained. It does not decode a body nobody asked for,
 //! and it does not turn its facts into an analysis conclusion: dialect validation, verification and
 //! source recovery remain separate facts of the layers above.
 //!
 //! [`ArtifactSnapshot`]: crate::artifact::ArtifactSnapshot
 
 use crate::artifact::ContainerFactsHandle;
-use crate::budget::Budget;
+use crate::budget::{Budget, CountedBudgetDimension};
 use crate::classfile::{
     self, AttributeShell, ClassFacts, MemberHeader, MemberTableStop, MethodCodeFacts,
     decode_method_code,
@@ -67,6 +68,8 @@ use crate::error::{Error, Result};
 use crate::model::{ByteSpan, ClassBytesId, ContainerId, Digest, JvmString, PhysicalClassLocation};
 use noak::reader::{Attribute, Class, Method};
 use serde::{Deserialize, Serialize};
+use std::cell::RefCell;
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 /// Where one class's bytes live inside a container that is held as shared backing.
@@ -302,6 +305,7 @@ pub enum MethodCodeAttribute {
 /// One trusted, once-read class: declaration, constant pool, member table and a multi-valued method
 /// locator, borrowing the read's backing.
 ///
+/// 一个 class task 顺序消费本实例；共享事实句柄可独立传递，解码 memo 不跨任务。
 /// The value borrows [`PreparedClassRead`] and never stores a self-reference inside an `Arc`: the
 /// parser view noak hands out borrows the class bytes, so it stays a borrow of the read that is alive
 /// for the whole class task, and only independently ownable payloads (the facts, the slots, the
@@ -312,6 +316,8 @@ pub enum MethodCodeAttribute {
 /// [`PreparedClass::locate_method`] for the declaration-to-ordinal mapping, and
 /// [`PreparedClass::method_code`] for a body.
 pub struct PreparedClass<'a> {
+    #[cfg(any(test, feature = "test-support"))]
+    _observation: crate::observation::PayloadToken,
     read: &'a PreparedClassRead,
     /// The shared structural payload, held as the handle its consumers share.
     ///
@@ -334,6 +340,8 @@ pub struct PreparedClass<'a> {
     method_count: u64,
     /// Where the member-table read stopped, when it did not reach the declared end.
     stop: Option<MemberTableStop>,
+    // 仅保留本次类任务实际请求且完整解码的 Body；坐标隶属本次 read，不按 bytes 合并来源。
+    decoded: RefCell<BTreeMap<MethodOrdinal, Arc<MethodCodeFacts>>>,
 }
 
 /// The parser view one prepared class holds: the class's pool and its method records.
@@ -402,6 +410,8 @@ impl<'a> PreparedClass<'a> {
         let field_count = count(facts.fields.len())?;
         let method_count = count(facts.methods.len())?;
         Ok(Self {
+            #[cfg(any(test, feature = "test-support"))]
+            _observation: crate::observation::PayloadToken::prepared_handle(),
             read,
             facts: Arc::new(facts),
             parser: Some(PreparedParser { class, methods }),
@@ -410,6 +420,7 @@ impl<'a> PreparedClass<'a> {
             field_count,
             method_count,
             stop: None,
+            decoded: RefCell::new(BTreeMap::new()),
         })
     }
 
@@ -433,6 +444,8 @@ impl<'a> PreparedClass<'a> {
         let slots = Self::slots(&facts.methods, Some(&stop))?;
         let located = locate_slots(&slots);
         Ok(Self {
+            #[cfg(any(test, feature = "test-support"))]
+            _observation: crate::observation::PayloadToken::prepared_handle(),
             read,
             facts: Arc::new(facts),
             parser: None,
@@ -441,6 +454,7 @@ impl<'a> PreparedClass<'a> {
             field_count,
             method_count,
             stop: Some(stop),
+            decoded: RefCell::new(BTreeMap::new()),
         })
     }
 
@@ -572,6 +586,36 @@ impl<'a> PreparedClass<'a> {
             Ok(position) => &self.located[position].ordinals,
             Err(_) => &[],
         }
+    }
+
+    /// 同一类任务的按需 Body 事实。命中只共享完整事实，不重读或重付解码费用。
+    ///
+    /// 新解码在执行前支付 MethodBodies，Code/AttributeBytes 仍由唯一 decoder 收取；
+    /// 只保留已请求的完整 Body，总量受当前可信 class 的大小和成员数约束；
+    /// bulk 的各方法预算仍独立计费，不把它们冒称一个累计内存限额。
+    /// 停止或损坏产生的前缀不进入 memo，复用前仍检查当前取消/截止时间。
+    pub fn shared_method_code(
+        &self,
+        ordinal: MethodOrdinal,
+        budget: &mut Budget,
+    ) -> Result<Arc<MethodCodeFacts>> {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if let Some(facts) = self.decoded.borrow().get(&ordinal) {
+            return Ok(Arc::clone(facts));
+        }
+        budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
+        let facts = Arc::new(self.method_code(ordinal, budget)?);
+        if facts.stopped_at.is_none()
+            && matches!(
+                facts.execution,
+                crate::model::ExecutionReport::Complete { .. }
+            )
+        {
+            self.decoded
+                .borrow_mut()
+                .insert(ordinal, Arc::clone(&facts));
+        }
+        Ok(facts)
     }
 
     /// Decodes one located method body with the same implementation the single-method path uses.

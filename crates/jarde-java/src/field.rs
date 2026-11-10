@@ -48,6 +48,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use jarde_jvm::method_ir::{RefType, SsaInstruction, SsaTable, Value, ValueId};
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::MemberHeader;
+use jarde_reader::model::JvmBytes;
 use serde::Serialize;
 
 use crate::ast::{AssignOp, Expr, ExprKind, Stmt, StmtKind};
@@ -164,7 +165,7 @@ impl Plan {
                 Some(evidence.bci),
             )?;
             if shape.writes() && shape.simple_static_final {
-                names.insert(evidence.name.clone());
+                names.insert(evidence.spelled_name());
             }
         }
         Ok(names)
@@ -312,10 +313,9 @@ pub(crate) fn committed_presentations(
         stop::charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
         stop::charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
         let mut record = |at: u32, access: FieldAccess, name: &str| {
-            if plan
-                .claim(at)
-                .is_some_and(|(evidence, _)| evidence.access == access && evidence.name == name)
-            {
+            if plan.claim(at).is_some_and(|(evidence, _)| {
+                evidence.access == access && evidence.name == JvmBytes::from_unicode(name)
+            }) {
                 presented.insert(at);
             }
         };
@@ -341,10 +341,10 @@ pub(crate) fn committed_presentations(
                             })
                         {
                             if let Some((read, _)) = plan.claim(shape.read) {
-                                record(shape.read, FieldAccess::Read, &read.name);
+                                record(shape.read, FieldAccess::Read, &read.spelled_name());
                             }
                             if let Some((write, _)) = plan.claim(shape.write) {
-                                record(shape.write, FieldAccess::Write, &write.name);
+                                record(shape.write, FieldAccess::Write, &write.spelled_name());
                             }
                         }
                     }
@@ -455,7 +455,7 @@ pub(crate) fn committed_presentations(
                         && evidence.access == FieldAccess::Read
                         && !shape.writes()
                     {
-                        record(at, FieldAccess::Read, &evidence.name);
+                        record(at, FieldAccess::Read, &evidence.spelled_name());
                     }
                 }
                 ExprKind::Field { receiver, name } => {
@@ -568,9 +568,22 @@ pub(crate) struct Evidence {
     pub(crate) bci: u32,
     pub(crate) access: FieldAccess,
     pub(crate) is_static: bool,
-    pub(crate) owner: String,
-    pub(crate) name: String,
-    pub(crate) descriptor: String,
+    pub(crate) owner: JvmBytes,
+    pub(crate) name: JvmBytes,
+    pub(crate) descriptor: JvmBytes,
+}
+
+impl Evidence {
+    /// Source spelling is separate from raw identity; only claimed scalar fields use this.
+    pub(crate) fn spelled_name(&self) -> String {
+        self.name
+            .to_unicode()
+            .expect("field claim checked scalar name")
+    }
+
+    pub(crate) fn spelled_owner(&self) -> Option<String> {
+        crate::build::spell_reference(&self.owner.to_unicode()?)
+    }
 }
 
 /// What one claimed field instruction reads.
@@ -614,14 +627,20 @@ pub(crate) fn plan(
     operations: &Operations,
     element_receiver_type: &dyn Fn(ValueId) -> Option<String>,
     declaring: Option<&DeclaringClass>,
-    method_name: &str,
-    method_descriptor: &str,
+    method_name: &[u8],
+    method_descriptor: &[u8],
     class_fields: Option<&[MemberHeader]>,
-    superclass_writes: &[crate::report::ProvedSuperclassFieldWrite],
+    superclass_writes: &[crate::report::SuperclassFieldWriteInput],
+    declared_types: Option<&crate::report::DeclaredGenericTypes>,
     budget: &mut Budget,
 ) -> Result<Plan, StopReason> {
     let mut plan = Plan::empty();
-    for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
+    for (block, instruction) in ssa.blocks().iter().flat_map(|block| {
+        block
+            .instructions()
+            .iter()
+            .map(move |instruction| (block.block(), instruction))
+    }) {
         let at = instruction.bci();
         let Some(Operation::Field {
             access,
@@ -647,6 +666,11 @@ pub(crate) fn plan(
             u64::try_from(superclass_writes.len()).unwrap_or(u64::MAX),
             Some(at),
         )?;
+        let qualified = if let Some(types) = declared_types {
+            declared_field_qualification(types, block, instruction, &evidence, ssa, budget)?
+        } else {
+            false
+        };
         match verify(
             instruction,
             &evidence,
@@ -654,6 +678,7 @@ pub(crate) fn plan(
             element_receiver_type,
             declaring,
             superclass_writes,
+            qualified,
         ) {
             Ok(shape) => {
                 plan.claimed.insert(at, (evidence, shape));
@@ -673,14 +698,81 @@ pub(crate) fn plan(
     Ok(plan)
 }
 
+fn declared_field_qualification(
+    types: &crate::report::DeclaredGenericTypes,
+    block: &jarde_jvm::method_ir::CanonicalBlockId,
+    instruction: &SsaInstruction,
+    evidence: &Evidence,
+    ssa: &SsaTable,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    if evidence.is_static {
+        return Ok(false);
+    }
+    let Some((_, receiver)) = stack_operands(instruction).first().copied() else {
+        return Ok(false);
+    };
+    for (owner, member) in &types.members {
+        stop::charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(evidence.bci),
+        )?;
+        let crate::report::DeclaredGenericMemberTypes::Field {
+            bci,
+            declaration,
+            application,
+            ..
+        } = member
+        else {
+            continue;
+        };
+        if owner != block || *bci != evidence.bci {
+            continue;
+        }
+        let jarde_reader::model::SymbolRef::Field {
+            owner,
+            name,
+            descriptor,
+        } = &declaration.member
+        else {
+            return Ok(false);
+        };
+        if name != &evidence.name
+            || descriptor != &evidence.descriptor
+            || (stated_type(ssa, receiver).as_ref() == Some(owner) && owner == &evidence.owner)
+        {
+            return Ok(false);
+        }
+        if !crate::generic_types::field_qualifier_accessible(types, member) {
+            return Ok(false);
+        }
+        for (index, (value, _)) in ssa.values_with_ids().enumerate() {
+            stop::charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(*bci))?;
+            if value == receiver {
+                return crate::generic_types::proved_runtime_upcast(
+                    types,
+                    index,
+                    *application,
+                    budget,
+                )
+                .map_err(|error| stop::stop_from_error(budget, error, Some(*bci)));
+            }
+        }
+        break;
+    }
+    Ok(false)
+}
+
 /// Proves the narrow blank-`static final` spelling rule from the field plan's own claims and the
 /// already-read headers of the declaring class. A same-name field with another descriptor is still
 /// ambiguous in Java, so uniqueness is checked by name before the descriptor and flags.
 fn prove_simple_static_final(
     plan: &mut Plan,
     declaring: Option<&DeclaringClass>,
-    method_name: &str,
-    method_descriptor: &str,
+    method_name: &[u8],
+    method_descriptor: &[u8],
     class_fields: Option<&[MemberHeader]>,
     budget: &mut Budget,
 ) -> Result<(), StopReason> {
@@ -688,7 +780,7 @@ fn prove_simple_static_final(
     const ACC_ENUM: u16 = 0x4000;
 
     stop::poll(budget, None)?;
-    if method_name != "<clinit>" || method_descriptor != "()V" {
+    if method_name != b"<clinit>" || method_descriptor != b"()V" {
         return Ok(());
     }
     let Some(declaring) = declaring else {
@@ -726,16 +818,19 @@ fn prove_simple_static_final(
         )?;
         if !evidence.is_static
             || !shape.writes()
-            || evidence.owner != declaring.name()
-            || !is_java_identifier(&evidence.name)
+            || &evidence.owner != declaring.raw_name()
+            || !evidence
+                .name
+                .to_unicode()
+                .is_some_and(|name| is_java_identifier(&name))
         {
             continue;
         }
 
-        let Some(Some(field)) = declarations.get(evidence.name.as_bytes()) else {
+        let Some(Some(field)) = declarations.get(evidence.name.0.as_slice()) else {
             continue;
         };
-        if field.descriptor.raw().0.as_slice() != evidence.descriptor.as_bytes()
+        if field.descriptor.raw().0.as_slice() != evidence.descriptor.0.as_slice()
             || field.access_flags & (crate::facts::ACC_STATIC | ACC_FINAL)
                 != (crate::facts::ACC_STATIC | ACC_FINAL)
         {
@@ -766,11 +861,17 @@ fn verify(
     ssa: &SsaTable,
     element_receiver_type: &dyn Fn(ValueId) -> Option<String>,
     declaring: Option<&DeclaringClass>,
-    superclass_writes: &[crate::report::ProvedSuperclassFieldWrite],
+    superclass_writes: &[crate::report::SuperclassFieldWriteInput],
+    qualified_owner: bool,
 ) -> Result<Shape, Refusal> {
     let at = evidence.bci;
     let operands = stack_operands(instruction);
     let shape = |detail: String| Refusal::shape("jre_field_shape", detail);
+    if evidence.name.to_unicode().is_none() || evidence.owner.to_unicode().is_none() {
+        return Err(shape(format!(
+            "the field at BCI {at} has no scalar source owner or name"
+        )));
+    }
     if evidence.is_static {
         // A static field has no receiver: there is no second member of the same name to confuse it
         // with, so the owner and the name the pool states are the whole of what has to be proven.
@@ -801,17 +902,21 @@ fn verify(
     // state names. The one receiver they leave unstated is an element read, and the array operand of
     // that read states its element: the caller's reading answers there, and whatever it answers is
     // held to the comparison below exactly as a frame-stated name is.
-    let receiver_type = stated_type(ssa, receiver).or_else(|| element_receiver_type(receiver));
-    let owner_cast = superclass_writes.iter().any(|proof| {
-        proof.bci == at
-            && evidence.access == FieldAccess::Write
-            && receiver_type.as_deref() == Some(proof.source.as_str())
-            && proof.source != proof.owner
-            && proof.owner == evidence.owner
-            && proof.name == evidence.name
-            && proof.descriptor == evidence.descriptor
+    let receiver_type = stated_type(ssa, receiver).or_else(|| {
+        element_receiver_type(receiver).map(|name| JvmBytes::from_unicode(&internal_form(&name)))
     });
+    let owner_cast = qualified_owner
+        || superclass_writes.iter().any(|proof| {
+            proof.bci == at
+                && evidence.access == FieldAccess::Write
+                && receiver_type.as_ref() == Some(&proof.source)
+                && proof.source != proof.owner
+                && proof.owner == evidence.owner
+                && proof.name == evidence.name
+                && proof.descriptor == evidence.descriptor
+        });
     match receiver_type {
+        _ if qualified_owner => {}
         // The receiver's own type is the member's owner: `receiver.f` names this field and no other.
         Some(stated) if stated == evidence.owner => {}
         Some(_) if owner_cast => {}
@@ -819,7 +924,7 @@ fn verify(
         // receiver whose type is not a class name, and which JVMS 4.10.1.9 lets through only a
         // `Fieldref` naming the class being constructed.
         None if matches!(ssa.value(receiver).ty(), Value::UninitializedThis) => {
-            let named = declaring.is_some_and(|class| class.name() == evidence.owner);
+            let named = declaring.is_some_and(|class| class.raw_name() == &evidence.owner);
             if !named {
                 return Err(Refusal::unmet(
                     &FIELD,
@@ -827,12 +932,12 @@ fn verify(
                     match declaring {
                         Some(class) => format!(
                             "the write at BCI {at} stores through `{}`, and the class that declares this constructor is `{}`: JVMS 4.10.1.9 lets the uninitialized `this` be stored through a `Fieldref` that names the class being constructed and no other",
-                            evidence.owner,
+                            crate::facts::display_jvm_bytes(&evidence.owner),
                             class.name()
                         ),
                         None => format!(
                             "the write at BCI {at} stores through `{}` on the uninitialized `this`, and this run was not told which class declares this constructor: JVMS 4.10.1.9 lets that write reach a `Fieldref` that names the class being constructed, and without the class's own name that cannot be checked",
-                            evidence.owner
+                            crate::facts::display_jvm_bytes(&evidence.owner)
                         ),
                     },
                 ));
@@ -841,9 +946,12 @@ fn verify(
         other => {
             return Err(shape(format!(
                 "the receiver of the field access at BCI {at} has the type {}, and the member the pool states is a field of `{}`: writing `receiver.{}` would name whichever field the receiver's own type declares, which is not the member this instruction reads",
-                other.unwrap_or_else(|| "this run does not state".to_string()),
-                evidence.owner,
-                evidence.name
+                other
+                    .as_ref()
+                    .map(crate::facts::display_jvm_bytes)
+                    .unwrap_or_else(|| "this run does not state".to_string()),
+                crate::facts::display_jvm_bytes(&evidence.owner),
+                crate::facts::display_jvm_bytes(&evidence.name)
             )));
         }
     }
@@ -867,11 +975,15 @@ fn verify(
 }
 
 /// The class name one value's frame entry states, in internal form, when it states one.
-fn stated_type(ssa: &SsaTable, value: ValueId) -> Option<String> {
+fn stated_type(ssa: &SsaTable, value: ValueId) -> Option<JvmBytes> {
     match ssa.value(value).ty() {
-        Value::Ref(RefType::Named { name, .. }) => {
-            Some(internal_form(&String::from_utf8_lossy(name)).to_string())
-        }
+        Value::Ref(RefType::Named { name, .. }) => Some(JvmBytes(
+            if name.starts_with(b"L") && name.ends_with(b";") {
+                name[1..name.len() - 1].to_vec()
+            } else {
+                name.clone()
+            },
+        )),
         _ => None,
     }
 }
@@ -891,16 +1003,20 @@ pub struct FieldRecord {
     pub access: &'static str,
     /// Whether the instruction names a static field.
     pub is_static: bool,
-    /// The member's owner, in the class file's own internal form.
+    /// Diagnostic owner text; the exact CP identity is in `raw_owner`.
     pub owner: String,
-    /// The member's name.
+    /// Diagnostic name text; the exact CP identity is in `raw_name`.
     pub name: String,
-    /// The member's descriptor.
+    /// Diagnostic descriptor text; the exact CP identity is in `raw_descriptor`.
     pub descriptor: String,
     /// Whether the run presented the instruction as a field access.
     pub presented: bool,
     /// Why it did not, when it did not.
     pub refusal: Option<FieldRefusal>,
+    /// Raw owner/name/descriptor of the same CP FieldRef; diagnostic strings are not identity.
+    pub raw_owner: JvmBytes,
+    pub raw_name: JvmBytes,
+    pub raw_descriptor: JvmBytes,
 }
 
 impl FieldRecord {
@@ -927,9 +1043,12 @@ impl FieldRecord {
                 FieldAccess::Write => "write",
             },
             is_static: evidence.is_static,
-            owner: evidence.owner.clone(),
-            name: evidence.name.clone(),
-            descriptor: evidence.descriptor.clone(),
+            owner: crate::facts::display_jvm_bytes(&evidence.owner),
+            raw_owner: evidence.owner.clone(),
+            name: crate::facts::display_jvm_bytes(&evidence.name),
+            raw_name: evidence.name.clone(),
+            descriptor: crate::facts::display_jvm_bytes(&evidence.descriptor),
+            raw_descriptor: evidence.descriptor.clone(),
             presented,
             refusal,
         }
@@ -985,14 +1104,34 @@ mod tests {
     use jarde_reader::budget::{CancellationToken, Limits};
 
     #[test]
+    fn raw_field_record_keeps_identity_separate_from_diagnostics() {
+        let evidence = Evidence {
+            bci: 9,
+            access: FieldAccess::Read,
+            is_static: true,
+            owner: JvmBytes(b"p/\xed\xa0\x81".to_vec()),
+            name: JvmBytes::from_unicode("𐐀value"),
+            descriptor: JvmBytes(b"Lp/\xed\xa0\x82;".to_vec()),
+        };
+        let record = FieldRecord::of(&evidence, false, Some(FieldRefusal::not_emitted(9)));
+        assert_eq!(record.raw_owner, evidence.owner);
+        assert_eq!(record.raw_name, evidence.name);
+        assert_eq!(record.raw_descriptor, evidence.descriptor);
+        assert_eq!(record.name, "𐐀value");
+        assert!(record.owner.contains("\\uD801"));
+        assert!(record.descriptor.contains("\\uD802"));
+        assert!(!record.presented);
+    }
+
+    #[test]
     fn final_refusal_gaps_keep_bci_order_across_plan_and_emission() {
         let evidence = |bci| Evidence {
             bci,
             access: FieldAccess::Read,
             is_static: true,
-            owner: "Example".to_owned(),
-            name: "value".to_owned(),
-            descriptor: "I".to_owned(),
+            owner: jarde_reader::model::JvmBytes::from_unicode("Example"),
+            name: jarde_reader::model::JvmBytes::from_unicode("value"),
+            descriptor: jarde_reader::model::JvmBytes::from_unicode("I"),
         };
         let mut plan = Plan::empty();
         plan.refusals.push((
@@ -1194,9 +1333,9 @@ mod tests {
                     bci: 7,
                     access: FieldAccess::Write,
                     is_static: true,
-                    owner: "Example".to_owned(),
-                    name: "value".to_owned(),
-                    descriptor: "I".to_owned(),
+                    owner: jarde_reader::model::JvmBytes::from_unicode("Example"),
+                    name: jarde_reader::model::JvmBytes::from_unicode("value"),
+                    descriptor: jarde_reader::model::JvmBytes::from_unicode("I"),
                 },
                 Shape {
                     receiver: None,
@@ -1237,7 +1376,7 @@ mod tests {
         assert!(matches!(
             committed_presentations(&program, &plan, std::iter::empty(), &mut limited),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 ..
             })
         ));
@@ -1288,9 +1427,9 @@ mod tests {
                     bci: 7,
                     access: FieldAccess::Write,
                     is_static: true,
-                    owner: "FinalStaticProbe".to_owned(),
-                    name: "first".to_owned(),
-                    descriptor: "I".to_owned(),
+                    owner: jarde_reader::model::JvmBytes::from_unicode("FinalStaticProbe"),
+                    name: jarde_reader::model::JvmBytes::from_unicode("first"),
+                    descriptor: jarde_reader::model::JvmBytes::from_unicode("I"),
                 },
                 Shape {
                     receiver: None,
@@ -1310,13 +1449,13 @@ mod tests {
             prove_simple_static_final(
                 &mut plan,
                 Some(&declaring),
-                "<clinit>",
-                "()V",
+                b"<clinit>",
+                b"()V",
                 Some(&[]),
                 &mut budget,
             ),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(7),
                 ..
             })
@@ -1340,8 +1479,8 @@ mod tests {
             prove_simple_static_final(
                 &mut plan,
                 Some(&declaring),
-                "<clinit>",
-                "()V",
+                b"<clinit>",
+                b"()V",
                 Some(&[]),
                 &mut budget,
             ),

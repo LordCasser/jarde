@@ -186,7 +186,12 @@ fn recovered_with(
 ) -> RecoveredMethod {
     let request = request(fixture, name, descriptor, stages);
     engine
-        .recover_method(slice::from_ref(&fixture.snapshot), &request, budget)
+        .recover_method(
+            slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            budget,
+        )
         .expect("a legal request is answered, not raised")
 }
 
@@ -563,13 +568,24 @@ fn a_committed_statement_makes_the_artifact_contain_statements() {
         RecoveryContent::ContainsStatements,
         "arg0 = arg0 + 1;",
     );
+    // The read this slice once quoted (`// @bytecode 8 0`: the `ireturn` at 8 reads the value the
+    // load at 0 put on the stack before the `iinc` at 3 rewrote the slot) is now recovered through
+    // the value it read: the pre-increment value is bound at its own load and the sum names both
+    // lifetimes — `saved0` is the old value, `arg0` the incremented one — so nothing is refused and
+    // no quote is owed.
     assert!(
-        local.text.contains("// @bytecode 8 0"),
-        "the artifact holds the quote it owes beside that statement:\n{}",
+        local.text.contains("int saved0 = arg0;")
+            && local.text.contains("return saved0 + 1 + arg0;"),
+        "the sum carries the pre-increment value under its bound name:\n{}",
         local.text
     );
-    assert_eq!(local.representation, Representation::Mixed);
-    assert_eq!(local.quality, Quality::Fallback);
+    assert!(
+        !local.text.contains("// @bytecode"),
+        "nothing in this body had to be quoted:\n{}",
+        local.text
+    );
+    assert_eq!(local.representation, Representation::Java);
+    assert_eq!(local.quality, Quality::Structured);
 
     let refused = fixture(&engine, REFUSED_CAST);
     let left = recover(
@@ -733,20 +749,25 @@ fn a_stopped_run_reports_not_produced() {
     let descriptor = descriptor_of(&fixture, b"nestedLocal");
 
     // The control: with an ample budget this very member is a produced artifact holding a statement,
-    // and the report states how many output bytes the run charged for it.
+    // and the report states how many output bytes the run charged for it. The emitter's contract is
+    // exact accounting (the CLI's own `transport.response_bytes` equality): the charged total is the
+    // artifact's own byte length.
     let produced = recover(&engine, &fixture, b"nestedLocal", &descriptor);
     assert_eq!(produced.content, RecoveryContent::ContainsStatements);
     assert!(!produced.text.is_empty());
     let charged = output_bytes(&produced);
     let artifact = u64::try_from(produced.text.len()).expect("the artifact length fits u64");
-    assert!(charged > artifact, "the run charged more than its artifact");
+    assert_eq!(
+        charged, artifact,
+        "the run charges exactly the artifact it hands out"
+    );
 
     // The output bound: the body builds statements, the emitter refuses the first write of the
     // artifact and discards the buffer, so the report states a stop and *not* the content of the AST
-    // it had already built. The bound is derived from the run itself rather than guessed: a run that
-    // may charge everything the ample one charged except the artifact's own bytes is exactly a run
-    // the analysis completes and the first emitter write refuses — a smaller bound would stop the
-    // class read, which is a different case.
+    // it had already built. The bound is derived from the run itself rather than guessed: the run
+    // may charge everything the ample one charged except the artifact's own bytes — under the exact
+    // contract that is zero output — so every non-output plane completes and the artifact's own
+    // first charge refuses.
     let mut tight = Budget::new(Limits {
         output_bytes: charged - artifact,
         ..limits()
@@ -763,7 +784,7 @@ fn a_stopped_run_reports_not_produced() {
         matches!(
             stopped.outcome,
             RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: CountedBudgetDimension::OutputBytes,
+                dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
                 ..
             })
         ),

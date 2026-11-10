@@ -1379,7 +1379,7 @@ fn reader_loop_arm_return_proof_publishes_no_partial_claim_on_budget_or_stop() {
                 if matches!(
                     result,
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         ..
                     })
                 ) && w.budget.usage().analysis_steps > 0
@@ -1463,7 +1463,11 @@ fn reader_loop_arm_return_proof_publishes_no_partial_claim_on_budget_or_stop() {
                     &candidate.join,
                     &frame
                 ),
-                Err(StopReason::Interrupted { .. })
+                Err(StopReason::Budget {
+                    dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
+                    at: Some(_),
+                    ..
+                })
             ));
             assert_eq!(w.visited, candidate.owners);
         },

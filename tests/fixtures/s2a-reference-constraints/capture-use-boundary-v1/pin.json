@@ -1,0 +1,28 @@
+{
+  "schema": "s2a-capture-use-boundary-fixture-pin-v1",
+  "source_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/capture-use-boundary-v1/manifest.json",
+  "source_manifest_sha256": "954584754216f90fadee73c7b453b4f1c9f01be709c69632f0b4ada100a4ee4a",
+  "source_declared_sha256": "b96db930059cd9eae98ad8bff631e4f6adceebb0574fafefe2a4dc0ad5e9d333",
+  "class_actual_bytes": 1262,
+  "class_actual_sha256": "2dbd67f1ffb785b7a98ee5cb8834435da8a492f107f431d392a34a0096df47e5",
+  "class_actual_blake3": "dbeb2292799a3d4dd34c8fa70ffbfbe2889874a80882ea79e4eb11eb478884a3",
+  "class_digest_matches_report": true,
+  "files": [
+    {
+      "name": "CapturedType.class",
+      "bytes": 1262,
+      "sha256": "2dbd67f1ffb785b7a98ee5cb8834435da8a492f107f431d392a34a0096df47e5"
+    },
+    {
+      "name": "CapturedType.java",
+      "bytes": 434,
+      "sha256": "b96db930059cd9eae98ad8bff631e4f6adceebb0574fafefe2a4dc0ad5e9d333"
+    },
+    {
+      "name": "CapturedTypeDriver.java",
+      "bytes": 446,
+      "sha256": "e9df506141a350ccaa18c9f4e28c66deea8f6af9a6421e6eea9c45fbddf78fa2"
+    }
+  ],
+  "driver_sha256": "e9df506141a350ccaa18c9f4e28c66deea8f6af9a6421e6eea9c45fbddf78fa2"
+}

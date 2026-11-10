@@ -1,0 +1,459 @@
+{
+  "schema": "s2a-reference-constraints-dev-class-source-pins-v1",
+  "frozen_before_cli": true,
+  "fixture_manifest_sha256": "1bccd5e95931ea689661bb9789e3d9e51c86e365841b1d26637fcb2c1fb9a6b0",
+  "run_receipt_sha256": "058674488f1f7c4f052d0599ae72a9818a2e584f161af2342b7bf96b46c9e487",
+  "producer_clis": [
+    {
+      "id": "r6",
+      "path": "/private/tmp/jarde-s2a-r6-20261026-bin/jarde-cli",
+      "bytes": 79341000,
+      "sha256": "ab79fa84408450aae1ad431e2819f5b08309024fe592d4e5aa9e56f4779e8b86"
+    },
+    {
+      "id": "relations-r5",
+      "path": "/private/tmp/jarde-s2a-relations-r5-20261026-bin/jarde-cli",
+      "bytes": 79433160,
+      "sha256": "6c19788cbd36de3b226553510c9d6046aff27621cbf69fa91bf6230ba847693a"
+    }
+  ],
+  "jar_policy": "reproducible standard ZIP: sorted class entries only, Deflate level 9, fixed 2020-01-01 timestamp, regular-file 0644 metadata; no driver classes.",
+  "runtime_profile": {
+    "policy": "plain-jar",
+    "source_target": 8,
+    "release": 8,
+    "multi_release": "disabled",
+    "layout": "generic",
+    "evidence": "essential",
+    "budget": "original CLI defaults; no --budget arguments",
+    "target_execution": false
+  },
+  "target_jars": [
+    {
+      "compiler": "corretto8",
+      "debug_mode": "debug",
+      "source_class": "ReferenceCases",
+      "jar_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/corretto8-debug.jar",
+      "jar_bytes": 2462,
+      "jar_sha256": "efea68e33eb1d8cd80bee616a57c9bfa4d7298be5d6b3de35336eb1a7b33b052",
+      "zip_members": [
+        "ReferenceCases$Answer.class",
+        "ReferenceCases$FirstAnswer.class",
+        "ReferenceCases$SecondAnswer.class",
+        "ReferenceCases.class"
+      ],
+      "class_records": [
+        {
+          "name": "ReferenceCases$Answer.class",
+          "bytes": 198,
+          "sha256": "c6eee05a4d78693a48231b21c230994be7001d778ae523f67051d43f68a97463",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases$FirstAnswer.class",
+          "bytes": 475,
+          "sha256": "8ff5073d365cf7786a4d16d6eabe37f96149fc6e924d671bbfb5baf5add0ae0f",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases$SecondAnswer.class",
+          "bytes": 478,
+          "sha256": "c42a5adca4be93ff0e7dabff87a86a68adc7aadd28ddde84ad04747e9e217c92",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases.class",
+          "bytes": 2062,
+          "sha256": "96d751e4817991e59783856a3e11b893a3d8bfbdd148498bb896f824d6c46632",
+          "class_major": 52
+        }
+      ],
+      "zip_member_sha256": {
+        "ReferenceCases$Answer.class": "c6eee05a4d78693a48231b21c230994be7001d778ae523f67051d43f68a97463",
+        "ReferenceCases$FirstAnswer.class": "8ff5073d365cf7786a4d16d6eabe37f96149fc6e924d671bbfb5baf5add0ae0f",
+        "ReferenceCases$SecondAnswer.class": "c42a5adca4be93ff0e7dabff87a86a68adc7aadd28ddde84ad04747e9e217c92",
+        "ReferenceCases.class": "96d751e4817991e59783856a3e11b893a3d8bfbdd148498bb896f824d6c46632"
+      },
+      "driver_excluded": true,
+      "source_classes_dir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/build/corretto8/dev/debug/classes"
+    },
+    {
+      "compiler": "corretto8",
+      "debug_mode": "no-debug",
+      "source_class": "ReferenceCases",
+      "jar_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/corretto8-no-debug.jar",
+      "jar_bytes": 1896,
+      "jar_sha256": "6e435a94b60517d22b0aa0470442cc0dc90356a9a9abaed7ba666ae5e23cf876",
+      "zip_members": [
+        "ReferenceCases$Answer.class",
+        "ReferenceCases$FirstAnswer.class",
+        "ReferenceCases$SecondAnswer.class",
+        "ReferenceCases.class"
+      ],
+      "class_records": [
+        {
+          "name": "ReferenceCases$Answer.class",
+          "bytes": 155,
+          "sha256": "ecc3d8666149d16ec889abe202f3ddb06548d0e717ea9a1eb63761a1f0a960d2",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases$FirstAnswer.class",
+          "bytes": 295,
+          "sha256": "4b10c24f85d40ffb207aa047dd5eb1dda4e9a42db97aaa9f35dc5140ebd187ef",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases$SecondAnswer.class",
+          "bytes": 297,
+          "sha256": "06b7e4a86033e34733bbeabed39da96a9d91879e2033783a5f15b4ea7918f2fd",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases.class",
+          "bytes": 1303,
+          "sha256": "9a8749699c372848c3d64f58ef26196cd4375a636473d9c3ab13929de5c09e1c",
+          "class_major": 52
+        }
+      ],
+      "zip_member_sha256": {
+        "ReferenceCases$Answer.class": "ecc3d8666149d16ec889abe202f3ddb06548d0e717ea9a1eb63761a1f0a960d2",
+        "ReferenceCases$FirstAnswer.class": "4b10c24f85d40ffb207aa047dd5eb1dda4e9a42db97aaa9f35dc5140ebd187ef",
+        "ReferenceCases$SecondAnswer.class": "06b7e4a86033e34733bbeabed39da96a9d91879e2033783a5f15b4ea7918f2fd",
+        "ReferenceCases.class": "9a8749699c372848c3d64f58ef26196cd4375a636473d9c3ab13929de5c09e1c"
+      },
+      "driver_excluded": true,
+      "source_classes_dir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/build/corretto8/dev/no-debug/classes"
+    },
+    {
+      "compiler": "openjdk23",
+      "debug_mode": "debug",
+      "source_class": "ReferenceCases",
+      "jar_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/openjdk23-debug.jar",
+      "jar_bytes": 2479,
+      "jar_sha256": "55578d2d7a753586db5a577daaaec495f328eb13d63d890d539a3e5f70c631bb",
+      "zip_members": [
+        "ReferenceCases$Answer.class",
+        "ReferenceCases$FirstAnswer.class",
+        "ReferenceCases$SecondAnswer.class",
+        "ReferenceCases.class"
+      ],
+      "class_records": [
+        {
+          "name": "ReferenceCases$Answer.class",
+          "bytes": 198,
+          "sha256": "d7f1d3af32e3b1c2182d31bf442fb5b75dac053f8f34ae8a5c68d38994f6a575",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases$FirstAnswer.class",
+          "bytes": 475,
+          "sha256": "2aa0a9be32586f9273091e7aba945e2a7fc8f1621ab23b98d5e4b1b787abb797",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases$SecondAnswer.class",
+          "bytes": 478,
+          "sha256": "8f12866dce8888b3d6721fc3c66611896a5a709f08ea6c71ec27471c5df6c874",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases.class",
+          "bytes": 2053,
+          "sha256": "8cb18ab2901fc4239edb9af76cc568b935a0e3cb09a1d294ebc028a3184d7519",
+          "class_major": 52
+        }
+      ],
+      "zip_member_sha256": {
+        "ReferenceCases$Answer.class": "d7f1d3af32e3b1c2182d31bf442fb5b75dac053f8f34ae8a5c68d38994f6a575",
+        "ReferenceCases$FirstAnswer.class": "2aa0a9be32586f9273091e7aba945e2a7fc8f1621ab23b98d5e4b1b787abb797",
+        "ReferenceCases$SecondAnswer.class": "8f12866dce8888b3d6721fc3c66611896a5a709f08ea6c71ec27471c5df6c874",
+        "ReferenceCases.class": "8cb18ab2901fc4239edb9af76cc568b935a0e3cb09a1d294ebc028a3184d7519"
+      },
+      "driver_excluded": true,
+      "source_classes_dir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/build/openjdk23/dev/debug/classes"
+    },
+    {
+      "compiler": "openjdk23",
+      "debug_mode": "no-debug",
+      "source_class": "ReferenceCases",
+      "jar_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/openjdk23-no-debug.jar",
+      "jar_bytes": 1896,
+      "jar_sha256": "5b8adaefc8b7939112608f9c8a239c5ec569072783f38126c927551ce8e8e479",
+      "zip_members": [
+        "ReferenceCases$Answer.class",
+        "ReferenceCases$FirstAnswer.class",
+        "ReferenceCases$SecondAnswer.class",
+        "ReferenceCases.class"
+      ],
+      "class_records": [
+        {
+          "name": "ReferenceCases$Answer.class",
+          "bytes": 155,
+          "sha256": "53640f0df650df46d2f5c411e9b0ac6c48c9d36ab5ca91a49a6f598cfc4fd6fe",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases$FirstAnswer.class",
+          "bytes": 295,
+          "sha256": "6bc9bca5c08d117b3a0e6ba8f9d91f43ee3f6c53b3017def63e1f685d674025f",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases$SecondAnswer.class",
+          "bytes": 297,
+          "sha256": "35d064e87d54b3ae12e1856905ab4c6278e5f9a3c993937577f28804a2f75d4d",
+          "class_major": 52
+        },
+        {
+          "name": "ReferenceCases.class",
+          "bytes": 1294,
+          "sha256": "a1207500d237bfe617f27697ccd3e3ff49c69e9eb3d5af7de01c38abdb924031",
+          "class_major": 52
+        }
+      ],
+      "zip_member_sha256": {
+        "ReferenceCases$Answer.class": "53640f0df650df46d2f5c411e9b0ac6c48c9d36ab5ca91a49a6f598cfc4fd6fe",
+        "ReferenceCases$FirstAnswer.class": "6bc9bca5c08d117b3a0e6ba8f9d91f43ee3f6c53b3017def63e1f685d674025f",
+        "ReferenceCases$SecondAnswer.class": "35d064e87d54b3ae12e1856905ab4c6278e5f9a3c993937577f28804a2f75d4d",
+        "ReferenceCases.class": "a1207500d237bfe617f27697ccd3e3ff49c69e9eb3d5af7de01c38abdb924031"
+      },
+      "driver_excluded": true,
+      "source_classes_dir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/build/openjdk23/dev/no-debug/classes"
+    }
+  ],
+  "planned_commands": [
+    {
+      "cli_id": "r6",
+      "class": "ReferenceCases",
+      "compiler": "corretto8",
+      "debug_mode": "debug",
+      "argv": [
+        "/private/tmp/jarde-s2a-r6-20261026-bin/jarde-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/corretto8-debug.jar",
+        "--class",
+        "ReferenceCases",
+        "--policy",
+        "plain-jar",
+        "--source-target",
+        "8",
+        "--release",
+        "8",
+        "--multi-release",
+        "disabled",
+        "--layout",
+        "generic",
+        "--format",
+        "json",
+        "--evidence",
+        "essential"
+      ],
+      "status": "pinned_not_run"
+    },
+    {
+      "cli_id": "r6",
+      "class": "ReferenceCases",
+      "compiler": "corretto8",
+      "debug_mode": "no-debug",
+      "argv": [
+        "/private/tmp/jarde-s2a-r6-20261026-bin/jarde-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/corretto8-no-debug.jar",
+        "--class",
+        "ReferenceCases",
+        "--policy",
+        "plain-jar",
+        "--source-target",
+        "8",
+        "--release",
+        "8",
+        "--multi-release",
+        "disabled",
+        "--layout",
+        "generic",
+        "--format",
+        "json",
+        "--evidence",
+        "essential"
+      ],
+      "status": "pinned_not_run"
+    },
+    {
+      "cli_id": "r6",
+      "class": "ReferenceCases",
+      "compiler": "openjdk23",
+      "debug_mode": "debug",
+      "argv": [
+        "/private/tmp/jarde-s2a-r6-20261026-bin/jarde-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/openjdk23-debug.jar",
+        "--class",
+        "ReferenceCases",
+        "--policy",
+        "plain-jar",
+        "--source-target",
+        "8",
+        "--release",
+        "8",
+        "--multi-release",
+        "disabled",
+        "--layout",
+        "generic",
+        "--format",
+        "json",
+        "--evidence",
+        "essential"
+      ],
+      "status": "pinned_not_run"
+    },
+    {
+      "cli_id": "r6",
+      "class": "ReferenceCases",
+      "compiler": "openjdk23",
+      "debug_mode": "no-debug",
+      "argv": [
+        "/private/tmp/jarde-s2a-r6-20261026-bin/jarde-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/openjdk23-no-debug.jar",
+        "--class",
+        "ReferenceCases",
+        "--policy",
+        "plain-jar",
+        "--source-target",
+        "8",
+        "--release",
+        "8",
+        "--multi-release",
+        "disabled",
+        "--layout",
+        "generic",
+        "--format",
+        "json",
+        "--evidence",
+        "essential"
+      ],
+      "status": "pinned_not_run"
+    },
+    {
+      "cli_id": "relations-r5",
+      "class": "ReferenceCases",
+      "compiler": "corretto8",
+      "debug_mode": "debug",
+      "argv": [
+        "/private/tmp/jarde-s2a-relations-r5-20261026-bin/jarde-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/corretto8-debug.jar",
+        "--class",
+        "ReferenceCases",
+        "--policy",
+        "plain-jar",
+        "--source-target",
+        "8",
+        "--release",
+        "8",
+        "--multi-release",
+        "disabled",
+        "--layout",
+        "generic",
+        "--format",
+        "json",
+        "--evidence",
+        "essential"
+      ],
+      "status": "pinned_not_run"
+    },
+    {
+      "cli_id": "relations-r5",
+      "class": "ReferenceCases",
+      "compiler": "corretto8",
+      "debug_mode": "no-debug",
+      "argv": [
+        "/private/tmp/jarde-s2a-relations-r5-20261026-bin/jarde-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/corretto8-no-debug.jar",
+        "--class",
+        "ReferenceCases",
+        "--policy",
+        "plain-jar",
+        "--source-target",
+        "8",
+        "--release",
+        "8",
+        "--multi-release",
+        "disabled",
+        "--layout",
+        "generic",
+        "--format",
+        "json",
+        "--evidence",
+        "essential"
+      ],
+      "status": "pinned_not_run"
+    },
+    {
+      "cli_id": "relations-r5",
+      "class": "ReferenceCases",
+      "compiler": "openjdk23",
+      "debug_mode": "debug",
+      "argv": [
+        "/private/tmp/jarde-s2a-relations-r5-20261026-bin/jarde-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/openjdk23-debug.jar",
+        "--class",
+        "ReferenceCases",
+        "--policy",
+        "plain-jar",
+        "--source-target",
+        "8",
+        "--release",
+        "8",
+        "--multi-release",
+        "disabled",
+        "--layout",
+        "generic",
+        "--format",
+        "json",
+        "--evidence",
+        "essential"
+      ],
+      "status": "pinned_not_run"
+    },
+    {
+      "cli_id": "relations-r5",
+      "class": "ReferenceCases",
+      "compiler": "openjdk23",
+      "debug_mode": "no-debug",
+      "argv": [
+        "/private/tmp/jarde-s2a-relations-r5-20261026-bin/jarde-cli",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/openjdk23-no-debug.jar",
+        "--class",
+        "ReferenceCases",
+        "--policy",
+        "plain-jar",
+        "--source-target",
+        "8",
+        "--release",
+        "8",
+        "--multi-release",
+        "disabled",
+        "--layout",
+        "generic",
+        "--format",
+        "json",
+        "--evidence",
+        "essential"
+      ],
+      "status": "pinned_not_run"
+    }
+  ]
+}

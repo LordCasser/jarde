@@ -23,6 +23,7 @@ fn method_text(class_bytes: &[u8], class_name: &str, method_name: &str) -> Strin
         .open(ArtifactInput::bytes(class_bytes.to_vec()), &mut budget)
         .expect("frozen class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },

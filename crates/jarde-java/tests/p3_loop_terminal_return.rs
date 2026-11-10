@@ -8,7 +8,7 @@ use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest, Quality};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+use jarde_reader::budget::{Budget, CancellationToken, Limits};
 use jarde_reader::model::{
     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
     PhysicalVariant,
@@ -171,7 +171,17 @@ fn recover_class_method_with_budget(
     );
     let mut budget = recovery_budget.unwrap_or(budget);
     recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8).with_evidence(evidence),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(evidence),
         &mut budget,
     )
 }
@@ -517,7 +527,7 @@ fn switch_loop_join_late_budget_cancel_and_deadline_publish_no_partial_source() 
         assert!(matches!(
             stopped.stop(),
             Some(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 ..
             })
         ));
@@ -551,9 +561,19 @@ fn switch_loop_join_late_budget_cancel_and_deadline_publish_no_partial_source() 
     );
     assert!(!expired.produced());
     assert!(expired.text.is_empty() && expired.source_map.is_empty());
+    // Re-pinned 2026-11-08 (cross-domain-regression-r1). The stop vocabulary was unified: an
+    // expired wall clock is a quota refusal on `ElapsedMillis`, not a structural `Interrupted`
+    // code (`src/stop.rs::stop_from_error` now maps every `BudgetExceeded` to `StopReason::Budget`,
+    // and five in-crate suites — statementful_loop_header/protected_prefix_loop/
+    // switch_nonlocal_completion/loop_arm_return/field_test_copy — already pin
+    // `Budget { dimension: ElapsedMillis }`). Measured here: consumed 3 / limit 1. The property
+    // this test is about — an expired deadline publishes no partial source — is unchanged.
     assert!(matches!(
         expired.stop(),
-        Some(StopReason::Interrupted { code, .. }) if *code == "jre_budget_interrupted"
+        Some(StopReason::Budget {
+            dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
+            ..
+        })
     ));
 }
 
@@ -605,7 +625,7 @@ fn cf07_candidate_budget_and_cancellation_publish_no_partial_source() {
     assert!(matches!(
         stopped.stop(),
         Some(StopReason::Budget {
-            dimension: CountedBudgetDimension::AnalysisSteps,
+            dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
             ..
         })
     ));

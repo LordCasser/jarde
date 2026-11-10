@@ -1,0 +1,7 @@
+# S2a reference-relation fixtures
+
+These four Java 8 class-path archives pin the deterministic R2 `Consumer` relation probe. The normal archives contain only `Consumer.class`; their bytecode calls `consume(java.util.List)` from `run(java.util.ArrayList)`. The override archives add a physical `java/util/ArrayList.class` entry. That entry comes from compiled `ShadowList` bytes with only the existing constant-pool UTF8 name rewritten; its `this_class` is `java/util/ArrayList`, its superclass is `java/lang/Object`, and it declares zero interfaces. The Code payload was unchanged. `manifest.json` records each archive SHA-256 and the fake Header class SHA-256/BLAKE3 identity.
+
+This is a static class-source regression. It opens each archive with `Engine::class_source` under PlainJar, runtime 8 and source target 8. It never loads or executes the override class, compiles recovered source, or makes a JVM behavior claim.
+
+The older S1 baseline and S2a R3 public-entry reports incorrectly emitted a Java/Structured call for the override input even though the selected physical Header did not implement `List`. The pinned R2 input/build evidence is under `openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/platform-header-override-v1/r2/`; the fixed R5 negative reports, with the physical `ArrayList.class` dependency retained and `relation: Some(Incompatible)` in the nested report text, are under `r2/before-relations-r5/`. `comparison-r3.json` preserves the positive-control equality and old/new nested Report fields.

@@ -1,0 +1,46 @@
+{
+  "schema": "s2b-conflicting-return-r1",
+  "javac": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+  "javac_args": [
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-g",
+    "-classpath",
+    "crates/jarde-java/tests/fixtures/s2b-bound-type-identities-r1/identity-a/classes",
+    "-d",
+    "crates/jarde-java/tests/fixtures/s2b-conflicting-return-r1/classes"
+  ],
+  "javap": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+  "javap_args": [
+    "-p",
+    "-s",
+    "-v",
+    "-c",
+    "flow.ConflictingReturnControls"
+  ],
+  "javap_contract": "descriptor (Ljava/util/List;)Ljava/util/List;, Signature List<String> to List<Foo>, physical Code has only aload_0 and areturn, no checkcast",
+  "files": [
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-conflicting-return-r1/src/flow/ConflictingReturnControls.java",
+      "size": 266,
+      "sha256": "2bbed18792c68e2199eaf9c19120b22488b577422846261f8c2637c01a13be63"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-conflicting-return-r1/classes/flow/ConflictingReturnControls.class",
+      "size": 619,
+      "sha256": "9ce76abb217dd7c65819ce94b1259133352871173e7235d73eab1b3b31bbbc1a"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-conflicting-return-r1/javac.log",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-conflicting-return-r1/ConflictingReturnControls.javap.txt",
+      "size": 2800,
+      "sha256": "bc3cac7f9f722005ee679c5cbf55552e1e8768e7d0cc0ebab3a5ed41b3c8d7f3"
+    }
+  ]
+}

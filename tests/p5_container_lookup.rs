@@ -1868,7 +1868,12 @@ fn recover_with(
         None => Budget::new(limits),
     };
     let recovered = Engine::new()
-        .recover_method(std::slice::from_ref(snapshot), request, &mut budget)
+        .recover_method(
+            std::slice::from_ref(snapshot),
+            jarde::SourceTarget::JAVA_8,
+            request,
+            &mut budget,
+        )
         .expect("a legal request is answered, not raised");
     (recovered, budget)
 }

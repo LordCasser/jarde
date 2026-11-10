@@ -462,6 +462,10 @@ fn recovery_operation(request: &MethodAnalysisRequest) -> Value {
         .as_object_mut()
         .expect("the request serializes as an object");
     fields.insert("kind".to_string(), json!("recover_method"));
+    fields.insert(
+        "source_target".to_string(),
+        json!(jarde::SourceTarget::JAVA_8),
+    );
     // The evidence selection this loop asks for is stated on **both** sides of the wire: this test
     // reads the segment table's physical paths, and an unrequested category is a category the
     // library does not materialize (`add-demand-driven-core-results`, D1).
@@ -571,6 +575,7 @@ fn cli_enumeration_then_recovery(name: &str, prefix: &[u8]) -> Value {
     let direct = engine
         .recover_method_with_evidence(
             std::slice::from_ref(&library_snapshot),
+            jarde::SourceTarget::JAVA_8,
             &analysis,
             &RecoveryEvidenceRequest::all(),
             &mut library_budget,

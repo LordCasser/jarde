@@ -88,9 +88,9 @@ const TYPED_CONTROL_LEGS: &[(&str, &str, &[u8], bool)] = &[
         true,
     ),
 ];
-// Refusals retain copy/read/store/return and extra-consumer anchors. Stable parameter loads
-// are named by the declaration. Historical fallback omits the rejected iadd producer;
-// see consumer-source-map-history-v1 and verification-root.md for the separate debt.
+// Consumer-control class bytes are analyzed only; the long-return control is not executed. Extra
+// consumers stay quoted, while its non-int return keeps an explicit typed store/load baseline
+// without claiming a returned `+=` form.
 const CONSUMER_CONTROL_LEGS: &[(&str, &str, &[u8], &[u32])] = &[
     (
         "v8",
@@ -210,6 +210,7 @@ fn opened_class_source(
         )
         .expect("one fixture class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },
@@ -462,16 +463,16 @@ fn nested_int_array_boundaries_do_not_claim_unproved_compound_updates() {
             unreachable!("the merged recovery record was checked above")
         };
         assert!(
-            !recovery.source_map.direct_of_bci(18).is_empty(),
-            "{leg}/merged: the row-Phi Other stays directly anchored: {:?}",
+            !recovery.source_map.derived_of_bci(18).is_empty(),
+            "{leg}/merged: the row-Phi Other is now a derived stack-copy source: {:?}",
             recovery.source_map.segments()
         );
         for bci in [
             0u32, 1, 4, 5, 6, 7, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21, 22, 23,
         ] {
             assert!(
-                !recovery.source_map.derived_of_bci(bci).is_empty(),
-                "{leg}/merged: the row-read closure lost derived BCI {bci}: {:?}",
+                !recovery.source_map.of_bci(bci).is_empty(),
+                "{leg}/merged: the row-read closure lost source BCI {bci}: {:?}",
                 recovery.source_map.segments()
             );
         }
@@ -597,7 +598,7 @@ fn returned_int_array_updates_use_java_types_beyond_category_one_frames() {
 }
 
 #[test]
-fn returned_int_array_updates_reject_extra_consumers_and_non_int_returns() {
+fn returned_int_array_updates_keep_extra_consumer_and_non_int_return_boundaries() {
     for (leg, variant, class_bytes, bcis) in CONSUMER_CONTROL_LEGS {
         let report = class_source_named(class_bytes, "ReturnedIntArrayUpdates");
         let scalar = body(&report, "scalar");
@@ -608,6 +609,33 @@ fn returned_int_array_updates_reject_extra_consumers_and_non_int_returns() {
                 .find(|method| method.item.name.raw().0 == b"scalar")
                 .expect("long-return control retains its scalar method");
             assert_eq!(method.item.descriptor.raw().0, b"([III)J");
+            assert_eq!(
+                scalar.quality,
+                Quality::Structured,
+                "{leg}/{variant}: {}",
+                scalar.text
+            );
+            assert!(
+                !scalar.text.contains("@bytecode"),
+                "{leg}/{variant}: {}",
+                scalar.text
+            );
+            assert!(
+                scalar.text.contains("return (long) saved2;"),
+                "the long return consumes the typed saved int result without claiming `return +=`:\n{}",
+                scalar.text
+            );
+            assert!(
+                scalar.text.contains("saved0[saved1] = saved2;"),
+                "the original array store remains explicit:\n{}",
+                scalar.text
+            );
+        } else {
+            assert!(
+                scalar.text.contains("@bytecode"),
+                "{leg}/{variant}: unsupported scalar shape stays explicitly quoted:\n{}",
+                scalar.text
+            );
         }
         assert!(
             !scalar
@@ -615,11 +643,6 @@ fn returned_int_array_updates_reject_extra_consumers_and_non_int_returns() {
                 .lines()
                 .any(|line| line.contains("return ") && line.contains(" += ")),
             "{leg}/{variant}: unsupported consumer/return shape cannot publish returned +=:\n{}",
-            scalar.text
-        );
-        assert!(
-            scalar.text.contains("@bytecode"),
-            "{leg}/{variant}: unsupported scalar shape stays explicitly quoted:\n{}",
             scalar.text
         );
         for bci in *bcis {

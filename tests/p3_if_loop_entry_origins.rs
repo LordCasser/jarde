@@ -2,7 +2,7 @@
 use jarde::*;
 use jarde_java::Provenance;
 use jarde_jvm::ir::Quality;
-use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension};
+use jarde_reader::budget::{Budget, CancellationToken};
 use jarde_reader::classfile::{MethodSelector, inspect_method_bytecode};
 use jarde_reader::model::ExecutionReport;
 use std::collections::BTreeSet;
@@ -24,6 +24,7 @@ fn source(bytes: &[u8], policy: EnvironmentPolicy, all: bool) -> ClassSourceRepo
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .expect("frozen class or JAR opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(OWNER),
         },
@@ -250,6 +251,7 @@ fn if_loop_entry_public_source_propagates_precancellation() {
         )
         .expect("fixture opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(OWNER),
         },
@@ -300,6 +302,7 @@ fn if_loop_entry_public_source_propagates_precancellation() {
     let complete = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::essential(),
             &mut complete_budget,
@@ -323,6 +326,7 @@ fn if_loop_entry_public_source_propagates_precancellation() {
         let stopped = engine
             .recover_method_with_evidence(
                 slice::from_ref(&snapshot),
+                jarde::SourceTarget::JAVA_8,
                 &request,
                 &RecoveryEvidenceRequest::essential(),
                 &mut budget,
@@ -332,7 +336,7 @@ fn if_loop_entry_public_source_propagates_precancellation() {
         let at_proof_site = matches!(
             &recovery.outcome,
             RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrEdges,
+                dimension: jarde_reader::budget::BudgetDimension::IrEdges,
                 at: Some(8),
                 ..
             })

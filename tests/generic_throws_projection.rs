@@ -91,6 +91,7 @@ fn class_source_named_with_evidence(
         .open(ArtifactInput::bytes(bytes), &mut budget)
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },
@@ -181,6 +182,26 @@ fn class_throws_variable_survives_both_debug_variants_and_typed_callers() {
         compile(&original, debug, &[(CLASS_NAME, SOURCE)]);
         let bytes = fs::read(original.join(format!("{CLASS_NAME}.class"))).unwrap();
         let report = class_source(bytes);
+        let invoke = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"invoke")
+            .expect("the physical abstract declaration remains queryable");
+        assert!(matches!(invoke.outcome, ClassSourceOutcome::NoBody));
+        assert_eq!(invoke.no_body_kind, Some(NoBodyKind::Abstract));
+        let signature_proof = invoke
+            .markers
+            .iter()
+            .find(|marker| marker.contains("generic Signature"))
+            .expect("the successful Signature projection names its proof");
+        assert!(
+            signature_proof.contains("physical NoBody/Signature erasure proof"),
+            "{signature_proof}"
+        );
+        assert!(
+            !signature_proof.contains("AST/SSA"),
+            "a physical NoBody declaration has no SSA return proof"
+        );
         assert!(
             report.text.contains("abstract void invoke() throws E;"),
             "{}",
@@ -476,6 +497,7 @@ public abstract class MethodLocalStopBoundary {
         .open(ArtifactInput::bytes(bytes), &mut task_budget(&[]).unwrap())
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("MethodLocalStopBoundary"),
         },
@@ -1002,6 +1024,7 @@ fn method_local_body_throws_budget_stop_and_cancellation_never_publish_a_partial
         .open(ArtifactInput::bytes(bytes), &mut task_budget(&[]).unwrap())
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("methodbodythrows/MethodBodyThrows"),
         },
@@ -1093,6 +1116,7 @@ fn budget_stop_and_cancellation_never_publish_a_partial_throws_header() {
         .open(ArtifactInput::bytes(bytes), &mut task_budget(&[]).unwrap())
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(CLASS_NAME),
         },

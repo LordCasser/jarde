@@ -94,11 +94,10 @@ use crate::query::{
     ConsumerKind, LiteralValue, QueryPosition, QueryRelation, QueryResolution, QueryTarget,
     XrefCertainty, XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
 };
-use jarde_reader::budget::CountedBudgetDimension;
 use jarde_reader::classfile::{
     BytecodeStop, ClassFacts, CpEntryFacts, CpEntryKind, EntryDescriptor, ExceptionHandlerFact,
-    InstructionFact, MethodCodeFacts, class_facts, cp_class_name, cp_entry, descriptor_types,
-    entry_descriptor, method_code_facts,
+    InstructionFact, MethodCodeFacts, class_facts_shared, cp_class_name, cp_entry,
+    descriptor_types, entry_descriptor, method_code_facts,
 };
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
@@ -106,6 +105,7 @@ use jarde_reader::model::{
     JvmBytes, Location, PhysicalDefinitionId, PhysicalMethodId, Provenance, SymbolRef,
     TerminationReason,
 };
+use std::sync::Arc;
 
 /// Attribute name of the only attribute this stream reads.
 const CODE_ATTRIBUTE: &[u8] = b"Code";
@@ -157,7 +157,7 @@ enum State {
 /// One open code producer: the unit's class file and where in it the walk stands.
 struct Open {
     content: UnitContent,
-    facts: ClassFacts,
+    facts: Arc<ClassFacts>,
     definition: PhysicalDefinitionId,
     /// The next member this walk decodes, in the class file's own method list.
     at: usize,
@@ -252,7 +252,7 @@ impl CodeWalk {
                 &code,
                 out,
             )?;
-            match code_stop(ctx, &code) {
+            match code_stop(&code) {
                 Some(CodeStop::Budget(error)) => return Err(error),
                 Some(CodeStop::Decode(error)) => {
                     ctx.push_diagnostic(stop_diagnostic(
@@ -305,7 +305,7 @@ fn open(
     };
     let facts = {
         let budget = ctx.budget();
-        class_facts(&content.bytes, budget)?
+        class_facts_shared(&content.bytes, budget)?
     };
     let definition = unit.definition(ClassBytesId {
         digest: content.digest.clone(),
@@ -1037,8 +1037,8 @@ enum CodeStop {
 ///
 /// `Partial { Error { .. } }` is exactly how the reader reports a body whose code did not
 /// decode; every other non-complete execution is a budget or cancellation condition,
-/// which the live budget re-states.
-fn code_stop(ctx: &mut ScanContext<'_>, facts: &MethodCodeFacts) -> Option<CodeStop> {
+/// retained by the reader before a later poll can observe the ledger's cancellation.
+fn code_stop(facts: &MethodCodeFacts) -> Option<CodeStop> {
     match &facts.execution {
         ExecutionReport::Complete { .. } => None,
         ExecutionReport::Partial {
@@ -1048,27 +1048,13 @@ fn code_stop(ctx: &mut ScanContext<'_>, facts: &MethodCodeFacts) -> Option<CodeS
             stop_code(facts).to_owned(),
             stop_description(facts),
         ))),
-        _ => Some(CodeStop::Budget(live_stop(ctx))),
+        _ => Some(CodeStop::Budget(
+            facts
+                .stop_error()
+                .expect("a budget-stopped decode retains its original error")
+                .clone(),
+        )),
     }
-}
-
-/// The structured error of a budget or cancellation stop.
-///
-/// `method_code_facts` returns its reliable prefix together with the stop instead of the
-/// failing error, so the stop is re-issued as a one-unit `CodeBytes` check against the
-/// live budget. `check` polls cancellation and the elapsed limit before the dimension
-/// limit, so the reported condition, dimension and counts are the ones that stopped the
-/// sub-scan, and `requested` states the re-check's own one-unit request.
-fn live_stop(ctx: &mut ScanContext<'_>) -> Error {
-    ctx.budget()
-        .check(CountedBudgetDimension::CodeBytes, 1)
-        .err()
-        .unwrap_or_else(|| {
-            Error::invalid_input(
-                "classfile_bytecode_failed",
-                "code decoding stopped without a live budget condition",
-            )
-        })
 }
 
 /// Stable code of the stop a method body reported.

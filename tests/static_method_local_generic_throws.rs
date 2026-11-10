@@ -57,6 +57,7 @@ fn report_from_source(label: &str, debug: &str, source: &str) -> ClassSourceRepo
         .open(ArtifactInput::bytes(bytes), &mut task_budget(&[]).unwrap())
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("StaticThrows"),
         },

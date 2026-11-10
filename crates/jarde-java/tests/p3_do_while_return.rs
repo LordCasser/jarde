@@ -16,7 +16,7 @@ use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+use jarde_reader::budget::{Budget, CancellationToken, Limits};
 use jarde_reader::model::{
     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
     PhysicalVariant,
@@ -121,7 +121,17 @@ fn recover_class_method(
     );
     let mut budget = recovery_budget.unwrap_or(budget);
     recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8).with_evidence(evidence),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(evidence),
         &mut budget,
     )
 }
@@ -339,7 +349,7 @@ fn closure_budget_and_cancellation_publish_no_partial_source() {
     assert!(matches!(
         stopped.stop(),
         Some(StopReason::Budget {
-            dimension: CountedBudgetDimension::AnalysisSteps,
+            dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
             ..
         })
     ));

@@ -931,6 +931,8 @@ pub(crate) struct SlotTouch {
     /// Class of the value a write stores; `None` for a read, whose class the reader of the SSA
     /// takes from the definition it resolved.
     pub(crate) value: Option<Value>,
+    /// Original input stack slot of a copied value; recorded by the actual stack permutation.
+    pub(crate) copied_from: Option<u32>,
 }
 
 /// What one instruction of a block touches, in execution order.
@@ -1012,6 +1014,28 @@ impl Frame {
         Ok(())
     }
 
+    /// Carries a stack value's original slot through a verified copy/rotation.
+    fn take_copy(&mut self, bci: u32, opcode: u8, category_one: bool) -> Norm<(Value, u32)> {
+        let value = if category_one {
+            self.take_cat1(bci, opcode)?
+        } else {
+            self.take(bci, opcode)?
+        };
+        // The pop leaves the stack at this input value's original first slot.
+        Ok((value, self.stack.len() as u32))
+    }
+
+    fn push_copy(&mut self, (value, source): (Value, u32), bci: u32) -> Norm<()> {
+        self.push(value, bci)?;
+        if let Some(touches) = self.touches.as_mut() {
+            touches
+                .last_mut()
+                .expect("push records one write")
+                .copied_from = Some(source);
+        }
+        Ok(())
+    }
+
     /// Records one access when a replay is tracing this frame; a no-op in every other run.
     fn record(
         &mut self,
@@ -1028,6 +1052,7 @@ impl Frame {
                 width: u32::try_from(width).unwrap_or(u32::MAX),
                 write,
                 value,
+                copied_from: None,
             });
         }
     }
@@ -2015,114 +2040,111 @@ fn apply_form(form: Form, bci: u32, opcode: u8, frame: &mut Frame) -> Norm<()> {
         }
         Form::Dup => {
             // `..., value1` -> `..., value1, value1`.
-            let value = frame.take_cat1(bci, opcode)?;
-            frame.push(value.clone(), bci)?;
-            frame.push(value, bci)?;
+            let value = frame.take_copy(bci, opcode, true)?;
+            frame.push_copy(value.clone(), bci)?;
+            frame.push_copy(value, bci)?;
         }
         Form::DupX1 => {
             // `..., value2, value1` -> `..., value1, value2, value1`.
-            let value1 = frame.take_cat1(bci, opcode)?;
-            let value2 = frame.take_cat1(bci, opcode)?;
-            frame.push(value1.clone(), bci)?;
-            frame.push(value2, bci)?;
-            frame.push(value1, bci)?;
+            let value1 = frame.take_copy(bci, opcode, true)?;
+            let value2 = frame.take_copy(bci, opcode, true)?;
+            frame.push_copy(value1.clone(), bci)?;
+            frame.push_copy(value2, bci)?;
+            frame.push_copy(value1, bci)?;
         }
         Form::DupX2 => {
             // `..., value3, value2, value1` -> `..., value1, value3, value2, value1`, or with a
             // category-2 `value2`: `..., value2, value1` -> `..., value1, value2, value1`.
-            let value1 = frame.take_cat1(bci, opcode)?;
-            let below = frame.take(bci, opcode)?;
-            if below.slots() == 2 {
-                frame.push(value1.clone(), bci)?;
-                frame.push(below, bci)?;
-                frame.push(value1, bci)?;
+            let value1 = frame.take_copy(bci, opcode, true)?;
+            let below = frame.take_copy(bci, opcode, false)?;
+            if below.0.slots() == 2 {
+                frame.push_copy(value1.clone(), bci)?;
+                frame.push_copy(below, bci)?;
+                frame.push_copy(value1, bci)?;
             } else {
-                let value3 = frame.take_cat1(bci, opcode)?;
-                frame.push(value1.clone(), bci)?;
-                frame.push(value3, bci)?;
-                frame.push(below, bci)?;
-                frame.push(value1, bci)?;
+                let value3 = frame.take_copy(bci, opcode, true)?;
+                frame.push_copy(value1.clone(), bci)?;
+                frame.push_copy(value3, bci)?;
+                frame.push_copy(below, bci)?;
+                frame.push_copy(value1, bci)?;
             }
         }
         Form::Dup2 => {
             // Two category-1 values, or one category-2 value.
-            let value1 = frame.take(bci, opcode)?;
-            if value1.slots() == 2 {
-                frame.push(value1.clone(), bci)?;
-                frame.push(value1, bci)?;
+            let value1 = frame.take_copy(bci, opcode, false)?;
+            if value1.0.slots() == 2 {
+                frame.push_copy(value1.clone(), bci)?;
+                frame.push_copy(value1, bci)?;
             } else {
-                let value2 = frame.take_cat1(bci, opcode)?;
-                frame.push(value2.clone(), bci)?;
-                frame.push(value1.clone(), bci)?;
-                frame.push(value2, bci)?;
-                frame.push(value1, bci)?;
+                let value2 = frame.take_copy(bci, opcode, true)?;
+                frame.push_copy(value2.clone(), bci)?;
+                frame.push_copy(value1.clone(), bci)?;
+                frame.push_copy(value2, bci)?;
+                frame.push_copy(value1, bci)?;
             }
         }
         Form::Dup2X1 => {
             // Two category-1 values over one category-1 value, or one category-2 value over one
             // category-1 value.
-            let value1 = frame.take(bci, opcode)?;
-            if value1.slots() == 2 {
-                let value2 = frame.take_cat1(bci, opcode)?;
-                frame.push(value1.clone(), bci)?;
-                frame.push(value2, bci)?;
-                frame.push(value1, bci)?;
+            let value1 = frame.take_copy(bci, opcode, false)?;
+            if value1.0.slots() == 2 {
+                let value2 = frame.take_copy(bci, opcode, true)?;
+                frame.push_copy(value1.clone(), bci)?;
+                frame.push_copy(value2, bci)?;
+                frame.push_copy(value1, bci)?;
             } else {
-                let value2 = frame.take_cat1(bci, opcode)?;
-                let value3 = frame.take_cat1(bci, opcode)?;
-                frame.push(value2.clone(), bci)?;
-                frame.push(value1.clone(), bci)?;
-                frame.push(value3, bci)?;
-                frame.push(value2, bci)?;
-                frame.push(value1, bci)?;
+                let value2 = frame.take_copy(bci, opcode, true)?;
+                let value3 = frame.take_copy(bci, opcode, true)?;
+                frame.push_copy(value2.clone(), bci)?;
+                frame.push_copy(value1.clone(), bci)?;
+                frame.push_copy(value3, bci)?;
+                frame.push_copy(value2, bci)?;
+                frame.push_copy(value1, bci)?;
             }
         }
         Form::Dup2X2 => {
-            // The four forms of JVMS 6.5: two category-1 values over two, one category-1 value
-            // over a category-2 one over a category-1 one, a category-2 value over two
-            // category-1 ones, and one category-2 value over one category-1 one. Two category-2
-            // values below each other are **not** a form of this instruction.
-            let value1 = frame.take(bci, opcode)?;
-            if value1.slots() == 2 {
-                let value2 = frame.take_cat1(bci, opcode)?;
-                frame.push(value1.clone(), bci)?;
-                frame.push(value2, bci)?;
-                frame.push(value1, bci)?;
-            } else {
-                let value2 = frame.take(bci, opcode)?;
-                if value2.slots() == 2 {
-                    let value3 = frame.take_cat1(bci, opcode)?;
-                    frame.push(value2.clone(), bci)?;
-                    frame.push(value1.clone(), bci)?;
-                    frame.push(value3, bci)?;
-                    frame.push(value2, bci)?;
-                    frame.push(value1, bci)?;
+            // JVMS 6.5: duplicate two slots and insert them below the next two slots.
+            // Each two-slot group is either one category-2 value or two category-1 values.
+            let value1 = frame.take_copy(bci, opcode, false)?;
+            if value1.0.slots() == 2 {
+                let value2 = frame.take_copy(bci, opcode, false)?;
+                if value2.0.slots() == 2 {
+                    frame.push_copy(value1.clone(), bci)?;
+                    frame.push_copy(value2, bci)?;
+                    frame.push_copy(value1, bci)?;
                 } else {
-                    let value3 = frame.take(bci, opcode)?;
-                    if value3.slots() == 2 {
-                        frame.push(value2.clone(), bci)?;
-                        frame.push(value1.clone(), bci)?;
-                        frame.push(value3, bci)?;
-                        frame.push(value2, bci)?;
-                        frame.push(value1, bci)?;
-                    } else {
-                        let value4 = frame.take_cat1(bci, opcode)?;
-                        frame.push(value2.clone(), bci)?;
-                        frame.push(value1.clone(), bci)?;
-                        frame.push(value4, bci)?;
-                        frame.push(value3, bci)?;
-                        frame.push(value2, bci)?;
-                        frame.push(value1, bci)?;
-                    }
+                    let value3 = frame.take_copy(bci, opcode, true)?;
+                    frame.push_copy(value1.clone(), bci)?;
+                    frame.push_copy(value3, bci)?;
+                    frame.push_copy(value2, bci)?;
+                    frame.push_copy(value1, bci)?;
+                }
+            } else {
+                let value2 = frame.take_copy(bci, opcode, true)?;
+                let value3 = frame.take_copy(bci, opcode, false)?;
+                if value3.0.slots() == 2 {
+                    frame.push_copy(value2.clone(), bci)?;
+                    frame.push_copy(value1.clone(), bci)?;
+                    frame.push_copy(value3, bci)?;
+                    frame.push_copy(value2, bci)?;
+                    frame.push_copy(value1, bci)?;
+                } else {
+                    let value4 = frame.take_copy(bci, opcode, true)?;
+                    frame.push_copy(value2.clone(), bci)?;
+                    frame.push_copy(value1.clone(), bci)?;
+                    frame.push_copy(value4, bci)?;
+                    frame.push_copy(value3, bci)?;
+                    frame.push_copy(value2, bci)?;
+                    frame.push_copy(value1, bci)?;
                 }
             }
         }
         Form::Swap => {
             // Two category-1 values, exchanged; a category-2 value is not a shape `swap` has.
-            let value1 = frame.take_cat1(bci, opcode)?;
-            let value2 = frame.take_cat1(bci, opcode)?;
-            frame.push(value1, bci)?;
-            frame.push(value2, bci)?;
+            let value1 = frame.take_copy(bci, opcode, true)?;
+            let value2 = frame.take_copy(bci, opcode, true)?;
+            frame.push_copy(value1, bci)?;
+            frame.push_copy(value2, bci)?;
         }
     }
     Ok(())

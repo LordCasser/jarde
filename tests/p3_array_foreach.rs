@@ -40,6 +40,7 @@ fn source(bytes: &[u8], class: &str, evidence: RecoveryEvidenceRequest) -> Class
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .expect("the frozen class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -343,6 +344,7 @@ fn low_work_budget_and_cancellation_publish_no_partial_array_loop() {
         .open(ArtifactInput::bytes(INTS.to_vec()), &mut open_budget)
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("IntArrayForeach"),
         },

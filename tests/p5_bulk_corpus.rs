@@ -651,6 +651,30 @@ impl Billing {
 // many-method-class folded condition before planning its input producers. The actual recorder
 // measures +6 IrItems only in this row and in both old per-method arms; the same source,
 // outcome/text comparisons and all other exact dimensions remain unchanged.
+// 2026-11-07 maintenance batch after the day's accepted mechanism rounds (binding gating,
+// widening supply, the SsaSiteIndex index, the initializer-contract split, the local planner,
+// ordering, relation wiring, slimmer stack frames, the fold family). The ignored recorder
+// re-measured every row on the same committed bytes; the numbers below are its measured counts,
+// not a formula, and no fixture, member, comparison or structural assertion moved.
+// * Work dimensions only on all six bulk rows: ir_items +453/+669/+283/+5078/+275/+153 and
+//   analysis_steps +7445/+11534/+4921/+70302/+4917/+5109 (flat/nested/two-origins/many/damaged/
+//   deep) — the indexed site billing (a site bills its ceil(log₂) comparison count instead of
+//   one charge per instruction), the append_local refactor, the prove main loop's residual after
+//   indexing, and the new proof artifacts booked into IrItems. An earlier intermediate round
+//   bisected the analysis_steps rise (+1371 append_local, +96 prove, the rest outside proof
+//   paths); these pins are the final recorder counts.
+// * output_bytes −4 on the four rows that hold `Scope`/`Holder` (flat/nested/two-origins/
+//   damaged) and −16 on both arms — exactly those four rows' sum; `many` and `deep` stand.
+// * The bulk `nested-mixed` row alone additionally reads +2 archive entries (+782 entry bytes)
+//   and delivers +2 result items: the demand-driven member reads re-materialize this shape's
+//   two nested containers; declared and delivered members stand at 27/27.
+// * The direct arm additionally reads +121 archive entries (+1667 entry bytes) and delivers
+//   +121 result items — the per-request path's reads and deliveries for the members the
+//   method-level demand-driven recovery now restores; the store arm answers those reads from
+//   retention (every read dimension of this row stands) while its work moves by exactly the
+//   direct arm's amounts, which is this file's retention claim holding. The arms' work deltas
+//   (+6913 IrItems, +104047 AnalysisSteps) sit within +2/−181 of the six rows' sums (they were
+//   exact sums in earlier rounds; the per-request delivery granularity now differs slightly).
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     ///
@@ -664,16 +688,22 @@ impl Billing {
     /// +101 with `recover-chained-field-assignment`: the field-copy proof bills every instruction
     /// of every body it scans for the copies whose consumers are field instructions, and no other
     /// dimension moved — the reads, the headers and the text are unmoved.
+    /// 2026-11-08 task 5.2: `analysis_steps` +75, this run's own measured charge after the
+    /// `RegionSummary` derived view landed in production. A completed walk now derives each
+    /// top-level candidate's facts once (its owned set, boundaries, transfers, terminals, clauses
+    /// and effects), billing `AnalysisSteps` per candidate and per owned block. The A4.1
+    /// reconciliation stays a test-gated stage proof, so `ir_items` and every other dimension
+    /// stand, and no text, outcome or comparison moved.
     const FLAT_MIXED: Self = Self {
         archive_entries: 8,
         entry_bytes: 1813,
         class_bytes: 1813,
         class_headers: 0,
         method_bodies: 17,
-        ir_items: 2497,
-        analysis_steps: 1548,
+        ir_items: 2950,
+        analysis_steps: 9068,
         result_items: 37,
-        output_bytes: 3657,
+        output_bytes: 3653,
     };
     /// `nested-mixed`: three containers, two of them nested, five classes.
     ///
@@ -688,16 +718,19 @@ impl Billing {
     /// `analysis_steps` +750 and `output_bytes` −19 (the same per-body evidence work, plus the
     /// `Holder` and `ModLike` quotes that became statements). The 2026-10-01 array-slot-retype
     /// split moved `analysis_steps` +5, the examined writes of this shape's reused slots.
+    /// 2026-11-08 task 5.2: `analysis_steps` +102, this run's own measured charge after the
+    /// `RegionSummary` derived view landed in production (the reason
+    /// [`Billing::FLAT_MIXED`] records); `ir_items` stands and no text or outcome moved.
     const NESTED_MIXED: Self = Self {
-        archive_entries: 25,
-        entry_bytes: 8061,
+        archive_entries: 27,
+        entry_bytes: 8843,
         class_bytes: 2381,
         class_headers: 0,
         method_bodies: 26,
-        ir_items: 4322,
-        analysis_steps: 2372,
-        result_items: 64,
-        output_bytes: 5628,
+        ir_items: 4991,
+        analysis_steps: 14008,
+        result_items: 66,
+        output_bytes: 5624,
     };
     /// `two-origins-one-identity`: one class file behind two physical origins, and the only case with
     /// a nonzero `class_headers`. What that dimension counts here is the binding work a duplicated
@@ -710,16 +743,19 @@ impl Billing {
     /// quoted row. The 2026-09-26 expansion moved `ir_items` +312, `analysis_steps` +446 and
     /// `output_bytes` −19 (the same `Scope`/`Holder` shape as `flat-mixed`). The 2026-10-01
     /// array-slot-retype split moved `analysis_steps` +4, the same examined-write work.
+    /// 2026-11-08 task 5.2: `analysis_steps` +60, this run's own measured charge after the
+    /// `RegionSummary` derived view landed in production (the reason
+    /// [`Billing::FLAT_MIXED`] records); `ir_items` stands and no text or outcome moved.
     const TWO_ORIGINS: Self = Self {
         archive_entries: 43,
         entry_bytes: 7522,
         class_bytes: 2686,
         class_headers: 4,
         method_bodies: 12,
-        ir_items: 2082,
-        analysis_steps: 1281,
+        ir_items: 2365,
+        analysis_steps: 6262,
         result_items: 43,
-        output_bytes: 2638,
+        output_bytes: 2634,
     };
     /// `many-method-class`: 107 members behind three read classes, one of them generated wide.
     // 2026-10-15 canonical physical protection: real range ordinals and their scans/union
@@ -804,14 +840,17 @@ impl Billing {
         // `Guarded` holds the two shapes that are asked (the two-copy `fin`/`catchFinally`
         // tables), so the ask itself is billed. No text, classification, read or delivery
         // dimension moved — this test's own text comparison is unchanged.
-        ir_items: 21458,
+        ir_items: 26536,
         // +44 with `recover-loop-body-try-catch`: the new retry candidate proof is also
         // examined before declining three ordinary named catches in `Guarded`.
         // The pinned old/current CLI comparison measures +13 for `syncThrowsCatching`,
         // +13 for `secondInitFailsCatching`, and +18 for `suppressedCatching`;
         // text, outcome, content, source map, and every other counted dimension stand.
         // `record_the_billing_table` independently measures this case's same +44.
-        analysis_steps: 12439,
+        // 2026-11-08 task 5.2: +568, this run's own measured charge after the `RegionSummary`
+        // derived view landed in production (the reason [`Billing::FLAT_MIXED`] records, over
+        // this case's 181 bodies); `ir_items` stands and no text or outcome moved.
+        analysis_steps: 83309,
         result_items: 122,
         output_bytes: 23333,
     };
@@ -828,24 +867,30 @@ impl Billing {
         class_bytes: 1019,
         class_headers: 0,
         method_bodies: 12,
-        ir_items: 2082,
-        analysis_steps: 1281,
+        ir_items: 2357,
+        // 2026-11-08 task 5.2: +60, this run's own measured charge after the `RegionSummary`
+        // derived view landed in production (the reason [`Billing::FLAT_MIXED`] records); every
+        // other dimension stands and no text or outcome moved.
+        analysis_steps: 6258,
         result_items: 35,
-        output_bytes: 2638,
+        output_bytes: 2634,
     };
     /// `deep-expression`: the two generated chains and the nested-evaluation sample.
     ///
     /// The 2026-09-26 expansion moved `ir_items` +492, `analysis_steps` +279 and `output_bytes`
     /// −131: the per-body evidence work, and the committed sample's artifacts shortened where its
     /// quoted refusals now sit beside the statements the expansion writes.
+    /// 2026-11-08 task 5.2: `analysis_steps` +21, this run's own measured charge after the
+    /// `RegionSummary` derived view landed in production (the reason
+    /// [`Billing::FLAT_MIXED`] records); `ir_items` stands and no text or outcome moved.
     const DEEP_EXPRESSION: Self = Self {
         archive_entries: 4,
         entry_bytes: 753,
         class_bytes: 753,
         class_headers: 0,
         method_bodies: 7,
-        ir_items: 3213,
-        analysis_steps: 1369,
+        ir_items: 3366,
+        analysis_steps: 6499,
         result_items: 18,
         output_bytes: 1723,
     };
@@ -872,8 +917,8 @@ impl Billing {
     /// statements (`Guarded.boom`'s `throw new` among them); the read, decode and delivery
     /// dimensions stand.
     const DIRECT_ARM: Self = Self {
-        archive_entries: 1915,
-        entry_bytes: 365912,
+        archive_entries: 2036,
+        entry_bytes: 367579,
         class_bytes: 327895,
         class_headers: 191,
         method_bodies: 181,
@@ -895,12 +940,21 @@ impl Billing {
         // field-copy proof's own scan of every body, charged to `IrItems`, and no other dimension.
         // +3 with `recover-io-resource-finally`, for the reason [`Billing::MANY_METHOD_CLASS`]
         // records: the row-set predicate's own ask at the blocks whose row set it reads.
-        ir_items: 35654,
+        // 2026-11-07 maintenance batch: +6913 IrItems and +104047 AnalysisSteps — the same work
+        // dimensions the six case rows moved (see the dated block above) — plus this path's own
+        // read/delivery side of the method-level demand-driven recovery: +121 archive entries,
+        // +1667 entry bytes and +121 result items; −16 output bytes (the four `Scope`/`Holder`
+        // rows' sum). `class_bytes`, `class_headers` and `method_bodies` stand.
+        ir_items: 42567,
         // +44 with `recover-loop-body-try-catch`, the same three candidate proofs
         // [`Billing::MANY_METHOD_CLASS`] records; retention still changes only reads.
-        analysis_steps: 20290,
-        result_items: 1378,
-        output_bytes: 39617,
+        // 2026-11-08 task 5.2: +886 AnalysisSteps, this run's own measured charge after the
+        // `RegionSummary` derived view landed in production — exactly the six case rows' own
+        // +75/+102/+60/+568/+60/+21 sum, because the arms run the same bodies. `ir_items` and
+        // every read dimension stand.
+        analysis_steps: 125223,
+        result_items: 1499,
+        output_bytes: 39601,
     };
 
     /// Arm B — the same requests, each carrying the one store that started empty. Pinned for the same
@@ -936,12 +990,17 @@ impl Billing {
         // and retention still touches only the read dimensions.
         // +1598 with `recover-chained-field-assignment`, the same work the direct arm records.
         // +3 with `recover-io-resource-finally`, the same work the direct arm records.
-        ir_items: 35654,
+        // 2026-11-07 maintenance batch: the same work moves as the direct arm (+6913 IrItems,
+        // +104047 AnalysisSteps, −16 output bytes); every read dimension of this row stands —
+        // retention answered the new reads, which is the row's own claim holding.
+        ir_items: 42567,
         // +44 with `recover-loop-body-try-catch`, the same three candidate proofs
         // [`Billing::MANY_METHOD_CLASS`] records; retention still changes only reads.
-        analysis_steps: 20290,
+        // 2026-11-08 task 5.2: +886 AnalysisSteps, the same work the direct arm records; every
+        // read dimension of this row stands, which is this row's retention claim holding.
+        analysis_steps: 125223,
         result_items: 26,
-        output_bytes: 39617,
+        output_bytes: 39601,
     };
 }
 // ---------------------------------------------------------------------------------------------
@@ -1648,6 +1707,7 @@ fn the_old_per_method_arms_keep_their_ledger_and_the_same_text() {
             let one_at_a_time = Engine::new()
                 .recover_method_with_evidence(
                     &content,
+                    jarde::SourceTarget::JAVA_8,
                     &request,
                     &RecoveryEvidenceRequest::all(),
                     &mut budget,
@@ -1679,6 +1739,7 @@ fn the_old_per_method_arms_keep_their_ledger_and_the_same_text() {
             let through_the_store = Engine::new()
                 .recover_method_with_evidence(
                     &content,
+                    jarde::SourceTarget::JAVA_8,
                     &request,
                     &RecoveryEvidenceRequest::all(),
                     &mut budget,

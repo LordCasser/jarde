@@ -102,8 +102,17 @@ fn refused_chain_report() -> jarde_java::RecoveryReport {
             .with_declaring_class(DeclaringClass::new("ChainOrFieldDuplicatePhi", 0x0021)),
     );
     recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         &mut budget,
     )
 }

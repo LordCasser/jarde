@@ -36,6 +36,7 @@ const NESTED_LOOPS_NONE: &[u8] =
 
 fn request(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -2016,7 +2017,10 @@ fn typed_list_foreach_element_heads_preserve_bindings_and_raw_origins() {
         .unwrap()
         .strip_prefix("for (java.lang.Integer ")
         .unwrap();
-    assert!(integers.contains("Object current;"), "{integers}");
+    assert!(
+        integers.contains("java.lang.Integer current;"),
+        "{integers}"
+    );
     assert!(integers.contains("current = null;"), "{integers}");
     assert!(
         integers.contains(&format!("current = {integer_head};")),

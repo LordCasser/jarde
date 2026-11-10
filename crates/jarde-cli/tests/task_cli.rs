@@ -1891,6 +1891,7 @@ fn the_task_chain_runs_over_the_identities_the_listings_printed() {
     let outcome = engine
         .recover_target(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &MethodOperationRequest {
                 method: MethodRef::Method {
                     method: identity.clone(),
@@ -2149,6 +2150,7 @@ fn navigation_uses_the_library_listings_and_the_caller_declared_scope() {
     let outcome = engine
         .recover_target(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &MethodOperationRequest {
                 method: MethodRef::Method { method: identity },
                 environment: EnvironmentRequest {
@@ -2323,6 +2325,7 @@ fn an_unfinished_name_selection_exits_four_and_is_the_librarys_own_document() {
     let outcome = engine
         .recover_target(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &MethodOperationRequest {
                 method: MethodRef::Name {
                     class: ClassNameQuery::internal("p/Base"),

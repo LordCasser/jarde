@@ -144,6 +144,7 @@ fn source_with(jar: &[u8], class: &str, limits: Limits) -> ClassSourceReport {
         .open(ArtifactInput::bytes(jar.to_vec()), &mut budget)
         .expect("the family jar opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -179,6 +180,7 @@ fn standalone_source(bytes: &[u8], class: &str) -> ClassSourceReport {
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut open_budget)
         .expect("the class file opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -1609,6 +1611,7 @@ fn budget_and_cancellation_never_publish_a_partial_binding_projection() {
         .open(ArtifactInput::bytes(jar.clone()), &mut open_budget)
         .expect("the family jar opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("SCGA"),
         },
@@ -1672,6 +1675,7 @@ fn essential_and_all_evidence_admit_the_same_binding_projections() {
         .open(ArtifactInput::bytes(jar.clone()), &mut open_budget)
         .expect("the family jar opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("SCGA"),
         },

@@ -7,7 +7,7 @@ use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+use jarde_reader::budget::{Budget, CancellationToken, Limits};
 use jarde_reader::model::{
     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
     PhysicalVariant,
@@ -776,7 +776,7 @@ fn canonical_edge_budget_cancel_and_deadline_stops_leave_owners_unclaimed() {
                 matches!(
                     result,
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         at: Some(at),
                         ..
                     }) if at == last_edge_bci
@@ -837,8 +837,9 @@ fn canonical_edge_budget_cancel_and_deadline_stops_leave_owners_unclaimed() {
             expired.visited.insert(entry);
             assert!(matches!(
                 expired.statementful_loop_header(header, header_node, blocks, &Frame::default()),
-                Err(StopReason::Interrupted {
-                    code: crate::stop::BUDGET_INTERRUPTED_CODE,
+                Err(StopReason::Budget {
+                    dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
+                    at: Some(_),
                     ..
                 })
             ));
@@ -1304,7 +1305,7 @@ fn real_sequential_loop_copy_candidate_accepts_and_stops_atomically() {
                 let result =
                     stopped.statementful_loop_header(header, node, blocks, &Frame::default());
                 if matches!(&result, Err(StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps, at: Some(at), ..
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps, at: Some(at), ..
                 }) if duplicate_bcis.contains(at))
                 {
                     assert_eq!(stopped.visited, BTreeSet::from([entry]));
@@ -1351,7 +1352,7 @@ fn real_sequential_loop_copy_candidate_accepts_and_stops_atomically() {
                 matches!(
                     result,
                     Err(StopReason::Budget {
-                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                         ..
                     })
                 ),

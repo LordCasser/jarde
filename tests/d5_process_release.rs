@@ -310,6 +310,7 @@ fn recovery(
 ) -> std::result::Result<RecoveredMethod, Stop> {
     let recovered = match engine.recover_method_with_evidence(
         slice::from_ref(snapshot),
+        jarde::SourceTarget::JAVA_8,
         request,
         selection,
         budget,

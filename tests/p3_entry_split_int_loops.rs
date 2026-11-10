@@ -1,7 +1,7 @@
 //! Public regression coverage for the proved entry-split integer-prefix loop.
 use jarde::*;
 use jarde_jvm::ir::{Quality, Representation};
-use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension};
+use jarde_reader::budget::{Budget, CancellationToken};
 use jarde_reader::classfile::{MethodSelector, inspect_method_bytecode};
 use jarde_reader::model::ExecutionReport;
 use std::collections::BTreeSet;
@@ -19,6 +19,7 @@ fn report(bytes: &[u8], class: &str, all: bool) -> ClassSourceReport {
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .expect("fixture class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -270,6 +271,7 @@ fn entry_split_candidate_stops_do_not_publish_a_half_prefix() {
         .open(ArtifactInput::bytes(POSITIVE.to_vec()), &mut open_budget)
         .expect("fixture opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(CLASS),
         },
@@ -504,6 +506,7 @@ fn entry_split_analysis_request_can_omit_ssa_without_fabricating_that_stage() {
     let result = engine
         .recover_method(
             std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &mut analysis_budget,
         )
@@ -624,7 +627,13 @@ fn entry_split_recover_with_budget(
     budget: &mut Budget,
 ) -> RecoveredMethod {
     engine
-        .recover_method_with_evidence(std::slice::from_ref(snapshot), request, evidence, budget)
+        .recover_method_with_evidence(
+            std::slice::from_ref(snapshot),
+            jarde::SourceTarget::JAVA_8,
+            request,
+            evidence,
+            budget,
+        )
         .expect("a budget boundary is returned in the report")
 }
 
@@ -765,7 +774,7 @@ fn entry_split_output_byte_stops_hit_each_prefix_copy_without_publishing_text() 
             );
             match &stopped.recovery().outcome {
                 RecoveryOutcome::Stopped(StopReason::Budget {
-                    dimension: CountedBudgetDimension::OutputBytes,
+                    dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
                     written,
                     at,
                     ..

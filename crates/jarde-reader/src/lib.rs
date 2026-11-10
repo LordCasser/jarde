@@ -11,6 +11,9 @@
 //! The public surface is the producer's side of those seams: read-only access to facts this crate
 //! produced, and no exported constructor for a state it has not established.
 
+/// Conservative workspace source/build identity; independent of package and format versions.
+pub const IMPLEMENTATION_ID: &str = env!("JARDE_IMPLEMENTATION_ID");
+
 pub mod accounting;
 // The artifact module owns the immutable snapshots and their bounded reads, and with them the two
 // things a consumer of a container shares: the container facts some live handle still holds
@@ -42,6 +45,10 @@ pub mod ledger;
 pub mod model;
 pub mod modern;
 pub mod multi_release;
+#[cfg(any(test, feature = "test-support"))]
+pub mod observation;
+#[cfg(not(any(test, feature = "test-support")))]
+mod observation;
 // The prepared class view (bulk task 2.1) is a lifecycle of one trusted read, not a cache layer: a
 // class task holds one for as long as it decodes that class's methods, and every method consumer of
 // that class shares it — the structural payload by the handle `PreparedClass::facts_handle` hands

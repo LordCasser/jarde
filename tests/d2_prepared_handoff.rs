@@ -186,6 +186,7 @@ fn archive_environment_request(snapshot: &ArtifactSnapshot) -> EnvironmentReques
 /// One class-source request over a physical identity.
 fn class_source_request(snapshot: &ArtifactSnapshot, class: ClassRef) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class,
         environment: environment_request(snapshot),
     }
@@ -197,6 +198,7 @@ fn archive_class_source_request(
     class: ClassRef,
 ) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class,
         environment: archive_environment_request(snapshot),
     }
@@ -484,11 +486,17 @@ fn a_recovery_run_without_same_class_callees_reads_once_and_prepares_nothing() {
     let mut budget = budget();
     let before = d0_counts::snapshot();
     let recovered = engine
-        .recover_method(std::slice::from_ref(&snapshot), &request, &mut budget)
+        .recover_method(
+            std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            &mut budget,
+        )
         .expect("the member is recovered");
     let counted = before.since(d0_counts::snapshot());
     println!(
-        "recover_method (no callees): materializations={} preparations={} body_decodes={} \
+        "recover_method (no callees)
+        jarde::SourceTarget::JAVA_8,: materializations={} preparations={} body_decodes={} \
          recovery_runs={} | class_headers={} method_bodies={}",
         counted.class_materializations,
         counted.class_preparations,
@@ -553,11 +561,17 @@ fn a_request_with_a_missing_dependency_reads_no_class() {
     let mut budget = budget();
     let before = d0_counts::snapshot();
     let recovered = engine
-        .recover_method(std::slice::from_ref(&snapshot), &request, &mut budget)
+        .recover_method(
+            std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            &mut budget,
+        )
         .expect("a rejected environment is a report, not an error");
     let counted = before.since(d0_counts::snapshot());
     println!(
-        "recover_method (rejected environment): materializations={} preparations={} body_decodes={}",
+        "recover_method (rejected environment)
+        jarde::SourceTarget::JAVA_8,: materializations={} preparations={} body_decodes={}",
         counted.class_materializations, counted.class_preparations, counted.body_decodes
     );
     assert!(

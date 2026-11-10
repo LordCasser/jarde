@@ -66,7 +66,7 @@ use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::evidence::Publication;
 use crate::facts::{CompareOp, ConstantValue, FieldAccess, InvokeKind, Operation};
-use crate::lambda::parse_method;
+use crate::lambda::parse_method_bytes;
 use crate::pass::{CONCAT, Precondition, RuleVersion};
 use crate::refusal::{Gap, Refusal};
 use crate::region::Region;
@@ -417,12 +417,13 @@ pub(crate) fn plan(
             let Some(Operation::Allocate { ty }) = operations.get(head) else {
                 continue;
             };
-            if !CONCAT_CLASSES.contains(&ty.as_str()) {
+            let Some(&known_class) = CONCAT_CLASSES.iter().find(|name| ty.0 == name.as_bytes())
+            else {
                 // Not a candidate: a chain on a class this rule does not know is an ordinary
                 // sequence of calls on that class, and nothing here claims anything about it.
                 continue;
-            }
-            let ty = ty.clone();
+            };
+            let ty = known_class.to_owned();
             match verify(
                 head, &ty, head_block, &block_of, &all, block, ssa, operations, copies, None, None,
             ) {
@@ -794,7 +795,7 @@ fn certify_direct_field_reads(
                 let Some(Operation::Invoke(target)) = operations.get(next.bci()) else {
                     return Ok(None);
                 };
-                if target.owner() != ty || target.name() != "append" {
+                if target.raw_owner().0 != ty.as_bytes() || target.name() != "append" {
                     return Ok(None);
                 }
                 let next_operands = stack_operands_counted(next, budget)?;
@@ -1032,19 +1033,19 @@ fn verify_four_conditional_strings(
     let Some(Operation::Allocate { ty }) = op(0) else {
         return Ok(None);
     };
-    if ty != "java/lang/StringBuilder" || op(1) != Some(&Operation::Duplicate) {
+    if ty.0 != b"java/lang/StringBuilder" || op(1) != Some(&Operation::Duplicate) {
         return Ok(None);
     }
     let Some(Operation::Invoke(init)) = op(2) else {
         return Ok(None);
     };
-    if init.owner() != ty || init.name() != "<init>" || init.descriptor() != "()V" {
+    if init.raw_owner() != ty || init.name() != "<init>" || init.descriptor() != "()V" {
         return Ok(None);
     }
     let Some(Operation::Invoke(to_string)) = op(31) else {
         return Ok(None);
     };
-    if to_string.owner() != ty
+    if to_string.raw_owner() != ty
         || to_string.name() != "toString"
         || to_string.descriptor() != "()Ljava/lang/String;"
         || op(32) != Some(&Operation::Return)
@@ -1110,9 +1111,9 @@ fn verify_four_conditional_strings(
                 owner,
                 name,
                 descriptor,
-            }) if part < 3 && descriptor == "Z" => {
+            }) if part < 3 && descriptor.0.as_slice() == b"Z" => {
                 if field_owner.as_ref().is_some_and(|known| known != owner)
-                    || !field_names.insert(name.clone())
+                    || !field_names.insert(name.0.clone())
                 {
                     false
                 } else {
@@ -1124,7 +1125,9 @@ fn verify_four_conditional_strings(
                 if part == 3
                     && target.kind() == InvokeKind::Static
                     && field_owner.as_ref().is_some_and(|owner| {
-                        target.owner() == owner && target.descriptor() == format!("(L{owner};)Z")
+                        target.raw_owner() == owner
+                            && target.raw_descriptor().0
+                                == [b"(L".as_slice(), &owner.0, b";)Z"].concat()
                     }) =>
             {
                 true
@@ -1150,7 +1153,7 @@ fn verify_four_conditional_strings(
         let Some(Operation::Invoke(target)) = op(base + 6) else {
             return Ok(None);
         };
-        if target.owner() != ty
+        if target.raw_owner() != ty
             || target.name() != "append"
             || target.descriptor() != "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
         {
@@ -1296,7 +1299,7 @@ fn verify_four_conditional_strings(
     Ok(Some(Chain {
         head,
         tail: ordered[31].bci(),
-        class: ty.clone(),
+        class: "java/lang/StringBuilder".to_owned(),
         appends,
         owned: ordered[..32]
             .iter()
@@ -1451,7 +1454,7 @@ fn verify_conditional_cut_chain(
             Some(Operation::Invoke(target))
                 if target.owner() == ty && target.name() == "append" =>
             {
-                let Some((params, returns)) = parse_method(target.descriptor()) else {
+                let Some((params, returns)) = parse_method_bytes(&target.raw_descriptor().0) else {
                     return Ok(None);
                 };
                 if params.len() != 1
@@ -1650,10 +1653,10 @@ fn verify_conditional_cut_chain(
     let Some(Operation::Invoke(target)) = operations.get(proof.consumer_bci) else {
         return Ok(None);
     };
-    let Some((params, returns)) = parse_method(target.descriptor()) else {
+    let Some((params, returns)) = parse_method_bytes(&target.raw_descriptor().0) else {
         return Ok(None);
     };
-    if target.owner() != ty
+    if target.raw_owner().0 != ty.as_bytes()
         || target.name() != "append"
         || params.as_slice() != [Type::Boolean]
         || !matches!(returns, Some(Type::Reference(name)) if name == source_name(ty))
@@ -1706,7 +1709,7 @@ fn verify_conditional_cut_chain(
             Some(Operation::Invoke(target))
                 if target.owner() == ty && target.name() == "append" =>
             {
-                let Some((params, returns)) = parse_method(target.descriptor()) else {
+                let Some((params, returns)) = parse_method_bytes(&target.raw_descriptor().0) else {
                     return Ok(None);
                 };
                 if params.len() != 1
@@ -2062,7 +2065,7 @@ fn verify(
             Some(Operation::Invoke(target))
                 if target.owner() == ty && target.name() == "append" =>
             {
-                let Some((params, returns)) = parse_method(target.descriptor()) else {
+                let Some((params, returns)) = parse_method_bytes(&target.raw_descriptor().0) else {
                     return Err(shape(format!(
                         "the `append` at BCI {at} has the descriptor `{}`, which is not one this layer reads",
                         target.descriptor()
@@ -2618,10 +2621,11 @@ mod ordered_field_budget_tests {
             &operations,
             &element_receiver_type,
             Some(&declaring),
-            "instanceFields",
-            "(LOrderedFieldConcat;)Ljava/lang/String;",
+            b"instanceFields",
+            b"(LOrderedFieldConcat;)Ljava/lang/String;",
             ir.class_fields(),
             &[],
+            None,
             &mut setup_budget,
         )
         .expect("field plan completes");
@@ -2676,7 +2680,7 @@ mod ordered_field_budget_tests {
         assert!(matches!(
             short,
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(_),
                 ..
             })

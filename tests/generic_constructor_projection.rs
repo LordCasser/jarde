@@ -94,6 +94,7 @@ fn class_outcome(
         .open(ArtifactInput::bytes(bytes), &mut budget)
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("genericctor/GenericConstructor"),
         },
@@ -332,6 +333,7 @@ fn report_for(bytes: &[u8], name: &str) -> ClassSourceReport {
         )
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -470,6 +472,7 @@ fn body_budget_and_cancellation_never_publish_a_partial_constructor_header() {
         .open(ArtifactInput::bytes(bytes), &mut task_budget(&[]).unwrap())
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("genericctor/GenericConstructor"),
         },

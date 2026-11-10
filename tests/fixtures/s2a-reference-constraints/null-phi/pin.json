@@ -1,0 +1,51 @@
+{
+  "schema": "s2a-null-phi-fixture-pin-v1",
+  "input_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/null-phi-boundary-v1/input-manifest.json",
+  "input_manifest_sha256": "aaa0fcb505cd91196fe1114859df776887cc5f41da414831924ba2638c89c754",
+  "source_files": [
+    {
+      "name": "NullPhiChoices.java",
+      "bytes": 328,
+      "sha256": "a6e7e27bb0a90445a36781de8007bfd9ae0813f0c2cc024474fffa3c6665bab3"
+    },
+    {
+      "name": "NullPhiChoicesDriver.java",
+      "bytes": 804,
+      "sha256": "1becbb0fe09eab879ec38ffee0fdfac34aec0f647e2fc6a3084a9c1737a4224d"
+    }
+  ],
+  "jars": [
+    {
+      "repo_relative_path": "tests/fixtures/s2a-reference-constraints/null-phi/jars/corretto8-debug.jar",
+      "bytes": 577,
+      "sha256": "5ed26cf2e6b430470ed638ff7d09a055a517d0bb603ffe78b267efcbabb82221",
+      "members": [
+        "NullPhiChoices.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-reference-constraints/null-phi/jars/corretto8-no-debug.jar",
+      "bytes": 447,
+      "sha256": "1d5f89e815dc5ba7452fc07709634fe79102652db2141225daffaff76653dec4",
+      "members": [
+        "NullPhiChoices.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-reference-constraints/null-phi/jars/openjdk23-debug.jar",
+      "bytes": 574,
+      "sha256": "a178a1836d97e72fedf74785f5cd5695c26bd2956cd21921d3ac98b1314f8949",
+      "members": [
+        "NullPhiChoices.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-reference-constraints/null-phi/jars/openjdk23-no-debug.jar",
+      "bytes": 445,
+      "sha256": "e4d8cd7c088932f2f6b3c61e829f600e8575b20ae7eeb4ff7cba9e180be58c63",
+      "members": [
+        "NullPhiChoices.class"
+      ]
+    }
+  ]
+}

@@ -59,6 +59,7 @@ fn opened(bytes: &[u8], class: &str) -> (Engine, ArtifactSnapshot, ClassSourceRe
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .expect("frozen Java 8 class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },

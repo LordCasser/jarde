@@ -170,7 +170,7 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     let (problems, identity) = validate_environment(slice::from_ref(&snapshot), &declaration);
     println!(
         "single-class policy: loader={:?} roots={} problems={}",
-        identity.domain_loaders,
+        identity.domains,
         declaration.domains[0].roots.len(),
         problems.len()
     );
@@ -185,6 +185,7 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
         let evidence = RecoveryEvidenceRequest::essential();
         let recovery = match engine.recover_target_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &MethodOperationRequest {
                 method: MethodRef::Method {
                     method: method.clone(),
@@ -242,7 +243,7 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
         // rather than the evidence of a text the caller does not hold.
         if let Some(binding) = recovery.recovered.recovery().artifact.binding() {
             println!(
-                "  artifact binding: schema={} engine={} registry={} member={} text={} byte(s) digested `{}`",
+                "  artifact binding: schema={} recovery_semantics={:?} resolution_semantics={:?} member={} text={} byte(s) digested `{}`",
                 binding.schema(),
                 binding.engine(),
                 binding.registry(),
@@ -258,6 +259,7 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
             let mut explained_budget = task_budget(&overrides)?;
             let explained = match engine.recover_target_with_evidence(
                 slice::from_ref(&snapshot),
+                jarde::SourceTarget::JAVA_8,
                 &MethodOperationRequest {
                     method: MethodRef::Method {
                         method: method.clone(),

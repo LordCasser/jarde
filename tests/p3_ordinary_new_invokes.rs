@@ -24,6 +24,7 @@ fn source(bytes: &[u8], name: &str) -> ClassSourceReport {
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
         .expect("fixture bytes open as a class");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -107,6 +108,7 @@ fn detailed_recovery(bytes: &[u8], method: &[u8], descriptor: &[u8]) -> Recovery
     engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut budget,
@@ -203,7 +205,7 @@ fn a_call_whose_value_is_a_constructor_argument_remains_presented() {
     let site = body
         .news
         .iter()
-        .find(|site| site.class == "CountingProbe")
+        .find(|site| site.class.0 == b"CountingProbe")
         .unwrap_or_else(|| panic!("no CountingProbe site; report={body:#?}"));
 
     assert!(site.presented(), "{site:?}");

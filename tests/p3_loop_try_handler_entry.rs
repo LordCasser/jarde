@@ -33,6 +33,7 @@ fn recover(bytes: &[u8], class: &str) -> ClassSourceReport {
 
 fn request(snapshot: &ArtifactSnapshot, class: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -203,35 +204,60 @@ fn a_preinitialized_local_keeps_its_computed_try_update_and_post_loop_read() {
 }
 
 #[test]
-fn an_unproved_computed_write_refuses_its_cross_region_read() {
-    let mut unsupported = CLASS.to_vec();
-    // Change only the sum's opcode to `iand`; it remains a valid, protected int computation,
-    // but this proof does not claim its producer tree can be published as the required assignment.
-    let positions: Vec<_> = unsupported
+fn a_proved_iand_write_is_presented_across_its_cross_region_read() {
+    let mut bitwise = CLASS.to_vec();
+    // Change only the unique sum opcode to `iand`; both are one-byte protected int operations.
+    let positions: Vec<_> = bitwise
         .windows(3)
         .enumerate()
         .filter_map(|(at, bytes)| (bytes == [0x60, 0x3d, 0xa7]).then_some(at))
         .collect();
     assert_eq!(positions.len(), 1);
-    unsupported[positions[0]] = 0x7e;
-    let report = recover(&unsupported, "LoopTryHandlerEntry");
+    bitwise[positions[0]] = 0x7e;
+    let report = recover(&bitwise, "LoopTryHandlerEntry");
     let method = report
         .methods
         .iter()
         .find(|method| method.item.name.raw().0 == b"loopTry")
         .expect("loopTry member");
+    assert!(!method.text.contains("@bytecode"), "{}", method.text);
+    assert!(method.text.contains("while (arg0 > 0)"), "{}", method.text);
     assert!(
-        method.text.contains("local 2 crosses a protected region"),
+        method
+            .text
+            .contains("local2 = local2 & maybeFail(arg0, arg1)"),
         "{}",
         method.text
     );
-    assert!(method.text.contains("@bytecode"), "{}", method.text);
     assert!(
-        method.text.contains("@bytecode 0 2 6 17 20 27"),
+        method.text.contains("catch (java.lang.RuntimeException"),
         "{}",
         method.text
     );
-    assert!(!method.text.contains("return local2;"), "{}", method.text);
+    assert!(method.text.contains("return local2;"), "{}", method.text);
+    let ClassSourceOutcome::Recovered {
+        report: recovered, ..
+    } = &method.outcome
+    else {
+        panic!("loopTry did not recover: {:?}", method.outcome);
+    };
+    for (bci, expected) in [
+        (1, "local2 = 0"),
+        (9, "maybeFail(arg0, arg1)"),
+        (13, "local2 = local2 & maybeFail(arg0, arg1)"),
+        (19, "local2 = -1"),
+        (27, "local2"),
+    ] {
+        assert!(
+            recovered
+                .source_map
+                .text_of_bci(&recovered.text, bci)
+                .iter()
+                .any(|piece| piece.contains(expected)),
+            "BCI {bci} lost `{expected}`: {:?}",
+            recovered.source_map.of_bci(bci)
+        );
+    }
 }
 
 #[test]

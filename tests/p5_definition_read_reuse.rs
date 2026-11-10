@@ -320,6 +320,7 @@ fn recover_one(
     let recovered = match engine
         .recover_target_with_evidence(
             std::slice::from_ref(snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::essential(),
             &mut budget,

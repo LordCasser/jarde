@@ -23,6 +23,7 @@ fn source(bytes: &[u8], class: &str) -> ClassSourceReport {
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .expect("class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -214,6 +215,7 @@ fn field_candidate_budget_and_cancellation_publish_no_partial_finally() {
         .open(ArtifactInput::bytes(FIELD.to_vec()), &mut opening)
         .expect("field class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("SharedFinally"),
         },

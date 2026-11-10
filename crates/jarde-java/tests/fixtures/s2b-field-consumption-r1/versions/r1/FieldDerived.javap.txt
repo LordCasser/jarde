@@ -1,0 +1,49 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/classes/flow/FieldDerived.class
+  Last modified 2026-10-27; size 377 bytes
+  MD5 checksum 6cad9a7c18fc2259f5bd44213f9fb542
+  Compiled from "FieldDerived.java"
+public final class flow.FieldDerived extends flow.FieldBox<java.util.List<identity.Foo>>
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#17         // flow/FieldBox."<init>":()V
+   #2 = Class              #18            // flow/FieldDerived
+   #3 = Class              #19            // flow/FieldBox
+   #4 = Utf8               value
+   #5 = Utf8               Ljava/lang/Object;
+   #6 = Utf8               <init>
+   #7 = Utf8               ()V
+   #8 = Utf8               Code
+   #9 = Utf8               LineNumberTable
+  #10 = Utf8               LocalVariableTable
+  #11 = Utf8               this
+  #12 = Utf8               Lflow/FieldDerived;
+  #13 = Utf8               Signature
+  #14 = Utf8               Lflow/FieldBox<Ljava/util/List<Lidentity/Foo;>;>;
+  #15 = Utf8               SourceFile
+  #16 = Utf8               FieldDerived.java
+  #17 = NameAndType        #6:#7          // "<init>":()V
+  #18 = Utf8               flow/FieldDerived
+  #19 = Utf8               flow/FieldBox
+{
+  public java.lang.Object value;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+
+  public flow.FieldDerived();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method flow/FieldBox."<init>":()V
+         4: return
+      LineNumberTable:
+        line 6: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lflow/FieldDerived;
+}
+Signature: #14                          // Lflow/FieldBox<Ljava/util/List<Lidentity/Foo;>;>;
+SourceFile: "FieldDerived.java"

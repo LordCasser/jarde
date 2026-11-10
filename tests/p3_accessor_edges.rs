@@ -457,6 +457,7 @@ fn recover(
     let recovered = Engine::new()
         .recover_method_with_evidence(
             std::slice::from_ref(snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut budget,
@@ -1098,6 +1099,7 @@ fn the_driver_and_its_same_class_callees_share_one_read_and_one_preparation() {
     let recovered = Engine::new()
         .recover_method_with_evidence(
             std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut budget,
@@ -1106,7 +1108,8 @@ fn the_driver_and_its_same_class_callees_share_one_read_and_one_preparation() {
     let counted = before.since(d0_counts::snapshot());
     let usage = budget.usage();
     println!(
-        "recover_method (same-class callees): materializations={} preparations={} body_decodes={} \
+        "recover_method (same-class callees)
+        jarde::SourceTarget::JAVA_8,: materializations={} preparations={} body_decodes={} \
          | class_headers={} method_bodies={}",
         counted.class_materializations,
         counted.class_preparations,
@@ -1160,4 +1163,115 @@ fn the_driver_and_its_same_class_callees_share_one_read_and_one_preparation() {
         "the loader binding check still ran, once, over the request's own read: {:?}",
         recovered.analysis().reads
     );
+}
+/// 全局停止后，保留的调用点不能启动辅助 Body。
+#[cfg(feature = "test-support")]
+#[test]
+fn a_stopped_driver_does_not_read_its_named_accessor_body() {
+    let _gate = gate();
+    let class = accessor_class();
+    let snapshot = open(&class);
+
+    // Control: the fixture's complete `method()I` run names exactly one real helper.
+    let (complete, _) = recover(&class, &snapshot, b"method", b"()I");
+    assert_eq!(
+        complete
+            .callees()
+            .unwrap()
+            .members()
+            .iter()
+            .map(|member| member.identity().name.0.clone())
+            .collect::<Vec<_>>(),
+        vec![b"access$100".to_vec()]
+    );
+
+    // `raw_facts` fully decodes method()I before canonical IR construction spends its first
+    // IrItem. This leaves the invocation in MethodIr.code while the driver report is stopped.
+    let mut stopped_limits = limits();
+    stopped_limits.ir_items = 0;
+    stopped_limits.method_bodies = 2; // caller + the one helper would both fit
+    let mut budget = Budget::new(stopped_limits);
+    let before = jarde_reader::observation::snapshot().body_decode_attempts;
+    let request = request_for(&snapshot, &class, b"method", b"()I");
+    let recovered = Engine::new()
+        .recover_method_with_evidence(
+            std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget,
+        )
+        .expect("the stopped driver still returns its bounded recovery result");
+
+    assert!(matches!(
+        &recovered.analysis().execution,
+        ExecutionReport::Partial { .. }
+    ));
+    assert_eq!(
+        budget.usage().ir_items,
+        0,
+        "the driver stopped before admitting its first IR item"
+    );
+    assert_eq!(
+        budget.usage().method_bodies,
+        1,
+        "only the caller body was admitted before the global stop"
+    );
+    assert_eq!(
+        jarde_reader::observation::snapshot().body_decode_attempts - before,
+        1,
+        "the retained accessor candidate must not cause a post-stop helper decode"
+    );
+    assert!(
+        recovered.callees().is_none(),
+        "a stopped driver publishes no helper read"
+    );
+}
+
+#[test]
+fn raw_accessor_names_reach_the_same_physical_helper_and_keep_the_field_fold() {
+    let _gate = gate();
+    let original = accessor_class();
+    let old = b"access$100";
+    let needle = [b"\x01".as_slice(), &(old.len() as u16).to_be_bytes(), old].concat();
+    let positions: Vec<_> = original
+        .windows(needle.len())
+        .enumerate()
+        .filter_map(|(i, bytes)| (bytes == needle).then_some(i))
+        .collect();
+    assert_eq!(
+        positions.len(),
+        2,
+        "the declaration and Methodref each name the helper"
+    );
+    for name in [
+        JvmBytes::from_unicode("access$𐐀"),
+        JvmBytes([b"access$".as_slice(), &[0xed, 0xa0, 0x81]].concat()),
+        JvmBytes([b"access$".as_slice(), &[0xed, 0xa0, 0x82]].concat()),
+    ] {
+        let mut class = Vec::new();
+        let mut from = 0;
+        for &at in &positions {
+            class.extend_from_slice(&original[from..at + 1]);
+            class.extend_from_slice(&(name.0.len() as u16).to_be_bytes());
+            class.extend_from_slice(&name.0);
+            from = at + needle.len();
+        }
+        class.extend_from_slice(&original[from..]);
+        let snapshot = open(&class);
+        let (recovered, usage) = recover(&class, &snapshot, b"method", b"()I");
+        let report = recovered.recovery();
+        assert!(report.produced(), "{:?}", report.outcome);
+        assert!(report.text.contains("return this.f;"), "{}", report.text);
+        assert_eq!(report.accessors.len(), 1);
+        assert!(report.accessors[0].presented());
+        let callees = recovered.callees().unwrap();
+        assert_eq!(callees.raw_class().0, b"Test");
+        assert_eq!(callees.members().len(), 1);
+        assert_eq!(callees.members()[0].identity().name, name);
+        assert_eq!(
+            usage.method_bodies, 2,
+            "only caller and the named helper are read"
+        );
+    }
 }

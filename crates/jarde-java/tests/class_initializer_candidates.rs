@@ -1,13 +1,13 @@
 use jarde_java::{
     DeclaringClass, MethodFacts, RecoveryFacts, RecoveryOutcome, RecoveryRequest, StopReason,
     facts::{ACC_ANNOTATION, ACC_INTERFACE},
-    report::{ClassInitializerStep, recover_for_class_source},
+    report::ClassInitializerStep,
 };
 use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-use jarde_reader::budget::{Budget, CountedBudgetDimension, Limits, UsageSnapshot};
+use jarde_reader::budget::{Budget, Limits, UsageSnapshot};
 use jarde_reader::model::{
     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
     PhysicalVariant,
@@ -166,9 +166,9 @@ fn enum_map_result(
     let mut budget = Budget::new(limits());
     jarde_java::enumswitch::prove_enum_switch_map_initializer(
         fixture.analysis.ir(),
-        "EnumSwitchSubject$1",
-        "$SwitchMap$Hue",
-        "Hue",
+        b"EnumSwitchSubject$1",
+        b"$SwitchMap$Hue",
+        &JvmBytes::from_unicode("Hue"),
         &[b"RED".to_vec(), b"BLUE".to_vec(), b"GREEN".to_vec()],
         &[1, 2],
         &mut budget,
@@ -186,9 +186,9 @@ fn enum_identity_result(class_bytes: &[u8]) -> Result<(), String> {
         initializer.analysis.ir(),
         constructor.analysis.ir(),
         (values_factory.analysis.ir(), values_method.analysis.ir()),
-        "Hue",
+        &JvmBytes::from_unicode("Hue"),
         &[b"RED".to_vec(), b"BLUE".to_vec(), b"GREEN".to_vec()],
-        "$VALUES",
+        &JvmBytes::from_unicode("$VALUES"),
         &mut budget,
     )
     .expect("enum identity proof remains within the test budget")
@@ -250,13 +250,13 @@ fn enum_identity_proof_consumes_the_actual_factory_and_public_values_bodies() {
     assert_eq!(
         jarde_java::enumswitch::enum_values_factory_name(
             initializer.analysis.ir(),
-            "Hue",
-            "$VALUES",
+            &JvmBytes::from_unicode("Hue"),
+            &JvmBytes::from_unicode("$VALUES"),
             &mut budget,
         )
         .expect("factory target lookup remains within budget")
         .expect("the actual callref names the factory"),
-        "$values"
+        JvmBytes::from_unicode("$values")
     );
     let bad_factory = enum_identity_result(ENUM_HUE_FACTORY_NULL_ELEMENT)
         .expect_err("an altered factory element must refuse enum projection");
@@ -297,15 +297,28 @@ fn class_source_sidecar_keeps_field_identity_rhs_and_bytecode_order() {
         fixture.analysis.ir(),
         &fixture.facts,
         jarde_java::pass::JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
     );
     let mut budget = Budget::new(limits());
-    let recovered = recover_for_class_source(&request, &mut budget, false, false);
+    let recovered = jarde_java::report::recover_for_class_source(
+        &request,
+        &mut budget,
+        jarde_java::report::ClassSourceOptions::default(),
+        None,
+    );
     assert!(
         recovered.report.produced(),
         "{:?}",
         recovered.report.outcome
     );
-    let candidates = recovered.initializer.expect("`<clinit>` gets its sidecar");
+    let candidates = recovered
+        .candidates
+        .initializer
+        .expect("`<clinit>` gets its sidecar");
     assert_eq!(candidates.member.as_ref(), Some(&fixture.method));
 
     let writes: Vec<_> = candidates
@@ -323,8 +336,8 @@ fn class_source_sidecar_keeps_field_identity_rhs_and_bytecode_order() {
             .map(|write| (
                 write.order,
                 write.bci,
-                write.name.as_str(),
-                write.descriptor.as_str()
+                write.name.clone(),
+                write.descriptor.clone()
             ))
             .collect::<Vec<_>>(),
         vec![
@@ -332,6 +345,14 @@ fn class_source_sidecar_keeps_field_identity_rhs_and_bytecode_order() {
             (1, 13, "SECOND", "Ljava/lang/String;"),
             (2, 25, "TOTAL", "I"),
         ]
+        .into_iter()
+        .map(|(order, bci, name, descriptor)| (
+            order,
+            bci,
+            JvmBytes::from_unicode(name),
+            JvmBytes::from_unicode(descriptor)
+        ))
+        .collect::<Vec<_>>()
     );
     assert_eq!(
         writes[2]
@@ -341,22 +362,30 @@ fn class_source_sidecar_keeps_field_identity_rhs_and_bytecode_order() {
             .iter()
             .map(|read| (
                 read.bci,
-                read.owner.as_str(),
-                read.name.as_str(),
-                read.descriptor.as_str()
+                read.owner.clone(),
+                read.name.clone(),
+                read.descriptor.clone()
             ))
             .collect::<Vec<_>>(),
         vec![
             (16, "InterfaceInitProbe", "FIRST", "Ljava/lang/String;"),
             (19, "InterfaceInitProbe", "SECOND", "Ljava/lang/String;"),
         ]
+        .into_iter()
+        .map(|(bci, owner, name, descriptor)| (
+            bci,
+            JvmBytes::from_unicode(owner),
+            JvmBytes::from_unicode(name),
+            JvmBytes::from_unicode(descriptor)
+        ))
+        .collect::<Vec<_>>()
     );
     assert!(writes[0].field_reads.as_ref().unwrap().is_empty());
     assert!(writes[1].field_reads.as_ref().unwrap().is_empty());
     assert!(!candidates.has_exception_handlers);
     for write in &writes {
-        assert_eq!(write.owner, "InterfaceInitProbe");
-        assert_eq!(write.spelled_name, write.name);
+        assert_eq!(write.owner, JvmBytes::from_unicode("InterfaceInitProbe"));
+        assert_eq!(JvmBytes::from_unicode(&write.spelled_name), write.name);
         assert!(write.is_static);
         assert_eq!(write.source.primary().bci(), write.bci);
         assert!(write.has_receiver);
@@ -383,15 +412,26 @@ fn sidecar_keeps_forward_and_constant_phase_reads_at_their_real_bcis() {
             fixture.analysis.ir(),
             &fixture.facts,
             jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
         );
         let mut budget = Budget::new(limits());
-        let recovered = recover_for_class_source(&request, &mut budget, false, false);
+        let recovered = jarde_java::report::recover_for_class_source(
+            &request,
+            &mut budget,
+            jarde_java::report::ClassSourceOptions::default(),
+            None,
+        );
         assert!(
             recovered.report.produced(),
             "{:?}",
             recovered.report.outcome
         );
         let candidates = recovered
+            .candidates
             .initializer
             .expect("the interface clinit has a sidecar");
         assert!(!candidates.has_exception_handlers);
@@ -399,7 +439,9 @@ fn sidecar_keeps_forward_and_constant_phase_reads_at_their_real_bcis() {
             .steps
             .iter()
             .find_map(|step| match step {
-                ClassInitializerStep::FieldWrite(write) if write.name == "EARLY" => Some(write),
+                ClassInitializerStep::FieldWrite(write) if write.name.0.as_slice() == b"EARLY" => {
+                    Some(write)
+                }
                 ClassInitializerStep::FieldWrite(_) | ClassInitializerStep::Other { .. } => None,
             })
             .expect("EARLY has a recovered field write");
@@ -409,9 +451,12 @@ fn sidecar_keeps_forward_and_constant_phase_reads_at_their_real_bcis() {
             .expect("the RHS field read has an exact field@1 claim");
         assert_eq!(reads.len(), 1);
         assert_eq!(reads[0].bci, expected_bci);
-        assert_eq!(reads[0].owner, class_name);
-        assert_eq!(reads[0].name, expected_name);
-        assert_eq!(reads[0].descriptor, expected_descriptor);
+        assert_eq!(reads[0].owner, JvmBytes::from_unicode(class_name));
+        assert_eq!(reads[0].name, JvmBytes::from_unicode(expected_name));
+        assert_eq!(
+            reads[0].descriptor,
+            JvmBytes::from_unicode(expected_descriptor)
+        );
         assert!(reads[0].is_static);
     }
 }
@@ -423,15 +468,26 @@ fn sidecar_marks_a_real_exception_handler_and_never_calls_it_a_linear_body() {
         fixture.analysis.ir(),
         &fixture.facts,
         jarde_java::pass::JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
     );
     let mut budget = Budget::new(limits());
-    let recovered = recover_for_class_source(&request, &mut budget, false, false);
+    let recovered = jarde_java::report::recover_for_class_source(
+        &request,
+        &mut budget,
+        jarde_java::report::ClassSourceOptions::default(),
+        None,
+    );
     assert!(
         recovered.report.produced(),
         "{:?}",
         recovered.report.outcome
     );
     let candidates = recovered
+        .candidates
         .initializer
         .expect("the interface clinit has a sidecar");
     assert!(candidates.has_exception_handlers);
@@ -444,15 +500,28 @@ fn candidate_sequence_keeps_unclaimed_top_level_effects_visible() {
         fixture.analysis.ir(),
         &fixture.facts,
         jarde_java::pass::JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
     );
     let mut budget = Budget::new(limits());
-    let recovered = recover_for_class_source(&request, &mut budget, false, false);
+    let recovered = jarde_java::report::recover_for_class_source(
+        &request,
+        &mut budget,
+        jarde_java::report::ClassSourceOptions::default(),
+        None,
+    );
     assert!(
         recovered.report.produced(),
         "{:?}",
         recovered.report.outcome
     );
-    let candidates = recovered.initializer.expect("`<clinit>` gets its sidecar");
+    let candidates = recovered
+        .candidates
+        .initializer
+        .expect("`<clinit>` gets its sidecar");
     assert_eq!(candidates.member.as_ref(), Some(&fixture.method));
     assert_eq!(candidates.steps.len(), 4, "{:?}", candidates.steps);
     assert!(matches!(
@@ -480,11 +549,22 @@ fn candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar(
         fixture.analysis.ir(),
         &fixture.facts,
         jarde_java::pass::JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
     );
     let mut complete_budget = Budget::new(limits());
-    let complete = recover_for_class_source(&request, &mut complete_budget, false, false);
+    let complete = jarde_java::report::recover_for_class_source(
+        &request,
+        &mut complete_budget,
+        jarde_java::report::ClassSourceOptions::default(),
+        None,
+    );
     assert!(complete.report.produced(), "{:?}", complete.report.outcome);
     let candidates = complete
+        .candidates
         .initializer
         .expect("eligible interface initializer");
     let first_candidate_bci = match &candidates.steps[0] {
@@ -504,6 +584,11 @@ fn candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar(
         fixture.analysis.ir(),
         &ineligible_facts,
         jarde_java::pass::JAVA_8,
+        jarde_reader::view::RuntimeProfile {
+            java_release: 8,
+            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+            layout: jarde_reader::view::LayoutMode::Generic,
+        },
     );
 
     let complete_items = ir_items(report_usage(&complete.report));
@@ -512,11 +597,16 @@ fn candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar(
         let mut bounded = limits();
         bounded.ir_items = ir_items_limit;
         let mut budget = Budget::new(bounded);
-        let stopped = recover_for_class_source(&request, &mut budget, false, false);
+        let stopped = jarde_java::report::recover_for_class_source(
+            &request,
+            &mut budget,
+            jarde_java::report::ClassSourceOptions::default(),
+            None,
+        );
         if matches!(
             stopped.report.outcome,
             RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(at),
                 ..
             }) if at == first_candidate_bci
@@ -524,8 +614,12 @@ fn candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar(
             let mut ineligible_bounded = limits();
             ineligible_bounded.ir_items = ir_items_limit;
             let mut ineligible_budget = Budget::new(ineligible_bounded);
-            let ineligible =
-                recover_for_class_source(&ineligible_request, &mut ineligible_budget, false, false);
+            let ineligible = jarde_java::report::recover_for_class_source(
+                &ineligible_request,
+                &mut ineligible_budget,
+                jarde_java::report::ClassSourceOptions::default(),
+                None,
+            );
             if ineligible.report.produced() {
                 found = Some(stopped);
                 break;
@@ -533,18 +627,23 @@ fn candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar(
         }
     }
     let stopped = found.expect("budget refusal occurs during eligible initializer candidates");
-    assert!(stopped.initializer.is_none());
+    assert!(stopped.candidates.initializer.is_none());
     assert!(stopped.report.text.is_empty());
 
     let mut output_bounded = limits();
     output_bounded.output_bytes = 0;
     let mut budget = Budget::new(output_bounded);
-    let stopped = recover_for_class_source(&request, &mut budget, false, false);
+    let stopped = jarde_java::report::recover_for_class_source(
+        &request,
+        &mut budget,
+        jarde_java::report::ClassSourceOptions::default(),
+        None,
+    );
     assert!(matches!(
         stopped.report.outcome,
         RecoveryOutcome::Stopped(_)
     ));
-    assert!(stopped.initializer.is_none());
+    assert!(stopped.candidates.initializer.is_none());
 }
 
 #[test]
@@ -556,15 +655,29 @@ fn initializer_sidecar_covers_ordinary_classes_and_interfaces_but_not_annotation
                 .with_access_flags(0x0008)
                 .with_declaring_class(DeclaringClass::new("InterfaceInitProbe", flags)),
         );
-        let request = RecoveryRequest::new(fixture.analysis.ir(), &facts, jarde_java::pass::JAVA_8);
+        let request = RecoveryRequest::new(
+            fixture.analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        );
 
         let mut ordinary_budget = Budget::new(limits());
         let mut expected = jarde_java::recover(&request, &mut ordinary_budget);
         let mut adapter_budget = Budget::new(limits());
-        let mut actual = recover_for_class_source(&request, &mut adapter_budget, false, false);
+        let mut actual = jarde_java::report::recover_for_class_source(
+            &request,
+            &mut adapter_budget,
+            jarde_java::report::ClassSourceOptions::default(),
+            None,
+        );
 
         assert_eq!(
-            actual.initializer.is_some(),
+            actual.candidates.initializer.is_some(),
             flags & ACC_ANNOTATION == 0,
             "class flags {flags:#06x}"
         );

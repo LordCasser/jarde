@@ -180,6 +180,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// One class-source presentation over the snapshot's own root container.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -296,12 +297,18 @@ const CF_MAIN: &str = "    public static void main(java.lang.String[] arg0) thro
 
 /// `TWX.month`: this change's own negative — `java.time.MonthDay`'s header declares
 /// `TemporalAccessor` verbatim, but the closed fourteen rows do not carry it, so the pair keeps
-/// the refusal rather than widening from the header's existence.
-const TWX_MONTH: &str = "    static java.lang.String month() {\n        // jarde: not recovered: the recovery run for `month()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method month()Ljava/lang/String;\n        // @declaration a static method of `TWX`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 13 10 2 7\n        // the parameter 0 of the invocation at BCI 10 is declared `java.time.temporal.TemporalAccessor` presents `java.time.MonthDay` but the invocation requires `java.time.temporal.TemporalAccessor` and this layer has no safe reference conversion evidence\n    }\n";
+/// the refusal rather than widening from the header's existence. Re-recorded 2025: the refusal
+/// sentence now carries its relation-evidence suffix ` (relation: Some(Missing))` (deliberate
+/// mechanism change, accepted on the mainline; the green `p3_platform_collection_widening` pin
+/// already states the same suffix verbatim). Field-by-field diff against the previous constant:
+/// the suffix is the only difference.
+const TWX_MONTH: &str = "    static java.lang.String month() {\n        // jarde: not recovered: the recovery run for `month()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method month()Ljava/lang/String;\n        // @declaration a static method of `TWX`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 13 10 2 7\n        // the parameter 0 of the invocation at BCI 10 is declared `java.time.temporal.TemporalAccessor` presents `java.time.MonthDay` but the invocation requires `java.time.temporal.TemporalAccessor` and this layer has no safe reference conversion evidence (relation: Some(Missing))\n    }\n";
 
 /// `TWX.year`: the same negative at the `Temporal` slot (`java.time.Year`'s header declares it;
-/// no row names it).
-const TWX_YEAR: &str = "    static long year() {\n        // jarde: not recovered: the recovery run for `year()J` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method year()J\n        // @declaration a static method of `TWX`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 18 15 0 6 12\n        // the parameter 0 of the invocation at BCI 15 is declared `java.time.temporal.Temporal` presents `java.time.Year` but the invocation requires `java.time.temporal.Temporal` and this layer has no safe reference conversion evidence\n    }\n";
+/// no row names it). Re-recorded together with `TWX_MONTH` for the same relation-suffix reason;
+/// field-by-field diff: the suffix is the only difference (`@bytecode 18 15 0 6 12` and every
+/// other line identical).
+const TWX_YEAR: &str = "    static long year() {\n        // jarde: not recovered: the recovery run for `year()J` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method year()J\n        // @declaration a static method of `TWX`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 18 15 0 6 12\n        // the parameter 0 of the invocation at BCI 15 is declared `java.time.temporal.Temporal` presents `java.time.Year` but the invocation requires `java.time.temporal.Temporal` and this layer has no safe reference conversion evidence (relation: Some(Missing))\n    }\n";
 
 /// The refusal text every negative below states: the one reference-conversion sentence this layer
 /// writes, unchanged by this change.

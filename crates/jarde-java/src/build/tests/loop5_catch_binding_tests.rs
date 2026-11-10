@@ -33,11 +33,14 @@ fn run_decide_types(
         &operations,
         &context.reuse,
         method_facts.parameters(),
+        !declaration.is_static(),
         &parameter_types,
         return_ty.as_ref(),
         &crate::field::Plan::empty(),
         &BTreeSet::new(),
         catch_parameters,
+        8,
+        &[],
         budget,
     )
 }
@@ -188,7 +191,7 @@ fn loop5_catch_binding_propagates_budget_and_cancellation_stops() {
     assert!(matches!(
         run_decide_types(&context, &uses, &paths.catch_parameters, &mut budget),
         Err(StopReason::Budget {
-            dimension: CountedBudgetDimension::AnalysisSteps,
+            dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
             ..
         })
     ));

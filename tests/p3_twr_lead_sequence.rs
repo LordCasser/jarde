@@ -47,12 +47,19 @@ fn limits() -> Limits {
 }
 
 fn class_source(bytes: &[u8]) -> ClassSourceReport {
+    class_source_with_header_cap(bytes, 10)
+}
+
+fn class_source_with_header_cap(bytes: &[u8], header_cap: u64) -> ClassSourceReport {
     let engine = Engine::new();
-    let mut budget = Budget::new(limits());
+    let mut bounded = limits();
+    bounded.class_headers = header_cap;
+    let mut budget = Budget::new(bounded);
     let snapshot = engine
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .expect("a standalone class fixture opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("TR"),
         },
@@ -149,7 +156,10 @@ fn the_older_lowerings_level_is_recovered_as_a_try_with_resources() {
 
 #[test]
 fn the_newer_lowerings_keep_their_resource_text_with_recovered_field_concats() {
-    let report = class_source(JAVAC23);
+    // Compare a completed source unit. The original cap=10 is preserved separately below;
+    // S1 2.4 already stops there during selected Header proof work.
+    let report = class_source_with_header_cap(JAVAC23, task_limits(&[]).unwrap().class_headers);
+    assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
     let rendered = report.text.as_bytes();
     // Keep the historical snapshot intact. Only the two independently proved field chains
     // change; every other byte, including the complete one/two resource statements, must match.
@@ -320,4 +330,20 @@ fn one_code(bytes: &[u8]) -> (usize, usize) {
         }
     }
     panic!("`one(Ljava/lang/String;)Ljava/lang/String;` has a `Code` attribute")
+}
+
+#[test]
+fn the_original_header_cap_still_reports_the_actual_stop() {
+    let report = class_source(JAVAC23);
+    assert!(!matches!(
+        report.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    assert_eq!(
+        report
+            .usage
+            .counted_usage(CountedBudgetDimension::ClassHeaders),
+        10
+    );
+    assert!(report.text.contains("budget_exceeded_class_headers"));
 }

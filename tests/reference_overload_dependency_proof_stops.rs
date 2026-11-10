@@ -38,6 +38,7 @@ fn present_bytes(
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("em11/InputHierarchyCalls"),
         },
@@ -209,16 +210,27 @@ fn em11_plain_header_stop_pays_no_later_snapshot_analysis_work() {
 }
 
 #[test]
-fn em11_cap_two_keeps_the_existing_snapshot_stop_and_prefix() {
+fn em11_cap_two_reuses_headers_and_keeps_the_complete_wide_result() {
     let (wide, _) = present(4096, false);
     let (report, _) = present(2, false);
-    assert!(is_header_stop(&report.execution));
+    assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
     assert_reliable_prefix(&wide, &report);
+    assert_eq!(report.text, wide.text);
+    assert_eq!(report.usage.class_headers, 2);
     let ClassSourceOutcome::Recovered { report: body, .. } = &run(&report).outcome else {
         panic!()
     };
-    assert!(is_header_stop(&body.execution));
-    assert_eq!(body.content, RecoveryContent::NotProduced);
+    let ClassSourceOutcome::Recovered {
+        report: expected, ..
+    } = &run(&wide).outcome
+    else {
+        panic!()
+    };
+    assert!(matches!(body.execution, ExecutionReport::Complete { .. }));
+    assert_eq!(body.content, expected.content);
+    assert_eq!(body.text, expected.text);
+    assert_eq!(body.source_map.segments(), expected.source_map.segments());
+    assert_eq!(body.artifact.binding(), expected.artifact.binding());
 }
 
 // Change only the availability of the required physical HLeaf definition. Every class byte

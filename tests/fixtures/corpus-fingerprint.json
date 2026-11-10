@@ -2458,17 +2458,17 @@
       "path": "tests/fixtures/nested-int-array-compound-updates/v8/NestedIntUpdates.class"
     },
     {
-      "blake3": "5b3ab8fe58d19b7825517efcd00dbd93ae33b1e2f71c0e4a5e364b8817b01dd7",
+      "blake3": "16442221ac1b4585e4f57544ff28c0766071d53aff54888298b511af71f53989",
       "bytes": 22996,
       "path": "tests/fixtures/p1-golden/bootstrap.json"
     },
     {
-      "blake3": "47973a6e5f49b2aa6532efb1490ca79b0d4a36a10054eec79768b875448b02d8",
+      "blake3": "80fed6c8c6c8049fb670cc913bb2e26edbc53498374a66b920f52c4dfe396ca7",
       "bytes": 19500,
       "path": "tests/fixtures/p1-golden/code.json"
     },
     {
-      "blake3": "a8b14634f84c18c3a0ff78eaecfc1efbc99e22feb085d0e1b7adf5e422316d75",
+      "blake3": "1e0021b9aab81d2cce6565d3f7d25d8b14e055c934a8aa3134806988ffb98d42",
       "bytes": 28468,
       "path": "tests/fixtures/p1-golden/metadata.json"
     },
@@ -2483,33 +2483,33 @@
       "path": "tests/fixtures/p1-golden/nested.json"
     },
     {
-      "blake3": "b9b804e2367e9bac2d187f1e4ba826f4474f482db4eebebd15e3fc066753dbb0",
-      "bytes": 65045,
+      "blake3": "4e3f431e54a6d6db1a3e3bc3016c66cb9de9de27298775d69bf3d8003de6a6bc",
+      "bytes": 67810,
       "path": "tests/fixtures/p2-golden/exception-overlap.json"
     },
     {
-      "blake3": "3908a67cd7fd687ca3ad377f195d908906fca9b38ebdc1e896e1746096b25b30",
-      "bytes": 100827,
+      "blake3": "713094a2cabcacd536343eabab9f7c3285f1c79928e6bca40921eed0324dc96e",
+      "bytes": 105251,
       "path": "tests/fixtures/p2-golden/historical.json"
     },
     {
-      "blake3": "a7b9bca333d78ea7bbfa20414dd3f3cb4f4a119662a031ff5a48c49f13d6c95e",
-      "bytes": 37653,
+      "blake3": "b31d4c05b8d19f45ea781030d4012f8c1b5737dd64a41e46d9b29ebea32e5fa0",
+      "bytes": 39312,
       "path": "tests/fixtures/p2-golden/inputs.json"
     },
     {
-      "blake3": "526d41823b555f1b95f40edb10b68f20337f59cab4dacdf896d9e98b727a5531",
-      "bytes": 12411,
+      "blake3": "fcf9815749e02c955df9d8ba046d22559b8d2cf1c442d6b30e602b242c9d62b3",
+      "bytes": 12964,
       "path": "tests/fixtures/p2-golden/legacy-clone.json"
     },
     {
-      "blake3": "a9aa2d88d7b2b5a6e72f7ae1ab4cf0fb783ae116454551d8ecf4f411df1ae41f",
-      "bytes": 109815,
+      "blake3": "765ceb9dd09cc62be70d376e0faf38b4b82da5c1649e24b066d3275938be9a02",
+      "bytes": 114792,
       "path": "tests/fixtures/p2-golden/resource-boundary.json"
     },
     {
-      "blake3": "902de080ad52a64757e2fc0751b95b6aaeb4cf315becbb90c8506c08bb9f929b",
-      "bytes": 12368,
+      "blake3": "d4cdbbf08dde2ca54aac1ec77137c41ee599433a6f67af49b2d604f9f050ad0c",
+      "bytes": 12921,
       "path": "tests/fixtures/p2-golden/wide-switch.json"
     },
     {
@@ -13706,6 +13706,1356 @@
       "blake3": "13708c0c7e841f41892f0e6a9ec23dc8bda440c4b9c458348719545d828344d9",
       "bytes": 752,
       "path": "tests/fixtures/returned-int-array-compound-updates/v8/ReturnedIntArrayUpdates.class"
+    },
+    {
+      "blake3": "9ca0fa4a0965e5de4a5caf63ce6bf56219fcec726fe2d24e40048cb55cf31b49",
+      "bytes": 1225,
+      "path": "tests/fixtures/s1-array-helper-raw/ascii.jar"
+    },
+    {
+      "blake3": "94dc2c263b0ba50250c235dc0e2d5c6705510ec0ae99d88e0f457f68af6344ab",
+      "bytes": 1504,
+      "path": "tests/fixtures/s1-array-helper-raw/element-supplementary.jar"
+    },
+    {
+      "blake3": "454908d15e89cb22ddfc941c1321728571ae0816aa7556766e1efb674636a90a",
+      "bytes": 1219,
+      "path": "tests/fixtures/s1-array-helper-raw/helper-supplementary.jar"
+    },
+    {
+      "blake3": "645cd7f897a9118d50fc76754223844f643fdc495178c0711272cdbd40a8f89d",
+      "bytes": 1239,
+      "path": "tests/fixtures/s1-array-helper-raw/owner-supplementary.jar"
+    },
+    {
+      "blake3": "e94a074aac92fd33ed89d4d3fcd3faab0b3affc839e699980e16ffdeb620e4ab",
+      "bytes": 584,
+      "path": "tests/fixtures/s1-body-type-names/member-dollar.jar"
+    },
+    {
+      "blake3": "3b88c8b918da42e2400004e645f6a5019da1b53e93cb2cf5f208c865e29ef7f9",
+      "bytes": 594,
+      "path": "tests/fixtures/s1-body-type-names/owner-dollar.jar"
+    },
+    {
+      "blake3": "c94b85993675ec03bb3216a402ab0a08f7070d7884888f00816e42ed3f7463fe",
+      "bytes": 1443,
+      "path": "tests/fixtures/s1-enum-constructor-stop/IntBody.class"
+    },
+    {
+      "blake3": "6c6a1cd12a0d0883b0e12c3afc020becb5f2b25f8de4ce800d5727b517839c46",
+      "bytes": 312,
+      "path": "tests/fixtures/s1-enum-constructor-stop/IntBody.java"
+    },
+    {
+      "blake3": "96c885a4a985334617f3067d804e4679a8d6fd3758551c79c3b12dbcca532889",
+      "bytes": 2897,
+      "path": "tests/fixtures/s1-enum-constructor-stop/input.jar"
+    },
+    {
+      "blake3": "2de44b4993d2428b5dc246d9843d28f3d195a629c2a3fc498bfd0bdb7f735ea6",
+      "bytes": 1128,
+      "path": "tests/fixtures/s1-enum-raw-names/arbitrary-field.jar"
+    },
+    {
+      "blake3": "fa8e3e78f447a8796a7a9c6cc60fd1cfd170b8a301276e8eb11ffe2d58b902b7",
+      "bytes": 2708,
+      "path": "tests/fixtures/s1-enum-raw-names/body-owner-bad-mutf8.jar"
+    },
+    {
+      "blake3": "0cb619a3c0d997ee2443dcd99f8db9a6bfd801cc664c09627b5365878cce6515",
+      "bytes": 3805,
+      "path": "tests/fixtures/s1-enum-raw-names/body-owner-manifest.json"
+    },
+    {
+      "blake3": "1315de8228a28f8aa92292bf88ac0ab7a84260e03fcfabfe343f7aef781b4473",
+      "bytes": 2714,
+      "path": "tests/fixtures/s1-enum-raw-names/body-owner-unspellable.jar"
+    },
+    {
+      "blake3": "1d6547ac351f9b27e86157813d5d0fc2ed7d699cd7899a0d98d612623cd8cc5d",
+      "bytes": 2746,
+      "path": "tests/fixtures/s1-enum-raw-names/body-owner.jar"
+    },
+    {
+      "blake3": "39b2538a3943f67800f6d7c5cdaf98b5a5c8eb13675186af1fb345dfbc983622",
+      "bytes": 1134,
+      "path": "tests/fixtures/s1-enum-raw-names/condition-name.jar"
+    },
+    {
+      "blake3": "b7315d75eb676c78cea420803409df4c689903e341fac7cc1cbcd93cbb395852",
+      "bytes": 996,
+      "path": "tests/fixtures/s1-enum-raw-names/constant-name.jar"
+    },
+    {
+      "blake3": "9ef262362f7171a1baf460bf1f3e99cc6f31000aef32ff2f3531b3515e201370",
+      "bytes": 984,
+      "path": "tests/fixtures/s1-enum-raw-names/int-control.jar"
+    },
+    {
+      "blake3": "f42b69352defe94d6dacd144530ebebb79c78643b60158ffa8c2f67206f72f09",
+      "bytes": 1389,
+      "path": "tests/fixtures/s1-enum-raw-names/int-field-owner-underscore.jar"
+    },
+    {
+      "blake3": "fd0b927f175c2c7dc21ec6c4badb7002a403ebf5f9dabb8c68fa5bdba66ebe08",
+      "bytes": 1416,
+      "path": "tests/fixtures/s1-enum-raw-names/int-field.jar"
+    },
+    {
+      "blake3": "8fb5eb73bd9b528e3210afccdc0767285240ea425e111b1c37a96fadd69cf7b6",
+      "bytes": 1229,
+      "path": "tests/fixtures/s1-enum-raw-names/map-control.jar"
+    },
+    {
+      "blake3": "87f203ca3dc829f11d5513426c75e2145cd22eed760bea3e5112815a66d3041f",
+      "bytes": 1235,
+      "path": "tests/fixtures/s1-enum-raw-names/map-field.jar"
+    },
+    {
+      "blake3": "a1e096b2e0848e9910bc4e8f491de7be89ef88d9f0f842f322aabe79333a422f",
+      "bytes": 1279,
+      "path": "tests/fixtures/s1-enum-raw-names/map-owner.jar"
+    },
+    {
+      "blake3": "d6f323d40b99f06dc45c63f2c6f92058aa54371682ee0d27c60a0d2b689f160a",
+      "bytes": 1496,
+      "path": "tests/fixtures/s1-enum-raw-names/object-field-owner-underscore.jar"
+    },
+    {
+      "blake3": "e8124529ead6f7446ed67aec63e116859458ea615f2e0b36b9e20049e2594964",
+      "bytes": 1128,
+      "path": "tests/fixtures/s1-enum-raw-names/object-field.jar"
+    },
+    {
+      "blake3": "8e0622b2d5aad95fc1998d7bcfaf1ea78f4f3113f234335f32f8a322b0d8f712",
+      "bytes": 1364,
+      "path": "tests/fixtures/s1-enum-raw-names/object-parameter-underscore.jar"
+    },
+    {
+      "blake3": "d6f05e79da3738b3c72aedf0417e86fa55426e714415c39ea9996f0ab69451e1",
+      "bytes": 1113,
+      "path": "tests/fixtures/s1-enum-raw-names/object-parameter.jar"
+    },
+    {
+      "blake3": "fe01ea34504db0589b8a6c352d70e9cb4e7f57a092d43d23e19bd6ffeaecad9d",
+      "bytes": 1081,
+      "path": "tests/fixtures/s1-enum-raw-names/terminal-control.jar"
+    },
+    {
+      "blake3": "b8bbaed66c42ba6de158f57bf6a3a5b7c26197e8a159bf9852e42b09c37c05a7",
+      "bytes": 1095,
+      "path": "tests/fixtures/s1-enum-raw-names/terminal-field.jar"
+    },
+    {
+      "blake3": "145f10441268ae8f24bca95417abd51b1919d94e44dc5e6e1408a17895fa4ecc",
+      "bytes": 1087,
+      "path": "tests/fixtures/s1-enum-raw-names/terminal-helper-name.jar"
+    },
+    {
+      "blake3": "8177aa6488803f63f9eb91847e8187816cfba211d3b219be2189e9f14227ef5c",
+      "bytes": 1087,
+      "path": "tests/fixtures/s1-enum-raw-names/terminal-helper-owner.jar"
+    },
+    {
+      "blake3": "5a8ebc419797f216d236fdb38dc2a547b7c80501befcfcc1823df811f2c389c6",
+      "bytes": 1372,
+      "path": "tests/fixtures/s1-generic-cast-source/ascii.jar"
+    },
+    {
+      "blake3": "0853848ffa9477b0ae3b938779aadc45a4ab78baa3dc3466702d7d2dd87ec1f1",
+      "bytes": 1410,
+      "path": "tests/fixtures/s1-generic-cast-source/supplementary.jar"
+    },
+    {
+      "blake3": "86d2c9fcf5e58a7e03f40f73b17d7d59c87dd6f9e0274ed334b14beb7cb010da",
+      "bytes": 1277,
+      "path": "tests/fixtures/s1-generic-declaration-boundary/ascii.jar"
+    },
+    {
+      "blake3": "5cc30e583ba83e659f7fa393616e060735b569bc78771add5fd1e6ead3cd4ae9",
+      "bytes": 1333,
+      "path": "tests/fixtures/s1-generic-declaration-boundary/supplementary.jar"
+    },
+    {
+      "blake3": "4ec2e62e3f4a78310d2a4079a007abeaf5c0b7ddc1e0f2127540160f2578af69",
+      "bytes": 285,
+      "path": "tests/fixtures/s1-generic-declaration-policies/mutant.class"
+    },
+    {
+      "blake3": "7b9d98d6fd02d97c65e8c43edd816b60dcc527f5f3c4bd43d7a238a10953a0d0",
+      "bytes": 284,
+      "path": "tests/fixtures/s1-generic-declaration-policies/original.class"
+    },
+    {
+      "blake3": "d812ea52ff6e0982ac715ddd4928e178d06c8f0f30a411656e3a1eed9bbd8b67",
+      "bytes": 1914,
+      "path": "tests/fixtures/s1-generic-physical-names/supplementary.jar"
+    },
+    {
+      "blake3": "41fb0d3053a71699ea172bf559504fb038c01e3b37572f9e138ac62241e4c8ec",
+      "bytes": 1012,
+      "path": "tests/fixtures/s1-generic-source-consumers/list-ascii.jar"
+    },
+    {
+      "blake3": "09fc356fe6bd32acae8d9b089afda6e12585e32d01f15120eed09f3a62e69613",
+      "bytes": 1038,
+      "path": "tests/fixtures/s1-generic-source-consumers/list-supplementary.jar"
+    },
+    {
+      "blake3": "f0948a5cdefff97e039c2d28e65db53a0170a9e40809445a99189adabc32f0c6",
+      "bytes": 1058,
+      "path": "tests/fixtures/s1-generic-source-consumers/member-path.jar"
+    },
+    {
+      "blake3": "ac5e0a4ee009e1d4cec25e256f398b4d7787c7c11277318b5d3454ae23cd1b43",
+      "bytes": 568,
+      "path": "tests/fixtures/s1-generic-source-consumers/receiver-ascii.jar"
+    },
+    {
+      "blake3": "d182f5be6c636142d0e588cfaef414ac1cc845baaa1c575f1ebaf287d7be926f",
+      "bytes": 608,
+      "path": "tests/fixtures/s1-generic-source-consumers/receiver-dollar-ascii.jar"
+    },
+    {
+      "blake3": "13f141e79ade35c21c65e9ff0660aa3be6c8d2cccf83819533a1c09c52787787",
+      "bytes": 636,
+      "path": "tests/fixtures/s1-generic-source-consumers/receiver-dollar-supplementary.jar"
+    },
+    {
+      "blake3": "3ee3b5ef29022046ab57dd0b28bb03a9d64e0c3f1c65f0910ecf7c61662a00b0",
+      "bytes": 582,
+      "path": "tests/fixtures/s1-generic-source-consumers/receiver-supplementary.jar"
+    },
+    {
+      "blake3": "6b26db432648641a2eab78cdab3e1456728fa478256ad2851f277f472eb9a790",
+      "bytes": 1364,
+      "path": "tests/fixtures/s1-invocation-names/interface-return-ascii-Xcall.jar"
+    },
+    {
+      "blake3": "a8e0a1168d1477d67269083d5dc79ec5c85eeb11220c175041969f3e17e056ef",
+      "bytes": 1364,
+      "path": "tests/fixtures/s1-invocation-names/interface-return-bmp-cafe.jar"
+    },
+    {
+      "blake3": "40a7a65db7ac61a1cae74296c5e2e21c5e519d065cdeb8c285b480303cfed0ba",
+      "bytes": 1362,
+      "path": "tests/fixtures/s1-invocation-names/interface-return-dash.jar"
+    },
+    {
+      "blake3": "d3eb012355cdeaedb7e44a59e00629bd6f2ba094fea889b2fd139fe2df2e2df5",
+      "bytes": 1379,
+      "path": "tests/fixtures/s1-invocation-names/interface-return-supplementary-U10400.jar"
+    },
+    {
+      "blake3": "76c721127c8b745355dc93e8e4dd944af97247a32f17d8da42e3d9f7037a56e8",
+      "bytes": 1362,
+      "path": "tests/fixtures/s1-invocation-names/interface-return-surrogate.jar"
+    },
+    {
+      "blake3": "d348d4bc23f128a99a8f1a70834bc2eaa49d8a6b41fe8f5b3d6abc90da1215f3",
+      "bytes": 1352,
+      "path": "tests/fixtures/s1-invocation-names/interface-return-underscore.jar"
+    },
+    {
+      "blake3": "2b44acfd0b867aaf0570f3bd3ce35e6856b8879dcb210b9e501216b8f28538e1",
+      "bytes": 843,
+      "path": "tests/fixtures/s1-invocation-names/private-special-return-ascii-Xcall.jar"
+    },
+    {
+      "blake3": "2bdf924d2eaeda76dbce451edee5fa8de7f8da3c4b2b5df64f4e086918242a9a",
+      "bytes": 843,
+      "path": "tests/fixtures/s1-invocation-names/private-special-return-bmp-cafe.jar"
+    },
+    {
+      "blake3": "b3921d76cf317b655fd5f59913b494440b487b4cc86e3a7f64d686172f8742dd",
+      "bytes": 841,
+      "path": "tests/fixtures/s1-invocation-names/private-special-return-dash.jar"
+    },
+    {
+      "blake3": "bc754979ab861787d501c999b54be0d04d7d2a704486ff1b67d5394ce52bafb9",
+      "bytes": 848,
+      "path": "tests/fixtures/s1-invocation-names/private-special-return-supplementary-U10400.jar"
+    },
+    {
+      "blake3": "fd4e77a39dc16191fd6a63493850d8ff3f0b05d139f17789cb768cc986501c9a",
+      "bytes": 841,
+      "path": "tests/fixtures/s1-invocation-names/private-special-return-surrogate.jar"
+    },
+    {
+      "blake3": "7b2a6506f9298551e267952ffaf5d0215b23fd423f836e940713962d8cec70ef",
+      "bytes": 839,
+      "path": "tests/fixtures/s1-invocation-names/private-special-return-underscore.jar"
+    },
+    {
+      "blake3": "7e95b7add85e0c5ad47637b2e3b7a565f65cd959b8df8ac9e7966b7f052c527b",
+      "bytes": 1175,
+      "path": "tests/fixtures/s1-invocation-names/static-void-ascii-Xcall.jar"
+    },
+    {
+      "blake3": "17525c3de6883fa1ac79476853db3363e121382d7ac3d7e9e160dbeaa3fa0da1",
+      "bytes": 1175,
+      "path": "tests/fixtures/s1-invocation-names/static-void-bmp-cafe.jar"
+    },
+    {
+      "blake3": "c8e12c20b39d4711276bac1bcb10acdf23befaedb198d2929bbc0106bca18526",
+      "bytes": 1173,
+      "path": "tests/fixtures/s1-invocation-names/static-void-dash.jar"
+    },
+    {
+      "blake3": "3b84f3a4cbe2edffd0c0c33f64c7d6eedf4c5977cca70b828ce8f921abef1119",
+      "bytes": 1185,
+      "path": "tests/fixtures/s1-invocation-names/static-void-supplementary-U10400.jar"
+    },
+    {
+      "blake3": "ccb9bb654f8620cee47ca0b1f79bc5f4aa216d8fab859e1b17bed7cead673482",
+      "bytes": 1173,
+      "path": "tests/fixtures/s1-invocation-names/static-void-surrogate.jar"
+    },
+    {
+      "blake3": "19c493605019e3f1dd783f6f06ad6ce7dc0e4232eb9275fd5c0fa57200c05682",
+      "bytes": 1167,
+      "path": "tests/fixtures/s1-invocation-names/static-void-underscore.jar"
+    },
+    {
+      "blake3": "c201c1040b57ba3a6ca537ba42d1e989f17b26af7364abbecc9b0c3e650f7509",
+      "bytes": 1107,
+      "path": "tests/fixtures/s1-invocation-names/virtual-return-ascii-Xcall.jar"
+    },
+    {
+      "blake3": "70e97dcf633ea25e4b6dc563e53342bcf3010c3be46c96ff1b191787c90e51cf",
+      "bytes": 1107,
+      "path": "tests/fixtures/s1-invocation-names/virtual-return-bmp-cafe.jar"
+    },
+    {
+      "blake3": "87cdf1afd52ed00b0dce34809e6c10736a57661335216efbd897b9dc89f0d3f5",
+      "bytes": 1105,
+      "path": "tests/fixtures/s1-invocation-names/virtual-return-dash.jar"
+    },
+    {
+      "blake3": "00fff6c45ee18ae02485a89ae70e3658ffe8f3ba1fdb689f633d5d4390b98163",
+      "bytes": 1117,
+      "path": "tests/fixtures/s1-invocation-names/virtual-return-supplementary-U10400.jar"
+    },
+    {
+      "blake3": "11e37451435a1f74d6f737141f64e2a84dd1c4278bd509fe616b6ee19531591a",
+      "bytes": 1105,
+      "path": "tests/fixtures/s1-invocation-names/virtual-return-surrogate.jar"
+    },
+    {
+      "blake3": "9878f6e5b26a61e15c8461119b834e47c79b4da38e2a8d30b6f65356473debc2",
+      "bytes": 1099,
+      "path": "tests/fixtures/s1-invocation-names/virtual-return-underscore.jar"
+    },
+    {
+      "blake3": "f7518865bc1b9ad9a21839c781cf17f5ddc8143eeb2c9dd413e1e36f2858f38f",
+      "bytes": 1572,
+      "path": "tests/fixtures/s1-lambda-handle-names/captured-this-ascii.jar"
+    },
+    {
+      "blake3": "aee4cb51bb98dba1a0e3cd1aeb75e1f1b6ce212d910a76256cc1a5f9c4752c10",
+      "bytes": 1606,
+      "path": "tests/fixtures/s1-lambda-handle-names/constructor-reference.jar"
+    },
+    {
+      "blake3": "9881266e3de731acadf8bc40f932e109e846a86e88afc0cdbde913a5ce036971",
+      "bytes": 1420,
+      "path": "tests/fixtures/s1-lambda-handle-names/discarded-legal-site.jar"
+    },
+    {
+      "blake3": "70571e3281b323d1f2264066faaabc79ee0c85c001e4b78fa5a428aa0c800375",
+      "bytes": 1558,
+      "path": "tests/fixtures/s1-lambda-handle-names/external-generated-dash.jar"
+    },
+    {
+      "blake3": "88443eb1e5d69ccd2b065999a7f5b35345300477640226c6d4a72560e666411a",
+      "bytes": 1468,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-inline-ascii.jar"
+    },
+    {
+      "blake3": "59bdb2d8e13221484b7005a3705efdc72c5ef15a1588873dfbc3d446cf7a2e9a",
+      "bytes": 1468,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-inline-bmp.jar"
+    },
+    {
+      "blake3": "bd206d2303b30a803d85cba9033a2a56308980a43e38c53203170f42a9ae1aef",
+      "bytes": 1566,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-inline-dash.jar"
+    },
+    {
+      "blake3": "358ee81cd34ce69032d576fce06085fd5b83774b6e792fe757afdb148a9d0654",
+      "bytes": 1470,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-inline-supplementary.jar"
+    },
+    {
+      "blake3": "c4cb7157b5f58a4dcc3b29f12e20496dccfb961bb2f51c49dd01f58fbbf58aa7",
+      "bytes": 1561,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-inline-surrogate.jar"
+    },
+    {
+      "blake3": "1458c429d55b9bc1417f8fb48ebdaca89f0305b4dae852322bf52814c0574a8e",
+      "bytes": 1560,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-inline-truncated.jar"
+    },
+    {
+      "blake3": "04cfcba5d40d0455fda1096bc3facc91f61293ec513f3cce76c85a1afacc0736",
+      "bytes": 1460,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-inline-underscore.jar"
+    },
+    {
+      "blake3": "b3b264b0e95505df2394e9894259ef397cc8919f59a68521ae936bbd0d674735",
+      "bytes": 1566,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-nonprivate.jar"
+    },
+    {
+      "blake3": "810b6d253fcdcf4e10f89b585f64217b888d2341e5bb69024729da47881920e5",
+      "bytes": 1566,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-nonsynthetic.jar"
+    },
+    {
+      "blake3": "c44b90bbba6f43c871840abea4264b73fcc367069d21b7070aae4357ed98a558",
+      "bytes": 1508,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-rename-ascii.jar"
+    },
+    {
+      "blake3": "d1d603a7df3f7e0cc2b3eb1623760b3bc005cfa68645308cafd8fa4ab3a823f9",
+      "bytes": 1508,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-rename-bmp.jar"
+    },
+    {
+      "blake3": "6e582817108ed055f35ccedeeb590ccce1c77183eddd2ec6b8c0774859a859e6",
+      "bytes": 1606,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-rename-dash.jar"
+    },
+    {
+      "blake3": "6c0c175e5117d358a9033c98462491401fe90caec6810f24896f510e58157a71",
+      "bytes": 1510,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-rename-supplementary.jar"
+    },
+    {
+      "blake3": "713f596c06384a4ab6a63854b08702f03c309a061c6d02361b121a2c54ff6bbf",
+      "bytes": 1601,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-rename-surrogate.jar"
+    },
+    {
+      "blake3": "767a4f513a63bb205cea8ab751169e8e2c71251141ab0344aee500ebf6986542",
+      "bytes": 1600,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-rename-truncated.jar"
+    },
+    {
+      "blake3": "252c6f83a0bc35c203ce097b176245d21169e56b28e2d0f83399a5c64c5957f9",
+      "bytes": 1500,
+      "path": "tests/fixtures/s1-lambda-handle-names/helper-rename-underscore.jar"
+    },
+    {
+      "blake3": "71d3777381695c4b3c807602c0d4a19374dde4e5eabbc2ff9a2a5d73a80db11b",
+      "bytes": 1575,
+      "path": "tests/fixtures/s1-lambda-handle-names/instance-nonprivate.jar"
+    },
+    {
+      "blake3": "94d64232c1ea5d4987f5383d455d0b620ec98cf2da20a6af443e435b33d05a52",
+      "bytes": 1575,
+      "path": "tests/fixtures/s1-lambda-handle-names/instance-nonsynthetic.jar"
+    },
+    {
+      "blake3": "8a4ce51cd0b0d17c8d25693b79a58a94c4f55156613fbd18d737a33d18cc207f",
+      "bytes": 1618,
+      "path": "tests/fixtures/s1-lambda-handle-names/staged-alias-collision.jar"
+    },
+    {
+      "blake3": "c4288e6dbf474162a06af7b641a2e43130f96c25c9d0ad2d2eb00b091b5380ee",
+      "bytes": 1239,
+      "path": "tests/fixtures/s1-lambda-handle-names/static-reference-ascii.jar"
+    },
+    {
+      "blake3": "acebe7a1d7036e308421c99b2de4cf6d3e3b8a5e8927b9da14c7b4718de1d29b",
+      "bytes": 1239,
+      "path": "tests/fixtures/s1-lambda-handle-names/static-reference-bmp.jar"
+    },
+    {
+      "blake3": "0ec80a9d3682eddb102cdabae63d6c30d43cd323b002e958a8b806ee579c546a",
+      "bytes": 1541,
+      "path": "tests/fixtures/s1-lambda-handle-names/static-reference-dash.jar"
+    },
+    {
+      "blake3": "cd169487a2fefaa071c926b58fd6a391d187371f9ebf2e60a139a9788e2a892d",
+      "bytes": 1241,
+      "path": "tests/fixtures/s1-lambda-handle-names/static-reference-supplementary.jar"
+    },
+    {
+      "blake3": "3ca7ce0074d0142ace9cbb8ff3172d119ba4a41be95a0c6fbaa0c868c95502f9",
+      "bytes": 1536,
+      "path": "tests/fixtures/s1-lambda-handle-names/static-reference-surrogate.jar"
+    },
+    {
+      "blake3": "fb9345d442ac66a1a5eef265ece9ed946e9c3ee36e487fd6d8d701d9e8364d91",
+      "bytes": 1535,
+      "path": "tests/fixtures/s1-lambda-handle-names/static-reference-truncated.jar"
+    },
+    {
+      "blake3": "088b0d16a7da6a69bf9d5b0c356e36417232f4d65e97748980febea4eb86fe1a",
+      "bytes": 1231,
+      "path": "tests/fixtures/s1-lambda-handle-names/static-reference-underscore.jar"
+    },
+    {
+      "blake3": "270432742707d07a8413cc468f71e5c55defd07f2633e1b08b6ff441e8a3d0ac",
+      "bytes": 1343,
+      "path": "tests/fixtures/s1-lambda-handle-names/unbound-lambda-ascii.jar"
+    },
+    {
+      "blake3": "7e293a35fe2583ddf6f1ba022055439e05b789c086119c5040b085ddb3187fed",
+      "bytes": 1343,
+      "path": "tests/fixtures/s1-lambda-handle-names/unbound-lambda-bmp.jar"
+    },
+    {
+      "blake3": "d9d7996a47358e8a219b25e06e4da46ce778a184bde4f1585d83177085b211a9",
+      "bytes": 1645,
+      "path": "tests/fixtures/s1-lambda-handle-names/unbound-lambda-dash.jar"
+    },
+    {
+      "blake3": "ce0983262957fdb8556710b2b61eb7e00dcfb40987a326bd9952f1f9066aff82",
+      "bytes": 1345,
+      "path": "tests/fixtures/s1-lambda-handle-names/unbound-lambda-supplementary.jar"
+    },
+    {
+      "blake3": "00b378c8aed6c2ef57e3fe8aeefaf9d5cf465d2574aabc3b2b97cb00832c2861",
+      "bytes": 1640,
+      "path": "tests/fixtures/s1-lambda-handle-names/unbound-lambda-surrogate.jar"
+    },
+    {
+      "blake3": "9c272af9b00d8096cc935fe31707a0007e872c35bd7517c0a401fed42cf05eea",
+      "bytes": 1639,
+      "path": "tests/fixtures/s1-lambda-handle-names/unbound-lambda-truncated.jar"
+    },
+    {
+      "blake3": "d70841430421b8b7c9e67ee1e0ba44e156be42528cc109845f8c828dc553764b",
+      "bytes": 1335,
+      "path": "tests/fixtures/s1-lambda-handle-names/unbound-lambda-underscore.jar"
+    },
+    {
+      "blake3": "974dbba7cdd78481f8e69c7f9de9a1157d7c59baaef040eba1957f0a7b70297e",
+      "bytes": 851,
+      "path": "tests/fixtures/s1-metadata-refusal/array-nan.jar"
+    },
+    {
+      "blake3": "a6780719d96110bf71be66c509f882e8c0a6db860241b370a85bf3b98f286035",
+      "bytes": 852,
+      "path": "tests/fixtures/s1-metadata-refusal/field-damaged.jar"
+    },
+    {
+      "blake3": "974dbba7cdd78481f8e69c7f9de9a1157d7c59baaef040eba1957f0a7b70297e",
+      "bytes": 851,
+      "path": "tests/fixtures/s1-metadata-refusal/field-float.jar"
+    },
+    {
+      "blake3": "278a48999da3bede90563f946f683bb53cd1b207b54d3b9428dbd80e6ecf6591",
+      "bytes": 4677,
+      "path": "tests/fixtures/s1-metadata-type-paths/ascii.jar"
+    },
+    {
+      "blake3": "67477ea6c6b05c77855aeed7159ceb3153d1d3d596bf4e61b9834e61cf96978a",
+      "bytes": 94,
+      "path": "tests/fixtures/s1-raw-anonymous/interface-supp/Driver.java"
+    },
+    {
+      "blake3": "278615cb4a75bbc788a19cc21af3aefd063f08454a457d7ff365bf0391ad3e67",
+      "bytes": 487,
+      "path": "tests/fixtures/s1-raw-anonymous/interface-supp/Use.java"
+    },
+    {
+      "blake3": "78c024c6c405b6a4ad380009cec5472230b151eddaad91e6f01b2931bb0e589c",
+      "bytes": 1945,
+      "path": "tests/fixtures/s1-raw-anonymous/interface-supp/input.jar"
+    },
+    {
+      "blake3": "acd57b69c0abc0052d50a97aeafa7fe986eab0947198478e7df0912f91e7dbf9",
+      "bytes": 55,
+      "path": "tests/fixtures/s1-raw-anonymous/interface-supp/𐐀Action.java"
+    },
+    {
+      "blake3": "d808d1143b39182ee02fb58fef4929e92c6835404de5516bb98811eeba49793c",
+      "bytes": 56,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-factory/Action.java"
+    },
+    {
+      "blake3": "6dd42779046f04c3dbd33dc1e000fe3d5f995aacb1360821b3867ccdc6fa9f0d",
+      "bytes": 173,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-factory/Driver.java"
+    },
+    {
+      "blake3": "d7c7109f20f280dffadda6e04fb740289a7ec58178c139c7ab7217ac497b3883",
+      "bytes": 418,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-factory/Nested.java"
+    },
+    {
+      "blake3": "55e97ec1f97a6c633c4423a7427e7332a7d15fa1a0e66f8d69604e2d36d36f1e",
+      "bytes": 2305,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-factory/input.jar"
+    },
+    {
+      "blake3": "139bf8c22f88c67af6cef25a06767727eadbba155a98cd0a9cd90ab97b9863f3",
+      "bytes": 64,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-factory/𐐀Factory.java"
+    },
+    {
+      "blake3": "6dd42779046f04c3dbd33dc1e000fe3d5f995aacb1360821b3867ccdc6fa9f0d",
+      "bytes": 173,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-interface/Driver.java"
+    },
+    {
+      "blake3": "b0e6af1e81669acd4fda30f3940b76211c7884389c44cf9fe516836de02e0677",
+      "bytes": 64,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-interface/Factory.java"
+    },
+    {
+      "blake3": "69bcdb0c6f99c3d48cfcb656c3d44aa9e8dafc416ec9bc6b5c5dbf980216380a",
+      "bytes": 418,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-interface/Nested.java"
+    },
+    {
+      "blake3": "7823972ce36d4110f4ed4377cc7c0345922604cccacea9d0bb200ee24ba44498",
+      "bytes": 2311,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-interface/input.jar"
+    },
+    {
+      "blake3": "4a78c92889ccae20061bc6fed6526d7b085267336c8fd9ba246a6a0d251c2a92",
+      "bytes": 60,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-interface/𐐀Action.java"
+    },
+    {
+      "blake3": "d808d1143b39182ee02fb58fef4929e92c6835404de5516bb98811eeba49793c",
+      "bytes": 56,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-root/Action.java"
+    },
+    {
+      "blake3": "91986be24e299651c334a21022aeddfac4de245560f17d1634b463215bb9ca4e",
+      "bytes": 181,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-root/Driver.java"
+    },
+    {
+      "blake3": "91e9061597d089c903bcc8187ed9464eb38fad93f02117f14582d0e4db7a586f",
+      "bytes": 60,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-root/Factory.java"
+    },
+    {
+      "blake3": "d7e9e9e2cde5d19af5255415c54d9b235f2962842f17b593cc51cd39e4b35a1c",
+      "bytes": 2393,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-root/input.jar"
+    },
+    {
+      "blake3": "677c1fa5b64f5f080f0255599d9874f3a5fcd679bd8ab16177fd2f40db9eeeab",
+      "bytes": 414,
+      "path": "tests/fixtures/s1-raw-anonymous/nested-root/𐐀Nested.java"
+    },
+    {
+      "blake3": "6d1dc566b6cb4bde73c5a13228937088ad260ae75b173be004044d3b5af256e4",
+      "bytes": 100,
+      "path": "tests/fixtures/s1-raw-anonymous/outer-supp/Driver.java"
+    },
+    {
+      "blake3": "b8154ff17dce8ba75228041d4b8658774657546cd42663789016da761d7e0391",
+      "bytes": 1834,
+      "path": "tests/fixtures/s1-raw-anonymous/outer-supp/input.jar"
+    },
+    {
+      "blake3": "a1ed589b6a7c4814b186d835666a573d1dc6c93f10242d9e1ea662e90824560c",
+      "bytes": 513,
+      "path": "tests/fixtures/s1-raw-anonymous/outer-supp/𐐀Inner.java"
+    },
+    {
+      "blake3": "694a726403a6a6f6e7dff900859ed90c6e96854890b05a90f5127dccd8e7463f",
+      "bytes": 52,
+      "path": "tests/fixtures/s1-raw-casts/supplementary/Api.java"
+    },
+    {
+      "blake3": "9f530a0c93f4a7be85faa55cb68a797ba9bd674bc12bfa195a9ea39e5361dbf9",
+      "bytes": 324,
+      "path": "tests/fixtures/s1-raw-casts/supplementary/Use.java"
+    },
+    {
+      "blake3": "614c2f1d624945b30f869da7aee464f3c54b778f89eb8f4cd61e393cec4f457b",
+      "bytes": 1754,
+      "path": "tests/fixtures/s1-raw-casts/supplementary/input.jar"
+    },
+    {
+      "blake3": "2394a33c4c9c18e42d98d39bbe33534a20b574fceb083845ce3285c50c601fc8",
+      "bytes": 37,
+      "path": "tests/fixtures/s1-raw-casts/supplementary/𐐀Value.java"
+    },
+    {
+      "blake3": "855485c27e8eca0daae640cb7fa03bd4b6c65e47824cfef303dc4920e5e606d5",
+      "bytes": 530,
+      "path": "tests/fixtures/s1-raw-enum-switch/constant/Driver.java"
+    },
+    {
+      "blake3": "b5df35146ee8abf76b1433d7ad7e167123614c1a9f832861b5655e80f7f72dea",
+      "bytes": 56,
+      "path": "tests/fixtures/s1-raw-enum-switch/constant/Hue.java"
+    },
+    {
+      "blake3": "1228dd7c93dc65fcb92bd7d007f54b94659f538ecc3b5cfcad770a0732711509",
+      "bytes": 538,
+      "path": "tests/fixtures/s1-raw-enum-switch/constant/Subject.java"
+    },
+    {
+      "blake3": "1cdf808e0b9dbb2eeb26ca784df5d3169bf84814d8da3fae491af311ea036044",
+      "bytes": 2677,
+      "path": "tests/fixtures/s1-raw-enum-switch/constant/input.jar"
+    },
+    {
+      "blake3": "91ab490d563cbca035c41e638d15ccda43e0440c71d5fe7448e08e758db8c598",
+      "bytes": 546,
+      "path": "tests/fixtures/s1-raw-enum-switch/owner/Driver.java"
+    },
+    {
+      "blake3": "b8e75e74b604a3bee53fcccece2c265071881f8826017aded94e67bfad2df567",
+      "bytes": 538,
+      "path": "tests/fixtures/s1-raw-enum-switch/owner/Subject.java"
+    },
+    {
+      "blake3": "3c0e23ab6863004e715722cf7869e302f2cd3bf0bcb645c5e39217cb4b902ec6",
+      "bytes": 2763,
+      "path": "tests/fixtures/s1-raw-enum-switch/owner/input.jar"
+    },
+    {
+      "blake3": "f973d65a32c263de991f49abf7c8a64fc17bd5273e167016802b5a7d2a97cf12",
+      "bytes": 56,
+      "path": "tests/fixtures/s1-raw-enum-switch/owner/𐐀Hue.java"
+    },
+    {
+      "blake3": "1933b4c346d2f97f4dffbfb37134f076da3de14a2ba030d0483c2ff2b161f2aa",
+      "bytes": 534,
+      "path": "tests/fixtures/s1-raw-enum-switch/package/Driver.java"
+    },
+    {
+      "blake3": "ce41d25774e366aad1e45d455d27c59cb0e3487c85a7ec779331d563629e21b6",
+      "bytes": 60,
+      "path": "tests/fixtures/s1-raw-enum-switch/package/Hue.java"
+    },
+    {
+      "blake3": "325493ac1710978a6227514d1fa0e093f658536a7cf425b9bb607a34081b1241",
+      "bytes": 542,
+      "path": "tests/fixtures/s1-raw-enum-switch/package/Subject.java"
+    },
+    {
+      "blake3": "294aaf23db57bcafab59ea3cda94b8bda33006617cd95dbd42d2a95670b343e9",
+      "bytes": 2903,
+      "path": "tests/fixtures/s1-raw-enum-switch/package/input.jar"
+    },
+    {
+      "blake3": "ac795debf133ce3dd41d972d4191b51e6c3159fc10e866aad39f997d44d2ec01",
+      "bytes": 465,
+      "path": "tests/fixtures/s1-raw-field-owner/supplementary.jar"
+    },
+    {
+      "blake3": "b0ab69004da6b4c4af2bca2415a347dcad4663417b919c1cb3bd99cd2919bd3d",
+      "bytes": 1604,
+      "path": "tests/fixtures/s1-raw-interface-super/dash.jar"
+    },
+    {
+      "blake3": "c297a1fd0d151b6a120f7cb0349bcb1547ef358df960ff6d7bba5d6a2e30120c",
+      "bytes": 1610,
+      "path": "tests/fixtures/s1-raw-interface-super/method.jar"
+    },
+    {
+      "blake3": "7f6018b6da4da65deab9a3048f188f334e965b9435f0f9d42d14848e226d3c46",
+      "bytes": 1618,
+      "path": "tests/fixtures/s1-raw-interface-super/owner.jar"
+    },
+    {
+      "blake3": "16716c55175a698350fb08c6a5d845d94e93a9279d0a09110d7233ac9e3d8ecc",
+      "bytes": 1817,
+      "path": "tests/fixtures/s1-raw-interface-super/parameter.jar"
+    },
+    {
+      "blake3": "1b1eb2deb8b6c1887e5eab007eea49a29e2aa61a49a9cb041b14ecbafaa506bf",
+      "bytes": 1854,
+      "path": "tests/fixtures/s1-raw-interface-super/return.jar"
+    },
+    {
+      "blake3": "582ddc174e9854964a13fce5591b0fd0a02bb7b16f66647c4e02044f33d3644f",
+      "bytes": 514,
+      "path": "tests/fixtures/s1-raw-member-paths/generic/Driver.java"
+    },
+    {
+      "blake3": "829169245c1a5f940fb5ed8286344e07631d5c0a147d69e9d2f610743a47a4b4",
+      "bytes": 308,
+      "path": "tests/fixtures/s1-raw-member-paths/generic/Outer.java"
+    },
+    {
+      "blake3": "286f7b9bcc005ee6e977d7ad5d63a0167b7cbcd06ee24b410b28d353e0dde45d",
+      "bytes": 222,
+      "path": "tests/fixtures/s1-raw-member-paths/generic/Use.java"
+    },
+    {
+      "blake3": "7e51490e012eeb73b62ad44468709076a041fd00b58f7a5d87edb2d539cd572a",
+      "bytes": 2225,
+      "path": "tests/fixtures/s1-raw-member-paths/generic/input.jar"
+    },
+    {
+      "blake3": "d6151dfd86ae45eacfa6e3f68b335642e8dde7c64f4ab208e27790c637842053",
+      "bytes": 438,
+      "path": "tests/fixtures/s1-raw-member-paths/simple/Driver.java"
+    },
+    {
+      "blake3": "518beeeeac8fed1bfaeba294de09d11fac8ca85373ad217a42811f573e8e2701",
+      "bytes": 154,
+      "path": "tests/fixtures/s1-raw-member-paths/simple/Use.java"
+    },
+    {
+      "blake3": "cba727726151e2a5e980447a43ece9eef611fe474a934fdb057a603d6a32da49",
+      "bytes": 1357,
+      "path": "tests/fixtures/s1-raw-member-paths/simple/input.jar"
+    },
+    {
+      "blake3": "4d4ad0e434844566984b15b03b7f924732d553efb013a25ba592041fd7abdf93",
+      "bytes": 260,
+      "path": "tests/fixtures/s1-raw-member-paths/simple/𐐀Outer.java"
+    },
+    {
+      "blake3": "00a2863f5fd11da320066e1cdf7a51fcfa5f958d66ea41d1ec66b555b6d8099c",
+      "bytes": 3390,
+      "path": "tests/fixtures/s1-raw-metadata-literals/element.jar"
+    },
+    {
+      "blake3": "62e90f8f418daac63636f99047061fe6ba079b844ebfcc0a5a662dbab7ee2b43",
+      "bytes": 3396,
+      "path": "tests/fixtures/s1-raw-metadata-literals/enum-constant.jar"
+    },
+    {
+      "blake3": "c788f67adbaf96ef62465ccb582e0ab5c83786b7490ece4e7000ff01a2afe8e6",
+      "bytes": 3396,
+      "path": "tests/fixtures/s1-raw-metadata-literals/nested-element.jar"
+    },
+    {
+      "blake3": "265917bafde3454ebcfa5982118ef2041031e7320128cd51c52289f33b5c9fd1",
+      "bytes": 3378,
+      "path": "tests/fixtures/s1-raw-metadata-literals/nul.jar"
+    },
+    {
+      "blake3": "5e5b69b4221b86ff239aee3fb963361ca5bc956abc2ff3b9d200c420635cdc18",
+      "bytes": 3398,
+      "path": "tests/fixtures/s1-raw-metadata-literals/string.jar"
+    },
+    {
+      "blake3": "da67195aa482d1be299f1b04accd2a6c81334ace5143ddb5a3233c8ea0433296",
+      "bytes": 3384,
+      "path": "tests/fixtures/s1-raw-metadata-literals/surrogate.jar"
+    },
+    {
+      "blake3": "e09987a0e871aa11b01d3788e0d9b3c7ea4704299cc0d49f5e071a319dc9196a",
+      "bytes": 605,
+      "path": "tests/fixtures/s1-raw-names/RawAlias.class"
+    },
+    {
+      "blake3": "d79061dfb81ecc9689c81a48148b28e9a3f8a8051322ccf0d6f7c0eb8d7f47e8",
+      "bytes": 163,
+      "path": "tests/fixtures/s1-raw-names/RawAlias.java"
+    },
+    {
+      "blake3": "824390e5be5fe6c438cb8cbe4b0015d8761100368bdbfd94ba3990ca9086a255",
+      "bytes": 948,
+      "path": "tests/fixtures/s1-raw-names/manifest.json"
+    },
+    {
+      "blake3": "133dcadbfdce6a53dd897394675cc90d48cf4bdc57ca49464018df039bf4c8fa",
+      "bytes": 110,
+      "path": "tests/fixtures/s1-raw-outer-super/method/Driver.java"
+    },
+    {
+      "blake3": "dbfa399eec17b36ac7077d1b8e3d61478d342acf14b3f21c45257efa06f7bd78",
+      "bytes": 186,
+      "path": "tests/fixtures/s1-raw-outer-super/method/EffectsBase.java"
+    },
+    {
+      "blake3": "53c4f197cb4e99d8e1a3e650b3dfd71130c3e3c2117ce50a0f43b38ea9190788",
+      "bytes": 1022,
+      "path": "tests/fixtures/s1-raw-outer-super/method/OuterSuperEffects.java"
+    },
+    {
+      "blake3": "67f63483e599c1345799032b593b9ed212e67cddedd4990d85751dda3af02d66",
+      "bytes": 3362,
+      "path": "tests/fixtures/s1-raw-outer-super/method/input.jar"
+    },
+    {
+      "blake3": "1f0579c1d69793446d54264bb0b23e56aa88e2df04421daad71d46e072320c85",
+      "bytes": 118,
+      "path": "tests/fixtures/s1-raw-outer-super/package/Driver.java"
+    },
+    {
+      "blake3": "89590b62840c0f244ede94f4ce2489099e1a0b946c26539a6e1e7db7e762326d",
+      "bytes": 190,
+      "path": "tests/fixtures/s1-raw-outer-super/package/EffectsBase.java"
+    },
+    {
+      "blake3": "4c53b3f93918c7f7c91b08eeb4dd9ffe63c9a01dce2bcf76c9847be3dab4ebe1",
+      "bytes": 1022,
+      "path": "tests/fixtures/s1-raw-outer-super/package/OuterSuperEffects.java"
+    },
+    {
+      "blake3": "8dddcbb59448ba9a491c98e30ddf54525a5445e0e87210695ffc7c48f6b4dda5",
+      "bytes": 3558,
+      "path": "tests/fixtures/s1-raw-outer-super/package/input.jar"
+    },
+    {
+      "blake3": "133dcadbfdce6a53dd897394675cc90d48cf4bdc57ca49464018df039bf4c8fa",
+      "bytes": 110,
+      "path": "tests/fixtures/s1-raw-outer-super/parent/Driver.java"
+    },
+    {
+      "blake3": "1a7c3750b43afd9909c84244cfb9302a25a732e37095756608140e7cdde680dd",
+      "bytes": 1011,
+      "path": "tests/fixtures/s1-raw-outer-super/parent/OuterSuperEffects.java"
+    },
+    {
+      "blake3": "131722477b9a3881ce0324434eae3d363d6248e4165db3c9f2c7fa83ef7c7e8b",
+      "bytes": 3340,
+      "path": "tests/fixtures/s1-raw-outer-super/parent/input.jar"
+    },
+    {
+      "blake3": "fc69a9b80fb1a2f3965516efab4f8de5cfc3ef1e33c6ead6f10ac500a07c7030",
+      "bytes": 179,
+      "path": "tests/fixtures/s1-raw-outer-super/parent/𐐀Base.java"
+    },
+    {
+      "blake3": "5fdb8ac9b64917a92781807cee897822767fd772d65c446a47dd5105512cd784",
+      "bytes": 937,
+      "path": "tests/fixtures/s1-raw-projections/array-helper/Use.class"
+    },
+    {
+      "blake3": "d4643d245549ac01a0d7e99851c94090dcec4057a84d7f1a32af09ed04533f31",
+      "bytes": 403,
+      "path": "tests/fixtures/s1-raw-projections/array-helper/Use.java"
+    },
+    {
+      "blake3": "dac1708a85ab4fe84ea334d0d23aaf15bff57e67902434faf190e9f09b9c14f5",
+      "bytes": 949,
+      "path": "tests/fixtures/s1-raw-projections/array-owner/𐐀Use.class"
+    },
+    {
+      "blake3": "b74e2d459279d4251d6e4414061aa53da3e2a4484018c214254bfaa34eb9ab9a",
+      "bytes": 395,
+      "path": "tests/fixtures/s1-raw-projections/array-owner/𐐀Use.java"
+    },
+    {
+      "blake3": "4e81db9d485aa46c0bae9ff9bcc8eb6f791394566d8acf5fa5195b495d1bc832",
+      "bytes": 623,
+      "path": "tests/fixtures/s1-raw-projections/bridge/N1.java"
+    },
+    {
+      "blake3": "88818a345cfba9ede3050d2534710bb5ceb3fcfb3d640b99e4be9ee70946f815",
+      "bytes": 2466,
+      "path": "tests/fixtures/s1-raw-projections/bridge/input.jar"
+    },
+    {
+      "blake3": "db494eec81b8162af91c29b5182cf9f65ac7257fdb45c171964adc75efba0409",
+      "bytes": 1697,
+      "path": "tests/fixtures/s1-raw-signature-names/supplementary.jar"
+    },
+    {
+      "blake3": "e0e02ed03b729da96bbd8b347d3398404c50e1b281b6fe6409cd285e81320e4d",
+      "bytes": 1844,
+      "path": "tests/fixtures/s1-synthetic-field-origin/supplementary.jar"
+    },
+    {
+      "blake3": "e70500348c1d9b526b1d455637996f98496a65b6a1df2627c28139be28db4844",
+      "bytes": 1118,
+      "path": "tests/fixtures/s1-write-accessor-raw/array-supplementary.jar"
+    },
+    {
+      "blake3": "5682dc4a34e148743d7e6ba5dd03c6559eca816e3ac742a863d976f6c100b889",
+      "bytes": 817,
+      "path": "tests/fixtures/s1-write-accessor-raw/ascii.jar"
+    },
+    {
+      "blake3": "ead062e475556476887baf96883795e60ec9586ff847b19437b37e184c6166e3",
+      "bytes": 869,
+      "path": "tests/fixtures/s1-write-accessor-raw/owner-supplementary.jar"
+    },
+    {
+      "blake3": "f84a7445c9efab1604633b57f8cd8ad32323127b4d96f43324e6d2f5d465791f",
+      "bytes": 1112,
+      "path": "tests/fixtures/s1-write-accessor-raw/value-supplementary.jar"
+    },
+    {
+      "blake3": "b099ed077a614542622b9816ac3acd491738554eb319830894ff6daace71bd83",
+      "bytes": 698,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/CaptureUpcasts.java"
+    },
+    {
+      "blake3": "88cd939dce637478f17ac734f2f2d1d064198593922c94d6be94a30e24898dc4",
+      "bytes": 481,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/CaptureUpcastsDriver.java"
+    },
+    {
+      "blake3": "13311c446e495f4edbdcb394056ba067b4471fea4bdd7f133c7b917ae8807a9e",
+      "bytes": 995,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/jars/corretto8-debug.jar"
+    },
+    {
+      "blake3": "fe7157119697fcf2425eee661a2fcb2cd70d5596ef0960ebfbe72d6eda50d78d",
+      "bytes": 774,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/jars/corretto8-no-debug.jar"
+    },
+    {
+      "blake3": "88e28b2f2180141e63a7f66df19f95b90aa29f576c711ccc4af124492c0d7993",
+      "bytes": 1003,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/jars/openjdk23-debug.jar"
+    },
+    {
+      "blake3": "7682d24a0baeb292683f3e440223c60b5e76fe959758f2cfe91c0f3548aa4795",
+      "bytes": 775,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/jars/openjdk23-no-debug.jar"
+    },
+    {
+      "blake3": "658fa1e93faf91572cbe54cd63c95a3b67e6a17757a22e31856ee2b77ab57bf4",
+      "bytes": 1499,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-upcasts/pin.json"
+    },
+    {
+      "blake3": "dbeb2292799a3d4dd34c8fa70ffbfbe2889874a80882ea79e4eb11eb478884a3",
+      "bytes": 1262,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-use-boundary-v1/CapturedType.class"
+    },
+    {
+      "blake3": "aa07649fa8d3f352706ddf9e2eb77b0f5a166f9035f9ddd6522b42d45049e2cd",
+      "bytes": 434,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-use-boundary-v1/CapturedType.java"
+    },
+    {
+      "blake3": "2813a342a823b9d4bd98193825ebd6744fb1774ee7a63e3c810790b0ca505feb",
+      "bytes": 446,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-use-boundary-v1/CapturedTypeDriver.java"
+    },
+    {
+      "blake3": "4f80e87b682ad0d5ecbea754e1ea0d4fc285849f2d382f89677430f0e82d8102",
+      "bytes": 1264,
+      "path": "tests/fixtures/s2a-reference-constraints/capture-use-boundary-v1/pin.json"
+    },
+    {
+      "blake3": "94db13de1ff4ece3a31e79c50774eec824b866126f0bf1b3623208f17a398244",
+      "bytes": 276,
+      "path": "tests/fixtures/s2a-reference-constraints/checked-reference/CheckedReference.class"
+    },
+    {
+      "blake3": "1e1ab48f32e5ae5f0d5a8801462b8a5ae2e51c214aa36678ad3ddedb17d2278f",
+      "bytes": 217,
+      "path": "tests/fixtures/s2a-reference-constraints/checked-reference/CheckedReference.java"
+    },
+    {
+      "blake3": "4d5699f22a8fd63a726c6e7170dae3f97087ae6bd4f10834a017f8a305089ec9",
+      "bytes": 533,
+      "path": "tests/fixtures/s2a-reference-constraints/checked-reference/CheckedReferenceDriver.java"
+    },
+    {
+      "blake3": "702c015b4b421def793654c56f948f17bc163715e6a64184fad16ef04be6a89c",
+      "bytes": 2134,
+      "path": "tests/fixtures/s2a-reference-constraints/checked-reference/pin.json"
+    },
+    {
+      "blake3": "f06011a825f498c7220eaac33ed425f0df8eafcad3e9acdec291204b7a37101d",
+      "bytes": 1303,
+      "path": "tests/fixtures/s2a-reference-constraints/corretto8-no-debug.class"
+    },
+    {
+      "blake3": "aff4a6092c208e39374a63e007e5706c077e1037e6190246dea745bcf6927240",
+      "bytes": 16764,
+      "path": "tests/fixtures/s2a-reference-constraints/dev-class-source-pins.json"
+    },
+    {
+      "blake3": "fdc3f7952b350c9839a4df599fa18b5daaee1749626e766933b310cd31b1dc88",
+      "bytes": 93,
+      "path": "tests/fixtures/s2a-reference-constraints/dev-class-source-pins.sha256"
+    },
+    {
+      "blake3": "88ec620373540a89a3c8d7356a1146fe55a44e72d0762c89539cdfec88ce1b24",
+      "bytes": 3475,
+      "path": "tests/fixtures/s2a-reference-constraints/input-pins.json"
+    },
+    {
+      "blake3": "4ddaa7ed5e6144e565fbf07c0f4974830036d2d9d6ac3092f3745800588549cf",
+      "bytes": 2462,
+      "path": "tests/fixtures/s2a-reference-constraints/jars/corretto8-debug.jar"
+    },
+    {
+      "blake3": "fd2e308de4aa083177ce7fe8adc7154aca84d62de6147b279bff104caed320ba",
+      "bytes": 1896,
+      "path": "tests/fixtures/s2a-reference-constraints/jars/corretto8-no-debug.jar"
+    },
+    {
+      "blake3": "27adc6f9eef15efd9cdc916f11455c2a9dd669d8bcdbe5638d31ec99b3948ae0",
+      "bytes": 2479,
+      "path": "tests/fixtures/s2a-reference-constraints/jars/openjdk23-debug.jar"
+    },
+    {
+      "blake3": "c6ae2b39e559c27ec6f52a36570662ced761304c1fae1b8eeda82970829177f9",
+      "bytes": 1896,
+      "path": "tests/fixtures/s2a-reference-constraints/jars/openjdk23-no-debug.jar"
+    },
+    {
+      "blake3": "06d506d406029f6b89143c7a0d77f606c1a2d916099d5912f60f1af0719d7e15",
+      "bytes": 328,
+      "path": "tests/fixtures/s2a-reference-constraints/null-phi/NullPhiChoices.java"
+    },
+    {
+      "blake3": "e3a0c71e38f5f3a896721c512bfbd00ec89b09b5a2d1482d09031d74680824a2",
+      "bytes": 804,
+      "path": "tests/fixtures/s2a-reference-constraints/null-phi/NullPhiChoicesDriver.java"
+    },
+    {
+      "blake3": "f683333ec22ad511978b914f2e4f89ef6d20d32104c91163c07898f2a27477cf",
+      "bytes": 577,
+      "path": "tests/fixtures/s2a-reference-constraints/null-phi/jars/corretto8-debug.jar"
+    },
+    {
+      "blake3": "64e8af937a167c01e04db9b251c78aece65142ecf16bca15263b284e644d65d6",
+      "bytes": 447,
+      "path": "tests/fixtures/s2a-reference-constraints/null-phi/jars/corretto8-no-debug.jar"
+    },
+    {
+      "blake3": "b27c281832975cf3c4338a75e867ff3f680d8b29eff976d1863518ba209ad6df",
+      "bytes": 574,
+      "path": "tests/fixtures/s2a-reference-constraints/null-phi/jars/openjdk23-debug.jar"
+    },
+    {
+      "blake3": "e8f688631f0bc268cfd0f49d7f671efb626e878e9ce3b8f69a23895d777b4e1c",
+      "bytes": 445,
+      "path": "tests/fixtures/s2a-reference-constraints/null-phi/jars/openjdk23-no-debug.jar"
+    },
+    {
+      "blake3": "e97fcbc4701015ce726ce59f7bfbca3242665eb1b530db9d4b97a470ef2073e6",
+      "bytes": 1819,
+      "path": "tests/fixtures/s2a-reference-constraints/null-phi/pin.json"
+    },
+    {
+      "blake3": "3640908369c731c812adcd64d234367a09a1020c764f2a02df29091a913c63f3",
+      "bytes": 594,
+      "path": "tests/fixtures/s2a-reference-constraints/primitive-loop-pin.json"
+    },
+    {
+      "blake3": "fa2f4af35cb94fbb9e7df477ac26033dbe4f6eac24361be503f07d62c301bc90",
+      "bytes": 262,
+      "path": "tests/fixtures/s2a-reference-constraints/primitive-loop.class"
+    },
+    {
+      "blake3": "a59247ee84e7540fefa755e336e2e573cae993735a46f0303e262c4b33f50915",
+      "bytes": 349,
+      "path": "tests/fixtures/s2a-reference-constraints/src/PrimitiveLoop.java"
+    },
+    {
+      "blake3": "488a5ed98e6ca61106f30398cda9b8504a2522475c99ba831ac15be472616be7",
+      "bytes": 2071,
+      "path": "tests/fixtures/s2a-reference-constraints/src/ReferenceCases.java"
+    },
+    {
+      "blake3": "3e7f362638c3892ad182ff06f454224a2a8169f92c75fb49e6cf2f5f0f9b10c5",
+      "bytes": 1340,
+      "path": "tests/fixtures/s2a-reference-constraints/src/ReferenceDevDriver.java"
+    },
+    {
+      "blake3": "35fa6d8d9375fab205225aeed211d424372ee889560fa9247990aaa052a56bb5",
+      "bytes": 413,
+      "path": "tests/fixtures/s2a-reference-constraints/unit-class-pin.json"
+    },
+    {
+      "blake3": "69bf2fa34c2a43014151cbad736a0f89ae3594b52185e2bc16d03227b0487889",
+      "bytes": 311,
+      "path": "tests/fixtures/s2a-reference-relations/corretto8-normal.jar"
+    },
+    {
+      "blake3": "b3316b55938ff5dee0acbd1e72dcc44298e02ab789577281c87902eb54836f44",
+      "bytes": 556,
+      "path": "tests/fixtures/s2a-reference-relations/corretto8-override.jar"
+    },
+    {
+      "blake3": "aacd500876168e58ca679f1b82dda1c1d87b45e2e01cbb22fade9b4fa6ca7186",
+      "bytes": 2615,
+      "path": "tests/fixtures/s2a-reference-relations/manifest.json"
+    },
+    {
+      "blake3": "8eb085501f0446f627aafecea890b95da79725164fc8a57576842160809f60d8",
+      "bytes": 311,
+      "path": "tests/fixtures/s2a-reference-relations/openjdk23-normal.jar"
+    },
+    {
+      "blake3": "5d431e945bffb505a3afc25dec75d25be16bb3fc04fc3511555cb667d1392480",
+      "bytes": 555,
+      "path": "tests/fixtures/s2a-reference-relations/openjdk23-override.jar"
+    },
+    {
+      "blake3": "f01153dfc52d655febbbdf47e8c070b62dd710cf58d3bf0593a0331ad0b6e999",
+      "bytes": 31,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/EdgeTarget.java"
+    },
+    {
+      "blake3": "ed50f241626a205d28b8c371131756b333065dcb89cbdeaae28e28fe037ed7a3",
+      "bytes": 180,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/ParentEdge.java"
+    },
+    {
+      "blake3": "9e9a63882514e48d2921cad75caf8db423e6f4777dea416fd35b07a1ceab7ad4",
+      "bytes": 309,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/ParentEdgeDriver.java"
+    },
+    {
+      "blake3": "6a74b5cd7be3901910536f2e4cdf7104ac2aaa2d06f4ebeda0e36c92d8a4a407",
+      "bytes": 163,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/PhysicalEdge.java"
+    },
+    {
+      "blake3": "fbfdf70d189d3055a73d522822c2a04847d3fda89d837b2da0efc17fb7b924c1",
+      "bytes": 323,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/PhysicalEdgeDriver.java"
+    },
+    {
+      "blake3": "3862cf5fc80cb08613c66214b86f4a873192bb38886699329146589217426f9d",
+      "bytes": 535,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/ParentEdge-corretto8-debug.class"
+    },
+    {
+      "blake3": "1508b1271b650dc5d6f50dd87bf979c455851b593a5ef3ac7ee3304ac0741839",
+      "bytes": 306,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/ParentEdge-corretto8-no-debug.class"
+    },
+    {
+      "blake3": "c894cafd944dd03a31a8a3e910861d3477f717ac42a148a487aa44ca72510072",
+      "bytes": 535,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/ParentEdge-openjdk23-debug.class"
+    },
+    {
+      "blake3": "16de81f8ea27efa687c87874e76a59ddebefbca119984e56804fb787a5e59e7e",
+      "bytes": 306,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/ParentEdge-openjdk23-no-debug.class"
+    },
+    {
+      "blake3": "0f6e87af098961ac98b749506dde29b6db6e2936e5bb44918a073126cd6256c2",
+      "bytes": 424,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/PhysicalEdge-corretto8-debug.jar"
+    },
+    {
+      "blake3": "82e09dba23757bc8a56a55c21b4c9bfe350d46ba50c03dae7e4e4c0b6953d7db",
+      "bytes": 327,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/PhysicalEdge-corretto8-no-debug.jar"
+    },
+    {
+      "blake3": "c66f428234655ab72fe8a8656c3caf9175004b8e12a25d8d6bc5ce6be8b30445",
+      "bytes": 423,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/PhysicalEdge-openjdk23-debug.jar"
+    },
+    {
+      "blake3": "8d59fec532ef20c2799b973d494ed9c1c85a46917720a1ca8aa7f2117b4ad56f",
+      "bytes": 328,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/binary/PhysicalEdge-openjdk23-no-debug.jar"
+    },
+    {
+      "blake3": "84bcec7fe403c4add6bc038e915bd36ec95e93ffc1b009164688ef2d0a0e10e9",
+      "bytes": 3734,
+      "path": "tests/fixtures/s2a-reference-relations/selected-parent-edge/pin.json"
+    },
+    {
+      "blake3": "3ac7db55f14a51d7dc6227a82da9b45da24ed95846dd5d79363e80d452f62206",
+      "bytes": 2305,
+      "path": "tests/fixtures/s2a-variable-lifetimes/DevCases.java"
+    },
+    {
+      "blake3": "21ad09d847bb967060696d9cedf67202c69d79c6c58010091282e28480cadba5",
+      "bytes": 1583,
+      "path": "tests/fixtures/s2a-variable-lifetimes/DevDriver-r2.java"
+    },
+    {
+      "blake3": "e6968ab3a898047102c8d9872bfa382f2410712de47a7c6517d02b90d85dea06",
+      "bytes": 3116,
+      "path": "tests/fixtures/s2a-variable-lifetimes/corretto8-debug.jar"
+    },
+    {
+      "blake3": "48541d4094367eaa3d2580252d6471eb0837dc43b8c84e4f8df2da06cb515e16",
+      "bytes": 2271,
+      "path": "tests/fixtures/s2a-variable-lifetimes/corretto8-no-debug.jar"
+    },
+    {
+      "blake3": "44e530b03d227d0845db32588feeb0aa835a2c28632e441f00acc541657a5655",
+      "bytes": 633,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/HandlerCopies.java"
+    },
+    {
+      "blake3": "c50eba6628869902722c9d3a24ba839181ae40513469a344027929dffe79c4d3",
+      "bytes": 828,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/HandlerCopiesDriver.java"
+    },
+    {
+      "blake3": "181af01043a7d3537127d12f2833d7d32d5cb6f1b6ffe36fcbea9eb74cf38e99",
+      "bytes": 448,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/invalid-call-name.class"
+    },
+    {
+      "blake3": "978143fac9d2fa6548f622cf02988820bce2f093ea27ce3204bb4908af8bd024",
+      "bytes": 639,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/jars/corretto8-debug.jar"
+    },
+    {
+      "blake3": "cbc37d639f6fd4947d76a4323fd2a8240a95dfa09f674db9659af79aed159e4d",
+      "bytes": 461,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/jars/corretto8-no-debug.jar"
+    },
+    {
+      "blake3": "2afc8c205c7865c79f1f38276379a0c199df48bdf2bc62e577070a5c057c8b62",
+      "bytes": 640,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/jars/openjdk23-debug.jar"
+    },
+    {
+      "blake3": "96a90e5b2167a5d37cd63143cc647682dc0d816e26dad97fbac8fe05b55ed71d",
+      "bytes": 459,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/jars/openjdk23-no-debug.jar"
+    },
+    {
+      "blake3": "22b812cf1726bf8c154a5f495970d4a598b3b11ca74e295fb65922315b5a3051",
+      "bytes": 2332,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/pin.json"
+    },
+    {
+      "blake3": "35fb755624c0c6e372c0bfd27f714bd93f1174825d0e0594de8b46c86b9c4e55",
+      "bytes": 1623,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/HandlerOperators.java"
+    },
+    {
+      "blake3": "71048a58fa57fea91a74464d02fa17b35347e080f8574428506369c158f2aba4",
+      "bytes": 1668,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/HandlerOperatorsDriver.java"
+    },
+    {
+      "blake3": "1052445cdd31bee71ed4ab710e050128b7bec4a87f6ccf8e77f5b68fe04f74dd",
+      "bytes": 935,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/jars/corretto8-debug.jar"
+    },
+    {
+      "blake3": "158e93bd4839ec39b93ae6448cdfee345e30050419dd61854a7cd179b034083c",
+      "bytes": 613,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/jars/corretto8-no-debug.jar"
+    },
+    {
+      "blake3": "7397d1ac1888bdccc490aeead7f25b8471f46606a35f4881505a11d1219ff2a2",
+      "bytes": 935,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/jars/openjdk23-debug.jar"
+    },
+    {
+      "blake3": "45cad0b279763566f6be9ffb51767fa79084d7a9cc118817347c86d9321499a7",
+      "bytes": 613,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/jars/openjdk23-no-debug.jar"
+    },
+    {
+      "blake3": "463e1d96889c7957a5e512288962b884d7141de1c452a92b93447146154bd7d1",
+      "bytes": 1875,
+      "path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/pin.json"
+    },
+    {
+      "blake3": "14c99a88fb52d786efa8283d64c33ca12ec3966fc30183c13a772e8e49695351",
+      "bytes": 3120,
+      "path": "tests/fixtures/s2a-variable-lifetimes/openjdk23-debug.jar"
+    },
+    {
+      "blake3": "81a2e8976b7e379410013462fafb5ab30d9667807a0a1a3f23506cab551e9963",
+      "bytes": 2268,
+      "path": "tests/fixtures/s2a-variable-lifetimes/openjdk23-no-debug.jar"
     },
     {
       "blake3": "8b14a235bc3fa882b6545f3dcf662e15bce7e322b793dd59f5709640adcf428d",

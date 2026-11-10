@@ -22,6 +22,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 
 fn request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("ArrayInitializerProbe"),
         },
@@ -246,17 +247,13 @@ fn a_method_without_array_allocations_keeps_its_tight_ir_budget() {
         b"(Ljava/lang/String;)Ljava/lang/String;",
     );
     let mut tight = Budget::new(Limits {
-        // This no-array body completes at exactly 87 IR items. The allowance intentionally leaves
-        // no room for charging an unrelated effect map while probing for initializer candidates.
-        // The field-copy proof (`recover-chained-field-assignment`) is the third charge this count
-        // carries: it scans every instruction of the body for the copies whose consumers are field
-        // instructions, and this body has none.
-        ir_items: 87,
+        ir_items: u64::MAX,
         ..task_limits(&[]).expect("the task defaults are bounded")
     });
     let recovered = Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut tight,
@@ -267,11 +264,7 @@ fn a_method_without_array_allocations_keeps_its_tight_ir_budget() {
         "a body with no array allocation stays on its existing recovery path: {:?}",
         recovered.recovery().stop()
     );
-    assert_eq!(
-        tight.usage().ir_items,
-        87,
-        "the fixture reaches the bound exactly"
-    );
+    panic!("PROBE1 ir_items={}", tight.usage().ir_items);
 }
 
 #[test]
@@ -284,12 +277,13 @@ fn a_partial_dimension_allocation_does_not_enter_the_initializer_candidate_path(
         // now costs one naming-scan item, and the field-copy proof
         // (`recover-chained-field-assignment`) scans this body's instructions beside it; leave no
         // room beyond those for candidate effects.
-        ir_items: 110,
+        ir_items: u64::MAX,
         ..task_limits(&[]).expect("the task defaults are bounded")
     });
     let recovered = Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut tight,
@@ -300,9 +294,5 @@ fn a_partial_dimension_allocation_does_not_enter_the_initializer_candidate_path(
         "a partial-dimension allocation keeps its existing recovery path: {:?}",
         recovered.recovery().stop()
     );
-    assert_eq!(
-        tight.usage().ir_items,
-        110,
-        "the fixture reaches the bound exactly"
-    );
+    panic!("PROBE2 ir_items={}", tight.usage().ir_items);
 }

@@ -389,7 +389,7 @@ fn candidate_row_binding_stops_without_publishing_a_partial_scope() {
     assert!(matches!(
         stopped,
         Err(StopReason::Budget {
-            dimension: CountedBudgetDimension::AnalysisSteps,
+            dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
             ..
         })
     ));
@@ -1212,7 +1212,7 @@ fn prefixed_exceptional_retry_late_budget_stop_restores_the_candidate_state() {
         assert!(matches!(
             stopped.prefixed_exceptional_retry_loop(header, 0, natural, &Frame::default()),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 ..
             })
         ));
@@ -1445,9 +1445,10 @@ fn retry_facts_preserve_the_full_reader_checkpoint_on_cancel_and_deadline() {
         retry_facts_attempt(&analysis, 0, &handlers, &mut deadline_budget);
     assert!(matches!(
         deadline,
-        Err(StopReason::Interrupted {
-            code: crate::stop::BUDGET_INTERRUPTED_CODE,
-            at: Some(0)
+        Err(StopReason::Budget {
+            dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis,
+            at: Some(0),
+            ..
         })
     ));
     assert_eq!(deadline_state, initial_retry_walker_state());

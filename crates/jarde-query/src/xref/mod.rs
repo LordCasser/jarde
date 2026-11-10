@@ -1224,8 +1224,8 @@ impl<'a> ScanContext<'a> {
     ///
     /// ZIP entries are read through the crate-private P0 path that charges
     /// `ReadBytes`/`EntryBytes` and no `OutputBytes`. The standalone CLASS root is
-    /// only exposed through P0 `root_bytes`, which charges read and output bytes;
-    /// no `OutputBytes` is charged for query items themselves.
+    /// read through the same P0 analysis path, `root_bytes_for_analysis`, which
+    /// charges `EntryBytes`/`ReadBytes` and no `OutputBytes`.
     pub(super) fn read_unit(&mut self, unit: &ScanUnit) -> Result<UnitContent> {
         let content = match &unit.kind {
             UnitKind::Entry(entry) => {
@@ -1236,7 +1236,7 @@ impl<'a> ScanContext<'a> {
                 }
             }
             UnitKind::StandaloneRoot => {
-                let bytes = self.snapshot.root_bytes(self.budget)?;
+                let bytes = self.snapshot.root_bytes_for_analysis(self.budget)?;
                 let digest = Digest(blake3::hash(&bytes).to_hex().to_string());
                 UnitContent { bytes, digest }
             }

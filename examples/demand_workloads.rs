@@ -297,6 +297,7 @@ fn run() -> Result<()> {
                 let report = performed(
                     engine.recover_target_with_evidence(
                         slice::from_ref(&snapshot),
+                        jarde::SourceTarget::JAVA_8,
                         &request,
                         &selection(),
                         &mut budget,
@@ -330,6 +331,7 @@ fn run() -> Result<()> {
                         let expanded = performed(
                             engine.recover_target_with_evidence(
                                 slice::from_ref(&snapshot),
+                                jarde::SourceTarget::JAVA_8,
                                 &request,
                                 &RecoveryEvidenceRequest::all()
                                     .with_expected_artifact(binding.clone()),

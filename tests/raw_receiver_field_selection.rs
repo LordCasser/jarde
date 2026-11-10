@@ -280,6 +280,7 @@ fn source_with_evidence(
         .open(ArtifactInput::bytes(jar.to_vec()), &mut budget)
         .expect("the frozen class-only jar opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -549,6 +550,7 @@ fn pre_cancelled_receiver_recovery_is_not_a_silent_success() {
         .open(ArtifactInput::bytes(RAW_PARAM.to_vec()), &mut open_budget)
         .expect("the raw-receiver jar opens before the stop is configured");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("RawParam"),
         },
@@ -586,4 +588,39 @@ fn pre_cancelled_receiver_recovery_is_not_a_silent_success() {
         matches!(execution, ExecutionReport::Cancelled { .. }),
         "cancellation must propagate instead of becoming a receiver refusal: {execution:?}"
     );
+}
+
+#[test]
+fn supplementary_owner_preserves_the_raw_field_receiver_proof() {
+    let class = "𐐀RawParam";
+    let input = include_bytes!("fixtures/s1-raw-field-owner/supplementary.jar");
+    let mut previous = None;
+    for evidence in [
+        RecoveryEvidenceRequest::essential(),
+        RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+        RecoveryEvidenceRequest::all(),
+    ] {
+        let report = source_with_evidence(input, class, &evidence);
+        assert_field_type(&report, "value", "T value");
+        assert_eq!(
+            report
+                .declaration
+                .as_ref()
+                .unwrap()
+                .item
+                .declaration
+                .this_class
+                .raw(),
+            &JvmBytes::from_unicode(class),
+        );
+        assert_eq!(
+            field(&report, "value").item.descriptor.raw().0,
+            b"Ljava/lang/Object;"
+        );
+        if let Some(text) = previous {
+            assert_eq!(report.text, text);
+        }
+        previous = Some(report.text);
+    }
+    compile_source_without_input_classpath(previous.as_deref().unwrap(), class);
 }

@@ -758,11 +758,19 @@ fn valid_environment_reports_no_problem_and_keeps_the_declaration_order() {
     assert_eq!(problems, Vec::new());
     assert_eq!(identity.runtime, environment.runtime);
     assert_eq!(
-        identity.domain_loaders,
+        identity
+            .domains
+            .iter()
+            .map(|domain| domain.loader.clone())
+            .collect::<Vec<_>>(),
         vec![loader("app"), loader("platform")]
     );
     assert_eq!(
-        identity.providers,
+        identity
+            .providers
+            .iter()
+            .map(|provider| provider.id.clone())
+            .collect::<Vec<_>>(),
         vec![ProviderId("app-headers".to_string())]
     );
     assert_eq!(identity.content, vec![fixture.snapshot.id().clone()]);
@@ -791,7 +799,14 @@ fn missing_parent_domain_is_reported_and_resolves_nothing() {
         vec![EnvironmentSubject::Loader(app.clone())]
     );
     assert!(problems[0].message.contains("missing-platform"));
-    assert_eq!(identity.domain_loaders, vec![app]);
+    assert_eq!(
+        identity
+            .domains
+            .iter()
+            .map(|domain| domain.loader.clone())
+            .collect::<Vec<_>>(),
+        vec![app]
+    );
 
     // All three entries report the problem under the same code, with one `missing_parent`
     // diagnostic followed by the capability code of the entry.
@@ -1121,7 +1136,14 @@ fn environment_problems_of_different_codes_keep_their_declaration_order() {
         ],
         "each problem points at the declaration it belongs to"
     );
-    assert_eq!(identity.domain_loaders, vec![app.clone()]);
+    assert_eq!(
+        identity
+            .domains
+            .iter()
+            .map(|domain| domain.loader.clone())
+            .collect::<Vec<_>>(),
+        vec![app.clone()]
+    );
     assert_problem_report(
         &fixture,
         three_codes,
@@ -1253,7 +1275,11 @@ fn provider_roots_must_be_listed_by_a_participating_domain() {
     );
     assert!(problems[0].message.contains("[0, 1]"));
     assert_eq!(
-        identity.providers,
+        identity
+            .providers
+            .iter()
+            .map(|provider| provider.id.clone())
+            .collect::<Vec<_>>(),
         vec![
             ProviderId("app-headers".to_string()),
             ProviderId("foreign-headers".to_string()),
@@ -1556,8 +1582,8 @@ fn resolution_stops_a_member_request_at_its_first_budgeted_step() {
         report.environment_identity,
         EnvironmentIdentity {
             runtime: environment.runtime.clone(),
-            domain_loaders: vec![loader("app"), loader("platform")],
-            providers: vec![ProviderId("app-headers".to_string())],
+            domains: environment.domains.clone(),
+            providers: environment.providers.clone(),
             content: vec![fixture.snapshot.id().clone()],
         }
     );
@@ -1631,18 +1657,23 @@ fn declaration_reference_query_reports_its_stop_instead_of_an_empty_answer() {
         CoverageState::Partial,
         "a scan that stopped may hold candidates no resolution has seen yet"
     );
+    // The first refused charge names itself. The scan charges an entry's own bytes before it reads
+    // the entry (the same charge-before-growth discipline the other dimensions state), so with a
+    // counted budget of zero the enumeration's charge is the one refused — earlier than any header
+    // read's ReadBytes, and with the same shape: one named dimension, one diagnostic, no accepted
+    // charge anywhere.
     assert!(matches!(
         report.execution,
         ExecutionReport::Partial {
             reason: TerminationReason::BudgetExceeded {
-                dimension: BudgetDimension::ReadBytes
+                dimension: BudgetDimension::EntryBytes
             },
             ..
         }
     ));
     assert_eq!(
         diagnostic_codes(&report.diagnostics),
-        vec!["budget_exceeded_read_bytes"]
+        vec!["budget_exceeded_entry_bytes"]
     );
     assert_eq!(report.environment_identity.runtime, environment.runtime);
     assert!(counted_usage_is_zero(&budget.usage()));
@@ -1735,8 +1766,8 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
         report.environment_identity,
         EnvironmentIdentity {
             runtime: environment.runtime.clone(),
-            domain_loaders: vec![loader("app"), loader("platform")],
-            providers: vec![ProviderId("app-headers".to_string())],
+            domains: environment.domains.clone(),
+            providers: environment.providers.clone(),
             content: vec![fixture.snapshot.id().clone()],
         }
     );
@@ -2146,7 +2177,7 @@ fn requests_and_identity_reject_unknown_fields_and_round_trip() {
 
     let identity = EnvironmentIdentity {
         runtime: analysis.environment.runtime.clone(),
-        domain_loaders: vec![loader("app")],
+        domains: analysis.environment.domains.clone(),
         providers: Vec::new(),
         content: vec![fixture.snapshot.id().clone()],
     };
@@ -3277,11 +3308,26 @@ fn contains_token(normalized: &str, token: &str) -> bool {
     let mut from = 0;
     while let Some(offset) = normalized[from..].find(token) {
         let index = from + offset;
+        let end = index + token.len();
         let preceded_by_identifier = normalized[..index]
             .chars()
             .next_back()
             .is_some_and(|previous| previous.is_alphanumeric() || previous == '_');
-        if !preceded_by_identifier {
+        // A derived name flags a whole identifier of its own: `Artifact` is the recovery layer's
+        // type, while `ArtifactSnapshot` is the reader's and must not match it as a prefix. The
+        // check only extends to the token's right edge when the token itself ends with an
+        // identifier character — a path token such as `petgraph::` ends at the separator, so
+        // whatever follows the separator is still part of the same reference.
+        let inside_identifier = preceded_by_identifier
+            || (token
+                .chars()
+                .next_back()
+                .is_some_and(|last| last.is_alphanumeric() || last == '_')
+                && normalized[end..]
+                    .chars()
+                    .next()
+                    .is_some_and(|next| next.is_alphanumeric() || next == '_'));
+        if !inside_identifier {
             return true;
         }
         from = index + 1;

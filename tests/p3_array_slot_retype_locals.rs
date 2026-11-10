@@ -42,6 +42,7 @@ fn recover(bytes: &[u8], class_name: &str) -> ClassSourceReport {
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
         .expect("patched Java 8 class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },
@@ -233,6 +234,26 @@ fn assert_verbatim(class_name: &str, bytes: &[u8], baseline: &str, expected: &st
     );
 }
 
+fn assert_retyped_complete_matches_old_boundary(
+    class_name: &str,
+    bytes: &[u8],
+    baseline: &str,
+    expected: &str,
+) {
+    let text = assert_complete(class_name, bytes, expected);
+    let current_declaration = "        java.lang.Object local1;\n";
+    assert_eq!(
+        text.matches(current_declaration).count(),
+        1,
+        "{class_name} has exactly the retyped slot declaration"
+    );
+    let old_boundary_text = text.replacen(current_declaration, "        int[] local1;\n", 1);
+    assert_eq!(
+        old_boundary_text, baseline,
+        "{class_name} differs from its old full-class baseline only at the repaired declaration"
+    );
+}
+
 #[test]
 fn the_same_element_shape_keeps_one_variable_verbatim() {
     assert_verbatim("V2", V2, V2_BASELINE, V2_EXPECTED);
@@ -240,12 +261,12 @@ fn the_same_element_shape_keeps_one_variable_verbatim() {
 
 #[test]
 fn a_join_that_merges_two_definitions_keeps_one_variable_verbatim() {
-    assert_verbatim("V3", V3, V3_BASELINE, V3_EXPECTED);
+    assert_retyped_complete_matches_old_boundary("V3", V3, V3_BASELINE, V3_EXPECTED);
 }
 
 #[test]
 fn a_loop_that_merges_two_definitions_keeps_one_variable_verbatim() {
-    assert_verbatim("V4", V4, V4_BASELINE, V4_EXPECTED);
+    assert_retyped_complete_matches_old_boundary("V4", V4, V4_BASELINE, V4_EXPECTED);
 }
 
 #[test]

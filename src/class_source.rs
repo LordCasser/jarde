@@ -62,32 +62,65 @@
 //! run is written. The one field two runs of the same request may differ in is the elapsed clock in
 //! `usage`, which is not part of the text.
 
-use crate::facade::{
-    ClassDeclarationFacts, ClassDeclarationItem, ClassRef, EnvironmentRequest, FieldItem,
-    MethodItem,
-};
+#[cfg(test)]
+use crate::JvmString;
+use crate::facade::{ClassDeclarationItem, ClassRef, EnvironmentRequest, FieldItem, MethodItem};
 use crate::{
     AnalysisStage, AttributeShell, Budget, Coverage, CpEntryFacts, Diagnostic, Error,
-    ExecutionReport, JvmBytes, JvmString, Limits, MemberHeader, MemberTableStop, NoBodyKind,
+    ExecutionReport, JvmBytes, Limits, MemberHeader, MemberTableStop, NoBodyKind,
     PhysicalDefinitionId, PhysicalMethodId, PhysicalView, Result, TerminationReason, UsageSnapshot,
     attribute_facts, budget_dimension_code,
 };
+#[cfg(test)]
+use jarde_java::declaration::method_arguments as arguments;
+use jarde_java::declaration::method_descriptor;
+pub(crate) use jarde_java::declaration::{
+    ProvedMethodParameter, decorate_qualified_type,
+    spellable_method_descriptor as spellable_descriptor, visibility,
+};
+#[cfg(test)]
+use jarde_java::generic_source_proof::spell_ordinary_signature_type_with_member_path;
+pub(crate) use jarde_java::generic_source_proof::{
+    ClassHeaderParentPosition, ClassHeaderParentProof, SameClassBodyValueSite,
+    SameClassConstructorReceiver, SameClassFieldReceiverSource, SameClassFieldUse,
+    SameClassFieldWriteSource, SameClassGenericArgumentOrigin, SameClassGenericArgumentSource,
+    SameClassGenericBodyReturnSource, SameClassGenericMethodBodyProof,
+    SameClassGenericMethodContract, SameClassInvokeUse, SameClassMemberRef,
+    SameClassOverloadCandidate, SameClassPublishedMethodParameters, SameClassUseFacts,
+    binary_pool_class_name, class_scope_variable, is_object_instance_method_name,
+    signature_class_erasure, spell_ordinary_signature_type,
+};
+#[cfg(test)]
+use jarde_java::generic_source_proof::{
+    ordinary_primitive_result_matches, overload_source_type_assignable,
+    prove_same_class_generic_substitution, spell_class_header_signature_type,
+    wildcard_array_return_matches,
+};
+use jarde_java::metadata_literal::{
+    MemberDefault, TypeUseOwner, resolve_constant_value, spell_member_annotation_uses,
+    spell_parameter_annotation_uses, spell_type_annotation_uses,
+};
+#[cfg(test)]
+use jarde_java::names::legal_package_name;
+use jarde_java::names::source_identifier;
+pub(crate) use jarde_java::names::written_name;
 use jarde_java::report::TypedFunctionalKind;
 use jarde_java::report::{GenericConstructorCandidate, GenericReturnCandidate, GenericReturnValue};
+pub(crate) use jarde_java::source_proof::EnumConstructorSourceTail;
+#[cfg(test)]
+use jarde_java::{NameTable, SlotEvidence};
 use jarde_java::{
-    LocalVariable, NameTable, RecoveryContent, RecoveryFacts, RecoveryReport, SlotEvidence,
-    alias_for, comment_text, escape_string, is_java_identifier, nested_member_reference_spelling,
-    type_of_component,
+    RecoveryContent, RecoveryFacts, RecoveryReport, comment_text, is_java_identifier,
 };
-use jarde_jvm::method_ir::parameter_positions;
 use jarde_reader::budget::CountedBudgetDimension;
 use jarde_reader::classfile::{
-    Base, ClassMemberFacts, CpEntryKind, DescriptorComponent, DescriptorKind, ElementConstantTag,
-    ElementValueFacts, EnclosingMethodFacts, InnerClassFacts, TypeAnnotationFacts, TypePathEntry,
-    cp_entry, descriptor_facts,
+    Base, ClassMemberFacts, CpEntryKind, DescriptorKind, ElementValueFacts, EnclosingMethodFacts,
+    InnerClassFacts, TypeAnnotationFacts, descriptor_facts,
 };
+#[cfg(test)]
+use jarde_reader::signature::TypeParameter;
 use jarde_reader::signature::{
-    ClassSignatureErasureProof, SignatureType, TypeArgument, TypeParameter, TypeParameterErasure,
+    ClassSignatureErasureProof, SignatureType, TypeArgument, TypeParameterErasure,
     parse_class_signature, parse_field_signature, parse_method_signature,
     prove_class_signature_erasure, prove_field_signature_erasure_with_class_scope,
     prove_method_signature_erasure_with_class_scope,
@@ -106,6 +139,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ClassSourceRequest {
+    /// Requested output syntax; independent of the runtime environment.
+    pub source_target: crate::SourceTarget,
     /// The class to present: a friendly name searched with the navigation rules over the
     /// environment's scope, or the physical definition a listing handed back. Several definitions
     /// of one name are all returned as candidates and nothing is presented (see
@@ -129,13 +164,10 @@ pub(crate) struct ClassSourceAssemblyContext {
     pub(crate) resolved_enclosing_method: Option<ResolvedEnclosingMethod>,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ResolvedInnerClass {
-    pub(crate) class: Vec<u8>,
-    pub(crate) outer_class: Option<Vec<u8>>,
-    pub(crate) inner_name: Option<JvmBytes>,
-    pub(crate) access_flags: u16,
-}
+#[cfg(test)]
+use jarde_java::names::class_simple_name as simple_name;
+use jarde_java::names::{SourceClassNames, class_package_name as package_name};
+pub(crate) use jarde_reader::classfile::ResolvedInnerClass;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ResolvedEnclosingMethod {
@@ -158,19 +190,8 @@ pub(crate) fn read_class_source_assembly_context(
             .unwrap_or(u64::MAX)
             .saturating_add(u64::from(facts.enclosing_method.is_some())),
     )?;
-    let mut resolved_inner_classes = Vec::with_capacity(facts.inner_classes.len());
-    for row in &facts.inner_classes {
-        budget.poll()?;
-        resolved_inner_classes.push(ResolvedInnerClass {
-            class: jarde_reader::classfile::cp_class_name(pool, row.class_index)?.0,
-            outer_class: (row.outer_class_index != 0)
-                .then(|| jarde_reader::classfile::cp_class_name(pool, row.outer_class_index))
-                .transpose()?
-                .map(|name| name.0),
-            inner_name: row.inner_name.clone(),
-            access_flags: row.access_flags,
-        });
-    }
+    let resolved_inner_classes =
+        jarde_reader::classfile::resolve_inner_classes(pool, &facts.inner_classes, budget)?;
     let resolved_enclosing_method = facts
         .enclosing_method
         .as_ref()
@@ -282,81 +303,11 @@ pub struct ClassSourceDeclaration {
     pub(crate) header_interface_arguments: Vec<Vec<u8>>,
 }
 
-/// One class-level annotation attribute's original shell and its parsed annotation entries.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct ClassAnnotationAttribute {
-    pub attribute: AttributeShell,
-    pub annotations: Vec<ElementValueFacts>,
-}
-
-/// One member's own `Runtime*Annotations` attribute, kept beside the spelling derived from it.
-#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct MemberAnnotationUses {
-    pub attributes: Vec<MemberAnnotationAttribute>,
-    pub uses: Vec<String>,
-    pub refusals: Vec<String>,
-}
-
-/// The raw shell and complete annotation values of one field or method declaration attribute.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct MemberAnnotationAttribute {
-    pub attribute: AttributeShell,
-    pub annotations: Vec<ElementValueFacts>,
-}
-
-/// One method's own `Runtime*ParameterAnnotations` attribute, including its leading `u1` count.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct ParameterAnnotationAttribute {
-    pub attribute: AttributeShell,
-    /// `None` means the shell was retained after its content could not be read.
-    pub parameter_count: Option<u8>,
-    pub parameters: Vec<Vec<ElementValueFacts>>,
-}
-
-/// Parsed and source-spelled parameter annotations, aligned only by descriptor parameter position.
-#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct ParameterAnnotationUses {
-    pub attributes: Vec<ParameterAnnotationAttribute>,
-    /// One list for each descriptor parameter, including positions with no annotation.
-    pub uses_by_position: Vec<Vec<String>>,
-    pub refusals: Vec<String>,
-}
-
-/// One type annotation shell and every entry it physically contains, with the attempted spelling.
-#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct TypeAnnotationUses {
-    pub attributes: Vec<TypeAnnotationAttribute>,
-    pub field_uses: Vec<String>,
-    pub return_uses: Vec<String>,
-    /// Descriptor parameter position to type-only source spellings.
-    pub parameter_uses: Vec<Vec<String>>,
-    /// Refusals retain the entry's owner, target and path in their text.
-    pub refusals: Vec<String>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct TypeAnnotationAttribute {
-    pub attribute: AttributeShell,
-    pub annotations: Vec<TypeAnnotationUse>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct TypeAnnotationUse {
-    pub target_type: u8,
-    pub target_info: Vec<u8>,
-    pub type_path: Vec<TypePathEntry>,
-    pub annotation: ElementValueFacts,
-    pub spelling: Option<String>,
-    pub refusal: Option<String>,
-}
+pub use jarde_java::report::{
+    ClassAnnotationAttribute, MemberAnnotationAttribute, MemberAnnotationUses,
+    ParameterAnnotationAttribute, ParameterAnnotationUses, TypeAnnotationAttribute,
+    TypeAnnotationUse, TypeAnnotationUses,
+};
 
 /// The raw member annotation facts handed from the one member-table read to its declaration writer.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -393,13 +344,20 @@ pub struct ClassSourceField {
     /// field `Signature` can replace the descriptor type while keeping the physical field identity
     /// in [`Self::item`].
     pub declaration: Option<String>,
+    /// Whether a field `Signature` has been accepted and published into `declaration`.
+    ///
+    /// This records the successful proof outcome directly; consumers must not infer it from the
+    /// explanatory marker text. A later refusal does not clear the fact while the previously
+    /// projected declaration remains published.
+    pub generic_signature_projected: bool,
     /// The field's own declaration annotation attributes, their complete values, spellings, and
     /// any annotation-level refusal.
     pub annotations: MemberAnnotationUses,
     /// Type annotation attributes physically owned by this field.
     pub type_annotations: TypeAnnotationUses,
     /// Every `// jarde:` marker the text carries for this field, in the order it writes them, each
-    /// one line: an unspellable raw name/descriptor or the field `Signature` projection decision.
+    /// one line: an unspellable raw name/descriptor, a refused `ConstantValue`, or the field
+    /// `Signature` projection decision.
     /// Empty when no such explanation is needed.
     pub markers: Vec<String>,
 }
@@ -414,21 +372,6 @@ pub(crate) struct ProvedIntegerConstant {
 
 /// One method of the presented class: the record of the class read, the spelling of its declaration,
 /// the text this presentation wrote for it, and the result of its own body's run.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum EnumConstructorSourceTail {
-    Unrecognized,
-    NoArg,
-    Int,
-    SingleString,
-    StringVarargs,
-}
-
-impl EnumConstructorSourceTail {
-    fn is_recognized(self) -> bool {
-        self != Self::Unrecognized
-    }
-}
-
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ClassSourceMethod {
@@ -629,6 +572,55 @@ impl GenericCallProjectionState {
             enum_constructor_signature_erasure_refused: self
                 .enum_constructor_signature_erasure_refused,
         })
+    }
+
+    /// Stage a declared-source body beside the pre-projection descriptor record. Callers install
+    /// this overlay only after all related declarations and physical consumers have passed.
+    pub(crate) fn project_declared_body(
+        &mut self,
+        record: &ClassSourceMethod,
+        declaration: String,
+        body: &str,
+        signature: bool,
+        budget: &mut Budget,
+    ) -> Result<bool> {
+        let Some(placed) = artifact(body) else {
+            return Ok(false);
+        };
+        let marker =
+            "// jarde: declared source types and physical consumers committed together".to_owned();
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::OutputBytes, marker.len() as u64)?;
+        self.markers.push(marker);
+        let bytes = block_member_text_bytes(
+            &declaration,
+            placed.envelope,
+            placed.statements,
+            &self.markers,
+            &record.annotations,
+        );
+        budget.charge(CountedBudgetDimension::OutputBytes, bytes)?;
+        let Some(text) = jarde_java::source_proof::projected_body_method_text(
+            Some(&declaration),
+            match &record.outcome {
+                ClassSourceOutcome::Recovered { report, .. } => Some(report),
+                _ => None,
+            },
+            &self.markers,
+            &record.item.name,
+            &record.item.descriptor,
+            &record.annotations,
+            body,
+            Some(&declaration),
+            &[],
+        ) else {
+            return Ok(false);
+        };
+        self.declaration = Some(declaration);
+        self.text = text;
+        self.generic_signature_refused = false;
+        self.generic_signature_projected = signature;
+        Ok(true)
     }
 
     pub(crate) fn project_generic(
@@ -944,6 +936,8 @@ pub enum ClassSourceOutcome {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ClassSourceReport {
+    pub source_target: crate::SourceTarget,
+    pub runtime_profile: jarde_reader::view::RuntimeProfile,
     /// The physical view this presentation read.
     pub view: PhysicalView,
     /// The physical definition this presentation is of: the identity a later read consumes.
@@ -1339,7 +1333,7 @@ pub enum ClassSourceMemberCapture {
     },
     StaticNoCapture {
         #[serde(skip)]
-        target: Box<jarde_java::report::ProvedStaticMemberTarget>,
+        target: Box<jarde_java::report::StaticMemberTargetInput>,
     },
     /// The physical relation is proved, but no constructor use target is claimed.
     StaticDeclaration,
@@ -1348,25 +1342,7 @@ pub enum ClassSourceMemberCapture {
     },
 }
 
-/// Physical evidence for capture only. A writer must separately prove every changed expression.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct MemberCaptureProof {
-    pub field_index: u64,
-    pub field_name: String,
-    pub constructor: PhysicalMethodId,
-    pub write_bci: u32,
-    pub reads: Vec<MemberCaptureRead>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct MemberCaptureRead {
-    pub method: PhysicalMethodId,
-    pub bci: u32,
-    /// SSA consumers of the value loaded from the capture field, in this physical method.
-    pub consumer_bcis: Vec<u32>,
-}
+pub use jarde_java::source_proof::{MemberCaptureProof, MemberCaptureRead};
 
 /// A physical, linear bridge from a selected Outer to its direct superclass method.
 /// This is evidence only; the family writer must separately accept every use before hiding it.
@@ -1411,82 +1387,10 @@ pub struct ClassSourceMemberRelation {
     pub access_flags: u16,
 }
 
-/// The map entries this class-source request proved from a selected helper's physical `<clinit>`.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct ClassSourceEnumSwitchEntry {
-    pub key: i64,
-    pub constant: Vec<u8>,
-    pub constant_field_bci: u32,
-    pub ordinal_bci: u32,
-    pub table_read_bci: u32,
-    pub store_bci: u32,
-    pub handler_ordinal: u32,
-    pub handler_bci: u32,
-}
+pub use jarde_java::bridge::ClassSourceBridgeProof;
+pub use jarde_java::source_proof::{ClassSourceEnumSwitchEntry, ClassSourceEnumSwitchProof};
 
-/// One same-run enum-switch candidate's class-level proof and projection outcome.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct ClassSourceEnumSwitchProof {
-    pub member: jarde_reader::model::PhysicalMethodId,
-    pub switch_bci: u32,
-    pub read_bci: u32,
-    pub table_owner: String,
-    pub table_name: String,
-    pub helper: Option<jarde_reader::model::PhysicalDefinitionId>,
-    pub enum_definition: Option<jarde_reader::model::PhysicalDefinitionId>,
-    pub entries: Vec<ClassSourceEnumSwitchEntry>,
-    pub projected: bool,
-    pub refusal: Option<String>,
-}
-
-/// A class-level bridge admission result and the state of its complete-source projection.
-/// Admission preserves the ordinary recovery report and physical method table; `projected` only
-/// states whether this class-source body emitted the explanation in place of a Java declaration.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct ClassSourceBridgeProof {
-    /// The physical bridge method whose same-run plan entered this proof.
-    pub member: jarde_reader::model::PhysicalMethodId,
-    /// The unique source method when all forward and signature premises were established.
-    pub target: Option<jarde_reader::model::PhysicalMethodId>,
-    /// The invocation BCI retained by the same-run `bridge@1` candidate.
-    pub call_bci: Option<u32>,
-    /// Whether the bridge may be elided from Java source under the proved inherited contract.
-    pub admitted: bool,
-    /// Whether the complete source replaced this member's Java declaration with a proof note.
-    pub projected: bool,
-    /// The first conservative reason the complete proof refused admission.
-    pub refusal: Option<String>,
-}
-
-/// Whether the complete ordinary interface or class static initializer group passed proof.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
-pub enum ClassSourceInitializerProof {
-    /// The class is outside this proof's scope or has no ordinary-class runtime static group.
-    NotApplicable,
-    /// Every runtime field write in the group passed, in original `<clinit>` order.
-    Proved {
-        /// Physical field index and its same-run write position and BCI, in initializer order.
-        fields: Vec<ClassSourceInitializerField>,
-    },
-    /// The whole runtime initializer group was refused with the first unmet proof condition.
-    Refused { reason: String },
-}
-
-/// The write whose value would be eligible for a later source projection.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct ClassSourceInitializerField {
-    /// The unchanged physical `field_info` table index.
-    pub field_index: u64,
-    /// The statement's order in the same-run `<clinit>` AST.
-    pub write_order: usize,
-    /// The `putstatic` BCI claimed by `field@1`.
-    pub write_bci: u32,
-}
+pub use jarde_java::source_proof::{ClassSourceInitializerField, ClassSourceInitializerProof};
 
 /// The class-text projection inputs one root's assembled [`ClassSourceReport::text`] was staged
 /// with, retained as the facts of that first pass — never recomputed, and never a second decision.
@@ -1630,26 +1534,12 @@ const ACC_FINAL: u16 = 0x0010;
 /// `ACC_STATIC` (JVMS 4.1-B/4.5-A/4.6-A): a class's own `static` describes a nesting this
 /// presentation does not claim, so only a member's is written.
 const ACC_STATIC: u16 = 0x0008;
-/// `ACC_SYNCHRONIZED` on a method, `ACC_SUPER` on a class (JVMS 4.1-B/4.6-A): one bit, two
-/// meanings, decided by the table it is read in.
-const ACC_SYNCHRONIZED: u16 = 0x0020;
-/// `ACC_VOLATILE` on a field (JVMS 4.5-A).
-const ACC_VOLATILE: u16 = 0x0040;
-/// `ACC_TRANSIENT` on a field, `ACC_VARARGS` on a method (JVMS 4.5-A/4.6-A): one bit, two
-/// meanings, decided by the table it is read in.
-const ACC_TRANSIENT: u16 = 0x0080;
-/// `ACC_VARARGS` (JVMS 4.6-A): [`ACC_TRANSIENT`]'s bit in a *method's* own `access_flags`, stating
+/// `ACC_VARARGS` (JVMS 4.6-A) in a *method's* own `access_flags`, stating
 /// that the member's last parameter is the variable-arity one. It is read where the parameter list
 /// is spelled ([`method_descriptor`]) and nowhere else.
 const ACC_VARARGS: u16 = 0x0080;
-/// `ACC_NATIVE` on a method (JVMS 4.6-A).
-const ACC_NATIVE: u16 = 0x0100;
 /// `ACC_INTERFACE` (JVMS 4.1-B).
 const ACC_INTERFACE: u16 = 0x0200;
-/// `ACC_ABSTRACT` (JVMS 4.1-B/4.6-A).
-const ACC_ABSTRACT: u16 = 0x0400;
-/// `ACC_STRICT` (JVMS 4.1-B/4.6-A).
-const ACC_STRICT: u16 = 0x0800;
 /// `ACC_ANNOTATION` (JVMS 4.1-B).
 const ACC_ANNOTATION: u16 = 0x2000;
 /// `ACC_ENUM` (JVMS 4.1-B): a class declared `enum`, or a field holding an enum constant.
@@ -1671,328 +1561,21 @@ fn is_static(access_flags: u16) -> bool {
 /// is deliberate. Turning `p.Outer$Inner` into a nesting relation, or splitting a name into a
 /// package and a simple name, would be inventing structure the class file does not state; `$` is a
 /// legal Java identifier character, and the name stays the one the bytes carry.
-fn class_name(raw: &[u8]) -> String {
-    String::from_utf8_lossy(raw).replace('/', ".")
-}
-
-/// The simple name one internal name states: everything after its last `/`, with `$` kept.
-///
-/// This is the name a class's **own** declaration and its constructors are spelled with. The package
-/// the name states before that `/` is not dropped: it is written as the text's `package` statement
-/// ([`package_name`]), which is the one place Java source states it. Only the last `/` is a package
-/// boundary — `$` is a legal Java identifier character, so `p/More17$1` states the simple name
-/// `More17$1`, exactly as `p/Outer$Inner` states `Outer$Inner`.
-fn simple_name(raw: &[u8]) -> String {
-    let simple = match raw.iter().rposition(|byte| *byte == b'/') {
-        Some(position) => &raw[position + 1..],
-        None => raw,
-    };
-    String::from_utf8_lossy(simple).into_owned()
-}
-
-/// The package one internal name states, as a `package` statement spells it, or `None` for a name
-/// that states none (the default package).
-///
-/// The package is the internal name in front of its last `/`, with every remaining `/` written as
-/// `.` — the same rule [`class_name`] applies to the whole name. `None` means the text writes no
-/// `package` line at all: a name with no `/` is in the unnamed package, which source spells with no
-/// statement rather than with an empty one.
-fn package_name(raw: &[u8]) -> Option<String> {
-    let position = raw.iter().rposition(|byte| *byte == b'/')?;
-    Some(String::from_utf8_lossy(&raw[..position]).replace('/', "."))
-}
-
-/// The name the text writes for one raw member name, and whether it had to be changed.
-///
-/// The change is [`alias_for`]'s and it is deterministic: a raw name Java cannot spell (a method
-/// named `foo-bar`) becomes the alias that function states, and the marker the caller writes says
-/// which raw name that alias came from. `<init>` and `<clinit>` never reach this rule — they are
-/// spelled as the declarations they are — and a name that is already an identifier is unchanged.
-fn written_name(raw: &[u8]) -> (String, bool) {
-    let text = String::from_utf8_lossy(raw).into_owned();
-    if is_java_identifier(&text) {
-        (text, false)
-    } else {
-        (alias_for(&text), true)
-    }
-}
-
-/// One descriptor component as Java source spells its type.
-///
-/// The spelling is the recovery layer's own ([`type_of_component`]), so this presentation and the
-/// statements of a recovered body cannot disagree about how a type is written: a primitive is the
-/// primitive's own name, and an array is spelled from its element outwards with one `[]` per
-/// dimension. Nothing about the production is read here — the reader states it
-/// ([`jarde_reader::classfile::descriptor_facts`]) — and an object name Java cannot write is
-/// refused rather than spelled lossily into a type position.
-fn source_type(component: &DescriptorComponent) -> Option<String> {
-    Some(type_of_component(component)?.spell().to_owned())
+fn class_name(raw: &[u8]) -> Option<String> {
+    jarde_java::names::source_class_name(&JvmBytes(raw.to_vec()))
 }
 
 /// One field descriptor as Java source spells it (JVMS 4.3.2), or `None` when the bytes are not
-/// that production.
+/// that production. Tests spell field descriptors from literals; the assembly paths read
+/// [`jarde_java::declaration::field_type`] where their descriptors already are.
+#[cfg(test)]
 fn field_type(descriptor: &[u8]) -> Option<String> {
-    let facts = descriptor_facts(descriptor, DescriptorKind::Field).ok()?;
-    source_type(facts.single()?)
+    jarde_java::declaration::field_type(descriptor)
 }
 
-/// One method descriptor as this presentation writes its declaration.
-#[derive(Clone, Debug, Eq, PartialEq)]
-struct Signature {
-    /// The parameters in declaration order: the type as Java spells it, and the **local slot** the
-    /// parameter occupies, with the receiver counted.
-    ///
-    /// The type is the array spelling the descriptor states — one `[]` per dimension — because that
-    /// is the type the descriptor's component names ([`source_type`]); which of the parameters is
-    /// written with the dots of [`Self::varargs`] is the **list's** own rule and is applied where
-    /// the list is written ([`arguments`]).
-    ///
-    /// The slot is the JVM layer's derivation from the descriptor's own facts
-    /// ([`parameter_positions`]): `this` holds slot 0 of a member that is not `static`, and each
-    /// parameter starts where the one before it ended — a `long`/`double` filling two slots and
-    /// **an array of either filling one**, like every other array.
-    parameters: Vec<(String, u16)>,
-    /// Whether the declaration's **last** parameter is written `T...`: true exactly when the
-    /// member's own `ACC_VARARGS` is set and the descriptor's last parameter is an array, which is
-    /// the one shape the flag can apply to (see [`method_descriptor`]).
-    ///
-    /// It is stated here and not spelled into [`Self::parameters`] because it is a fact about the
-    /// parameter **list** — the last position, and only the last — while each entry above is the
-    /// type its own component names.
-    varargs: bool,
-    /// The return type, or `None` for `V`.
-    returns: Option<String>,
-    /// How many slots the parameters occupy together, the receiver included: the first slot a body
-    /// of this member may declare a local in.
-    slots: u16,
-}
-
-/// One method descriptor as Java source spells it, or `None` when the bytes are not that production
-/// or state a type this presentation cannot write.
-///
-/// The descriptor is read **once**, by the reader's own facts, and everything the declaration needs
-/// comes from that one reading: the types are the recovery layer's spelling of the reader's
-/// components, and the slots are the JVM layer's derivation from those same components. So a
-/// signature's parameter names and the body's references to them are one reading of one descriptor
-/// — never two parses that could place a parameter in two different slots.
-///
-/// `varargs` is the member's own `ACC_VARARGS` (0x0080), the one fact of the declaration that the
-/// descriptor does not state. It reaches the **last** parameter and only when that parameter is an
-/// array: `[I` is written `int...` and `[[B` is written `byte[]...` — the element type, then the
-/// `[]` it still has, then the dots the last `[]` became. A member whose flag is set and whose last
-/// parameter is not an array states no `...` at all: the flag is carried by no position, and the
-/// parameters are written as the descriptor states them.
-fn method_descriptor(descriptor: &[u8], is_static: bool, varargs: bool) -> Option<Signature> {
-    let facts = descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
-    let positions = parameter_positions(&facts, is_static)?;
-    let parameters = facts
-        .parameters()
-        .iter()
-        .zip(positions)
-        .map(|(component, slot)| Some((source_type(component)?, slot)))
-        .collect::<Option<Vec<(String, u16)>>>()?;
-    // The two facts meet here, and neither alone states a `...`: the member's own flag states that
-    // its last parameter is the variable-arity one, and the descriptor's own last component states
-    // whether there is an array for that to mean. An array parameter of a member without the flag
-    // keeps its brackets, and a flag on a member whose last parameter is not an array is written as
-    // the descriptor states it.
-    let varargs = varargs
-        && facts
-            .parameters()
-            .last()
-            .is_some_and(DescriptorComponent::is_array);
-    let returns = match facts.result() {
-        Some(component) => Some(source_type(component)?),
-        None => None,
-    };
-    let slots = u16::from(!is_static).checked_add(facts.parameter_slots()?)?;
-    Some(Signature {
-        parameters,
-        varargs,
-        returns,
-        slots,
-    })
-}
-
-/// The declaration line one class is written as, without its opening brace.
-///
-/// The kind comes from the class file's own flags — `@interface`, `interface`, `enum` or `class` —
-/// and so does everything else here:
-///
-/// * only the modifiers source spells are written, and one that the kind already means is not
-///   repeated (`abstract` on an interface, `abstract`/`final` on an enum);
-/// * a class's superclass is written from `super_class`, which the format requires to be present for
-///   every class that is not `module-info`;
-/// * an ordinary interface's `extends` list is the interfaces the class file declares, because its
-///   own `super_class` is `java/lang/Object` by the format's rule and is not a source superclass;
-///   a canonical annotation's implicit `Annotation` interface remains in the facts but is omitted
-///   from the `@interface` header.
-fn class_declaration(name: &str, facts: &ClassDeclarationFacts) -> String {
-    class_declaration_with_types(name, facts, None, None, None)
-}
-
-pub(crate) fn nested_member_class_header(name: &str, facts: &ClassDeclarationFacts) -> String {
-    class_declaration(name, facts)
-}
-
-fn class_declaration_with_types(
-    name: &str,
-    facts: &ClassDeclarationFacts,
-    parameters: Option<&str>,
-    generic_superclass: Option<&str>,
-    generic_interfaces: Option<&[String]>,
-) -> String {
-    let flags = facts.access_flags;
-    let interface = flags & ACC_INTERFACE != 0;
-    let canonical_annotation = flags & (ACC_ANNOTATION | ACC_INTERFACE)
-        == (ACC_ANNOTATION | ACC_INTERFACE)
-        && facts.interfaces.len() == 1
-        && facts.interfaces[0].raw().0 == b"java/lang/annotation/Annotation";
-    let enumeration = !interface && flags & ACC_ENUM != 0;
-    let mut words: Vec<&str> = Vec::new();
-    words.extend(visibility(flags));
-    if !interface {
-        if flags & ACC_ABSTRACT != 0 && !enumeration {
-            words.push("abstract");
-        }
-        if flags & ACC_FINAL != 0 && !enumeration {
-            words.push("final");
-        }
-        if flags & ACC_STRICT != 0 {
-            words.push("strictfp");
-        }
-    }
-    let kind = if flags & ACC_ANNOTATION != 0 {
-        "@interface"
-    } else if interface {
-        "interface"
-    } else if enumeration {
-        "enum"
-    } else {
-        "class"
-    };
-    let mut line = String::new();
-    for word in words {
-        line.push_str(word);
-        line.push(' ');
-    }
-    line.push_str(kind);
-    line.push(' ');
-    line.push_str(name);
-    if let Some(parameters) = parameters {
-        line.push('<');
-        line.push_str(parameters);
-        line.push('>');
-    }
-    if canonical_annotation {
-        return line;
-    }
-    let supers: Vec<String> = generic_interfaces
-        .map(<[String]>::to_vec)
-        .unwrap_or_else(|| {
-            facts
-                .interfaces
-                .iter()
-                .map(|interface| class_name(&interface.raw().0))
-                .collect()
-        });
-    if interface {
-        if !supers.is_empty() {
-            line.push_str(" extends ");
-            line.push_str(&supers.join(", "));
-        }
-        return line;
-    }
-    if !enumeration && let Some(super_class) = &facts.super_class {
-        line.push_str(" extends ");
-        if let Some(generic_superclass) = generic_superclass {
-            line.push_str(generic_superclass);
-        } else {
-            line.push_str(&class_name(&super_class.raw().0));
-        }
-    }
-    if !supers.is_empty() {
-        line.push_str(" implements ");
-        line.push_str(&supers.join(", "));
-    }
-    line
-}
-
-/// The names the parameters of one member are written with, in **slot** order: index 0 is slot 0,
-/// which is the receiver of a member that is not `static` and the first parameter of one that is.
-///
-/// The names are the recovery layer's own — [`NameTable`] over the debug names the member's run
-/// read — so the signature and the body spell one parameter the same way: a slot the debug table
-/// names once takes that name (aliased when Java cannot spell it), a slot it names over several
-/// records takes the first variable's name, and a slot it does not name takes the ordinal name the
-/// naming table invents (`arg<slot>`), which is exactly what the body's statements say.
-///
-/// A member no run was performed for — one that declares no body, one that could not be spelled —
-/// carries no debug names at all, so its parameters take those ordinal names. That is a rule of this
-/// presentation's, stated here, and not a claim about the source: the class file does not state
-/// parameter names, and the debug table is the only place one may come from.
-fn parameter_names(facts: Option<&RecoveryFacts>, slots: u16) -> Vec<String> {
-    let mut records: Vec<Vec<String>> = vec![Vec::new(); usize::from(slots)];
-    for record in facts.into_iter().flat_map(|facts| facts.debug_locals()) {
-        if let Some(names) = records.get_mut(usize::from(record.slot())) {
-            names.push(record.name().to_owned());
-        }
-    }
-    let evidence: Vec<SlotEvidence> = records
-        .into_iter()
-        .map(|names| match names.len() {
-            0 => SlotEvidence::Unnamed,
-            1 => SlotEvidence::Whole(names[0].clone()),
-            _ => SlotEvidence::Split(names.into_iter().map(Some).collect()),
-        })
-        .collect();
-    let table = if facts.is_some_and(|facts| facts.method().has_receiver()) {
-        NameTable::build_with_receiver(slots, slots, &evidence)
-    } else {
-        NameTable::build(slots, slots, &evidence)
-    };
-    (0..slots)
-        .map(|slot| {
-            table
-                .name(LocalVariable::new(slot, 0))
-                .map(|name| name.text().to_owned())
-                .unwrap_or_else(|| format!("arg{slot}"))
-        })
-        .collect()
-}
-
-/// One raw name or descriptor, as a comment line can carry it.
-///
-/// Two steps, both of them the engine's own: the reader's escaped display of the bytes
-/// ([`JvmString::escaped`]), then [`comment_text`], which is what makes the result safe inside a
-/// `//` comment. The second step is not cosmetic — Java processes `\uXXXX` before it lexes, so a
-/// comment carrying one would end the line it is written on, which is the hazard the recovery
-/// layer's own emitter states for its reasons.
-fn comment_name(value: &JvmString) -> String {
-    comment_text(&value.escaped())
-}
-
-/// How one member is named inside a marker: its own raw name and descriptor, as the recovery
-/// report's `method` field spells them (`name` then `descriptor`, no separator).
+/// Adapt the physical member names to Java's shared marker spelling.
 fn label(item: &MethodItem) -> String {
-    format!(
-        "{}{}",
-        comment_name(&item.name),
-        comment_name(&item.descriptor)
-    )
-}
-
-/// The visibility Java source spells, or nothing at all for a package-private declaration.
-fn visibility(access_flags: u16) -> Option<&'static str> {
-    if access_flags & ACC_PUBLIC != 0 {
-        Some("public")
-    } else if access_flags & ACC_PROTECTED != 0 {
-        Some("protected")
-    } else if access_flags & ACC_PRIVATE != 0 {
-        Some("private")
-    } else {
-        None
-    }
+    jarde_java::source_proof::member_label(&item.name, &item.descriptor)
 }
 
 /// One member's declaration as this presentation spells it, with the marker its spelling needs.
@@ -2011,22 +1594,6 @@ pub(crate) struct Spelled {
     pub(crate) annotations: MemberAnnotationUses,
     pub(crate) parameter_annotations: ParameterAnnotationUses,
     pub(crate) type_annotations: TypeAnnotationUses,
-}
-
-/// Whether this presentation can write a declaration for a member whose raw descriptor these bytes
-/// are: a method descriptor (JVMS 4.3.3) whose every type is one Java source spells.
-///
-/// A member this answers `false` for is published as
-/// [`ClassSourceOutcome::Unspelled`](crate::ClassSourceOutcome::Unspelled), and no recovery run is
-/// performed for it — a run whose artifact could not be placed under a declaration would be work
-/// whose result this presentation has nowhere to write.
-pub(crate) fn spellable_descriptor(descriptor: &[u8]) -> bool {
-    match descriptor_facts(descriptor, DescriptorKind::Method) {
-        Ok(facts) => facts
-            .components()
-            .all(|component| type_of_component(component).is_some()),
-        Err(_) => false,
-    }
 }
 
 /// Whether one member's own attribute table declares an attribute of this name.
@@ -2326,39 +1893,37 @@ pub(crate) fn declares_constant_value(field: &MemberHeader) -> bool {
     declares_attribute(field, b"ConstantValue")
 }
 
-/// The default one member's own `AnnotationDefault` attribute states (JVMS 4.7.22), resolved against
-/// the class's constant pool as far as this presentation spells it, or `None` when no `default` is
-/// written.
+/// The raw value one member's own `AnnotationDefault` attribute states (JVMS 4.7.22),
+/// or `None` when the attribute is absent. Java literal resolution belongs to the caller
+/// supplying this source unit's naming facts.
 ///
 /// The read is [`attribute_facts`] over this member's own `AnnotationDefault` shell(s) — the reader's
 /// one parser for that attribute, and only those shells are handed over, so the `attribute_bytes`
 /// charge is exactly this attribute's — and nothing here reads a body, a use site or another member:
 /// the declaration default is the value the member's own attribute declares.
 ///
-/// `None` is exactly the state "nothing to write", and it is never a stop of the request: the member
-/// declares no `AnnotationDefault` at all, or its value is one this presentation has no literal for.
-/// Those include an unspellable NaN bit pattern, a nested annotation with an invalid source name,
-/// and an array holding one of those (see [`MemberDefault`]). The member keeps
-/// the declaration its flags and its descriptor state, which is what the class file's *other* facts
-/// say about it; not one literal is invented for it.
-///
-/// An `Err` is the reader's own failure to read the attribute (its bytes are damaged, its charge was
-/// refused, the request was cancelled): the caller decides what that is worth — a budget or a
-/// cancellation is the request's own stop, exactly as a refused `Exceptions` read is.
+/// `None` means that the member has no attribute. A present raw value crosses the Java
+/// literal gate with this source unit's naming facts before publication. The caller isolates
+/// local refusals and propagates budget/cancellation as shared request stops.
 pub(crate) fn declared_annotation_default(
     bytes: &[u8],
     member: &MemberHeader,
     pool: &[CpEntryFacts],
     budget: &mut Budget,
-) -> Result<Option<MemberDefault>> {
+) -> Result<Option<ElementValueFacts>> {
     if !declares_annotation_default(member) {
         return Ok(None);
     }
     let shells = attribute_shells(member, b"AnnotationDefault");
-    let Some(value) = attribute_facts(bytes, &shells, pool, budget)?.annotation_default else {
-        return Ok(None);
-    };
-    Ok(resolve_default(&value, pool))
+    let value = attribute_facts(bytes, &shells, pool, budget)?
+        .annotation_default
+        .ok_or_else(|| {
+            Error::invalid_input(
+                "classfile_invalid_attribute_content",
+                "declared AnnotationDefault has no decoded value",
+            )
+        })?;
+    Ok(Some(value))
 }
 
 /// The declaration facts one member's own attribute table states, as its declaration writes them.
@@ -2369,8 +1934,8 @@ pub(crate) fn declared_annotation_default(
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct MemberAttributes {
     /// The member's own `AnnotationDefault` (JVMS 4.7.22), when it declares one this presentation
-    /// has a literal for.
-    pub(crate) default: Option<MemberDefault>,
+    /// declares, kept raw until the source unit supplies its naming context.
+    pub(crate) default: Option<ElementValueFacts>,
     /// The exception types the member's own `Exceptions` attribute (JVMS 4.7.4) states, in the
     /// attribute's own order; empty when the member declares none.
     pub(crate) throws: Vec<String>,
@@ -2378,13 +1943,6 @@ pub(crate) struct MemberAttributes {
     pub(crate) throws_raw: Vec<Vec<u8>>,
     /// A complete descriptor-to-slot projection of this member's parameter attribute.
     pub(crate) parameters: Option<Vec<ProvedMethodParameter>>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProvedMethodParameter {
-    pub(crate) slot: u16,
-    pub(crate) name: String,
-    pub(crate) is_final: bool,
 }
 
 fn prove_method_parameters(
@@ -2396,42 +1954,24 @@ fn prove_method_parameters(
     if entries.len() != signature.parameters.len() || flags & (0x1000 | 0x0040) != 0 {
         return None;
     }
-    let mut used = std::collections::BTreeSet::new();
-    let parameters: Vec<ProvedMethodParameter> = entries
+    // Metadata proves parameter slots and flags. Source spelling belongs to the shared NameTable,
+    // including keywords, supplementary names, and collisions with the wide-slot fallback names.
+    entries
         .iter()
         .zip(signature.parameters.iter())
         .map(|(entry, (_, slot))| {
             if entry.access_flags & (0x1000 | 0x8000) != 0 {
                 return None;
             }
-            let name = std::str::from_utf8(&entry.name.as_ref()?.0).ok()?;
-            if !is_java_identifier(name) || !used.insert(name.to_owned()) {
-                return None;
-            }
+            let raw = entry.name.as_ref()?;
+            jarde_reader::model::JvmString::from_mutf8(raw.0.clone())?;
             Some(ProvedMethodParameter {
                 slot: *slot,
-                name: name.to_owned(),
+                name: raw.clone(),
                 is_final: entry.access_flags & ACC_FINAL != 0,
             })
         })
-        .collect::<Option<_>>()?;
-    let mut evidence = vec![SlotEvidence::Unnamed; usize::from(signature.slots)];
-    for parameter in &parameters {
-        evidence[usize::from(parameter.slot)] = SlotEvidence::Whole(parameter.name.clone());
-    }
-    let table = if is_static(flags) {
-        NameTable::build(signature.slots, signature.slots, &evidence)
-    } else {
-        NameTable::build_with_receiver(signature.slots, signature.slots, &evidence)
-    };
-    parameters
-        .iter()
-        .all(|parameter| {
-            table
-                .name(LocalVariable::whole(parameter.slot))
-                .is_some_and(|name| name.text() == parameter.name)
-        })
-        .then_some(parameters)
+        .collect()
 }
 
 /// The declaration facts one member's own attribute table states (JVMS 4.7.4, 4.7.22).
@@ -2493,7 +2033,16 @@ pub(crate) fn declared_member_attributes(
     };
     Ok(MemberAttributes {
         default,
-        throws: throws_raw.iter().map(|name| class_name(name)).collect(),
+        throws: throws_raw
+            .iter()
+            .map(|name| class_name(name))
+            .collect::<Option<Vec<_>>>()
+            .ok_or_else(|| {
+                Error::unsupported(
+                    "class_source_name_unspellable",
+                    "exception type has no faithful Java source name",
+                )
+            })?,
         throws_raw,
         parameters,
     })
@@ -2585,171 +2134,6 @@ pub(crate) enum SameClassBinding {
     Unproved,
 }
 
-/// One physically decoded `invoke*` site of the selected class's own body set: the caller's own
-/// label, the site's BCI and opcode, and the owner/name/descriptor the pool entry states.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassInvokeUse {
-    pub(crate) caller: String,
-    pub(crate) physical_caller: PhysicalMethodId,
-    pub(crate) bci: u32,
-    pub(crate) opcode: u8,
-    pub(crate) owner: Vec<u8>,
-    pub(crate) name: Vec<u8>,
-    pub(crate) descriptor: Vec<u8>,
-    /// Physical SSA values aligned to descriptor parameter order. Empty is meaningful only when
-    /// `ssa_operands_complete` is true for a zero-argument call.
-    pub(crate) argument_values: Vec<jarde_jvm::method_ir::ValueId>,
-    pub(crate) receiver_value: Option<jarde_jvm::method_ir::ValueId>,
-    pub(crate) result_value: Option<jarde_jvm::method_ir::ValueId>,
-    pub(crate) argument_value_facts: Vec<SameClassInvokeValueFact>,
-    pub(crate) receiver_value_fact: Option<SameClassInvokeValueFact>,
-    pub(crate) result_value_fact: Option<SameClassInvokeValueFact>,
-    pub(crate) ssa_operands_complete: bool,
-    /// For a constructor invocation, the receiver identity established by the same run's SSA.
-    /// `None` means this is not a constructor invocation; `Unknown` stays local to this site and
-    /// must not make unrelated same-class consumers incomplete.
-    pub(crate) constructor_receiver: Option<SameClassConstructorReceiver>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassInvokeValueFact {
-    pub(crate) value: jarde_jvm::method_ir::ValueId,
-    pub(crate) definition: jarde_jvm::method_ir::Definition,
-    pub(crate) uses: Vec<Option<u32>>,
-    pub(crate) replaced_by: Option<jarde_jvm::method_ir::ValueId>,
-}
-
-/// One same-run SSA output at an AST expression's primary BCI. Generic body proofs retain only
-/// the load/result identities needed to close formal reads and return/condition/throw consumers.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassBodyValueSite {
-    pub(crate) bci: u32,
-    pub(crate) opcode: u8,
-    pub(crate) stack_reads: Vec<(u32, SameClassInvokeValueFact)>,
-    pub(crate) stack_writes: Vec<SameClassInvokeValueFact>,
-    pub(crate) local_reads: Vec<(u16, SameClassInvokeValueFact)>,
-    pub(crate) local_writes: Vec<(u16, SameClassInvokeValueFact)>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum SameClassGenericBodyReturnSource {
-    Parameter {
-        slot: u16,
-    },
-    Call {
-        bci: u32,
-        opcode: u8,
-        owner: Vec<u8>,
-        name: Vec<u8>,
-        descriptor: Vec<u8>,
-    },
-}
-
-/// The evidence retained by the emitter for an AST-shaped generic method body. It records actual
-/// physical formal identities and each return source; it is not a boolean saying that a body was
-/// merely seen or parsed.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassGenericMethodBodyProof {
-    pub(crate) method: PhysicalMethodId,
-    pub(crate) formal_names: Vec<(u16, String)>,
-    pub(crate) return_sources: Vec<SameClassGenericBodyReturnSource>,
-    pub(crate) condition_slots: Vec<u16>,
-    pub(crate) throw_sites: Vec<u32>,
-    pub(crate) field_write_sites: Vec<u32>,
-    pub(crate) constructor_call_bci: Option<u32>,
-    pub(crate) constructor_init: Option<jarde_java::init::InitRecord>,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum SameClassConstructorReceiver {
-    UninitializedThis,
-    NewObject,
-    Unknown,
-}
-
-/// One physically decoded field access of the selected class's own body set. A write site carries
-/// its source-level proof when the RHS is one of the narrowly supported same-scope parameter,
-/// literal-null, or completed raw-allocation forms; an absent proof makes the projected field
-/// unsafe for that writer. A read site carries the SSA-side classification of what the loaded
-/// value feeds: `Some(true)` only when every consumer keeps accepting the parameterized value (an
-/// `Object`-parameter argument position, or a consumer that does not select members on it).
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassFieldUse {
-    pub(crate) caller: String,
-    pub(crate) physical_method: PhysicalMethodId,
-    pub(crate) bci: u32,
-    pub(crate) opcode: u8,
-    pub(crate) owner: Vec<u8>,
-    pub(crate) name: Vec<u8>,
-    pub(crate) descriptor: Vec<u8>,
-    pub(crate) read_expressible: Option<bool>,
-    pub(crate) write_source: Option<SameClassFieldWriteSource>,
-    pub(crate) receiver_source: Option<SameClassFieldReceiverSource>,
-    pub(crate) source_complete: bool,
-}
-
-/// A receiver fact from the actual committed source statement at this field-use BCI.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum SameClassFieldReceiverSource {
-    This,
-    Parameter { slot: u16 },
-    RawLocal,
-}
-
-/// A narrowly proved source for one same-class field write. `None` on the use site means the
-/// physical write was decoded but its value did not match one of these closed shapes.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum SameClassFieldWriteSource {
-    Null,
-    /// A same-run `ldc`/`ldc_w` String constant used once as a String field's physical RHS.
-    /// This fact is for the narrow method-body certificate only; generic field assignment proofs
-    /// deliberately do not treat it as evidence that a value satisfies a type variable.
-    StringConstant {
-        value_bci: u32,
-    },
-    Parameter {
-        method: PhysicalMethodId,
-        slot: u16,
-    },
-    RawAllocation {
-        owner: Vec<u8>,
-    },
-}
-
-/// The actual source parameter types and declared method bounds a completed same-class method
-/// record publishes. Generic facts are present only when that method's own `Signature` projected
-/// successfully; otherwise only the physical descriptor is available to the field-write proof.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassPublishedMethodParameters {
-    pub(crate) method: PhysicalMethodId,
-    pub(crate) parameter_slots: Vec<u16>,
-    pub(crate) descriptor_parameters: Vec<Vec<u8>>,
-    pub(crate) generic_parameters: Option<Vec<SignatureType>>,
-    pub(crate) method_type_parameters: Vec<TypeParameter>,
-}
-
-/// A member a readable but non-body reference source names: an `ldc` method handle or a
-/// bootstrap-table row/argument. The first slice reads these to keep the inventory honest but does
-/// not prove a functional-position target, so a candidate such a source names stays refused.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassMemberRef {
-    pub(crate) owner: Vec<u8>,
-    pub(crate) name: Vec<u8>,
-    pub(crate) descriptor: Vec<u8>,
-    pub(crate) method: bool,
-}
-
-/// The bounded use-site inventory of one selected class, as the commit phase hands it to the
-/// binding proofs: every decoded body's invoke and field sites, every readable non-body source,
-/// and whether the scan covered every supported consumer at all.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassUseFacts<'a> {
-    pub(crate) complete: bool,
-    pub(crate) invokes: &'a [SameClassInvokeUse],
-    pub(crate) field_uses: &'a [SameClassFieldUse],
-    pub(crate) member_refs: &'a [SameClassMemberRef],
-}
-
 /// One same-class generic caller dependency. Indices are physical method-table positions, never
 /// names or erased descriptors: overloads and method/class binders remain distinct.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -2766,1620 +2150,9 @@ pub(crate) struct GenericCallComponent {
     pub(crate) order: Option<Vec<usize>>,
 }
 
-/// The published generic contract read from one physical same-class method. The caller may use
-/// this only after the matching declaration has been staged from the same Signature and erasure
-/// proof; its physical identity keeps overloaded methods and method binders separate.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassGenericMethodContract {
-    pub(crate) method: PhysicalMethodId,
-    pub(crate) method_parameters: Vec<TypeParameter>,
-    pub(crate) parameters: Vec<SignatureType>,
-    pub(crate) result: Option<SignatureType>,
-}
-
-/// Source type proved at one invocation argument. Only a direct emitted parameter is admitted in
-/// overload selection; generic substitution can additionally receive an exact nested call result
-/// whose own callee and uses were proved first. Casts, aliases, unknown locals, and AST `presented`
-/// types do not create a source type.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassGenericArgumentSource {
-    pub(crate) caller: PhysicalMethodId,
-    pub(crate) origin: SameClassGenericArgumentOrigin,
-    pub(crate) source_type: SignatureType,
-    pub(crate) caller_method_parameters: Vec<TypeParameter>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum SameClassGenericArgumentOrigin {
-    Formal {
-        slot: u16,
-    },
-    NullLiteral,
-    NestedCall {
-        bci: u32,
-        opcode: u8,
-        owner: Vec<u8>,
-        name: Vec<u8>,
-        descriptor: Vec<u8>,
-    },
-}
-
-/// A consistent invocation substitution for the callee's method-level type variables.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassGenericSubstitution {
-    pub(crate) method_arguments: Vec<SignatureType>,
-    pub(crate) argument_sources: Vec<SameClassGenericArgumentSource>,
-}
-
-/// Prove direct type-variable substitution and all explicit bounds for one invocation. The
-/// caller's and callee's method binders are resolved before their shared class scope, so a method
-/// `T` shadowing class `T` cannot silently become the class variable. Only direct formal source
-/// types are accepted here; general expressions need their own source proof.
-pub(crate) fn prove_same_class_generic_substitution(
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &[TypeParameter],
-    callee: &SameClassGenericMethodContract,
-    actuals: &[SameClassGenericArgumentSource],
-    budget: &mut Budget,
-) -> Result<Option<SameClassGenericSubstitution>> {
-    budget.charge(
-        CountedBudgetDimension::AnalysisSteps,
-        u64::try_from(callee.parameters.len().saturating_add(actuals.len())).unwrap_or(u64::MAX),
-    )?;
-    if callee.parameters.len() != actuals.len() {
-        return Ok(None);
-    }
-    let mut method_arguments: Vec<Option<SignatureType>> =
-        vec![None; callee.method_parameters.len()];
-    for (parameter, actual) in callee.parameters.iter().zip(actuals) {
-        budget.poll()?;
-        if !same_class_call_type_matches(
-            parameter,
-            &actual.source_type,
-            class_scope,
-            class_parameters,
-            &callee.method_parameters,
-            &actual.caller_method_parameters,
-            &mut method_arguments,
-            budget,
-            0,
-        )? {
-            return Ok(None);
-        }
-    }
-    if method_arguments.iter().any(Option::is_none) {
-        // An unconstrained type variable cannot be inferred from a null, omitted, or otherwise
-        // unobserved argument. It must have one direct source at an actual parameter position.
-        return Ok(None);
-    }
-    Ok(Some(SameClassGenericSubstitution {
-        method_arguments: method_arguments.into_iter().flatten().collect(),
-        argument_sources: actuals.to_vec(),
-    }))
-}
-
-pub(crate) fn same_class_generic_result_matches(
-    class_scope: &[TypeParameterErasure],
-    caller_method_parameters: &[TypeParameter],
-    caller_result: &SignatureType,
-    callee: &SameClassGenericMethodContract,
-    substitution: &SameClassGenericSubstitution,
-    budget: &mut Budget,
-) -> Result<bool> {
-    let Some(callee_result) = callee.result.as_ref() else {
-        return Ok(false);
-    };
-    let Some(substituted) = substitute_same_class_method_result(
-        callee_result,
-        &callee.method_parameters,
-        &substitution.method_arguments,
-        budget,
-        0,
-    )?
-    else {
-        return Ok(false);
-    };
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    Ok(signature_types_same_generic_call_binding(
-        &substituted,
-        caller_result,
-        class_scope,
-        caller_method_parameters,
-    ))
-}
-
-pub(crate) fn same_class_generic_substituted_result(
-    callee: &SameClassGenericMethodContract,
-    substitution: &SameClassGenericSubstitution,
-    budget: &mut Budget,
-) -> Result<Option<SignatureType>> {
-    let Some(result) = callee.result.as_ref() else {
-        return Ok(None);
-    };
-    substitute_same_class_method_result(
-        result,
-        &callee.method_parameters,
-        &substitution.method_arguments,
-        budget,
-        0,
-    )
-}
-
-pub(crate) fn same_class_generic_source_assignable_to_descriptor(
-    source: &SignatureType,
-    caller_method_parameters: &[TypeParameter],
-    descriptor: &[u8],
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &[TypeParameter],
-    budget: &mut Budget,
-) -> Result<Option<bool>> {
-    let mut method_descriptor = Vec::with_capacity(descriptor.len().saturating_add(4));
-    method_descriptor.push(b'(');
-    method_descriptor.extend_from_slice(descriptor);
-    method_descriptor.extend_from_slice(b")V");
-    let parsed = match parse_method_signature(&method_descriptor, budget) {
-        Ok(parsed) => parsed,
-        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
-            return Err(error);
-        }
-        Err(_) => return Ok(None),
-    };
-    let [target] = parsed.parameters.as_slice() else {
-        return Ok(None);
-    };
-    overload_source_type_assignable(
-        source,
-        target,
-        caller_method_parameters,
-        class_scope,
-        class_parameters,
-        budget,
-        0,
-    )
-}
-
-fn substitute_same_class_method_result(
-    source: &SignatureType,
-    method_parameters: &[TypeParameter],
-    method_arguments: &[SignatureType],
-    budget: &mut Budget,
-    depth: usize,
-) -> Result<Option<SignatureType>> {
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    if depth > 64 {
-        return Ok(None);
-    }
-    match source {
-        SignatureType::Base(_) => Ok(Some(source.clone())),
-        SignatureType::Array(component) => Ok(substitute_same_class_method_result(
-            component,
-            method_parameters,
-            method_arguments,
-            budget,
-            depth + 1,
-        )?
-        .map(|component| SignatureType::Array(Box::new(component)))),
-        SignatureType::TypeVariable(name) => {
-            let mut binders = method_parameters
-                .iter()
-                .enumerate()
-                .filter(|(_, binder)| binder.name == *name);
-            let Some((index, _)) = binders.next() else {
-                return Ok(Some(source.clone()));
-            };
-            if binders.next().is_some() {
-                return Ok(None);
-            }
-            Ok(method_arguments.get(index).cloned())
-        }
-        SignatureType::Class(class) => {
-            let mut result = class.clone();
-            for segment in &mut result.segments {
-                budget.poll()?;
-                for argument in &mut segment.arguments {
-                    let TypeArgument::Exact(source) = argument else {
-                        return Ok(None);
-                    };
-                    let Some(substituted) = substitute_same_class_method_result(
-                        source,
-                        method_parameters,
-                        method_arguments,
-                        budget,
-                        depth + 1,
-                    )?
-                    else {
-                        return Ok(None);
-                    };
-                    *source = substituted;
-                }
-            }
-            Ok(Some(SignatureType::Class(result)))
-        }
-    }
-}
-
-fn same_class_call_type_matches(
-    target: &SignatureType,
-    actual: &SignatureType,
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &[TypeParameter],
-    callee_method_parameters: &[TypeParameter],
-    caller_method_parameters: &[TypeParameter],
-    substitutions: &mut [Option<SignatureType>],
-    budget: &mut Budget,
-    depth: usize,
-) -> Result<bool> {
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    if depth > 64 {
-        return Ok(false);
-    }
-    match (target, actual) {
-        (SignatureType::Base(left), SignatureType::Base(right)) => Ok(left == right),
-        (SignatureType::Array(left), SignatureType::Array(right)) => same_class_call_type_matches(
-            left,
-            right,
-            class_scope,
-            class_parameters,
-            callee_method_parameters,
-            caller_method_parameters,
-            substitutions,
-            budget,
-            depth + 1,
-        ),
-        (SignatureType::TypeVariable(target_name), _) => {
-            if let Some((index, binder)) = callee_method_parameters
-                .iter()
-                .enumerate()
-                .find(|(_, binder)| binder.name == *target_name)
-            {
-                if !same_class_call_type_satisfies_method_bounds(
-                    actual,
-                    binder,
-                    class_scope,
-                    class_parameters,
-                    caller_method_parameters,
-                    budget,
-                )? {
-                    return Ok(false);
-                }
-                let Some(previous) = substitutions.get_mut(index) else {
-                    return Ok(false);
-                };
-                if let Some(previous) = previous {
-                    Ok(signature_types_same_generic_call_binding(
-                        previous,
-                        actual,
-                        class_scope,
-                        caller_method_parameters,
-                    ))
-                } else {
-                    *previous = Some(actual.clone());
-                    Ok(true)
-                }
-            } else {
-                let Some((target_index, _)) = class_scope
-                    .iter()
-                    .enumerate()
-                    .find(|(_, binder)| binder.name == *target_name)
-                else {
-                    return Ok(false);
-                };
-                let SignatureType::TypeVariable(actual_name) = actual else {
-                    return Ok(false);
-                };
-                if caller_method_parameters
-                    .iter()
-                    .any(|binder| binder.name == *actual_name)
-                {
-                    return Ok(false);
-                }
-                Ok(class_scope
-                    .get(target_index)
-                    .is_some_and(|binder| binder.name == *actual_name))
-            }
-        }
-        (SignatureType::Class(target), SignatureType::Class(actual)) => {
-            if target.segments.len() != actual.segments.len() {
-                return Ok(false);
-            }
-            for (target, actual) in target.segments.iter().zip(&actual.segments) {
-                if target.binary_name != actual.binary_name
-                    || target.arguments.len() != actual.arguments.len()
-                {
-                    return Ok(false);
-                }
-                for (target_argument, actual_argument) in
-                    target.arguments.iter().zip(&actual.arguments)
-                {
-                    let (TypeArgument::Exact(target), TypeArgument::Exact(actual)) =
-                        (target_argument, actual_argument)
-                    else {
-                        return Ok(false);
-                    };
-                    if !same_class_call_type_matches(
-                        target,
-                        actual,
-                        class_scope,
-                        class_parameters,
-                        callee_method_parameters,
-                        caller_method_parameters,
-                        substitutions,
-                        budget,
-                        depth + 1,
-                    )? {
-                        return Ok(false);
-                    }
-                }
-            }
-            Ok(true)
-        }
-        _ => Ok(false),
-    }
-}
-
-/// Generic invocation equality uses binder identity within one physical caller. A method binder
-/// shadows a same-named class binder, while repeated references to the same method binder remain
-/// equivalent. The older field-writer comparison intentionally keeps its narrower semantics.
-fn signature_types_same_generic_call_binding(
-    left: &SignatureType,
-    right: &SignatureType,
-    class_scope: &[TypeParameterErasure],
-    method_binders: &[TypeParameter],
-) -> bool {
-    match (left, right) {
-        (SignatureType::Base(left), SignatureType::Base(right)) => left == right,
-        (SignatureType::Array(left), SignatureType::Array(right)) => {
-            signature_types_same_generic_call_binding(left, right, class_scope, method_binders)
-        }
-        (SignatureType::TypeVariable(left), SignatureType::TypeVariable(right)) => {
-            left == right
-                && (method_binders.iter().any(|binder| binder.name == *left)
-                    || (class_scope_variable(left, class_scope)
-                        && !method_binders.iter().any(|binder| binder.name == *left)))
-        }
-        (SignatureType::Class(left), SignatureType::Class(right)) => {
-            left.segments.len() == right.segments.len()
-                && left
-                    .segments
-                    .iter()
-                    .zip(&right.segments)
-                    .all(|(left, right)| {
-                        left.binary_name == right.binary_name
-                            && left.arguments.len() == right.arguments.len()
-                            && left
-                                .arguments
-                                .iter()
-                                .zip(&right.arguments)
-                                .all(|(left, right)| {
-                                    matches!((left, right),
-                                    (TypeArgument::Exact(left), TypeArgument::Exact(right))
-                                        if signature_types_same_generic_call_binding(
-                                            left, right, class_scope, method_binders
-                                        ))
-                                })
-                    })
-        }
-        _ => false,
-    }
-}
-
-fn same_class_call_type_satisfies_method_bounds(
-    actual: &SignatureType,
-    target: &TypeParameter,
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &[TypeParameter],
-    caller_method_parameters: &[TypeParameter],
-    budget: &mut Budget,
-) -> Result<bool> {
-    let mut required = Vec::new();
-    if let Some(bound) = &target.class_bound {
-        required.push(bound);
-    }
-    required.extend(target.interface_bounds.iter());
-    if required.is_empty() {
-        return Ok(matches!(
-            actual,
-            SignatureType::TypeVariable(_) | SignatureType::Class(_)
-        ));
-    }
-    for bound in required {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        let SignatureType::Class(required_class) = bound else {
-            return Ok(false);
-        };
-        let Some(required_segment) = required_class.segments.last() else {
-            return Ok(false);
-        };
-        if required_class
-            .segments
-            .iter()
-            .any(|segment| !segment.arguments.is_empty())
-        {
-            return Ok(false);
-        }
-        let required_name = required_segment.binary_name.as_slice();
-        if required_name == b"java/lang/Object" {
-            continue;
-        }
-        let actual_bound_matches = match actual {
-            SignatureType::Class(actual_class) => actual_class
-                .segments
-                .last()
-                .is_some_and(|segment| segment.binary_name.as_slice() == required_name),
-            SignatureType::TypeVariable(actual_name) => caller_method_parameters
-                .iter()
-                .find(|binder| binder.name == *actual_name)
-                .or_else(|| {
-                    class_scope
-                        .iter()
-                        .position(|binder| binder.name == *actual_name)
-                        .and_then(|index| class_parameters.get(index))
-                })
-                .is_some_and(|actual_binder| {
-                    std::iter::once(actual_binder.class_bound.as_ref())
-                        .flatten()
-                        .chain(actual_binder.interface_bounds.iter())
-                        .any(|bound| {
-                            matches!(bound, SignatureType::Class(class)
-                                if class.segments.last().is_some_and(|segment| segment.binary_name.as_slice() == required_name)
-                                    && class.segments.iter().all(|segment| segment.arguments.is_empty()))
-                        })
-                }),
-            SignatureType::Base(_) | SignatureType::Array(_) => false,
-        };
-        if !actual_bound_matches {
-            return Ok(false);
-        }
-    }
-    Ok(true)
-}
-
 // ---------------------------------------------------------------------------------------------
 // Closed same-class overload proof for a source cast at a generic call site
 // ---------------------------------------------------------------------------------------------
-
-/// One source argument admitted by the overload proof. A non-null argument retains the physical
-/// caller, its formal or nested-call origin, the Signature type, and the caller binder list that
-/// proved its source type. Null has no invented source type and cannot infer a callee method binder.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassOverloadActual {
-    pub(crate) source: Option<SameClassGenericArgumentSource>,
-    pub(crate) null_literal: bool,
-}
-
-/// One complete, source-writable same-class declaration that can participate in overload
-/// resolution. `owner` is the class-file internal name paired with the physical method identity;
-/// the caller supplies it from the same completed class inventory.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SameClassOverloadCandidate {
-    pub(crate) method: PhysicalMethodId,
-    pub(crate) owner: Vec<u8>,
-    pub(crate) descriptor: Vec<u8>,
-    pub(crate) access_flags: u16,
-    pub(crate) parameters: Vec<SignatureType>,
-    pub(crate) method_parameters: Vec<TypeParameter>,
-    pub(crate) source_writable: bool,
-}
-
-/// Prove that a source invocation remains pinned to its physical target after adding only
-/// explicit-bound reference upcasts. This is intentionally a finite proof: it accepts a complete
-/// same-class overload inventory on an `Object` subclass with no interfaces, excludes varargs,
-/// bridge and synthetic declarations, and resolves only the JDK reference relationships listed in
-/// `closed_jdk8_reference_relation`. An unknown relationship makes the whole proof unavailable;
-/// the positive-only widening helper is not used as a negative fact.
-pub(crate) fn prove_same_class_overload_argument_upcasts(
-    class_internal: &[u8],
-    class_superclass: Option<&[u8]>,
-    class_interfaces: &[Vec<u8>],
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &[TypeParameter],
-    caller: &PhysicalMethodId,
-    target: &jarde_java::facts::CallTarget,
-    call_bci: u32,
-    overloads_complete: bool,
-    actuals: &[SameClassOverloadActual],
-    overloads: &[SameClassOverloadCandidate],
-    budget: &mut Budget,
-) -> Result<Option<Vec<jarde_java::report::ClassSourceInvokeArgumentCast>>> {
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    if !overloads_complete
-        || class_superclass != Some(b"java/lang/Object".as_slice())
-        || !class_interfaces.is_empty()
-        || target.owner().as_bytes() != class_internal
-        || target.is_interface_reference()
-        || !matches!(
-            target.kind(),
-            jarde_java::facts::InvokeKind::Static
-                | jarde_java::facts::InvokeKind::Virtual
-                | jarde_java::facts::InvokeKind::Special
-        )
-        || target.name().starts_with('<')
-        // The closed candidate slice contains declarations from this class only. Object's
-        // inherited instance methods are additional source candidates even when this class has no
-        // interfaces, so their names are outside this proof.
-        || is_object_instance_method_name(target.name().as_bytes())
-        || overloads.is_empty()
-    {
-        return Ok(None);
-    }
-    let expected_static = target.kind() == jarde_java::facts::InvokeKind::Static;
-    let mut selected = None;
-    let mut seen_methods = std::collections::HashSet::new();
-    for (index, candidate) in overloads.iter().enumerate() {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        if !candidate.source_writable
-            || candidate.owner != class_internal
-            || candidate.method.owner != caller.owner
-            || candidate.method.name.0.as_slice() != target.name().as_bytes()
-            || candidate.descriptor.as_slice() != candidate.method.descriptor.0.as_slice()
-            || candidate.access_flags & (ACC_VARARGS | 0x0040 | 0x1000) != 0
-            || (candidate.access_flags & ACC_STATIC != 0) != expected_static
-            || !seen_methods.insert(candidate.method.clone())
-        {
-            return Ok(None);
-        }
-        let Some(parameter_descriptors) = overload_parameter_descriptors(&candidate.descriptor)
-        else {
-            return Ok(None);
-        };
-        budget.charge(
-            CountedBudgetDimension::AnalysisSteps,
-            u64::try_from(parameter_descriptors.len()).unwrap_or(u64::MAX),
-        )?;
-        if parameter_descriptors.len() != candidate.parameters.len() {
-            return Ok(None);
-        }
-        if candidate.method.name.0.as_slice() == target.name().as_bytes()
-            && candidate.descriptor.as_slice() == target.descriptor().as_bytes()
-            && target.owner().as_bytes() == candidate.owner
-        {
-            if selected.replace(index).is_some() {
-                return Ok(None);
-            }
-        }
-    }
-    let Some(selected) = selected else {
-        return Ok(None);
-    };
-    let caller_method_parameters = overload_actual_method_parameters(caller, actuals, budget)?;
-    if caller_method_parameters.is_none() && actuals.iter().any(|actual| actual.source.is_some()) {
-        return Ok(None);
-    }
-    let caller_method_parameters = caller_method_parameters.unwrap_or_default();
-    let mut actual_types = Vec::with_capacity(actuals.len());
-    for actual in actuals {
-        budget.poll()?;
-        match (&actual.source, actual.null_literal) {
-            (Some(source), false) if source.caller == *caller => {
-                actual_types.push(Some(source.source_type.clone()));
-            }
-            (None, true) => actual_types.push(None),
-            _ => return Ok(None),
-        }
-    }
-    let uncast_resolution = overload_target_is_unique_most_specific(
-        selected,
-        overloads,
-        &actual_types,
-        &caller_method_parameters,
-        class_scope,
-        class_parameters,
-        budget,
-    )?;
-    if uncast_resolution == Some(true) {
-        return Ok(Some(Vec::new()));
-    }
-
-    // A cast is considered only where the target's physical parameter descriptor is exactly one
-    // of this direct formal's explicit reference bounds. Every other argument keeps its proved
-    // source type. This prevents an erasure or `Object` type from being used to invent `T`.
-    let Some(selected_parameter_descriptors) =
-        overload_parameter_descriptors(&overloads[selected].descriptor)
-    else {
-        return Ok(None);
-    };
-    let mut cast_choices = Vec::new();
-    for (argument_index, actual) in actuals.iter().enumerate() {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        let Some(source) = &actual.source else {
-            continue;
-        };
-        let SignatureType::TypeVariable(name) = &source.source_type else {
-            continue;
-        };
-        let Some(parameter_descriptor) = selected_parameter_descriptors.get(argument_index) else {
-            return Ok(None);
-        };
-        let Some(target_name) = descriptor_reference_name(parameter_descriptor) else {
-            continue;
-        };
-        if !explicit_reference_bound_matches(
-            name,
-            &target_name,
-            &source.caller_method_parameters,
-            class_scope,
-            class_parameters,
-            budget,
-        )? {
-            continue;
-        }
-        let Ok(target_name) = std::str::from_utf8(&target_name) else {
-            continue;
-        };
-        let source_type = SignatureType::Class(jarde_reader::signature::ClassType {
-            segments: vec![jarde_reader::signature::ClassTypeSegment {
-                binary_name: target_name.as_bytes().to_vec(),
-                arguments: Vec::new(),
-            }],
-        });
-        cast_choices.push((
-            argument_index,
-            source_type,
-            jarde_java::ast::Type::Reference(target_name.replace('/', ".")),
-        ));
-    }
-    if cast_choices.is_empty() {
-        return Ok(None);
-    }
-
-    // Apply the closed set together, then remove each cast whose absence still leaves this target
-    // uniquely most-specific. This is polynomial in the descriptor arity and keeps only edits
-    // that the proof needs; there is no powerset search over JVM arguments.
-    let mut keep = vec![true; cast_choices.len()];
-    let mut candidate_actuals = actual_types.clone();
-    for (argument_index, source_type, _) in &cast_choices {
-        let Some(actual) = candidate_actuals.get_mut(*argument_index) else {
-            return Ok(None);
-        };
-        *actual = Some(source_type.clone());
-    }
-    let cast_resolution = overload_target_is_unique_most_specific(
-        selected,
-        overloads,
-        &candidate_actuals,
-        &caller_method_parameters,
-        class_scope,
-        class_parameters,
-        budget,
-    )?;
-    if cast_resolution != Some(true) {
-        return Ok(None);
-    }
-    loop {
-        let mut changed = false;
-        for (choice_index, (argument_index, _, _)) in cast_choices.iter().enumerate() {
-            if !keep[choice_index] {
-                continue;
-            }
-            budget.poll()?;
-            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-            let Some(original) = actual_types.get(*argument_index) else {
-                return Ok(None);
-            };
-            {
-                let Some(actual) = candidate_actuals.get_mut(*argument_index) else {
-                    return Ok(None);
-                };
-                *actual = original.clone();
-            }
-            if overload_target_is_unique_most_specific(
-                selected,
-                overloads,
-                &candidate_actuals,
-                &caller_method_parameters,
-                class_scope,
-                class_parameters,
-                budget,
-            )? == Some(true)
-            {
-                keep[choice_index] = false;
-                changed = true;
-            } else {
-                let Some(actual) = candidate_actuals.get_mut(*argument_index) else {
-                    return Ok(None);
-                };
-                *actual = Some(cast_choices[choice_index].1.clone());
-            }
-        }
-        if !changed {
-            break;
-        }
-    }
-    let solution: Vec<_> = keep
-        .iter()
-        .enumerate()
-        .filter_map(|(index, keep)| keep.then_some(index))
-        .collect();
-    if solution.is_empty() {
-        return Ok(None);
-    }
-    let opcode = match target.kind() {
-        jarde_java::facts::InvokeKind::Virtual => 0xb6,
-        jarde_java::facts::InvokeKind::Special => 0xb7,
-        jarde_java::facts::InvokeKind::Static => 0xb8,
-        jarde_java::facts::InvokeKind::Interface => return Ok(None),
-    };
-    Ok(Some(
-        solution
-            .into_iter()
-            .map(|choice| {
-                let (argument_index, _, ty) = &cast_choices[choice];
-                jarde_java::report::ClassSourceInvokeArgumentCast {
-                    call_bci,
-                    opcode,
-                    target: target.clone(),
-                    argument_index: *argument_index,
-                    ty: ty.clone(),
-                }
-            })
-            .collect(),
-    ))
-}
-
-fn overload_actual_method_parameters(
-    caller: &PhysicalMethodId,
-    actuals: &[SameClassOverloadActual],
-    budget: &mut Budget,
-) -> Result<Option<Vec<TypeParameter>>> {
-    let mut result: Option<Vec<TypeParameter>> = None;
-    for actual in actuals {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        let Some(source) = &actual.source else {
-            continue;
-        };
-        if source.caller != *caller {
-            return Ok(None);
-        }
-        if result
-            .as_ref()
-            .is_some_and(|parameters| parameters != &source.caller_method_parameters)
-        {
-            return Ok(None);
-        }
-        result.get_or_insert_with(|| source.caller_method_parameters.clone());
-    }
-    Ok(result)
-}
-
-fn overload_parameter_descriptors(descriptor: &[u8]) -> Option<Vec<Vec<u8>>> {
-    let facts = descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
-    facts
-        .parameters()
-        .iter()
-        .map(|parameter| parameter.bytes(descriptor).map(<[u8]>::to_vec))
-        .collect()
-}
-
-fn descriptor_reference_name(descriptor: &[u8]) -> Option<Vec<u8>> {
-    if descriptor.first() != Some(&b'L') || descriptor.last() != Some(&b';') {
-        return None;
-    }
-    let name = descriptor.get(1..descriptor.len().checked_sub(1)?)?;
-    (!name.is_empty() && !name.contains(&b'[')).then(|| name.to_vec())
-}
-
-fn explicit_reference_bound_matches(
-    variable: &[u8],
-    target: &[u8],
-    caller_method_parameters: &[TypeParameter],
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &[TypeParameter],
-    budget: &mut Budget,
-) -> Result<bool> {
-    budget.charge(
-        CountedBudgetDimension::AnalysisSteps,
-        u64::try_from(
-            caller_method_parameters
-                .len()
-                .saturating_add(class_scope.len()),
-        )
-        .unwrap_or(u64::MAX),
-    )?;
-    budget.poll()?;
-    let mut method_matches = caller_method_parameters
-        .iter()
-        .filter(|parameter| parameter.name == variable);
-    let binder = if let Some(parameter) = method_matches.next() {
-        if method_matches.next().is_some() {
-            return Ok(false);
-        }
-        parameter
-    } else {
-        let mut matches = class_scope
-            .iter()
-            .enumerate()
-            .filter(|(_, parameter)| parameter.name == variable);
-        let Some((index, _)) = matches.next() else {
-            return Ok(false);
-        };
-        if matches.next().is_some() {
-            return Ok(false);
-        }
-        let Some(parameter) = class_parameters.get(index) else {
-            return Ok(false);
-        };
-        parameter
-    };
-    for bound in std::iter::once(binder.class_bound.as_ref())
-        .flatten()
-        .chain(binder.interface_bounds.iter())
-    {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        if matches!(bound, SignatureType::Class(class)
-            if signature_class_erasure(bound) == Some(target)
-                && !class.segments.is_empty())
-        {
-            return Ok(true);
-        }
-    }
-    Ok(false)
-}
-
-fn overload_target_is_unique_most_specific(
-    selected: usize,
-    overloads: &[SameClassOverloadCandidate],
-    actuals: &[Option<SignatureType>],
-    caller_method_parameters: &[TypeParameter],
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &[TypeParameter],
-    budget: &mut Budget,
-) -> Result<Option<bool>> {
-    let mut applicable = Vec::new();
-    for (index, candidate) in overloads.iter().enumerate() {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        let applicability = overload_candidate_applicability(
-            candidate,
-            actuals,
-            caller_method_parameters,
-            class_scope,
-            class_parameters,
-            budget,
-        )?;
-        match applicability {
-            Some(Some(parameters)) => applicable.push((index, parameters)),
-            Some(None) => {}
-            None => return Ok(None),
-        }
-    }
-    let Some(selected_parameters) = applicable
-        .iter()
-        .find(|(index, _)| *index == selected)
-        .map(|(_, parameters)| parameters.clone())
-    else {
-        return Ok(Some(false));
-    };
-    for (index, parameters) in applicable {
-        budget.poll()?;
-        if index == selected {
-            continue;
-        }
-        let mut strict = false;
-        for (selected_type, other_type) in selected_parameters.iter().zip(&parameters) {
-            let selected_to_other = overload_source_type_assignable(
-                selected_type,
-                other_type,
-                caller_method_parameters,
-                class_scope,
-                class_parameters,
-                budget,
-                0,
-            )?;
-            let other_to_selected = overload_source_type_assignable(
-                other_type,
-                selected_type,
-                caller_method_parameters,
-                class_scope,
-                class_parameters,
-                budget,
-                0,
-            )?;
-            match (selected_to_other, other_to_selected) {
-                (Some(true), Some(false)) => strict = true,
-                (Some(true), Some(true)) => {}
-                (Some(false), _) | (_, Some(false)) => return Ok(Some(false)),
-                _ => return Ok(None),
-            }
-        }
-        if !strict {
-            return Ok(Some(false));
-        }
-    }
-    Ok(Some(true))
-}
-
-fn overload_candidate_applicability(
-    candidate: &SameClassOverloadCandidate,
-    actuals: &[Option<SignatureType>],
-    caller_method_parameters: &[TypeParameter],
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &[TypeParameter],
-    budget: &mut Budget,
-) -> Result<Option<Option<Vec<SignatureType>>>> {
-    if candidate.parameters.len() != actuals.len() {
-        return Ok(Some(None));
-    }
-    if !overload_candidate_binders_are_closed(candidate, budget)? {
-        return Ok(None);
-    }
-    let mut method_arguments: Vec<Option<SignatureType>> =
-        vec![None; candidate.method_parameters.len()];
-    for (parameter, actual) in candidate.parameters.iter().zip(actuals) {
-        budget.poll()?;
-        match actual {
-            Some(actual) => {
-                if !overload_infer_method_arguments(
-                    parameter,
-                    actual,
-                    &candidate.method_parameters,
-                    &mut method_arguments,
-                    class_scope,
-                    caller_method_parameters,
-                    budget,
-                    0,
-                )? {
-                    return Ok(Some(None));
-                }
-            }
-            None if !candidate.method_parameters.is_empty()
-                && overload_type_mentions_method_binder(
-                    parameter,
-                    &candidate.method_parameters,
-                    budget,
-                )? =>
-            {
-                // A generic invocation with a null argument can infer from target typing or other
-                // constraints. This proof does not model those constraints, so it cannot use null
-                // to declare the overload inapplicable.
-                return Ok(None);
-            }
-            None => {}
-        }
-    }
-    if method_arguments.iter().any(Option::is_none) {
-        return Ok(Some(None));
-    }
-    let method_arguments: Vec<_> = method_arguments.into_iter().flatten().collect();
-    for (index, argument) in method_arguments.iter().enumerate() {
-        let Some(binder) = candidate.method_parameters.get(index) else {
-            return Ok(Some(None));
-        };
-        match overload_method_argument_satisfies_bounds(
-            argument,
-            binder,
-            &candidate.method_parameters,
-            &method_arguments,
-            class_scope,
-            class_parameters,
-            caller_method_parameters,
-            budget,
-        )? {
-            Some(true) => {}
-            Some(false) => return Ok(Some(None)),
-            None => return Ok(None),
-        }
-    }
-    let mut instantiated = Vec::with_capacity(candidate.parameters.len());
-    for (parameter, actual) in candidate.parameters.iter().zip(actuals) {
-        let Some(parameter) = substitute_same_class_method_result(
-            parameter,
-            &candidate.method_parameters,
-            &method_arguments,
-            budget,
-            0,
-        )?
-        else {
-            return Ok(Some(None));
-        };
-        if let Some(actual) = actual {
-            match overload_source_type_assignable(
-                actual,
-                &parameter,
-                caller_method_parameters,
-                class_scope,
-                class_parameters,
-                budget,
-                0,
-            )? {
-                Some(true) => {}
-                Some(false) => return Ok(Some(None)),
-                None => return Ok(None),
-            }
-        } else if !overload_reference_type(&parameter) {
-            return Ok(Some(None));
-        }
-        instantiated.push(parameter);
-    }
-    Ok(Some(Some(instantiated)))
-}
-
-/// The overload proof models method inference only when each method binder occurs once as a
-/// complete formal parameter. Repeated/nested inference constraints can choose a common type or
-/// depend on target typing; treating those shapes as inapplicable would be an unsafe negative.
-fn overload_candidate_binders_are_closed(
-    candidate: &SameClassOverloadCandidate,
-    budget: &mut Budget,
-) -> Result<bool> {
-    budget.charge(
-        CountedBudgetDimension::AnalysisSteps,
-        u64::try_from(
-            candidate
-                .parameters
-                .len()
-                .saturating_add(candidate.method_parameters.len()),
-        )
-        .unwrap_or(u64::MAX),
-    )?;
-    let mut names = std::collections::HashSet::new();
-    for binder in &candidate.method_parameters {
-        budget.poll()?;
-        if !names.insert(binder.name.as_slice()) {
-            return Ok(false);
-        }
-        let mut direct_count = 0;
-        for parameter in &candidate.parameters {
-            budget.poll()?;
-            if overload_type_mentions_method_binder(
-                parameter,
-                &candidate.method_parameters,
-                budget,
-            )? {
-                if matches!(parameter, SignatureType::TypeVariable(name) if name == &binder.name) {
-                    direct_count += 1;
-                } else {
-                    // The broad predicate identifies at least one method binder. A direct binder
-                    // can coexist with other independent parameters, but nested forms are opaque.
-                    let mentions_this =
-                        overload_type_mentions_one_method_binder(parameter, &binder.name, budget)?;
-                    if mentions_this {
-                        return Ok(false);
-                    }
-                }
-            }
-        }
-        if direct_count != 1 {
-            return Ok(false);
-        }
-    }
-    Ok(true)
-}
-
-fn overload_type_mentions_one_method_binder(
-    ty: &SignatureType,
-    name: &[u8],
-    budget: &mut Budget,
-) -> Result<bool> {
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    match ty {
-        SignatureType::TypeVariable(candidate) => Ok(candidate == name),
-        SignatureType::Array(component) => {
-            overload_type_mentions_one_method_binder(component, name, budget)
-        }
-        SignatureType::Class(class) => {
-            for segment in &class.segments {
-                budget.poll()?;
-                for argument in &segment.arguments {
-                    let present = match argument {
-                        TypeArgument::Exact(ty)
-                        | TypeArgument::Extends(ty)
-                        | TypeArgument::Super(ty) => {
-                            overload_type_mentions_one_method_binder(ty, name, budget)?
-                        }
-                        TypeArgument::Any => false,
-                    };
-                    if present {
-                        return Ok(true);
-                    }
-                }
-            }
-            Ok(false)
-        }
-        SignatureType::Base(_) => Ok(false),
-    }
-}
-
-fn overload_method_argument_satisfies_bounds(
-    actual: &SignatureType,
-    binder: &TypeParameter,
-    method_parameters: &[TypeParameter],
-    method_arguments: &[SignatureType],
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &[TypeParameter],
-    caller_method_parameters: &[TypeParameter],
-    budget: &mut Budget,
-) -> Result<Option<bool>> {
-    let mut bounds = Vec::new();
-    for bound in std::iter::once(binder.class_bound.as_ref())
-        .flatten()
-        .chain(binder.interface_bounds.iter())
-    {
-        let Some(bound) = substitute_same_class_method_result(
-            bound,
-            method_parameters,
-            method_arguments,
-            budget,
-            0,
-        )?
-        else {
-            return Ok(None);
-        };
-        bounds.push(bound);
-    }
-    if bounds.is_empty() {
-        return Ok(overload_reference_type(actual).then_some(true));
-    }
-    let mut unknown = false;
-    for bound in &bounds {
-        match overload_source_type_assignable(
-            actual,
-            bound,
-            caller_method_parameters,
-            class_scope,
-            class_parameters,
-            budget,
-            0,
-        )? {
-            Some(true) => {}
-            Some(false) => return Ok(Some(false)),
-            None => unknown = true,
-        }
-    }
-    Ok((!unknown).then_some(true))
-}
-
-fn overload_infer_method_arguments(
-    parameter: &SignatureType,
-    actual: &SignatureType,
-    method_parameters: &[TypeParameter],
-    substitutions: &mut [Option<SignatureType>],
-    class_scope: &[TypeParameterErasure],
-    caller_method_parameters: &[TypeParameter],
-    budget: &mut Budget,
-    depth: usize,
-) -> Result<bool> {
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    if depth > 64 {
-        return Ok(false);
-    }
-    if let SignatureType::TypeVariable(name) = parameter {
-        let mut binders = method_parameters
-            .iter()
-            .enumerate()
-            .filter(|(_, binder)| binder.name == *name);
-        if let Some((index, _)) = binders.next() {
-            if binders.next().is_some() {
-                return Ok(false);
-            }
-            let Some(slot) = substitutions.get_mut(index) else {
-                return Ok(false);
-            };
-            if let Some(previous) = slot {
-                return Ok(signature_types_same_generic_call_binding(
-                    previous,
-                    actual,
-                    class_scope,
-                    caller_method_parameters,
-                ));
-            }
-            *slot = Some(actual.clone());
-            return Ok(true);
-        }
-    }
-    match (parameter, actual) {
-        (SignatureType::Array(parameter), SignatureType::Array(actual)) => {
-            overload_infer_method_arguments(
-                parameter,
-                actual,
-                method_parameters,
-                substitutions,
-                class_scope,
-                caller_method_parameters,
-                budget,
-                depth + 1,
-            )
-        }
-        (SignatureType::Class(parameter), SignatureType::Class(actual))
-            if parameter.segments.len() == actual.segments.len() =>
-        {
-            for (parameter, actual) in parameter.segments.iter().zip(&actual.segments) {
-                if parameter.binary_name != actual.binary_name
-                    || parameter.arguments.len() != actual.arguments.len()
-                {
-                    return Ok(true);
-                }
-                for (parameter, actual) in parameter.arguments.iter().zip(&actual.arguments) {
-                    let (TypeArgument::Exact(parameter), TypeArgument::Exact(actual)) =
-                        (parameter, actual)
-                    else {
-                        return Ok(false);
-                    };
-                    if !overload_infer_method_arguments(
-                        parameter,
-                        actual,
-                        method_parameters,
-                        substitutions,
-                        class_scope,
-                        caller_method_parameters,
-                        budget,
-                        depth + 1,
-                    )? {
-                        return Ok(false);
-                    }
-                }
-            }
-            Ok(true)
-        }
-        _ => Ok(true),
-    }
-}
-
-fn overload_type_mentions_method_binder(
-    ty: &SignatureType,
-    method_parameters: &[TypeParameter],
-    budget: &mut Budget,
-) -> Result<bool> {
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    match ty {
-        SignatureType::TypeVariable(name) => Ok(method_parameters
-            .iter()
-            .any(|parameter| parameter.name == *name)),
-        SignatureType::Array(component) => {
-            overload_type_mentions_method_binder(component, method_parameters, budget)
-        }
-        SignatureType::Class(class) => {
-            for segment in &class.segments {
-                budget.poll()?;
-                for argument in &segment.arguments {
-                    let mentioned = match argument {
-                        TypeArgument::Exact(ty) => {
-                            overload_type_mentions_method_binder(ty, method_parameters, budget)?
-                        }
-                        TypeArgument::Any | TypeArgument::Extends(_) | TypeArgument::Super(_) => {
-                            true
-                        }
-                    };
-                    if mentioned {
-                        return Ok(true);
-                    }
-                }
-            }
-            Ok(false)
-        }
-        SignatureType::Base(_) => Ok(false),
-    }
-}
-
-fn overload_reference_type(ty: &SignatureType) -> bool {
-    matches!(
-        ty,
-        SignatureType::TypeVariable(_) | SignatureType::Class(_) | SignatureType::Array(_)
-    )
-}
-
-/// `Some(true/false)` is a closed answer; `None` means the finite hierarchy does not decide it.
-fn overload_source_type_assignable(
-    source: &SignatureType,
-    target: &SignatureType,
-    caller_method_parameters: &[TypeParameter],
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &[TypeParameter],
-    budget: &mut Budget,
-    depth: usize,
-) -> Result<Option<bool>> {
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    if depth > 64 {
-        return Ok(None);
-    }
-    if overload_shared_shadowed_binder_name(
-        source,
-        target,
-        caller_method_parameters,
-        class_scope,
-        budget,
-    )? {
-        // The same spelling can denote a caller method binder on one side and the class binder
-        // on the other. Without preserving those two binder identities through the candidate
-        // projection, equality would turn a shadowed `T` into a false overload match.
-        return Ok(None);
-    }
-    if signature_types_same_generic_call_binding(
-        source,
-        target,
-        class_scope,
-        caller_method_parameters,
-    ) {
-        return Ok(Some(true));
-    }
-    match (source, target) {
-        (SignatureType::Base(source), SignatureType::Base(target)) if source == target => {
-            Ok(Some(true))
-        }
-        // Primitive widening, boxing and unboxing affect JLS applicability. They are outside this
-        // reference-upcast proof, so an unequal/base-reference pair is unknown rather than a
-        // negative applicability fact.
-        (SignatureType::Base(_), _) | (_, SignatureType::Base(_)) => Ok(None),
-        (SignatureType::Array(source), SignatureType::Array(target)) => {
-            overload_source_type_assignable(
-                source,
-                target,
-                caller_method_parameters,
-                class_scope,
-                class_parameters,
-                budget,
-                depth + 1,
-            )
-        }
-        (SignatureType::Array(_), SignatureType::Class(target)) => Ok(signature_class_erasure(
-            &SignatureType::Class(target.clone()),
-        )
-        .map(|name| {
-            name == b"java/lang/Object"
-                || name == b"java/lang/Cloneable"
-                || name == b"java/io/Serializable"
-        })),
-        (SignatureType::Class(source), SignatureType::Class(target)) => {
-            if source == target {
-                return Ok(Some(true));
-            }
-            let source_signature = SignatureType::Class(source.clone());
-            let Some(source_name) = signature_class_erasure(&source_signature) else {
-                return Ok(None);
-            };
-            let target_signature = SignatureType::Class(target.clone());
-            let Some(target_name) = signature_class_erasure(&target_signature) else {
-                return Ok(None);
-            };
-            if target_name == b"java/lang/Object" {
-                return Ok(Some(true));
-            }
-            // The one parameterized JDK edge in this closed proof is String's actual Java 8
-            // `Comparable<String>` header. Wildcard conversions remain unknown below.
-            if source_name == b"java/lang/String"
-                && target_name == b"java/lang/Comparable"
-                && target.segments.last().is_some_and(|segment| {
-                    matches!(
-                        segment.arguments.as_slice(),
-                        [TypeArgument::Exact(SignatureType::Class(string))]
-                            if signature_class_erasure(&SignatureType::Class(string.clone()))
-                                == Some(b"java/lang/String".as_slice())
-                                && string.segments.iter().all(|segment| segment.arguments.is_empty())
-                    )
-                })
-            {
-                return Ok(Some(true));
-            }
-            if source_name == target_name {
-                if target
-                    .segments
-                    .iter()
-                    .all(|segment| segment.arguments.is_empty())
-                {
-                    return Ok(Some(true));
-                }
-                if target.segments.iter().any(|segment| {
-                    segment.arguments.iter().any(|argument| {
-                        matches!(
-                            argument,
-                            TypeArgument::Any | TypeArgument::Extends(_) | TypeArgument::Super(_)
-                        )
-                    })
-                }) {
-                    return Ok(None);
-                }
-                return Ok(Some(false));
-            }
-            let raw_relation = closed_jdk8_reference_relation(source_name, target_name);
-            if source
-                .segments
-                .iter()
-                .any(|segment| !segment.arguments.is_empty())
-                || target
-                    .segments
-                    .iter()
-                    .any(|segment| !segment.arguments.is_empty())
-            {
-                return Ok(match raw_relation {
-                    Some(false) => Some(false),
-                    Some(true) | None => None,
-                });
-            }
-            Ok(raw_relation)
-        }
-        (SignatureType::TypeVariable(name), SignatureType::Class(target)) => {
-            let target = SignatureType::Class(target.clone());
-            if signature_class_erasure(&target).as_deref() == Some(b"java/lang/Object") {
-                return Ok(Some(true));
-            }
-            let Some(binder) = overload_find_binder(
-                name,
-                caller_method_parameters,
-                class_scope,
-                class_parameters,
-                budget,
-            )?
-            else {
-                return Ok(None);
-            };
-            let mut bounds = Vec::new();
-            bounds.extend(binder.class_bound.iter());
-            bounds.extend(binder.interface_bounds.iter());
-            if bounds.is_empty() {
-                return Ok(Some(false));
-            }
-            let mut unknown = false;
-            for bound in bounds {
-                let relation = overload_source_type_assignable(
-                    bound,
-                    &target,
-                    caller_method_parameters,
-                    class_scope,
-                    class_parameters,
-                    budget,
-                    depth + 1,
-                )?;
-                match relation {
-                    Some(true) => return Ok(Some(true)),
-                    Some(false) => {}
-                    None => unknown = true,
-                }
-            }
-            Ok((!unknown).then_some(false))
-        }
-        (SignatureType::TypeVariable(_), SignatureType::Array(_)) => Ok(Some(false)),
-        // Different variables can still be related through their bounds (for example
-        // `U extends T`). This helper does not close variable-to-variable bounds, so it cannot
-        // use this pair as negative overload-applicability evidence.
-        (SignatureType::TypeVariable(_), SignatureType::TypeVariable(_)) => Ok(None),
-        (SignatureType::Class(_), SignatureType::Array(_)) => Ok(Some(false)),
-        (SignatureType::Array(_), SignatureType::TypeVariable(_)) => Ok(Some(false)),
-        (SignatureType::Class(_), SignatureType::TypeVariable(_)) => Ok(Some(false)),
-    }
-}
-
-fn overload_shared_shadowed_binder_name(
-    source: &SignatureType,
-    target: &SignatureType,
-    caller_method_parameters: &[TypeParameter],
-    class_scope: &[TypeParameterErasure],
-    budget: &mut Budget,
-) -> Result<bool> {
-    let mut source_names = std::collections::HashSet::new();
-    let mut target_names = std::collections::HashSet::new();
-    overload_collect_type_variables(source, &mut source_names, budget)?;
-    overload_collect_type_variables(target, &mut target_names, budget)?;
-    budget.charge(
-        CountedBudgetDimension::AnalysisSteps,
-        u64::try_from(source_names.len()).unwrap_or(u64::MAX),
-    )?;
-    budget.poll()?;
-    Ok(source_names.iter().any(|name| {
-        target_names.contains(name)
-            && caller_method_parameters
-                .iter()
-                .any(|parameter| parameter.name.as_slice() == *name)
-            && class_scope
-                .iter()
-                .any(|parameter| parameter.name.as_slice() == *name)
-    }))
-}
-
-fn overload_collect_type_variables<'a>(
-    ty: &'a SignatureType,
-    names: &mut std::collections::HashSet<&'a [u8]>,
-    budget: &mut Budget,
-) -> Result<()> {
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    match ty {
-        SignatureType::TypeVariable(name) => {
-            names.insert(name);
-        }
-        SignatureType::Array(component) => {
-            overload_collect_type_variables(component, names, budget)?;
-        }
-        SignatureType::Class(class) => {
-            for segment in &class.segments {
-                budget.poll()?;
-                for argument in &segment.arguments {
-                    match argument {
-                        TypeArgument::Exact(ty)
-                        | TypeArgument::Extends(ty)
-                        | TypeArgument::Super(ty) => {
-                            overload_collect_type_variables(ty, names, budget)?;
-                        }
-                        TypeArgument::Any => {}
-                    }
-                }
-            }
-        }
-        SignatureType::Base(_) => {}
-    }
-    Ok(())
-}
-
-fn overload_find_binder<'a>(
-    name: &[u8],
-    caller_method_parameters: &'a [TypeParameter],
-    class_scope: &[TypeParameterErasure],
-    class_parameters: &'a [TypeParameter],
-    budget: &mut Budget,
-) -> Result<Option<&'a TypeParameter>> {
-    budget.charge(
-        CountedBudgetDimension::AnalysisSteps,
-        u64::try_from(
-            caller_method_parameters
-                .len()
-                .saturating_add(class_scope.len()),
-        )
-        .unwrap_or(u64::MAX),
-    )?;
-    budget.poll()?;
-    let mut method = caller_method_parameters
-        .iter()
-        .filter(|parameter| parameter.name == name);
-    if let Some(parameter) = method.next() {
-        return Ok(method.next().is_none().then_some(parameter));
-    }
-    let mut class = class_scope
-        .iter()
-        .enumerate()
-        .filter(|(_, parameter)| parameter.name == name);
-    let Some((index, _)) = class.next() else {
-        return Ok(None);
-    };
-    if class.next().is_some() {
-        return Ok(None);
-    }
-    Ok(class_parameters.get(index))
-}
-
-/// Closed Java 8 header facts used by this proof: `Number` implements `Serializable` but not
-/// `Comparable`; `String` implements `Serializable`, `Comparable` and `CharSequence`; all four
-/// types inherit from `Object`. The caller's Java source dialect is Java 8, so later JDK interfaces
-/// such as `Constable` and `ConstantDesc` are deliberately absent. `None` is unknown, never a
-/// negative assignability claim.
-fn closed_jdk8_reference_relation(source: &[u8], target: &[u8]) -> Option<bool> {
-    const OBJECT: &[u8] = b"java/lang/Object";
-    const NUMBER: &[u8] = b"java/lang/Number";
-    const STRING: &[u8] = b"java/lang/String";
-    const COMPARABLE: &[u8] = b"java/lang/Comparable";
-    const SERIALIZABLE: &[u8] = b"java/io/Serializable";
-    const CHAR_SEQUENCE: &[u8] = b"java/lang/CharSequence";
-    if source == target || target == OBJECT {
-        return Some(true);
-    }
-    let closed = [
-        OBJECT,
-        NUMBER,
-        STRING,
-        COMPARABLE,
-        SERIALIZABLE,
-        CHAR_SEQUENCE,
-    ];
-    if !closed.contains(&source) || !closed.contains(&target) {
-        return None;
-    }
-    let assignable = match source {
-        NUMBER => target == SERIALIZABLE,
-        STRING => matches!(target, COMPARABLE | SERIALIZABLE | CHAR_SEQUENCE),
-        COMPARABLE | SERIALIZABLE | CHAR_SEQUENCE => false,
-        OBJECT => false,
-        _ => false,
-    };
-    Some(assignable)
-}
 
 /// Split generic candidates into undirected dependency components and topologically order each
 /// acyclic component with callees before callers. This is a bounded DAG pass, not a type fixpoint:
@@ -4594,7 +2367,7 @@ pub(crate) fn prove_same_class_method_binding(
     {
         return Ok(SameClassBinding::Unproved);
     }
-    if name != b"<init>" && !std::str::from_utf8(name).is_ok_and(is_java_identifier) {
+    if name != b"<init>" && source_identifier(name).is_none() {
         return Ok(SameClassBinding::Unproved);
     }
     if !facts.complete {
@@ -4798,41 +2571,7 @@ pub(crate) fn same_class_field_use_note(
     Ok(format!("same-class uses at {}", sites.join(", ")))
 }
 
-fn class_scope_variable(name: &[u8], class_scope: &[TypeParameterErasure]) -> bool {
-    class_scope.iter().any(|parameter| parameter.name == name)
-}
-
-pub(crate) fn charge_signature_type_proof(ty: &SignatureType, budget: &mut Budget) -> Result<u64> {
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    match ty {
-        SignatureType::Base(_) => Ok(0),
-        SignatureType::TypeVariable(_) => Ok(1),
-        SignatureType::Array(element) => charge_signature_type_proof(element, budget),
-        SignatureType::Class(class) => {
-            let mut variable_count = 0_u64;
-            for segment in &class.segments {
-                budget.poll()?;
-                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                for argument in &segment.arguments {
-                    budget.poll()?;
-                    match argument {
-                        TypeArgument::Any => {
-                            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                        }
-                        TypeArgument::Exact(ty)
-                        | TypeArgument::Extends(ty)
-                        | TypeArgument::Super(ty) => {
-                            variable_count = variable_count
-                                .saturating_add(charge_signature_type_proof(ty, budget)?);
-                        }
-                    }
-                }
-            }
-            Ok(variable_count)
-        }
-    }
-}
+pub(crate) use jarde_java::generic_source_proof::charge_signature_type_proof;
 
 fn charge_field_write_source_proof(
     source: &SameClassFieldWriteSource,
@@ -4980,16 +2719,6 @@ fn signature_types_same_class_binding(
         }
         _ => false,
     }
-}
-
-fn signature_class_erasure(ty: &SignatureType) -> Option<&[u8]> {
-    let SignatureType::Class(class) = ty else {
-        return None;
-    };
-    class
-        .segments
-        .last()
-        .map(|segment| segment.binary_name.as_slice())
 }
 
 fn descriptor_reference_shape(descriptor: &[u8]) -> Option<(u32, Vec<u8>)> {
@@ -5406,39 +3135,6 @@ pub(crate) enum SignatureProjection {
     DeferredSameClass,
 }
 
-fn ordinary_primitive_result_matches(
-    physical: &jarde_java::ast::Type,
-    parsed: Option<&SignatureType>,
-    signature_spelling: Option<&str>,
-    descriptor_spelling: Option<&str>,
-) -> bool {
-    let exact_base = matches!(
-        (physical, parsed),
-        (
-            jarde_java::ast::Type::Boolean,
-            Some(SignatureType::Base(b'Z'))
-        ) | (jarde_java::ast::Type::Byte, Some(SignatureType::Base(b'B')))
-            | (jarde_java::ast::Type::Char, Some(SignatureType::Base(b'C')))
-            | (
-                jarde_java::ast::Type::Short,
-                Some(SignatureType::Base(b'S'))
-            )
-            | (jarde_java::ast::Type::Int, Some(SignatureType::Base(b'I')))
-            | (jarde_java::ast::Type::Long, Some(SignatureType::Base(b'J')))
-            | (
-                jarde_java::ast::Type::Float,
-                Some(SignatureType::Base(b'F'))
-            )
-            | (
-                jarde_java::ast::Type::Double,
-                Some(SignatureType::Base(b'D'))
-            )
-    );
-    exact_base
-        && signature_spelling == Some(physical.spell())
-        && descriptor_spelling == Some(physical.spell())
-}
-
 /// Decide one generic method-header projection from this member's own Signature, an already
 /// published class-variable scope, and a typed return candidate from the same recovery run.
 /// Syntax/erasure failures are refusals; budget and cancellation remain operation stops.
@@ -5557,52 +3253,13 @@ pub(crate) fn project_method_signature_with_state(
             .0;
         let parsed = parse_method_signature(&raw, budget)?;
         let name = &member.name.raw().0;
-        projection.enum_constructor_source_tail = if shells.len() == 1
-            && name.as_slice() == b"<init>"
-            && member.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;II)V"
-            && parsed.type_parameters.is_empty()
-            && parsed.parameters.as_slice() == [SignatureType::Base(b'I')]
-            && parsed.result.is_none()
-            && parsed.throws.is_empty()
-        {
-            EnumConstructorSourceTail::Int
-        } else if shells.len() == 1
-            && name.as_slice() == b"<init>"
-            && member.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;I)V"
-            && parsed.type_parameters.is_empty()
-            && parsed.parameters.is_empty()
-            && parsed.result.is_none()
-            && parsed.throws.is_empty()
-        {
-            EnumConstructorSourceTail::NoArg
-        } else if shells.len() == 1
-            && name.as_slice() == b"<init>"
-            && member.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;ILjava/lang/String;)V"
-            && parsed.type_parameters.is_empty()
-            && matches!(parsed.parameters.as_slice(), [SignatureType::Class(class)]
-                if class.segments.len() == 1
-                    && class.segments[0].binary_name == b"java/lang/String"
-                    && class.segments[0].arguments.is_empty())
-            && parsed.result.is_none()
-            && parsed.throws.is_empty()
-        {
-            EnumConstructorSourceTail::SingleString
-        } else if shells.len() == 1
-            && name.as_slice() == b"<init>"
-            && member.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;I[Ljava/lang/String;)V"
-            && parsed.type_parameters.is_empty()
-            && matches!(parsed.parameters.as_slice(), [SignatureType::Array(element)]
-                if matches!(element.as_ref(), SignatureType::Class(class)
-                    if class.segments.len() == 1
-                        && class.segments[0].binary_name == b"java/lang/String"
-                        && class.segments[0].arguments.is_empty()))
-            && parsed.result.is_none()
-            && parsed.throws.is_empty()
-        {
-            EnumConstructorSourceTail::StringVarargs
-        } else {
-            EnumConstructorSourceTail::Unrecognized
-        };
+        projection.enum_constructor_source_tail =
+            jarde_java::source_proof::enum_constructor_source_tail(
+                shells.len(),
+                name,
+                &member.descriptor.raw().0,
+                &parsed,
+            );
         let erasure = prove_method_signature_erasure_with_class_scope(
             &parsed,
             &member.descriptor.raw().0,
@@ -5612,17 +3269,15 @@ pub(crate) fn project_method_signature_with_state(
         )?;
         let no_body_generic = matches!(record.outcome, ClassSourceOutcome::NoBody)
             && !parsed.type_parameters.is_empty();
-        let class_scope_constructor = name == b"<init>"
-            && parsed.type_parameters.is_empty()
-            && class_signature_present
-            && !class_scope.is_empty()
-            && (constructor_candidate.is_some()
-                || projection
-                    .same_class_generic_body_proof
-                    .as_ref()
-                    .is_some_and(|proof| {
-                        proof.constructor_call_bci.is_some() && proof.constructor_init.is_some()
-                    }));
+        let class_scope_constructor =
+            jarde_java::generic_source_proof::class_scope_constructor_is_candidate(
+                &name,
+                &parsed,
+                class_signature_present,
+                class_scope,
+                constructor_candidate,
+                projection.same_class_generic_body_proof.as_ref(),
+            );
         let generic_constructor =
             name == b"<init>" && (!parsed.type_parameters.is_empty() || class_scope_constructor);
         if no_body_generic {
@@ -5635,66 +3290,22 @@ pub(crate) fn project_method_signature_with_state(
                 budget,
             )?;
         }
-        let body_generic_throws = matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-            && parsed.type_parameters.is_empty()
-            && parsed
-                .throws
-                .iter()
-                .any(|throws| matches!(throws, SignatureType::TypeVariable(_)));
-        let body_method_local_generic_throws =
-            matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-                && !parsed.type_parameters.is_empty()
-                && member.descriptor.raw().0.as_slice() == b"()V"
-                && parsed.parameters.is_empty()
-                && parsed.result.is_none()
-                && matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)]);
-        let static_method_local_generic_throws =
-            matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-                && !parsed.type_parameters.is_empty()
-                && matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)]);
-        let body_generic_null_return =
-            matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-                && !parsed.type_parameters.is_empty()
-                && matches!(candidate, Some(GenericReturnCandidate {
-                parameters,
-                value: GenericReturnValue::NullLiteral,
-            }) if parameters.is_empty());
-        let body_generic_void = matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-            && !parsed.type_parameters.is_empty()
-            && parsed.result.is_none()
-            && parsed.throws.is_empty()
-            && attributes.throws_raw.is_empty()
-            && matches!(candidate, Some(GenericReturnCandidate {
-                parameters,
-                value: GenericReturnValue::CompleteBody { result_type: None, .. },
-            }) if !parameters.is_empty());
-        let body_ordinary_parameterized_null_return = matches!(
-            record.outcome,
-            ClassSourceOutcome::Recovered { .. }
-        ) && parsed.type_parameters.is_empty()
-            && shells.len() == 1
-            && parsed.parameters.is_empty()
-            && parsed.throws.is_empty()
-            && attributes.throws_raw.is_empty()
-            && member.descriptor.raw().0.as_slice() == b"()Ljava/util/List;"
-            && member.access_flags & (ACC_PUBLIC | ACC_STATIC) == ACC_PUBLIC
-            && !class_internal.contains(&b'$')
-            && class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) == 0
-            && class_superclass == Some(b"java/lang/Object".as_slice())
-            && class_interfaces.is_empty()
-            && class_scope.is_empty()
-            && !class_signature_present
-            && matches!(parsed.result.as_ref(), Some(SignatureType::Class(class))
-                    if matches!(class.segments.as_slice(), [segment]
-                        if segment.binary_name.as_slice() == b"java/util/List"
-                            && matches!(segment.arguments.as_slice(), [TypeArgument::Exact(SignatureType::Class(string))]
-                                if matches!(string.segments.as_slice(), [string]
-                                    if string.binary_name.as_slice() == b"java/lang/String"
-                                        && string.arguments.is_empty()))))
-            && matches!(candidate, Some(GenericReturnCandidate {
-                    parameters,
-                    value: GenericReturnValue::NullLiteral,
-                }) if parameters.is_empty());
+        let body_ordinary_parameterized_null_return =
+            jarde_java::generic_source_proof::ordinary_parameterized_null_return_is_proved(
+                matches!(record.outcome, ClassSourceOutcome::Recovered { .. }),
+                shells.len() == 1,
+                !attributes.throws_raw.is_empty(),
+                &member.descriptor.raw().0,
+                member.access_flags,
+                &parsed,
+                candidate,
+                class_internal,
+                class_flags,
+                class_superclass,
+                class_interfaces,
+                class_scope,
+                class_signature_present,
+            );
         budget.charge(
             CountedBudgetDimension::AnalysisSteps,
             u64::try_from(pool.len()).unwrap_or(u64::MAX),
@@ -5729,40 +3340,23 @@ pub(crate) fn project_method_signature_with_state(
             ));
         }
         let (declaration, proof) = if generic_constructor {
-            (
-                generic_constructor_declaration(
-                    record,
-                    projection,
-                    attributes,
-                    &parsed,
-                    &erasure.type_parameters,
-                    constructor_candidate,
-                    projection.same_class_generic_body_proof.as_ref(),
-                    physical_fields,
-                    class_internal,
-                    class_flags,
-                    class_superclass,
-                    class_interfaces,
-                    class_scope,
-                    class_signature_present,
-                    budget,
-                )?,
-                if class_scope_constructor
-                    && constructor_candidate
-                        .is_some_and(|candidate| !candidate.field_writes.is_empty())
-                    || class_scope_constructor
-                        && projection
-                            .same_class_generic_body_proof
-                            .as_ref()
-                            .is_some_and(|proof| !proof.field_write_sites.is_empty())
-                {
-                    "same-run AST/Code/SSA constructor body proof"
-                } else if class_scope_constructor {
-                    "same-run AST/Code/SSA empty Object-constructor proof"
-                } else {
-                    "same-run AST/SSA empty-constructor proof"
-                },
-            )
+            generic_constructor_declaration(
+                record,
+                projection,
+                attributes,
+                &parsed,
+                &erasure.type_parameters,
+                constructor_candidate,
+                projection.same_class_generic_body_proof.as_ref(),
+                physical_fields,
+                class_internal,
+                class_flags,
+                class_superclass,
+                class_interfaces,
+                class_scope,
+                class_signature_present,
+                budget,
+            )?
         } else if no_body_generic {
             let declaration = no_body_generic_method_declaration(
                 record,
@@ -5774,62 +3368,77 @@ pub(crate) fn project_method_signature_with_state(
                 budget,
             )?;
             (declaration, "physical no-body declaration proof")
-        } else if body_method_local_generic_throws {
-            let declaration = body_method_local_generic_throws_declaration(
-                record,
-                projection,
-                attributes,
-                &parsed,
-                candidate,
-                class_internal,
-                class_flags,
-                class_superclass,
-                class_interfaces,
-                class_scope,
-                class_signature_present,
-                budget,
-            )?;
+        } else if let Some(declaration) =
+            matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
+                .then(|| {
+                    body_method_local_generic_throws_declaration(
+                        record,
+                        projection,
+                        attributes,
+                        &parsed,
+                        candidate,
+                        class_internal,
+                        class_flags,
+                        class_superclass,
+                        class_interfaces,
+                        class_scope,
+                        class_signature_present,
+                        budget,
+                    )
+                })
+                .flatten()
+        {
             (
-                declaration,
+                declaration?,
                 "same-run AST/Code/SSA empty-void and method-local Signature scope/erasure proof",
             )
-        } else if body_generic_null_return {
-            let declaration = generic_null_instance_method_declaration(
-                record,
-                projection,
-                attributes,
-                &parsed,
-                candidate,
-                class_internal,
-                class_flags,
-                class_superclass,
-                class_interfaces,
-                class_scope,
-                class_signature_present,
-                budget,
-            )?;
+        } else if let Some(declaration) =
+            matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
+                .then(|| {
+                    generic_null_instance_method_declaration(
+                        record,
+                        projection,
+                        attributes,
+                        &parsed,
+                        candidate,
+                        class_internal,
+                        class_flags,
+                        class_superclass,
+                        class_interfaces,
+                        class_scope,
+                        class_signature_present,
+                        budget,
+                    )
+                })
+                .flatten()
+        {
             (
-                declaration,
+                declaration?,
                 "same-run AST/Code/SSA exact null-return and method-local Signature scope/erasure proof",
             )
-        } else if body_generic_void {
-            let declaration = generic_void_body_declaration(
-                record,
-                projection,
-                attributes,
-                &parsed,
-                candidate,
-                &erasure.type_parameters,
-                class_internal,
-                resolved_inner_classes,
-                budget,
-            )?;
+        } else if let Some(declaration) =
+            matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
+                .then(|| {
+                    generic_void_body_declaration(
+                        record,
+                        projection,
+                        attributes,
+                        &parsed,
+                        candidate,
+                        &erasure.type_parameters,
+                        class_internal,
+                        resolved_inner_classes,
+                        budget,
+                    )
+                })
+                .flatten()
+        {
             (
-                declaration,
+                declaration?,
                 "same-run complete AST/Code/SSA parameter-use and Signature erasure proof",
             )
         } else if body_ordinary_parameterized_null_return {
-            let declaration = ordinary_parameterized_declaration(
+            ordinary_parameterized_declaration(
                 record,
                 Some(projection),
                 attributes,
@@ -5843,42 +3452,33 @@ pub(crate) fn project_method_signature_with_state(
                 true,
                 proved_list_parameters,
                 budget,
-            )?;
+            )?
+        } else if let Some(declaration) =
+            matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
+                .then(|| {
+                    static_method_local_generic_throws_declaration(
+                        record,
+                        projection,
+                        attributes,
+                        &parsed,
+                        candidate,
+                        class_internal,
+                        class_flags,
+                        class_superclass,
+                        class_interfaces,
+                        class_scope,
+                        class_signature_present,
+                        budget,
+                    )
+                })
+                .flatten()
+        {
             (
-                declaration,
-                "same-run AST/Code/SSA exact null-return and parameterized method Signature erasure proof",
-            )
-        } else if static_method_local_generic_throws {
-            let declaration = static_method_local_generic_throws_declaration(
-                record,
-                projection,
-                attributes,
-                &parsed,
-                candidate,
-                class_internal,
-                class_flags,
-                class_superclass,
-                class_interfaces,
-                class_scope,
-                class_signature_present,
-                budget,
-            )?;
-            (
-                declaration,
+                declaration?,
                 "same-run AST/SSA direct parameter return and method-local Signature scope/erasure proof",
             )
         } else if parsed.type_parameters.is_empty() {
-            let empty_void_wildcard_parameter = ordinary_empty_void_wildcard_parameter_is_proved(
-                record,
-                attributes,
-                &parsed,
-                candidate,
-                class_flags,
-                class_internal,
-                class_superclass,
-                class_interfaces,
-            );
-            let declaration = ordinary_parameterized_declaration(
+            ordinary_parameterized_declaration(
                 record,
                 Some(projection),
                 attributes,
@@ -5892,27 +3492,7 @@ pub(crate) fn project_method_signature_with_state(
                 false,
                 proved_list_parameters,
                 budget,
-            )?;
-            (
-                declaration,
-                if body_generic_throws {
-                    "same-run AST/Code/SSA empty-void proof"
-                } else if empty_void_wildcard_parameter {
-                    "same-run AST/Code/SSA unused-parameter proof"
-                } else if matches!(
-                    candidate.map(|candidate| &candidate.value),
-                    Some(GenericReturnValue::TypedFunctional { .. })
-                ) {
-                    "same-run direct Code/SSA/Program and LambdaMetafactory target proof"
-                } else if matches!(
-                    candidate.map(|candidate| &candidate.value),
-                    Some(GenericReturnValue::CompleteBody { .. })
-                ) {
-                    "same-run AST/Code/SSA complete body proof"
-                } else {
-                    "same-run AST/SSA parameter-return proof"
-                },
-            )
+            )?
         } else if let Some(body_proof) = projection.same_class_generic_body_proof.as_ref() {
             (
                 generic_method_body_declaration(
@@ -6070,25 +3650,20 @@ pub(crate) fn project_member_family_generic_signature(
     class_superclass: Option<&[u8]>,
     class_interfaces: &[Vec<u8>],
     class_scope: &[TypeParameterErasure],
-    target: &jarde_java::report::ProvedMemberInnerTarget,
+    target: &jarde_java::report::MemberInnerTargetInput,
     root_return: bool,
     budget: &mut Budget,
 ) -> Result<()> {
-    let refused = |why| Error::unsupported("generic_member_family_signature_unproved", why);
     let shells = attribute_shells(member, b"Signature");
-    if shells.len() != 1
-        || class_scope.len() != 1
-        || class_scope[0].descriptor != b"Ljava/lang/Object;"
-        || record.markers.len() != 1
-        || !record.generic_signature_refused
-        || !record.annotations.attributes.is_empty()
-        || !record.parameter_annotations.attributes.is_empty()
-        || !record.type_annotations.attributes.is_empty()
-    {
-        return Err(refused(
-            "family method is outside the one-variable unannotated Signature slice",
-        ));
-    }
+    jarde_java::generic_source_proof::prove_member_family_signature_source_slice(
+        shells.len(),
+        class_scope,
+        record.markers.len(),
+        record.generic_signature_refused,
+        !record.annotations.attributes.is_empty()
+            || !record.parameter_annotations.attributes.is_empty()
+            || !record.type_annotations.attributes.is_empty(),
+    )?;
     let raw = attribute_facts(bytes, &shells, pool, budget)?
         .signature
         .ok_or_else(|| {
@@ -6099,11 +3674,7 @@ pub(crate) fn project_member_family_generic_signature(
         })?
         .0;
     let parsed = parse_method_signature(&raw, budget)?;
-    if !parsed.type_parameters.is_empty() {
-        return Err(refused(
-            "method-local type variables are outside the family scope",
-        ));
-    }
+    jarde_java::generic_source_proof::prove_member_family_method_scope(&parsed)?;
     prove_method_signature_erasure_with_class_scope(
         &parsed,
         &member.descriptor.raw().0,
@@ -6112,100 +3683,47 @@ pub(crate) fn project_member_family_generic_signature(
         budget,
     )?;
 
-    let declaration = if root_return {
-        let SignatureType::Class(result) = parsed
-            .result
-            .as_ref()
-            .ok_or_else(|| refused("root method has no generic result"))?
-        else {
-            return Err(refused("root result is not the selected member class"));
-        };
-        let [outer, inner] = result.segments.as_slice() else {
-            return Err(refused(
-                "root result does not carry the complete outer/member Signature path",
-            ));
-        };
-        if class_internal != target.outer.as_bytes()
-            || member.name.raw().0 != b"make"
-            || member.descriptor.raw().0 != format!("()L{};", target.owner).as_bytes()
-            || !parsed.parameters.is_empty()
-            || !parsed.throws.is_empty()
-            || outer.binary_name != target.outer.as_bytes()
-            || outer.arguments.as_slice()
-                != [TypeArgument::Exact(SignatureType::TypeVariable(
-                    class_scope[0].name.clone(),
-                ))]
-            || inner.binary_name != target.owner.as_bytes()
-            || !inner.arguments.is_empty()
-        {
-            return Err(refused(
-                "root method Signature is not the selected Outer<T>.Inner return",
-            ));
-        }
-        let result = spell_ordinary_signature_type_with_member_path(
-            parsed.result.as_ref().unwrap(),
-            class_scope,
-            &target.source_type_path,
-            budget,
-            0,
-        )?;
-        let mut signature = method_descriptor(&member.descriptor.raw().0, false, false)
-            .ok_or_else(|| refused("root physical descriptor cannot be spelled"))?;
-        signature.returns = Some(result);
-        let (name, aliased) = written_name(&member.name.raw().0);
-        if aliased || !is_java_identifier(&name) {
-            return Err(refused("root method name has no source spelling"));
-        }
-        format_generic_method_header(record, &signature, &name, &[], &attributes.throws)
-    } else {
-        if member.name.raw().0 != b"id"
-            || member.descriptor.raw().0 != b"(Ljava/lang/Object;)Ljava/lang/Object;"
-            || parsed.parameters.as_slice()
-                != [SignatureType::TypeVariable(class_scope[0].name.clone())]
-            || parsed.result.as_ref()
-                != Some(&SignatureType::TypeVariable(class_scope[0].name.clone()))
-            || !parsed.throws.is_empty()
-        {
-            return Err(refused(
-                "child method Signature is not the inherited T id(T) shape",
-            ));
-        }
-        let candidate = record.same_run_generic_return.as_ref().ok_or_else(|| {
-            refused("child identity method has no retained same-run body candidate")
-        })?;
-        let mut staged = record.clone();
-        // The one marker is precisely the independent physical request's missing outer scope.
-        // It is omitted only on this temporary family-writer record after the relation gate above.
-        staged.markers.clear();
-        ordinary_parameterized_declaration(
-            &staged,
-            None,
-            attributes,
+    let proof = record.same_class_generic_body_proof.as_ref();
+    let (declaration, classification) =
+        jarde_java::generic_source_proof::member_family_generic_declaration(
+            &member.name.raw().0,
+            &member.descriptor.raw().0,
+            record.item.access_flags,
+            record.declaration.is_some(),
+            matches!(record.outcome, ClassSourceOutcome::Recovered { .. }),
+            matches!(record.outcome, ClassSourceOutcome::NoBody),
+            record.no_body_kind.is_some(),
+            matches!(
+                record.item.body,
+                crate::MemberBodyEvidence::CodeAttribute { .. }
+            ),
+            !record.annotations.attributes.is_empty()
+                || !record.parameter_annotations.attributes.is_empty(),
+            !record.annotations.refusals.is_empty()
+                || !record.parameter_annotations.refusals.is_empty()
+                || !record.type_annotations.refusals.is_empty(),
+            !record.type_annotations.attributes.is_empty(),
+            &record.parameter_annotations.uses_by_position,
+            attributes.default.is_some(),
+            &attributes.throws,
+            !attributes.throws_raw.is_empty(),
             &parsed,
-            Some(candidate),
+            record.same_run_generic_return.as_ref(),
+            proof,
+            proof.is_none_or(|proof| proof.method == record.item.identity),
             class_flags,
             class_internal,
             class_superclass,
             class_interfaces,
-            class_scope,
-            false,
-            &[],
+            &class_scope[0],
+            target,
+            root_return,
             budget,
-        )?
-    };
+        )?;
     // `record` is a family-writer clone. Drop only the independently recorded scope refusal;
     // `project_generic` replaces it with the successful family-scope note below.
     record.markers.clear();
-    record.project_generic(
-        declaration,
-        &raw,
-        if root_return {
-            "selected family return Signature and proved member construction"
-        } else {
-            "proved inherited outer-variable scope and same-run parameter-return proof"
-        },
-        budget,
-    )
+    record.project_generic(declaration, &raw, classification, budget)
 }
 
 /// Spell one generic constructor only after its same-run body candidate, Signature erasure, and
@@ -6228,222 +3746,41 @@ fn generic_constructor_declaration(
     class_scope: &[TypeParameterErasure],
     class_signature_present: bool,
     budget: &mut Budget,
-) -> Result<String> {
-    let refused = |why| Error::unsupported("generic_constructor_source_unproved", why);
-    let item = &record.item;
-    if item.name.raw().0 != b"<init>"
-        || projection.declaration.is_none()
-        || !matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-        || !projection.markers.is_empty()
-        || item.access_flags & !(ACC_PUBLIC | ACC_PRIVATE | ACC_PROTECTED) != 0
-        || attributes.default.is_some()
-        || !attributes.throws_raw.is_empty()
-        || !parsed.throws.is_empty()
-        || parsed.result.is_some()
-        || !record.annotations.attributes.is_empty()
-        || !record.annotations.refusals.is_empty()
-        || !record.parameter_annotations.attributes.is_empty()
-        || !record.parameter_annotations.refusals.is_empty()
-        || !record.type_annotations.attributes.is_empty()
-        || !record.type_annotations.refusals.is_empty()
-        || class_internal.contains(&b'$')
-        || class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) != 0
-        || class_superclass != Some(b"java/lang/Object".as_slice())
-        || !class_interfaces.is_empty()
-    {
-        return Err(refused(
-            "constructor flags, throws, annotations, nesting, or class hierarchy lack a faithful source position",
-        ));
-    }
-    let (parameters, init, forwarded_parameter_slots, field_writes) =
-        if let Some(candidate) = candidate {
-            (
-                candidate.parameters.as_slice(),
-                &candidate.init,
-                candidate.forwarded_parameter_slots.as_slice(),
-                candidate.field_writes.as_slice(),
-            )
-        } else {
-            let proof = body_proof.filter(|proof| {
-                proof.method == item.identity
-                    && proof.constructor_call_bci.is_some()
-                    && proof
-                        .constructor_init
-                        .as_ref()
-                        .is_some_and(|init| init.bci == proof.constructor_call_bci)
-                    && parsed.type_parameters.is_empty()
-                    && method_scope.is_empty()
-                    && !class_scope.is_empty()
-                    && class_signature_present
-            });
-            let proof = proof
-                .ok_or_else(|| refused("same-run AST/SSA does not prove the constructor body"))?;
-            (
-                proof.formal_names.as_slice(),
-                proof.constructor_init.as_ref().unwrap(),
-                &[][..],
-                &[][..],
-            )
-        };
-    let this_class = std::str::from_utf8(class_internal)
-        .map_err(|_| refused("constructor owner has no source UTF-8"))?;
-    if !init.presented
-        || init.target != Some(jarde_java::ast::ConstructorTarget::Super)
-        || init.class.as_deref() != Some("java/lang/Object")
-        || init.declared.as_deref() != Some(this_class)
-    {
-        return Err(refused(
-            "same-run InitRecord does not prove Object() for this class",
-        ));
-    }
-    let mut signature = method_descriptor(&item.descriptor.raw().0, false, false)
-        .ok_or_else(|| refused("physical constructor descriptor cannot be spelled"))?;
-    let class_scope_constructor = parsed.type_parameters.is_empty();
-    if signature.parameters.len() != parsed.parameters.len()
-        || signature.parameters.len() != parameters.len()
-        || (class_scope_constructor
-            && (!forwarded_parameter_slots.is_empty()
-                || !method_scope.is_empty()
-                || class_scope.is_empty()
-                || !class_signature_present))
-        || (!class_scope_constructor && !field_writes.is_empty())
-    {
-        return Err(refused(
-            "constructor Signature, physical parameter positions, and same-run body proof differ",
-        ));
-    }
-    let mut scope = Vec::with_capacity(class_scope.len() + method_scope.len());
-    scope.extend_from_slice(method_scope);
-    scope.extend_from_slice(class_scope);
-    let mut type_parameters = Vec::with_capacity(parsed.type_parameters.len());
-    for parameter in &parsed.type_parameters {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        let name = std::str::from_utf8(&parameter.name)
-            .map_err(|_| refused("constructor type parameter name is not source UTF-8"))?;
-        if !is_java_identifier(name) {
-            return Err(refused(
-                "constructor type parameter has no Java source spelling",
-            ));
-        }
-        let mut bounds = Vec::new();
-        for bound in parameter
-            .class_bound
-            .iter()
-            .chain(parameter.interface_bounds.iter())
-        {
-            bounds.push(spell_ordinary_signature_type(bound, &scope, budget, 0)?);
-        }
-        if bounds.is_empty() {
-            bounds.push("java.lang.Object".to_owned());
-        }
-        type_parameters.push(format!("{name} extends {}", bounds.join(" & ")));
-    }
-    let mut parameter_types = Vec::with_capacity(parsed.parameters.len());
-    for parameter in &parsed.parameters {
-        parameter_types.push(spell_ordinary_signature_type(parameter, &scope, budget, 0)?);
-    }
-    for ((_, slot), (candidate_slot, name)) in signature.parameters.iter().zip(parameters) {
-        if slot != candidate_slot || !is_java_identifier(name) {
-            return Err(refused(
-                "same-run constructor parameter slot or name is unproved",
-            ));
-        }
-    }
-    for ((spelling, _), ty) in signature.parameters.iter_mut().zip(parameter_types) {
-        *spelling = ty;
-    }
-    if class_scope_constructor {
-        budget.charge(
-            CountedBudgetDimension::AnalysisSteps,
-            u64::try_from(parameters.len())
-                .unwrap_or(u64::MAX)
-                .saturating_add(
-                    u64::try_from(field_writes.len())
-                        .unwrap_or(u64::MAX)
-                        .saturating_mul(u64::try_from(parameters.len()).unwrap_or(u64::MAX)),
-                ),
-        )?;
-        for write in field_writes {
-            budget.poll()?;
-            let mut parameter_found = false;
-            for (slot, _) in parameters {
-                budget.poll()?;
-                parameter_found |= *slot == write.parameter_slot;
-            }
-            if write.owner.as_bytes() != class_internal || !parameter_found {
-                return Err(refused(
-                    "same-run field write does not name this class and a physical constructor parameter",
-                ));
-            }
-            if !generic_constructor_field_matches_physical_field(
-                write,
-                class_internal,
-                physical_fields,
-                budget,
-            )? {
-                return Err(refused(
-                    "same-run field write does not name one unique instance field declaration",
-                ));
-            }
-        }
-    }
-    let class_name = simple_name(class_internal);
-    if !is_java_identifier(&class_name) || class_name.contains('$') {
-        return Err(refused("class name has no faithful constructor spelling"));
-    }
-    let args = parameters
-        .iter()
-        .zip(&signature.parameters)
-        .map(|((_, name), (ty, _))| format!("{ty} {name}"))
-        .collect::<Vec<_>>();
-    let mut words = visibility(item.access_flags)
-        .map(str::to_owned)
-        .into_iter()
-        .collect::<Vec<_>>();
-    if !type_parameters.is_empty() {
-        words.push(format!("<{}>", type_parameters.join(", ")));
-    }
-    let prefix = if words.is_empty() {
-        String::new()
-    } else {
-        format!("{} ", words.join(" "))
-    };
-    Ok(format!("{prefix}{class_name}({})", args.join(", ")))
-}
-
-fn generic_constructor_field_matches_physical_field(
-    write: &jarde_java::report::GenericConstructorFieldWrite,
-    class_internal: &[u8],
-    physical_fields: &[MemberHeader],
-    budget: &mut Budget,
-) -> Result<bool> {
-    budget.charge(
-        CountedBudgetDimension::AnalysisSteps,
-        u64::try_from(physical_fields.len()).unwrap_or(u64::MAX),
-    )?;
-    if write.owner.as_bytes() != class_internal {
-        return Ok(false);
-    }
-    let mut matching = None;
-    for field in physical_fields {
-        budget.poll()?;
-        if field.name.raw().0 == write.name.as_bytes() {
-            if matching.is_some() {
-                return Ok(false);
-            }
-            matching = Some(field);
-        }
-    }
-    Ok(matching.is_some_and(|field| {
-        field.descriptor.raw().0 == write.descriptor.as_bytes()
-            && field.access_flags & ACC_STATIC == 0
-    }))
+) -> Result<(String, &'static str)> {
+    jarde_java::generic_source_proof::generic_constructor_declaration(
+        &record.item.name.raw().0,
+        &record.item.descriptor.raw().0,
+        record.item.access_flags,
+        projection.declaration.is_some(),
+        matches!(record.outcome, ClassSourceOutcome::Recovered { .. }),
+        projection.markers.is_empty(),
+        attributes.default.is_some(),
+        !attributes.throws_raw.is_empty(),
+        !record.annotations.attributes.is_empty()
+            || !record.parameter_annotations.attributes.is_empty()
+            || !record.type_annotations.attributes.is_empty(),
+        !record.annotations.refusals.is_empty()
+            || !record.parameter_annotations.refusals.is_empty()
+            || !record.type_annotations.refusals.is_empty(),
+        parsed,
+        method_scope,
+        candidate,
+        body_proof,
+        body_proof.is_some_and(|proof| proof.method == record.item.identity),
+        physical_fields,
+        class_internal,
+        class_flags,
+        class_superclass,
+        class_interfaces,
+        class_scope,
+        class_signature_present,
+        budget,
+    )
 }
 
 /// The initial no-body projection proves the class has no inherited source contract to satisfy.
-/// `$` in a binary name is conservatively treated as nested because this class-source view does not
-/// publish an InnerClasses nesting proof.
+/// `$` in a binary name is conservatively treated as nested because this projection receives no
+/// selected InnerClasses nesting proof.
 fn prove_no_body_generic_hierarchy(
     record: &ClassSourceMethod,
     class_internal: &[u8],
@@ -6452,25 +3789,15 @@ fn prove_no_body_generic_hierarchy(
     class_interfaces: &[Vec<u8>],
     budget: &mut Budget,
 ) -> Result<()> {
-    let refused = |why| Error::unsupported("generic_inherited_contract_unproved", why);
-    budget.poll()?;
-    if !matches!(record.no_body_kind, Some(NoBodyKind::Abstract))
-        || class_flags & (ACC_ANNOTATION | ACC_ENUM) != 0
-        || class_internal.contains(&b'$')
-        || class_superclass != Some(b"java/lang/Object".as_slice())
-        || !class_interfaces.is_empty()
-    {
-        return Err(refused(
-            "no-body generic projection requires a top-level class or root interface with Object as its physical superclass and no interfaces",
-        ));
-    }
-    let name = &record.item.name.raw().0;
-    if is_object_instance_method_name(name) {
-        return Err(refused(
-            "method name may override an Object instance method",
-        ));
-    }
-    Ok(())
+    jarde_java::generic_source_proof::prove_no_body_generic_hierarchy(
+        record.no_body_kind,
+        &record.item.name.raw().0,
+        class_internal,
+        class_flags,
+        class_superclass,
+        class_interfaces,
+        budget,
+    )
 }
 
 /// Re-spell descriptor positions only when the same-run body returned the selected member
@@ -6490,11 +3817,11 @@ fn project_member_inner_descriptor_path(
             qualifier_slot,
         } => (
             &target.source_type_path,
-            target.owner.as_str(),
+            &target.owner,
             Some(*qualifier_slot),
         ),
         GenericReturnValue::StaticMemberCreation { target, .. } => {
-            (&target.source_type_path, target.owner.as_str(), None)
+            (&target.source_type_path, &target.owner, None)
         }
         _ => return Ok(()),
     };
@@ -6527,22 +3854,21 @@ fn project_member_inner_descriptor_path(
             return Err(refused("member qualifier is not a method parameter slot"));
         };
         let Some(outer) = source_type_path.iter().find(|segment| {
-            segment.binary_name
+            Some(&segment.binary_name)
                 == source_type_path
                     .last()
-                    .and_then(|segment| segment.enclosing_binary_name.as_deref())
-                    .unwrap_or("")
+                    .and_then(|segment| segment.enclosing_binary_name.as_ref())
         }) else {
             return Err(refused("selected source path has no enclosing member type"));
         };
         let Some(member) = source_type_path
             .iter()
-            .find(|segment| segment.binary_name == target_owner)
+            .find(|segment| &segment.binary_name == target_owner)
         else {
             return Err(refused("selected source path has no target member type"));
         };
-        if qualifier_type != &outer.binary_name.replace('/', ".")
-            || member.enclosing_binary_name.as_deref() != Some(outer.binary_name.as_str())
+        if qualifier_type != &binary_pool_class_name(&outer.binary_name.0)?
+            || member.enclosing_binary_name.as_ref() != Some(&outer.binary_name)
             || member.is_static
             || !outer.is_static
             || source_type_path.last().is_none_or(|last| last != member)
@@ -6554,7 +3880,7 @@ fn project_member_inner_descriptor_path(
     }
     if let Some(result) = &signature.returns
         && result != "java.lang.Object"
-        && result != &target_owner.replace('/', ".")
+        && result != &binary_pool_class_name(&target_owner.0)?
     {
         return Err(refused(
             "physical result is neither Object nor the selected member type",
@@ -6570,10 +3896,10 @@ fn project_member_inner_descriptor_path(
 
     let mut declaration = record.declaration.clone().expect("checked above");
     let mut mapped_segments = source_type_path.iter().collect::<Vec<_>>();
-    mapped_segments.sort_by_key(|segment| std::cmp::Reverse(segment.binary_name.len()));
+    mapped_segments.sort_by_key(|segment| std::cmp::Reverse(segment.binary_name.0.len()));
     let mut changed = false;
     for segment in mapped_segments {
-        let physical_name = segment.binary_name.replace('/', ".");
+        let physical_name = binary_pool_class_name(&segment.binary_name.0)?;
         let expected_count = signature
             .parameters
             .iter()
@@ -6597,7 +3923,14 @@ fn project_member_inner_descriptor_path(
             _ => segment.source_name.as_str(),
         };
         let (rewritten, count) = replace_java_type_token(&declaration, &physical_name, source_name);
-        if count != expected_count {
+        // The declaration writer may already have used the same proved source path. Count
+        // whole type tokens only: a containing type must not match the prefix of a member type.
+        let already_projected = if physical_name != source_name {
+            replace_java_type_token(&declaration, source_name, source_name).1
+        } else {
+            0
+        };
+        if count + already_projected != expected_count {
             return Err(refused(
                 "declaration type positions do not match the physical member descriptor",
             ));
@@ -6614,7 +3947,7 @@ fn project_member_inner_descriptor_path(
     // spelling changed. The block itself is reused verbatim from the same run.
     let marker = format!(
         "// jarde: descriptor type path for `{}` follows the same-run proved member creation",
-        target_owner
+        jarde_java::facts::display_jvm_bytes(target_owner)
     );
     let mut markers = record.markers.clone();
     markers.push(marker);
@@ -6640,11 +3973,13 @@ fn project_member_inner_descriptor_path(
 }
 
 fn descriptor_component_base(ty: &str) -> &str {
-    ty.strip_suffix("[]").unwrap_or(ty)
+    ty.trim_end_matches("[]")
 }
 
 fn replace_java_type_token(text: &str, from: &str, to: &str) -> (String, usize) {
-    let is_identifier = |byte: u8| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'$');
+    let is_identifier = |byte: u8| {
+        byte.is_ascii_alphanumeric() || byte >= 0x80 || matches!(byte, b'_' | b'$' | b'.')
+    };
     let bytes = text.as_bytes();
     let needle = from.as_bytes();
     let mut output = String::with_capacity(text.len());
@@ -6658,7 +3993,13 @@ fn replace_java_type_token(text: &str, from: &str, to: &str) -> (String, usize) 
         let start = cursor + relative;
         let end = start + needle.len();
         let left_is_boundary = start == 0 || !is_identifier(bytes[start - 1]);
-        let right_is_boundary = end == bytes.len() || !is_identifier(bytes[end]);
+        let ellipsis_boundary = text[end..].strip_prefix("...").is_some_and(|tail| {
+            tail.as_bytes()
+                .first()
+                .is_none_or(|byte| !is_identifier(*byte))
+        });
+        let right_is_boundary =
+            end == bytes.len() || !is_identifier(bytes[end]) || ellipsis_boundary;
         if left_is_boundary && right_is_boundary {
             output.push_str(&text[cursor..start]);
             output.push_str(to);
@@ -6671,172 +4012,6 @@ fn replace_java_type_token(text: &str, from: &str, to: &str) -> (String, usize) 
         }
     }
     (output, count)
-}
-
-fn is_object_instance_method_name(name: &[u8]) -> bool {
-    const OBJECT_INSTANCE_METHODS: &[&[u8]] = &[
-        b"getClass",
-        b"hashCode",
-        b"equals",
-        b"clone",
-        b"toString",
-        b"notify",
-        b"notifyAll",
-        b"wait",
-        b"finalize",
-    ];
-    OBJECT_INSTANCE_METHODS.contains(&name)
-}
-
-#[allow(clippy::too_many_arguments)]
-fn prove_body_generic_throws_shape(
-    record: &ClassSourceMethod,
-    parsed: &jarde_reader::signature::MethodSignature,
-    candidate: Option<&GenericReturnCandidate>,
-    class_internal: &[u8],
-    class_flags: u16,
-    class_superclass: Option<&[u8]>,
-    class_interfaces: &[Vec<u8>],
-    budget: &mut Budget,
-) -> Result<()> {
-    let refused = |why| Error::unsupported("body_generic_throws_source_unproved", why);
-    let item = &record.item;
-    if !matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-        || !matches!(item.descriptor.raw().0.as_slice(), b"()V")
-        || item.name.raw().0 == b"<init>"
-        || item.name.raw().0 == b"<clinit>"
-        || is_object_instance_method_name(&item.name.raw().0)
-        || item.access_flags & (ACC_ABSTRACT | ACC_NATIVE | ACC_VARARGS) != 0
-        || class_internal.contains(&b'$')
-        || class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) != 0
-        || class_superclass != Some(b"java/lang/Object".as_slice())
-        || !class_interfaces.is_empty()
-        || !parsed.type_parameters.is_empty()
-        || !parsed.parameters.is_empty()
-        || parsed.result.is_some()
-        || !matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)])
-    {
-        return Err(refused(
-            "method Signature, member, or class hierarchy exceeds the supported empty-void shape",
-        ));
-    }
-    if !matches!(
-        candidate,
-        Some(GenericReturnCandidate {
-            parameters,
-            value: GenericReturnValue::EmptyVoid,
-        }) if parameters.is_empty()
-    ) {
-        return Err(refused(
-            "same-run AST/Code/SSA does not prove the exact empty void body",
-        ));
-    }
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    Ok(())
-}
-
-#[allow(clippy::too_many_arguments)]
-fn prove_body_method_local_generic_throws_shape(
-    record: &ClassSourceMethod,
-    projection: &GenericCallProjectionState,
-    parsed: &jarde_reader::signature::MethodSignature,
-    candidate: Option<&GenericReturnCandidate>,
-    class_internal: &[u8],
-    class_flags: u16,
-    class_superclass: Option<&[u8]>,
-    class_interfaces: &[Vec<u8>],
-    class_scope: &[TypeParameterErasure],
-    class_signature_present: bool,
-    budget: &mut Budget,
-) -> Result<()> {
-    let refused = |why| Error::unsupported("body_method_local_generic_throws_source_unproved", why);
-    let item = &record.item;
-    if !matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-        || projection.declaration.is_none()
-        || !projection.markers.is_empty()
-        || !record.annotations.refusals.is_empty()
-        || !record.parameter_annotations.refusals.is_empty()
-        || !record.type_annotations.attributes.is_empty()
-        || !record.type_annotations.refusals.is_empty()
-        || item.access_flags
-            & !(ACC_PUBLIC
-                | ACC_PRIVATE
-                | ACC_PROTECTED
-                | ACC_FINAL
-                | ACC_SYNCHRONIZED
-                | ACC_STRICT)
-            != 0
-        || item.descriptor.raw().0.as_slice() != b"()V"
-        || matches!(item.name.raw().0.as_slice(), b"<init>" | b"<clinit>")
-        || is_object_instance_method_name(&item.name.raw().0)
-        || class_internal.contains(&b'$')
-        || class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) != 0
-        || class_superclass != Some(b"java/lang/Object".as_slice())
-        || !class_interfaces.is_empty()
-        || !class_scope.is_empty()
-        || class_signature_present
-        || !parsed.parameters.is_empty()
-        || parsed.result.is_some()
-        || parsed.type_parameters.len() != 1
-        || !matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)])
-    {
-        return Err(refused(
-            "method Signature, member, or class hierarchy exceeds the supported empty-void shape",
-        ));
-    }
-    if !matches!(
-        candidate,
-        Some(GenericReturnCandidate {
-            parameters,
-            value: GenericReturnValue::EmptyVoid,
-        }) if parameters.is_empty()
-    ) {
-        return Err(refused(
-            "same-run AST/Code/SSA does not prove the exact empty void body",
-        ));
-    }
-    let [parameter] = parsed.type_parameters.as_slice() else {
-        unreachable!("shape checked above")
-    };
-    let bounds = parameter
-        .class_bound
-        .iter()
-        .chain(parameter.interface_bounds.iter())
-        .collect::<Vec<_>>();
-    let [SignatureType::Class(bound)] = bounds.as_slice() else {
-        return Err(refused(
-            "method variable must have exactly one proved class bound and no additional bounds",
-        ));
-    };
-    let [segment] = bound.segments.as_slice() else {
-        return Err(refused("method variable bound is nested"));
-    };
-    if !segment.arguments.is_empty()
-        || !matches!(
-            segment.binary_name.as_slice(),
-            b"java/lang/Throwable"
-                | b"java/lang/Exception"
-                | b"java/lang/RuntimeException"
-                | b"java/lang/Error"
-        )
-    {
-        return Err(refused(
-            "method variable bound is not a proved JDK throwable root",
-        ));
-    }
-    let name = std::str::from_utf8(&parameter.name)
-        .map_err(|_| refused("method variable name is not source UTF-8"))?;
-    if !is_java_identifier(name)
-        || parsed.throws.first() != Some(&SignatureType::TypeVariable(parameter.name.clone()))
-    {
-        return Err(refused(
-            "throws variable is not the source-spellable method-local variable",
-        ));
-    }
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -6853,10 +4028,18 @@ fn body_method_local_generic_throws_declaration(
     class_scope: &[TypeParameterErasure],
     class_signature_present: bool,
     budget: &mut Budget,
-) -> Result<String> {
-    prove_body_method_local_generic_throws_shape(
-        record,
-        projection,
+) -> Option<Result<String>> {
+    jarde_java::generic_source_proof::body_method_local_generic_throws_declaration(
+        &record.item.name.raw().0,
+        &record.item.descriptor.raw().0,
+        record.item.access_flags,
+        projection.declaration.is_some(),
+        !projection.markers.is_empty(),
+        !record.annotations.refusals.is_empty()
+            || !record.parameter_annotations.refusals.is_empty()
+            || !record.type_annotations.refusals.is_empty(),
+        !record.type_annotations.attributes.is_empty(),
+        attributes.default.is_some(),
         parsed,
         candidate,
         class_internal,
@@ -6866,51 +4049,7 @@ fn body_method_local_generic_throws_declaration(
         class_scope,
         class_signature_present,
         budget,
-    )?;
-    if attributes.default.is_some() {
-        return Err(Error::unsupported(
-            "body_method_local_generic_throws_source_unproved",
-            "annotation default has no source position in this method shape",
-        ));
-    }
-    let [parameter] = parsed.type_parameters.as_slice() else {
-        return Err(Error::unsupported(
-            "body_method_local_generic_throws_source_unproved",
-            "method must declare exactly one local type variable",
-        ));
-    };
-    let variable_name = std::str::from_utf8(&parameter.name).map_err(|_| {
-        Error::unsupported(
-            "body_method_local_generic_throws_source_unproved",
-            "method variable name is not source UTF-8",
-        )
-    })?;
-    let bound_internal = match parameter.class_bound.as_ref() {
-        Some(SignatureType::Class(bound)) => &bound.segments[0].binary_name,
-        _ => unreachable!("validated by shape proof"),
-    };
-    let bound = simple_generic_class_name(bound_internal)?;
-    let signature =
-        method_descriptor(&record.item.descriptor.raw().0, false, false).ok_or_else(|| {
-            Error::unsupported(
-                "body_method_local_generic_throws_source_unproved",
-                "physical method descriptor cannot be spelled",
-            )
-        })?;
-    let (method_name, aliased) = written_name(&record.item.name.raw().0);
-    if aliased || !is_java_identifier(&method_name) {
-        return Err(Error::unsupported(
-            "body_method_local_generic_throws_source_unproved",
-            "method name has no faithful Java spelling",
-        ));
-    }
-    Ok(format_generic_method_header(
-        record,
-        &signature,
-        &method_name,
-        &[format!("{variable_name} extends {bound}")],
-        &[variable_name.to_owned()],
-    ))
+    )
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -6927,77 +4066,26 @@ fn static_method_local_generic_throws_declaration(
     class_scope: &[TypeParameterErasure],
     class_signature_present: bool,
     budget: &mut Budget,
-) -> Result<String> {
-    let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
-    let item = &record.item;
-    if !matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-        || item.access_flags & ACC_STATIC == 0
-        || class_internal.contains(&b'$')
-        || class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) != 0
-        || class_superclass != Some(b"java/lang/Object".as_slice())
-        || !class_interfaces.is_empty()
-        || !class_scope.is_empty()
-        || class_signature_present
-        || !matches!(
-            candidate,
-            Some(GenericReturnCandidate {
-                value: GenericReturnValue::Parameter(_),
-                ..
-            })
-        )
-        || !matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)])
-    {
-        return Err(refused(
-            "method-local generic throws requires a direct parameter return in a top-level, non-generic Object subclass with no interfaces",
-        ));
-    }
-    let [SignatureType::TypeVariable(throws_variable)] = parsed.throws.as_slice() else {
-        unreachable!("shape checked above")
-    };
-    let mut matching_parameters = parsed
-        .type_parameters
-        .iter()
-        .filter(|parameter| parameter.name == *throws_variable);
-    let Some(parameter) = matching_parameters.next() else {
-        return Err(refused(
-            "throws variable is outside the method-local type parameter scope",
-        ));
-    };
-    if matching_parameters.next().is_some() {
-        return Err(refused(
-            "throws variable does not identify a unique method-local type parameter",
-        ));
-    }
-    if !parameter.interface_bounds.is_empty() {
-        return Err(refused(
-            "throws variable cannot have additional interface bounds",
-        ));
-    }
-    let Some(SignatureType::Class(bound)) = parameter.class_bound.as_ref() else {
-        return Err(refused(
-            "throws variable must have one explicit class first bound",
-        ));
-    };
-    let [segment] = bound.segments.as_slice() else {
-        return Err(refused("throws variable bound is nested"));
-    };
-    if !segment.arguments.is_empty()
-        || !matches!(
-            segment.binary_name.as_slice(),
-            b"java/lang/Throwable"
-                | b"java/lang/Exception"
-                | b"java/lang/RuntimeException"
-                | b"java/lang/Error"
-        )
-    {
-        return Err(refused(
-            "throws variable bound is not a proved JDK throwable root",
-        ));
-    }
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    generic_method_declaration(
-        record, projection, attributes, parsed, candidate, true, None,
+) -> Option<Result<String>> {
+    jarde_java::generic_source_proof::static_method_local_generic_throws_declaration(
+        &record.item.name.raw().0,
+        &record.item.descriptor.raw().0,
+        record.item.access_flags,
+        projection.declaration.is_some(),
+        !record.annotations.attributes.is_empty()
+            || !record.parameter_annotations.attributes.is_empty()
+            || !record.type_annotations.attributes.is_empty(),
+        !projection.markers.is_empty(),
+        &attributes.throws,
+        parsed,
+        candidate,
+        class_internal,
+        class_flags,
+        class_superclass,
+        class_interfaces,
+        class_scope,
+        class_signature_present,
+        budget,
     )
 }
 
@@ -7010,204 +4098,24 @@ fn no_body_generic_method_declaration(
     class_scope: &[TypeParameterErasure],
     budget: &mut Budget,
 ) -> Result<String> {
-    let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
-    let item = &record.item;
-    if projection.declaration.is_none()
-        || !matches!(record.no_body_kind, Some(NoBodyKind::Abstract))
-        || matches!(item.name.raw().0.as_slice(), b"<init>" | b"<clinit>")
-        || item.access_flags
-            & !(ACC_PUBLIC
-                | ACC_PRIVATE
-                | ACC_PROTECTED
-                | ACC_STATIC
-                | ACC_FINAL
-                | ACC_ABSTRACT
-                | ACC_NATIVE
-                | ACC_SYNCHRONIZED
-                | ACC_STRICT
-                | ACC_VARARGS)
-            != 0
-        || attributes.default.is_some()
-        || !record.annotations.refusals.is_empty()
-        || !record.parameter_annotations.refusals.is_empty()
-        || !record.type_annotations.attributes.is_empty()
-        || !record.type_annotations.refusals.is_empty()
-    {
-        return Err(refused(
-            "method flags, annotations, or source name cannot be preserved",
-        ));
-    }
-    let mut scope = Vec::with_capacity(class_scope.len() + method_scope.len());
-    scope.extend_from_slice(class_scope);
-    scope.extend_from_slice(method_scope);
-    let mut signature = method_descriptor(
-        &item.descriptor.raw().0,
-        is_static(item.access_flags),
-        item.access_flags & ACC_VARARGS != 0,
+    jarde_java::generic_source_proof::no_body_generic_method_declaration(
+        &record.item.name.raw().0,
+        &record.item.descriptor.raw().0,
+        record.item.access_flags,
+        projection.declaration.is_some(),
+        record.no_body_kind,
+        attributes.default.is_some(),
+        !record.annotations.refusals.is_empty()
+            || !record.parameter_annotations.refusals.is_empty()
+            || !record.type_annotations.refusals.is_empty(),
+        !record.type_annotations.attributes.is_empty(),
+        &record.parameter_annotations.uses_by_position,
+        &attributes.throws,
+        parsed,
+        method_scope,
+        class_scope,
+        budget,
     )
-    .ok_or_else(|| refused("physical method descriptor cannot be spelled"))?;
-    if signature.parameters.len() != parsed.parameters.len() {
-        return Err(refused("generic and physical parameter positions differ"));
-    }
-    let mut parameters = Vec::with_capacity(parsed.parameters.len());
-    for parameter in &parsed.parameters {
-        parameters.push(spell_ordinary_signature_type(parameter, &scope, budget, 0)?);
-    }
-    let result = parsed
-        .result
-        .as_ref()
-        .map(|result| spell_ordinary_signature_type(result, &scope, budget, 0))
-        .transpose()?;
-    let mut type_parameters = Vec::with_capacity(parsed.type_parameters.len());
-    for parameter in &parsed.type_parameters {
-        let mut bounds = Vec::new();
-        for bound in parameter
-            .class_bound
-            .iter()
-            .chain(parameter.interface_bounds.iter())
-        {
-            bounds.push(spell_ordinary_signature_type(bound, &scope, budget, 0)?);
-        }
-        let name = std::str::from_utf8(&parameter.name)
-            .map_err(|_| refused("type parameter name is not source UTF-8"))?;
-        if !is_java_identifier(name) {
-            return Err(refused("type parameter has no Java source spelling"));
-        }
-        if bounds.is_empty() {
-            bounds.push("java.lang.Object".to_owned());
-        }
-        type_parameters.push(format!("{name} extends {}", bounds.join(" & ")));
-    }
-    let mut generic_throws = Vec::with_capacity(parsed.throws.len());
-    for exception in &parsed.throws {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        match exception {
-            SignatureType::TypeVariable(variable) => {
-                let Some(first_bound) = scope.iter().find(|entry| entry.name == *variable) else {
-                    return Err(refused(
-                        "throws variable is outside the emitted class and method scopes",
-                    ));
-                };
-                if !matches!(
-                    first_bound.descriptor.as_slice(),
-                    b"Ljava/lang/Throwable;"
-                        | b"Ljava/lang/Exception;"
-                        | b"Ljava/lang/RuntimeException;"
-                        | b"Ljava/lang/Error;"
-                ) {
-                    return Err(refused(
-                        "throws variable first bound is not a proved JDK throwable root",
-                    ));
-                }
-                generic_throws.push(
-                    std::str::from_utf8(variable)
-                        .map_err(|_| refused("throws variable name is not source UTF-8"))?
-                        .to_owned(),
-                );
-            }
-            SignatureType::Class(class) => {
-                let [segment] = class.segments.as_slice() else {
-                    return Err(refused(
-                        "nested throws class has no preserved source position",
-                    ));
-                };
-                if !segment.arguments.is_empty() {
-                    return Err(refused(
-                        "parameterized throws class is not a legal Java exception type",
-                    ));
-                }
-                generic_throws.push(simple_generic_class_name(&segment.binary_name)?);
-            }
-            _ => return Err(refused("throws type has no supported Java source spelling")),
-        }
-    }
-    let throws = if parsed.throws.is_empty() {
-        attributes.throws.clone()
-    } else {
-        generic_throws
-    };
-    for ((spelling, _), ty) in signature.parameters.iter_mut().zip(parameters) {
-        *spelling = ty;
-    }
-    signature.returns = result;
-    let (name, aliased) = written_name(&item.name.raw().0);
-    if aliased || !is_java_identifier(&name) {
-        return Err(refused("method name has no faithful Java spelling"));
-    }
-    Ok(format_generic_method_header(
-        record,
-        &signature,
-        &name,
-        &type_parameters,
-        &throws,
-    ))
-}
-
-/// Assemble a fully spelled generic method head after its source types and proof gates have
-/// succeeded. No-body methods and recovered empty-void methods share this final spelling path.
-fn format_generic_method_header(
-    record: &ClassSourceMethod,
-    signature: &Signature,
-    name: &str,
-    type_parameters: &[String],
-    throws: &[String],
-) -> String {
-    let flags = record.item.access_flags;
-    let mut words = Vec::new();
-    words.extend(visibility(flags));
-    if flags & ACC_STATIC != 0 {
-        words.push("static");
-    }
-    if flags & ACC_FINAL != 0 {
-        words.push("final");
-    }
-    if flags & ACC_ABSTRACT != 0 {
-        words.push("abstract");
-    }
-    if flags & ACC_NATIVE != 0 {
-        words.push("native");
-    }
-    if flags & ACC_SYNCHRONIZED != 0 {
-        words.push("synchronized");
-    }
-    if flags & ACC_STRICT != 0 {
-        words.push("strictfp");
-    }
-    let mut arguments = Vec::with_capacity(signature.parameters.len());
-    for (position, (ty, slot)) in signature.parameters.iter().enumerate() {
-        let annotations = record
-            .parameter_annotations
-            .uses_by_position
-            .get(position)
-            .into_iter()
-            .flatten()
-            .map(|annotation| format!("{annotation} "))
-            .collect::<String>();
-        let varargs = signature.varargs && position + 1 == signature.parameters.len();
-        arguments.push(format!(
-            "{annotations}{} arg{slot}",
-            varargs_type(ty, varargs)
-        ));
-    }
-    let mut declaration = String::new();
-    if !words.is_empty() {
-        declaration.push_str(&words.join(" "));
-        declaration.push(' ');
-    }
-    if !type_parameters.is_empty() {
-        declaration.push('<');
-        declaration.push_str(&type_parameters.join(", "));
-        declaration.push_str("> ");
-    }
-    declaration.push_str(signature.returns.as_deref().unwrap_or("void"));
-    declaration.push(' ');
-    declaration.push_str(name);
-    declaration.push('(');
-    declaration.push_str(&arguments.join(", "));
-    declaration.push(')');
-    declaration.push_str(&throws_clause(throws));
-    declaration
 }
 
 /// Spell ordinary parameterized method types only after the reader has proved their erasures.
@@ -7227,1050 +4135,48 @@ fn ordinary_parameterized_declaration(
     allow_null_return: bool,
     proved_list_parameters: &[(u16, Vec<String>)],
     budget: &mut Budget,
-) -> Result<String> {
-    let refused = |why| Error::unsupported("ordinary_generic_source_unproved", why);
-    let item = &record.item;
-    let empty_void_wildcard_parameter = ordinary_empty_void_wildcard_parameter_is_proved(
-        record,
-        attributes,
+) -> Result<(String, &'static str)> {
+    let proof = projection
+        .and_then(|state| state.same_class_generic_body_proof.as_ref())
+        .or(record.same_class_generic_body_proof.as_ref());
+    jarde_java::generic_source_proof::ordinary_parameterized_declaration(
+        &record.item.name.raw().0,
+        &record.item.descriptor.raw().0,
+        record.item.access_flags,
+        projection.map_or(record.declaration.is_some(), |state| {
+            state.declaration.is_some()
+        }),
+        matches!(record.outcome, ClassSourceOutcome::Recovered { .. }),
+        matches!(record.outcome, ClassSourceOutcome::NoBody),
+        record.no_body_kind.is_some(),
+        matches!(
+            record.item.body,
+            crate::MemberBodyEvidence::CodeAttribute { .. }
+        ),
+        projection.map_or(record.markers.is_empty(), |state| state.markers.is_empty()),
+        !record.annotations.attributes.is_empty()
+            || !record.parameter_annotations.attributes.is_empty(),
+        !record.annotations.refusals.is_empty()
+            || !record.parameter_annotations.refusals.is_empty()
+            || !record.type_annotations.refusals.is_empty(),
+        !record.type_annotations.attributes.is_empty(),
+        &record.parameter_annotations.uses_by_position,
+        attributes.default.is_some(),
+        &attributes.throws,
+        !attributes.throws_raw.is_empty(),
         parsed,
         candidate,
+        proof,
+        proof.is_none_or(|proof| proof.method == record.item.identity),
         class_flags,
         class_internal,
         class_superclass,
         class_interfaces,
-    );
-    if projection.map_or(record.declaration.is_none(), |state| {
-        state.declaration.is_none()
-    }) || matches!(item.name.raw().0.as_slice(), b"<init>" | b"<clinit>")
-        || item.access_flags
-            & !(ACC_PUBLIC
-                | ACC_PRIVATE
-                | ACC_PROTECTED
-                | ACC_STATIC
-                | ACC_FINAL
-                | ACC_ABSTRACT
-                | ACC_NATIVE
-                | ACC_SYNCHRONIZED
-                | ACC_STRICT
-                | ACC_VARARGS)
-            != 0
-        || attributes.default.is_some()
-        || !record.annotations.refusals.is_empty()
-        || !record.parameter_annotations.refusals.is_empty()
-        || !record.type_annotations.attributes.is_empty()
-        || !record.type_annotations.refusals.is_empty()
-    {
-        return Err(refused(
-            "member flags, annotation positions, or source name cannot be preserved",
-        ));
-    }
-    match &record.outcome {
-        ClassSourceOutcome::Recovered { .. }
-            if projection.map_or(record.markers.is_empty(), |state| state.markers.is_empty()) => {}
-        ClassSourceOutcome::NoBody if record.no_body_kind.is_some() => {}
-        _ => {
-            return Err(refused(
-                "method body or no-body declaration has no complete source proof",
-            ));
-        }
-    }
-    let mut signature = method_descriptor(
-        &item.descriptor.raw().0,
-        is_static(item.access_flags),
-        item.access_flags & ACC_VARARGS != 0,
-    )
-    .ok_or_else(|| refused("physical method descriptor cannot be spelled"))?;
-    if signature.parameters.len() != parsed.parameters.len() {
-        return Err(refused("generic and physical parameter positions differ"));
-    }
-    let source_type_path = match candidate.map(|candidate| &candidate.value) {
-        Some(GenericReturnValue::MemberCreation { target, .. }) => {
-            Some(target.source_type_path.as_slice())
-        }
-        Some(GenericReturnValue::StaticMemberCreation { target, .. }) => {
-            Some(target.source_type_path.as_slice())
-        }
-        _ => None,
-    };
-    let mut parameter_types = Vec::with_capacity(parsed.parameters.len());
-    for parameter in &parsed.parameters {
-        parameter_types.push(spell_ordinary_signature_type_with_member_path(
-            parameter,
-            class_scope,
-            source_type_path.unwrap_or(&[]),
-            budget,
-            0,
-        )?);
-    }
-    let result = parsed
-        .result
-        .as_ref()
-        .map(|result| {
-            spell_ordinary_signature_type_with_member_path(
-                result,
-                class_scope,
-                source_type_path.unwrap_or(&[]),
-                budget,
-                0,
-            )
-        })
-        .transpose()?;
-    let mut generic_throws = Vec::with_capacity(parsed.throws.len());
-    for exception in &parsed.throws {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        match exception {
-            SignatureType::Class(class) => {
-                let [segment] = class.segments.as_slice() else {
-                    return Err(refused(
-                        "nested throws type has no preserved source position",
-                    ));
-                };
-                if !segment.arguments.is_empty() {
-                    return Err(refused(
-                        "parameterized throws type has no preserved source position",
-                    ));
-                }
-                generic_throws.push(simple_generic_class_name(&segment.binary_name)?);
-            }
-            SignatureType::TypeVariable(variable) => {
-                match &record.outcome {
-                    ClassSourceOutcome::NoBody => {}
-                    ClassSourceOutcome::Recovered { .. } => prove_body_generic_throws_shape(
-                        record,
-                        parsed,
-                        candidate,
-                        class_internal,
-                        class_flags,
-                        class_superclass,
-                        class_interfaces,
-                        budget,
-                    )?,
-                    _ => {
-                        return Err(refused(
-                            "generic throws variable has no complete body or no-body proof",
-                        ));
-                    }
-                }
-                let Some(class_variable) = class_scope.iter().find(|item| item.name == *variable)
-                else {
-                    return Err(refused(
-                        "generic throws variable is not present in the emitted class header",
-                    ));
-                };
-                if !matches!(
-                    class_variable.descriptor.as_slice(),
-                    b"Ljava/lang/Throwable;"
-                        | b"Ljava/lang/Exception;"
-                        | b"Ljava/lang/RuntimeException;"
-                        | b"Ljava/lang/Error;"
-                ) {
-                    return Err(refused(
-                        "generic throws variable first bound is not a proved JDK throwable root",
-                    ));
-                }
-                let name = std::str::from_utf8(variable)
-                    .map_err(|_| refused("generic throws variable name is not source UTF-8"))?;
-                if !is_java_identifier(name) {
-                    return Err(refused(
-                        "generic throws variable has no Java source spelling",
-                    ));
-                }
-                generic_throws.push(name.to_owned());
-            }
-            _ => {
-                return Err(refused(
-                    "generic throws type has no preserved Java source spelling",
-                ));
-            }
-        }
-    }
-    let throws = if parsed.throws.is_empty() {
-        attributes.throws.clone()
-    } else {
-        generic_throws
-    };
-    if let ClassSourceOutcome::Recovered { .. } = &record.outcome {
-        let returned = if let Some(proof) = projection
-            .and_then(|state| state.same_class_generic_body_proof.as_ref())
-            .or(record.same_class_generic_body_proof.as_ref())
-        {
-            if proof.method != item.identity
-                || proof.formal_names.len() != signature.parameters.len()
-                || (parsed.result.is_some() && proof.return_sources.is_empty())
-                || (proof.constructor_call_bci.is_some() != (item.identity.name.0 == b"<init>"))
-                || proof
-                    .field_write_sites
-                    .iter()
-                    .collect::<std::collections::HashSet<_>>()
-                    .len()
-                    != proof.field_write_sites.len()
-            {
-                return Err(refused(
-                    "same-run generic body proof has different method formals",
-                ));
-            }
-            for ((_, slot), (proof_slot, proof_name)) in
-                signature.parameters.iter().zip(&proof.formal_names)
-            {
-                if slot != proof_slot || !is_java_identifier(proof_name) {
-                    return Err(refused(
-                        "same-run generic body proof has different formal identity",
-                    ));
-                }
-            }
-            let mut returned_positions = Vec::new();
-            for source in &proof.return_sources {
-                if let SameClassGenericBodyReturnSource::Parameter { slot } = source {
-                    let Some(position) = signature.parameters.iter().position(|(_, at)| at == slot)
-                    else {
-                        return Err(refused("generic return source is not a physical formal"));
-                    };
-                    if parsed.result.as_ref() != Some(&parsed.parameters[position]) {
-                        return Err(refused(
-                            "generic return formal differs from the Signature result",
-                        ));
-                    }
-                    returned_positions.push(position);
-                }
-            }
-            Some(returned_positions)
-        } else {
-            let candidate = candidate.ok_or_else(|| {
-                refused("same-run Program/SSA cannot prove the body under parameterized types")
-            })?;
-            if candidate.parameters.len() != signature.parameters.len() {
-                return Err(refused("same-run parameter count differs from descriptor"));
-            }
-            for ((_, slot), (candidate_slot, name)) in
-                signature.parameters.iter().zip(&candidate.parameters)
-            {
-                budget.poll()?;
-                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                if slot != candidate_slot || !is_java_identifier(name) {
-                    return Err(refused(
-                        "same-run parameter slot or source name is unproved",
-                    ));
-                }
-            }
-            let complete_body_parameters_proved = if let GenericReturnValue::CompleteBody {
-                unread_parameter_slots,
-                ..
-            } = &candidate.value
-            {
-                budget.charge(
-                    CountedBudgetDimension::AnalysisSteps,
-                    u64::try_from(
-                        parsed
-                            .parameters
-                            .len()
-                            .saturating_add(unread_parameter_slots.len()),
-                    )
-                    .unwrap_or(u64::MAX),
-                )?;
-                let mut proved = unread_parameter_slots
-                    .windows(2)
-                    .all(|slots| slots[0] < slots[1]);
-                budget.charge(
-                    CountedBudgetDimension::AnalysisSteps,
-                    u64::try_from(proved_list_parameters.len()).unwrap_or(u64::MAX),
-                )?;
-                proved &= proved_list_parameters
-                    .windows(2)
-                    .all(|slots| slots[0].0 < slots[1].0);
-                for slot in unread_parameter_slots {
-                    budget.poll()?;
-                    proved &= signature
-                        .parameters
-                        .binary_search_by_key(slot, |(_, physical_slot)| *physical_slot)
-                        .is_ok();
-                }
-                for (position, parameter) in parsed.parameters.iter().enumerate() {
-                    budget.poll()?;
-                    let physical = signature.parameters.get(position);
-                    let list_signature_element = match parameter {
-                        SignatureType::Class(class) => {
-                            budget.charge(
-                                CountedBudgetDimension::AnalysisSteps,
-                                u64::try_from(class.segments.len())
-                                    .unwrap_or(u64::MAX)
-                                    .saturating_add(1),
-                            )?;
-                            match class.segments.as_slice() {
-                                [list] if list.binary_name.as_slice() == b"java/util/List" => {
-                                    match list.arguments.as_slice() {
-                                        [TypeArgument::Exact(SignatureType::Class(element))] => {
-                                            budget.charge(
-                                                CountedBudgetDimension::AnalysisSteps,
-                                                u64::try_from(element.segments.len())
-                                                    .unwrap_or(u64::MAX)
-                                                    .saturating_add(1),
-                                            )?;
-                                            if element.segments.is_empty()
-                                                || element
-                                                    .segments
-                                                    .iter()
-                                                    .any(|segment| !segment.arguments.is_empty())
-                                            {
-                                                None
-                                            } else {
-                                                let copied_bytes = element.segments.iter().fold(
-                                                    0u64,
-                                                    |total, segment| {
-                                                        total.saturating_add(
-                                                            u64::try_from(
-                                                                segment.binary_name.len(),
-                                                            )
-                                                            .unwrap_or(u64::MAX),
-                                                        )
-                                                    },
-                                                );
-                                                budget.charge(
-                                                    CountedBudgetDimension::OutputBytes,
-                                                    copied_bytes,
-                                                )?;
-                                                let element_signature =
-                                                    SignatureType::Class(element.clone());
-                                                Some(
-                                                    spell_ordinary_signature_type_with_member_path(
-                                                        &element_signature,
-                                                        class_scope,
-                                                        source_type_path.unwrap_or(&[]),
-                                                        budget,
-                                                        0,
-                                                    )?,
-                                                )
-                                            }
-                                        }
-                                        _ => None,
-                                    }
-                                }
-                                _ => None,
-                            }
-                        }
-                        _ => None,
-                    };
-                    let list_actual_types = physical.and_then(|(_, slot)| {
-                        proved_list_parameters
-                            .binary_search_by_key(slot, |(proved_slot, _)| *proved_slot)
-                            .ok()
-                            .map(|index| &proved_list_parameters[index].1)
-                    });
-                    let list_element_matches =
-                        match (list_signature_element.as_deref(), list_actual_types) {
-                            (Some(_), Some(actual_types)) if actual_types.is_empty() => true,
-                            (Some(expected), Some(actual_types)) => {
-                                actual_types.first().is_some_and(|actual| {
-                                    actual.as_str() == expected
-                                        && actual_types.iter().all(|candidate| candidate == actual)
-                                })
-                            }
-                            _ => false,
-                        };
-                    let preserved = physical.is_some_and(|(physical_type, slot)| {
-                        matches!(parameter, SignatureType::TypeVariable(_))
-                            || parameter_types.get(position) == Some(physical_type)
-                            || unread_parameter_slots.binary_search(slot).is_ok()
-                            || list_element_matches
-                    });
-                    proved &= preserved;
-                }
-                proved
-            } else {
-                false
-            };
-            match &candidate.value {
-                GenericReturnValue::EmptyVoid
-                    if parsed.result.is_none()
-                        && matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)]) =>
-                {
-                    Some(Vec::new())
-                }
-                GenericReturnValue::EmptyVoid if empty_void_wildcard_parameter => Some(Vec::new()),
-                GenericReturnValue::EmptyVoid => None,
-                // A complete void body whose parameters are only read keeps compiling
-                // when a class-scope variable replaces the erased parameter spelling: the reader
-                // proved the variable's erasure is that parameter, so every read stays assignable to
-                // the context that accepted the erased reference. The same-run candidate refused any
-                // reassignment of the parameter locals, which is the write side this proof refuses.
-                GenericReturnValue::CompleteBody {
-                    result_type: None, ..
-                } if parsed.result.is_none()
-                    && parsed.throws.is_empty()
-                    && complete_body_parameters_proved =>
-                {
-                    Some(Vec::new())
-                }
-                GenericReturnValue::CompleteBody {
-                    result_type: Some(result_type),
-                    ..
-                } if parsed.throws.is_empty()
-                    && ordinary_primitive_result_matches(
-                        result_type,
-                        parsed.result.as_ref(),
-                        result.as_deref(),
-                        signature.returns.as_deref(),
-                    )
-                    && complete_body_parameters_proved
-                    && !proved_list_parameters.is_empty() =>
-                {
-                    Some(Vec::new())
-                }
-                GenericReturnValue::CompleteBody { .. } => None,
-                GenericReturnValue::NullLiteral if allow_null_return => Some(Vec::new()),
-                GenericReturnValue::NullLiteral => None,
-                GenericReturnValue::Parameter(slot) => signature
-                    .parameters
-                    .iter()
-                    .position(|(_, at)| *at == *slot)
-                    .map(|position| vec![position]),
-                GenericReturnValue::Conditional {
-                    test,
-                    when_true,
-                    when_false,
-                } => {
-                    let test_position =
-                        signature.parameters.iter().position(|(_, at)| *at == *test);
-                    let true_position = signature
-                        .parameters
-                        .iter()
-                        .position(|(_, at)| *at == *when_true);
-                    let false_position = signature
-                        .parameters
-                        .iter()
-                        .position(|(_, at)| *at == *when_false);
-                    match (test_position, true_position, false_position) {
-                        (Some(test_position), Some(true_position), Some(false_position))
-                            if parsed.parameters[test_position] == SignatureType::Base(b'Z') =>
-                        {
-                            Some(vec![true_position, false_position])
-                        }
-                        _ => None,
-                    }
-                }
-                GenericReturnValue::MemberCreation {
-                    target,
-                    qualifier_slot,
-                } => {
-                    let qualifier_position = signature
-                        .parameters
-                        .iter()
-                        .position(|(_, slot)| *slot == *qualifier_slot);
-                    qualifier_position
-                        .is_some_and(|position| {
-                            let parameter_matches =
-                                parsed.parameters.get(position).is_some_and(|ty| {
-                                    member_signature_class_matches(
-                                        ty,
-                                        &target.outer,
-                                        &target.source_type_path,
-                                        false,
-                                    )
-                                });
-                            parameter_matches
-                                && parsed.result.as_ref().is_some_and(|ty| {
-                                    signature_result_matches_member_creation(ty, target)
-                                })
-                        })
-                        .then_some(Vec::new())
-                }
-                GenericReturnValue::StaticMemberCreation { target, .. } => parsed
-                    .result
-                    .as_ref()
-                    .is_some_and(|ty| {
-                        member_signature_class_matches(
-                            ty,
-                            &target.owner,
-                            &target.source_type_path,
-                            false,
-                        )
-                    })
-                    .then_some(Vec::new()),
-                GenericReturnValue::TypedFunctional { target } => {
-                    let expected = match target.kind {
-                        TypedFunctionalKind::FunctionStringInteger => {
-                            "java.util.function.Function<java.lang.String, java.lang.Integer>"
-                        }
-                        TypedFunctionalKind::SupplierString => {
-                            "java.util.function.Supplier<java.lang.String>"
-                        }
-                    };
-                    (parsed.parameters.is_empty() && result.as_deref() == Some(expected))
-                        .then_some(Vec::new())
-                }
-                GenericReturnValue::ArrayCreation { array_type, .. }
-                    if parsed.type_parameters.is_empty()
-                        && parsed.parameters.is_empty()
-                        && signature.parameters.is_empty()
-                        && parsed.throws.is_empty()
-                        && attributes.throws_raw.is_empty()
-                        && throws.is_empty()
-                        && candidate.parameters.is_empty()
-                        && wildcard_array_return_matches(
-                            array_type,
-                            parsed.result.as_ref(),
-                            signature.returns.as_deref(),
-                            budget,
-                        )? =>
-                {
-                    Some(Vec::new())
-                }
-                GenericReturnValue::ArrayCreation { .. } => None,
-            }
-        }
-        .ok_or_else(|| {
-            refused("return source is not a proven parameter value or selected member creation")
-        })?;
-        if projection
-            .and_then(|state| state.same_class_generic_body_proof.as_ref())
-            .or(record.same_class_generic_body_proof.as_ref())
-            .is_none()
-        {
-            let Some(candidate) = candidate else {
-                return Err(refused("generic return candidate is missing"));
-            };
-            if !matches!(
-                candidate.value,
-                GenericReturnValue::MemberCreation { .. }
-                    | GenericReturnValue::StaticMemberCreation { .. }
-                    | GenericReturnValue::TypedFunctional { .. }
-            ) && returned
-                .iter()
-                .any(|position| parsed.result.as_ref() != Some(&parsed.parameters[*position]))
-            {
-                return Err(refused(
-                    "returned parameter has a different generic source type",
-                ));
-            }
-        }
-    }
-    for ((spelling, _), ty) in signature.parameters.iter_mut().zip(parameter_types) {
-        *spelling = ty;
-    }
-    signature.returns = result;
-    let (name, aliased) = written_name(&item.name.raw().0);
-    if aliased || !is_java_identifier(&name) {
-        return Err(refused("method name has no faithful Java spelling"));
-    }
-    let mut words = Vec::new();
-    words.extend(visibility(item.access_flags));
-    if is_static(item.access_flags) {
-        words.push("static");
-    }
-    if item.access_flags & ACC_FINAL != 0 {
-        words.push("final");
-    }
-    if item.access_flags & ACC_ABSTRACT != 0 {
-        words.push("abstract");
-    }
-    if item.access_flags & ACC_NATIVE != 0 {
-        words.push("native");
-    }
-    if item.access_flags & ACC_SYNCHRONIZED != 0 {
-        words.push("synchronized");
-    }
-    if item.access_flags & ACC_STRICT != 0 {
-        words.push("strictfp");
-    }
-    if is_default_member(class_flags, item) {
-        words.push("default");
-    }
-    let names = projection
-        .and_then(|state| state.same_class_generic_body_proof.as_ref())
-        .or(record.same_class_generic_body_proof.as_ref())
-        .map(|proof| proof.formal_names.as_slice())
-        .or_else(|| candidate.map(|candidate| candidate.parameters.as_slice()));
-    let mut arguments = Vec::new();
-    for (position, (ty, slot)) in signature.parameters.iter().enumerate() {
-        let name = names
-            .and_then(|names| names.get(position).map(|(_, name)| name.clone()))
-            .unwrap_or_else(|| format!("arg{slot}"));
-        let varargs = signature.varargs && position + 1 == signature.parameters.len();
-        let annotations = record
-            .parameter_annotations
-            .uses_by_position
-            .get(position)
-            .into_iter()
-            .flatten()
-            .map(|annotation| format!("{annotation} "))
-            .collect::<String>();
-        arguments.push(format!("{annotations}{} {name}", varargs_type(ty, varargs)));
-    }
-    Ok(format!(
-        "{}{} {}({}){}",
-        if words.is_empty() {
-            String::new()
-        } else {
-            format!("{} ", words.join(" "))
-        },
-        signature.returns.as_deref().unwrap_or("void"),
-        name,
-        arguments.join(", "),
-        throws_clause(&throws),
-    ))
-}
-
-/// Accept only `T<?>[][]...` when the same-run creation and reader-spelled physical return name
-/// state the same array shape. Erasure validity itself is established by the reader before this
-/// declaration projection is called; this gate narrows that proof to one unbounded wildcard leaf.
-fn wildcard_array_return_matches(
-    actual_array_type: &str,
-    signature_result: Option<&SignatureType>,
-    physical_return_type: Option<&str>,
-    budget: &mut Budget,
-) -> Result<bool> {
-    let Some(physical_return_type) = physical_return_type else {
-        return Ok(false);
-    };
-    if actual_array_type != physical_return_type {
-        return Ok(false);
-    }
-
-    let mut physical_leaf = actual_array_type;
-    let mut physical_rank = 0usize;
-    while let Some(leaf) = physical_leaf.strip_suffix("[]") {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        physical_leaf = leaf;
-        physical_rank = physical_rank.saturating_add(1);
-    }
-    if physical_rank == 0 || physical_leaf.is_empty() {
-        return Ok(false);
-    }
-
-    let Some(mut signature_leaf) = signature_result else {
-        return Ok(false);
-    };
-    let mut signature_rank = 0usize;
-    while let SignatureType::Array(component) = signature_leaf {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        signature_leaf = component;
-        signature_rank = signature_rank.saturating_add(1);
-    }
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    let SignatureType::Class(class) = signature_leaf else {
-        return Ok(false);
-    };
-    let [segment] = class.segments.as_slice() else {
-        return Ok(false);
-    };
-    if segment.arguments.is_empty() {
-        return Ok(false);
-    }
-    let mut all_unbounded = true;
-    for argument in &segment.arguments {
-        budget.poll()?;
-        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        all_unbounded &= matches!(argument, TypeArgument::Any);
-    }
-    Ok(all_unbounded
-        && signature_rank == physical_rank
-        && simple_generic_class_name(&segment.binary_name)? == physical_leaf)
-}
-
-/// The first narrow empty-body parameter projection: one static `List` wildcard whose bound has
-/// an existing simple source spelling. The body candidate is produced from the same complete
-/// Code/AST/SSA run and carries every physical parameter slot.
-fn ordinary_empty_void_wildcard_parameter_is_proved(
-    record: &ClassSourceMethod,
-    attributes: &MemberAttributes,
-    parsed: &jarde_reader::signature::MethodSignature,
-    candidate: Option<&GenericReturnCandidate>,
-    class_flags: u16,
-    class_internal: &[u8],
-    class_superclass: Option<&[u8]>,
-    class_interfaces: &[Vec<u8>],
-) -> bool {
-    let item = &record.item;
-    candidate.is_some_and(|candidate| matches!(&candidate.value, GenericReturnValue::EmptyVoid))
-        && is_static(item.access_flags)
-        && item.access_flags & !(ACC_PUBLIC | ACC_PRIVATE | ACC_PROTECTED | ACC_STATIC) == 0
-        && attributes.throws_raw.is_empty()
-        && parsed.result.is_none()
-        && parsed.throws.is_empty()
-        && record.annotations.attributes.is_empty()
-        && record.annotations.refusals.is_empty()
-        && record.parameter_annotations.attributes.is_empty()
-        && record.parameter_annotations.refusals.is_empty()
-        && record.type_annotations.attributes.is_empty()
-        && record.type_annotations.refusals.is_empty()
-        && !class_internal.contains(&b'$')
-        && class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) == 0
-        && class_superclass == Some(b"java/lang/Object".as_slice())
-        && class_interfaces.is_empty()
-        && matches!(parsed.parameters.as_slice(), [SignatureType::Class(class)]
-            if matches!(class.segments.as_slice(), [segment]
-                if segment.binary_name == b"java/util/List"
-                    && matches!(segment.arguments.as_slice(), [argument]
-                        if ordinary_simple_wildcard_argument(argument))))
-}
-
-fn ordinary_simple_wildcard_argument(argument: &TypeArgument) -> bool {
-    let simple_class = |ty: &SignatureType| {
-        matches!(ty, SignatureType::Class(class)
-            if matches!(class.segments.as_slice(), [segment]
-                if segment.arguments.is_empty()
-                    && simple_generic_class_name(&segment.binary_name).is_ok()))
-    };
-    let primitive_array = |ty: &SignatureType| {
-        matches!(ty, SignatureType::Array(element)
-            if matches!(element.as_ref(), SignatureType::Base(b'B' | b'C' | b'D' | b'F' | b'I' | b'J' | b'S' | b'Z')))
-    };
-    match argument {
-        TypeArgument::Any => true,
-        TypeArgument::Extends(ty) | TypeArgument::Super(ty) => {
-            simple_class(ty) || primitive_array(ty)
-        }
-        TypeArgument::Exact(_) => false,
-    }
-}
-
-fn spell_ordinary_signature_type(
-    ty: &SignatureType,
-    class_scope: &[TypeParameterErasure],
-    budget: &mut Budget,
-    depth: usize,
-) -> Result<String> {
-    spell_ordinary_signature_type_with_member_path(ty, class_scope, &[], budget, depth)
-}
-
-/// The class-header spelling of one `Signature` type — the `extends`/`implements` entries
-/// [`ClassSourceDeclaration::project_generic_signature`] publishes. It is the same recursion as
-/// the member and annotation positions, with one difference: a single-segment class name is
-/// spelled by [`binary_pool_class_name`], the class file's own name with `$` kept, because that
-/// is the name the raw header already states for every parent no `Signature` projects. A
-/// projected entry therefore adds its type arguments and changes no name.
-fn spell_class_header_signature_type(
-    ty: &SignatureType,
-    class_scope: &[TypeParameterErasure],
-    budget: &mut Budget,
-    depth: usize,
-) -> Result<String> {
-    spell_signature_type_with_spelling(
-        ty,
         class_scope,
-        &[],
-        ClassNameSpelling::BinaryPoolName,
+        allow_null_return,
+        proved_list_parameters,
         budget,
-        depth,
     )
-}
-
-/// How one class type's binary name becomes text.
-#[derive(Clone, Copy, Eq, PartialEq)]
-enum ClassNameSpelling {
-    /// A member, annotation, `throws` or type-parameter position: a single-segment name is
-    /// spelled only when a member proof selected its source path
-    /// ([`simple_generic_class_name`]), so a `$` name without that proof has no spelling here.
-    SelectedSourcePath,
-    /// The class header's own `extends`/`implements` entries ([`binary_pool_class_name`]).
-    BinaryPoolName,
-}
-
-fn spell_ordinary_signature_type_with_member_path(
-    ty: &SignatureType,
-    class_scope: &[TypeParameterErasure],
-    source_type_path: &[jarde_java::report::ProvedMemberInnerSourceSegment],
-    budget: &mut Budget,
-    depth: usize,
-) -> Result<String> {
-    spell_signature_type_with_spelling(
-        ty,
-        class_scope,
-        source_type_path,
-        ClassNameSpelling::SelectedSourcePath,
-        budget,
-        depth,
-    )
-}
-
-fn spell_signature_type_with_spelling(
-    ty: &SignatureType,
-    class_scope: &[TypeParameterErasure],
-    source_type_path: &[jarde_java::report::ProvedMemberInnerSourceSegment],
-    class_names: ClassNameSpelling,
-    budget: &mut Budget,
-    depth: usize,
-) -> Result<String> {
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    if depth > 128 {
-        return Err(Error::unsupported(
-            "ordinary_generic_source_unproved",
-            "type nesting exceeds source projection depth",
-        ));
-    }
-    let nested = depth + 1;
-    match ty {
-        SignatureType::Base(code) => Ok(match code {
-            b'B' => "byte",
-            b'C' => "char",
-            b'D' => "double",
-            b'F' => "float",
-            b'I' => "int",
-            b'J' => "long",
-            b'S' => "short",
-            b'Z' => "boolean",
-            _ => {
-                return Err(Error::unsupported(
-                    "ordinary_generic_source_unproved",
-                    "unknown primitive signature type",
-                ));
-            }
-        }
-        .to_owned()),
-        SignatureType::Array(element) => Ok(format!(
-            "{}[]",
-            spell_signature_type_with_spelling(
-                element,
-                class_scope,
-                source_type_path,
-                class_names,
-                budget,
-                nested,
-            )?
-        )),
-        SignatureType::TypeVariable(name) => class_scope
-            .iter()
-            .find(|variable| variable.name == *name)
-            .and_then(|variable| std::str::from_utf8(&variable.name).ok())
-            .filter(|name| is_java_identifier(name))
-            .map(str::to_owned)
-            .ok_or_else(|| {
-                Error::unsupported(
-                    "ordinary_generic_source_unproved",
-                    "type variable is not present in the emitted class header",
-                )
-            }),
-        SignatureType::Class(class) => {
-            if class.segments.is_empty() {
-                return Err(Error::unsupported(
-                    "ordinary_generic_source_unproved",
-                    "nested binary class path has no unique Java source spelling",
-                ));
-            }
-            let mut result = String::new();
-            let mut previous_mapping: Option<&jarde_java::report::ProvedMemberInnerSourceSegment> =
-                None;
-            for segment in &class.segments {
-                budget.poll()?;
-                let mapping = unique_member_source_segment(source_type_path, &segment.binary_name)?;
-                if let Some(mapping) = mapping {
-                    if !segment.arguments.is_empty()
-                        && segment.arguments.len() != mapping.type_parameter_count
-                    {
-                        return Err(Error::unsupported(
-                            "ordinary_generic_source_unproved",
-                            "selected member type has a different number of source arguments",
-                        ));
-                    }
-                    if mapping.is_static || mapping.enclosing_binary_name.is_none() {
-                        result = mapping.source_name.clone();
-                    } else {
-                        let previous = previous_mapping.ok_or_else(|| {
-                            Error::unsupported(
-                                "ordinary_generic_source_unproved",
-                                "non-static member type has no explicit enclosing Signature segment",
-                            )
-                        })?;
-                        if mapping.enclosing_binary_name.as_deref()
-                            != Some(previous.binary_name.as_str())
-                            || !segment_is_immediate_source_child(
-                                &mapping.source_name,
-                                &previous.source_name,
-                            )
-                        {
-                            return Err(Error::unsupported(
-                                "ordinary_generic_source_unproved",
-                                "selected non-static member does not follow the Signature's enclosing segment",
-                            ));
-                        }
-                        let suffix = mapping
-                            .source_name
-                            .strip_prefix(&previous.source_name)
-                            .and_then(|suffix| suffix.strip_prefix('.'))
-                            .ok_or_else(|| {
-                                Error::unsupported(
-                                    "ordinary_generic_source_unproved",
-                                    "selected member source path is inconsistent",
-                                )
-                            })?;
-                        if !is_java_identifier(suffix) {
-                            return Err(Error::unsupported(
-                                "ordinary_generic_source_unproved",
-                                "selected member source segment is not a Java identifier",
-                            ));
-                        }
-                        result.push('.');
-                        result.push_str(suffix);
-                    }
-                    previous_mapping = Some(mapping);
-                } else {
-                    if class.segments.len() != 1 {
-                        return Err(Error::unsupported(
-                            "ordinary_generic_source_unproved",
-                            "nested binary class path has no selected Java source spelling",
-                        ));
-                    }
-                    result = match class_names {
-                        ClassNameSpelling::SelectedSourcePath => {
-                            simple_generic_class_name(&segment.binary_name)?
-                        }
-                        ClassNameSpelling::BinaryPoolName => {
-                            binary_pool_class_name(&segment.binary_name)?
-                        }
-                    };
-                    previous_mapping = None;
-                }
-                if !segment.arguments.is_empty() {
-                    let mut arguments = Vec::with_capacity(segment.arguments.len());
-                    for argument in &segment.arguments {
-                        budget.poll()?;
-                        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                        let spelling = match argument {
-                            TypeArgument::Any => "?".to_owned(),
-                            TypeArgument::Exact(ty) => spell_signature_type_with_spelling(
-                                ty,
-                                class_scope,
-                                source_type_path,
-                                class_names,
-                                budget,
-                                nested,
-                            )?,
-                            TypeArgument::Extends(ty) => format!(
-                                "? extends {}",
-                                spell_signature_type_with_spelling(
-                                    ty,
-                                    class_scope,
-                                    source_type_path,
-                                    class_names,
-                                    budget,
-                                    nested,
-                                )?
-                            ),
-                            TypeArgument::Super(ty) => format!(
-                                "? super {}",
-                                spell_signature_type_with_spelling(
-                                    ty,
-                                    class_scope,
-                                    source_type_path,
-                                    class_names,
-                                    budget,
-                                    nested,
-                                )?
-                            ),
-                        };
-                        arguments.push(spelling);
-                    }
-                    result.push('<');
-                    result.push_str(&arguments.join(", "));
-                    result.push('>');
-                }
-            }
-            Ok(result)
-        }
-    }
-}
-
-fn unique_member_source_segment<'a>(
-    source_type_path: &'a [jarde_java::report::ProvedMemberInnerSourceSegment],
-    binary_name: &[u8],
-) -> Result<Option<&'a jarde_java::report::ProvedMemberInnerSourceSegment>> {
-    let mut found: Option<&jarde_java::report::ProvedMemberInnerSourceSegment> = None;
-    for segment in source_type_path {
-        if segment.binary_name.as_bytes() != binary_name {
-            continue;
-        }
-        if found.is_some_and(|previous| previous != segment) {
-            return Err(Error::unsupported(
-                "ordinary_generic_source_unproved",
-                "selected member source path is ambiguous",
-            ));
-        }
-        found = Some(segment);
-    }
-    Ok(found)
-}
-
-fn segment_is_immediate_source_child(child: &str, parent: &str) -> bool {
-    child
-        .strip_prefix(parent)
-        .and_then(|suffix| suffix.strip_prefix('.'))
-        .is_some_and(is_java_identifier)
-}
-
-fn member_signature_class_matches(
-    ty: &SignatureType,
-    expected_binary_name: &str,
-    source_type_path: &[jarde_java::report::ProvedMemberInnerSourceSegment],
-    require_all_source_segments: bool,
-) -> bool {
-    let SignatureType::Class(class) = ty else {
-        return false;
-    };
-    let Some(expected) = source_type_path
-        .iter()
-        .find(|segment| segment.binary_name == expected_binary_name)
-    else {
-        return false;
-    };
-    if class
-        .segments
-        .last()
-        .is_none_or(|segment| segment.binary_name.as_slice() != expected_binary_name.as_bytes())
-        || (require_all_source_segments && class.segments.len() != 2)
-    {
-        return false;
-    }
-    if expected.type_parameter_count > 0
-        && !class.segments.last().is_some_and(|segment| {
-            segment.arguments.is_empty() || segment.arguments.len() == expected.type_parameter_count
-        })
-    {
-        return false;
-    }
-    true
-}
-
-fn signature_result_matches_member_creation(
-    ty: &SignatureType,
-    target: &jarde_java::report::ProvedMemberInnerTarget,
-) -> bool {
-    if matches!(
-        ty,
-        SignatureType::Class(class)
-            if class.segments.len() == 1
-                && class.segments[0].binary_name.as_slice() == b"java/lang/Object"
-                && class.segments[0].arguments.is_empty()
-    ) {
-        return true;
-    }
-    let SignatureType::Class(class) = ty else {
-        return false;
-    };
-    let Some(outer) = target
-        .source_type_path
-        .iter()
-        .find(|segment| segment.binary_name == target.outer)
-    else {
-        return false;
-    };
-    let Some(member) = target
-        .source_type_path
-        .iter()
-        .find(|segment| segment.binary_name == target.owner)
-    else {
-        return false;
-    };
-    class.segments.len() == 2
-        && class.segments[0].binary_name.as_slice() == outer.binary_name.as_bytes()
-        && class.segments[1].binary_name.as_slice() == member.binary_name.as_bytes()
-        && class.segments[0].arguments.len() == outer.type_parameter_count
-        && class.segments[1].arguments.len() == member.type_parameter_count
-        && !class.segments[0].arguments.is_empty()
 }
 
 fn generic_void_body_declaration(
@@ -8283,180 +4189,25 @@ fn generic_void_body_declaration(
     class_internal: &[u8],
     resolved_inner_classes: &[ResolvedInnerClass],
     budget: &mut Budget,
-) -> Result<String> {
-    let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
-    let [parameter] = parsed.type_parameters.as_slice() else {
-        return Err(refused(
-            "generic void body requires exactly one method type parameter",
-        ));
-    };
-    let Some(SignatureType::Class(bound)) = parameter.class_bound.as_ref() else {
-        return Err(refused("generic void body requires one class bound"));
-    };
-    let Some(physical) = method_descriptor(&record.item.descriptor.raw().0, false, false) else {
-        return Err(refused(
-            "physical generic void descriptor cannot be spelled",
-        ));
-    };
-    if !parameter.interface_bounds.is_empty()
-        || bound.segments.len() != 1
-        || !bound.segments[0].arguments.is_empty()
-        || erasures.len() != 1
-        || erasures[0].name != parameter.name
-        || !erasures[0].descriptor.starts_with(b"L")
-        || parsed.parameters.as_slice()
-            != [
-                SignatureType::TypeVariable(parameter.name.clone()),
-                SignatureType::Base(b'Z'),
-            ]
-        || physical.parameters.len() != 2
-        || physical.parameters[1].0 != "boolean"
-        || physical.parameters[0].0 == "boolean"
-        || !attributes.throws_raw.is_empty()
-        || !matches!(candidate, Some(GenericReturnCandidate {
-            parameters,
-            value: GenericReturnValue::CompleteBody { result_type: None, .. },
-        }) if parameters.len() == 2)
-    {
-        return Err(refused(
-            "generic void body must be `<T extends B> void` with physical `(B, boolean)`, exact erasure, and two same-run parameter slots",
-        ));
-    }
-    let bound_name = if bound.segments[0].binary_name.contains(&b'$') {
-        let expected_erasure = [
-            b"L".as_slice(),
-            bound.segments[0].binary_name.as_slice(),
-            b";",
-        ]
-        .concat();
-        if erasures[0].descriptor != expected_erasure {
-            return Err(refused(
-                "nested bound does not match the proved physical parameter erasure",
-            ));
-        }
-        selected_nested_sibling_bound_spelling(
-            class_internal,
-            &bound.segments[0].binary_name,
-            &physical.parameters[0].0,
-            resolved_inner_classes,
-        )?
-    } else {
-        simple_generic_class_name(&bound.segments[0].binary_name)?
-    };
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    generic_method_declaration(
-        record,
-        projection,
-        attributes,
+) -> Option<Result<String>> {
+    jarde_java::generic_source_proof::generic_void_body_declaration(
+        &record.item.name.raw().0,
+        &record.item.descriptor.raw().0,
+        record.item.access_flags,
+        projection.declaration.is_some(),
+        !record.annotations.attributes.is_empty()
+            || !record.parameter_annotations.attributes.is_empty()
+            || !record.type_annotations.attributes.is_empty(),
+        !projection.markers.is_empty(),
+        &attributes.throws,
+        !attributes.throws_raw.is_empty(),
         parsed,
         candidate,
-        false,
-        Some(&bound_name),
+        erasures,
+        class_internal,
+        resolved_inner_classes,
+        budget,
     )
-}
-
-/// A `$` class name is source-spellable here only because the already selected physical method
-/// descriptor supplied that exact spelling and the selected class plus the bound prove direct
-/// siblings in one named source family. This deliberately does not canonicalize `$` to `.`.
-fn selected_nested_sibling_bound_spelling(
-    class_internal: &[u8],
-    bound_internal: &[u8],
-    physical_parameter_spelling: &str,
-    resolved_inner_classes: &[ResolvedInnerClass],
-) -> Result<String> {
-    let refused = || {
-        Error::unsupported(
-            "generic_source_shape_unproved",
-            "nested bound lacks an unambiguous spelling in the selected class family",
-        )
-    };
-    let unique = |internal: &[u8]| {
-        let mut matches = resolved_inner_classes
-            .iter()
-            .filter(|entry| entry.class == internal);
-        let entry = matches.next()?;
-        matches.next().is_none().then_some(entry)
-    };
-    let class = unique(class_internal).ok_or_else(refused)?;
-    let bound = unique(bound_internal).ok_or_else(refused)?;
-    let (Some(outer), Some(class_name), Some(bound_name)) = (
-        class.outer_class.as_deref(),
-        class.inner_name.as_ref().map(|name| name.0.as_slice()),
-        bound.inner_name.as_ref().map(|name| name.0.as_slice()),
-    ) else {
-        return Err(refused());
-    };
-    let class_binary = [outer, b"$", class_name].concat();
-    let bound_binary = [outer, b"$", bound_name].concat();
-    let outer_source = std::str::from_utf8(outer).map_err(|_| refused())?;
-    let class_source = std::str::from_utf8(class_name).map_err(|_| refused())?;
-    let inner_source = std::str::from_utf8(bound_name).map_err(|_| refused())?;
-    if !outer_source.split('/').all(is_java_identifier)
-        || !is_java_identifier(class_source)
-        || !is_java_identifier(inner_source)
-    {
-        return Err(refused());
-    }
-    let expected_source_name = format!("{}${inner_source}", outer_source.replace('/', "."));
-    if class_binary != class_internal
-        || bound_binary != bound_internal
-        || outer != bound.outer_class.as_deref().unwrap_or_default()
-        || physical_parameter_spelling != expected_source_name
-    {
-        return Err(refused());
-    }
-    Ok(physical_parameter_spelling.to_owned())
-}
-
-fn spell_generic_body_signature_type(
-    ty: &jarde_reader::signature::SignatureType,
-    method_variables: &[(Vec<u8>, String, String)],
-    class_scope: &[TypeParameterErasure],
-    budget: &mut Budget,
-    depth: usize,
-) -> Result<String> {
-    use jarde_reader::signature::SignatureType;
-
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    if depth > 128 {
-        return Err(Error::unsupported(
-            "generic_source_shape_unproved",
-            "generic method type nesting exceeds source projection depth",
-        ));
-    }
-    match ty {
-        SignatureType::TypeVariable(name) => method_variables
-            .iter()
-            .find(|(candidate, _, _)| candidate == name)
-            .map(|(_, spelling, _)| spelling.clone())
-            .or_else(|| {
-                class_scope
-                    .iter()
-                    .find(|candidate| candidate.name == *name)
-                    .and_then(|candidate| std::str::from_utf8(&candidate.name).ok())
-                    .filter(|name| is_java_identifier(name))
-                    .map(str::to_owned)
-            })
-            .ok_or_else(|| {
-                Error::unsupported(
-                    "generic_source_shape_unproved",
-                    "type variable is outside the emitted method and class scopes",
-                )
-            }),
-        SignatureType::Array(element) => Ok(format!(
-            "{}[]",
-            spell_generic_body_signature_type(
-                element,
-                method_variables,
-                class_scope,
-                budget,
-                depth + 1,
-            )?
-        )),
-        _ => spell_ordinary_signature_type(ty, class_scope, budget, depth),
-    }
 }
 
 fn generic_method_body_declaration(
@@ -8468,242 +4219,26 @@ fn generic_method_body_declaration(
     class_scope: &[TypeParameterErasure],
     budget: &mut Budget,
 ) -> Result<String> {
-    use jarde_reader::signature::SignatureType;
-
-    let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
-    let item = &record.item;
-    let is_static = item.access_flags & ACC_STATIC != 0;
-    if proof.method != item.identity
-        || item.name.raw().0 == b"<init>"
-        || item.access_flags
-            & !(ACC_PUBLIC
-                | ACC_PRIVATE
-                | ACC_PROTECTED
-                | ACC_STATIC
-                | ACC_FINAL
-                | ACC_SYNCHRONIZED
-                | ACC_STRICT)
-            != 0
-        || !record.annotations.attributes.is_empty()
-        || !record.parameter_annotations.attributes.is_empty()
-        || !record.type_annotations.attributes.is_empty()
-        || !projection.markers.is_empty()
-    {
-        return Err(refused(
+    if proof.method != record.item.identity {
+        return Err(Error::unsupported(
+            "generic_source_shape_unproved",
             "body certificate does not match a preservable generic method declaration",
         ));
     }
-    if parsed.type_parameters.is_empty() {
-        return Err(refused("method has no local type parameters"));
-    }
-    let formal_count = proof.formal_names.len();
-    let signature_type_count = parsed
-        .parameters
-        .len()
-        .saturating_add(usize::from(parsed.result.is_some()))
-        .saturating_add(parsed.throws.len());
-    let bound_count = parsed
-        .type_parameters
-        .iter()
-        .map(|parameter| {
-            parameter
-                .class_bound
-                .iter()
-                .count()
-                .saturating_add(parameter.interface_bounds.len())
-        })
-        .fold(0usize, usize::saturating_add);
-    let proof_work = formal_count
-        .saturating_mul(formal_count)
-        .saturating_add(signature_type_count.saturating_mul(parsed.type_parameters.len()))
-        .saturating_add(formal_count)
-        .saturating_add(proof.return_sources.len())
-        .saturating_add(bound_count)
-        .saturating_add(parsed.type_parameters.len())
-        .saturating_add(parsed.throws.len());
-    budget.charge(
-        CountedBudgetDimension::AnalysisSteps,
-        u64::try_from(proof_work).unwrap_or(u64::MAX),
-    )?;
-    let mut variables = Vec::with_capacity(parsed.type_parameters.len());
-    for parameter in &parsed.type_parameters {
-        budget.poll()?;
-        let variable = std::str::from_utf8(&parameter.name)
-            .map_err(|_| refused("type variable name is not source UTF-8"))?;
-        if !is_java_identifier(variable) {
-            return Err(refused("type variable has no Java source spelling"));
-        }
-        let mut bounds = Vec::new();
-        for bound in parameter
-            .class_bound
-            .iter()
-            .chain(parameter.interface_bounds.iter())
-        {
-            budget.poll()?;
-            let SignatureType::Class(class) = bound else {
-                return Err(refused("type-variable bound is unsupported"));
-            };
-            let [segment] = class.segments.as_slice() else {
-                return Err(refused("nested bounds are unsupported"));
-            };
-            if !segment.arguments.is_empty() {
-                return Err(refused("parameterized bounds are unsupported"));
-            }
-            bounds.push(simple_generic_class_name(&segment.binary_name)?);
-        }
-        if bounds.is_empty() {
-            bounds.push("java.lang.Object".to_owned());
-        }
-        variables.push((
-            parameter.name.clone(),
-            variable.to_owned(),
-            bounds.join(" & "),
-        ));
-    }
-
-    let signature = method_descriptor(&item.descriptor.raw().0, is_static, false)
-        .ok_or_else(|| refused("physical descriptor cannot be spelled"))?;
-    let Some(slots) = jarde_jvm::method_ir::parameter_positions(
-        &descriptor_facts(&item.descriptor.raw().0, DescriptorKind::Method)?,
-        is_static,
-    ) else {
-        return Err(refused("physical parameter slots are unavailable"));
-    };
-    if slots.len() != parsed.parameters.len()
-        || proof.formal_names.len() != slots.len()
-        || signature.parameters.len() != slots.len()
-        || proof
-            .formal_names
-            .iter()
-            .map(|(slot, _)| *slot)
-            .collect::<std::collections::BTreeSet<_>>()
-            .len()
-            != slots.len()
-    {
-        return Err(refused(
-            "body formal identities do not match physical parameters",
-        ));
-    }
-    let mut arguments = Vec::with_capacity(slots.len());
-    let mut parameter_types = Vec::with_capacity(slots.len());
-    for (position, slot) in slots.iter().enumerate() {
-        budget.poll()?;
-        let Some((_, name)) = proof
-            .formal_names
-            .iter()
-            .find(|(formal_slot, _)| formal_slot == slot)
-        else {
-            return Err(refused("body certificate omits a physical formal"));
-        };
-        if !is_java_identifier(name) {
-            return Err(refused("formal name has no Java source spelling"));
-        }
-        let ty = spell_generic_body_signature_type(
-            &parsed.parameters[position],
-            &variables,
-            class_scope,
-            budget,
-            0,
-        )?;
-        parameter_types.push(parsed.parameters[position].clone());
-        arguments.push(format!("{ty} {name}"));
-    }
-    let result_name = match parsed.result.as_ref() {
-        None => {
-            if !proof.return_sources.is_empty() {
-                return Err(refused("void method body has value-return sources"));
-            }
-            "void".to_owned()
-        }
-        Some(result) => {
-            if proof.return_sources.is_empty() {
-                return Err(refused(
-                    "value-returning method has no certified return source",
-                ));
-            }
-            for source in &proof.return_sources {
-                budget.poll()?;
-                match source {
-                    SameClassGenericBodyReturnSource::Parameter { slot } => {
-                        let Some(position) = slots.iter().position(|formal| formal == slot) else {
-                            return Err(refused(
-                                "return source is outside the physical formal slots",
-                            ));
-                        };
-                        if parameter_types.get(position) != Some(result) {
-                            return Err(refused(
-                                "return source formal does not have the Signature result type",
-                            ));
-                        }
-                    }
-                    SameClassGenericBodyReturnSource::Call { .. } => {}
-                }
-            }
-            spell_generic_body_signature_type(result, &variables, class_scope, budget, 0)?
-        }
-    };
-    let throws = parsed
-        .throws
-        .iter()
-        .map(|exception| match exception {
-            SignatureType::Class(class) => {
-                budget.poll()?;
-                let [segment] = class.segments.as_slice() else {
-                    return Err(refused("nested throws type is unsupported"));
-                };
-                if !segment.arguments.is_empty() {
-                    return Err(refused("parameterized throws type is unsupported"));
-                }
-                simple_generic_class_name(&segment.binary_name)
-            }
-            SignatureType::TypeVariable(_) => {
-                spell_generic_body_signature_type(exception, &variables, class_scope, budget, 0)
-            }
-            _ => Err(refused(
-                "method-local generic throws type lacks a body proof",
-            )),
-        })
-        .collect::<Result<Vec<_>>>()?;
-    if throws != attributes.throws {
-        return Err(refused(
-            "generic throws Signature differs from physical Exceptions",
-        ));
-    }
-    let (name, aliased) = written_name(&item.name.raw().0);
-    if aliased || !is_java_identifier(&name) {
-        return Err(refused("method name has no faithful source spelling"));
-    }
-    let mut words = Vec::new();
-    words.extend(visibility(item.access_flags));
-    if is_static {
-        words.push("static");
-    }
-    if item.access_flags & ACC_FINAL != 0 {
-        words.push("final");
-    }
-    if item.access_flags & ACC_SYNCHRONIZED != 0 {
-        words.push("synchronized");
-    }
-    if item.access_flags & ACC_STRICT != 0 {
-        words.push("strictfp");
-    }
-    Ok(format!(
-        "{}<{}> {} {}({}){}",
-        if words.is_empty() {
-            String::new()
-        } else {
-            format!("{} ", words.join(" "))
-        },
-        variables
-            .iter()
-            .map(|(_, name, bound)| format!("{name} extends {bound}"))
-            .collect::<Vec<_>>()
-            .join(", "),
-        result_name,
-        name,
-        arguments.join(", "),
-        throws_clause(&throws),
-    ))
+    jarde_java::generic_source_proof::generic_method_body_declaration(
+        &record.item.name.raw().0,
+        &record.item.descriptor.raw().0,
+        record.item.access_flags,
+        !record.annotations.attributes.is_empty()
+            || !record.parameter_annotations.attributes.is_empty()
+            || !record.type_annotations.attributes.is_empty(),
+        !projection.markers.is_empty(),
+        &attributes.throws,
+        parsed,
+        proof,
+        class_scope,
+        budget,
+    )
 }
 
 fn generic_method_declaration(
@@ -8715,253 +4250,21 @@ fn generic_method_declaration(
     method_local_throws_proved: bool,
     first_bound_spelling: Option<&str>,
 ) -> Result<String> {
-    let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
-    let candidate = candidate
-        .ok_or_else(|| refused("the recovered AST/SSA body is not a direct parameter return"))?;
-    let item = &record.item;
-    let void_body = matches!(
-        &candidate.value,
-        GenericReturnValue::CompleteBody {
-            result_type: None,
-            ..
-        }
-    );
-    let null_instance_return = matches!(candidate.value, GenericReturnValue::NullLiteral);
-    let is_static = item.access_flags & ACC_STATIC != 0;
-    if projection.declaration.is_none()
-        || (void_body && is_static)
-        || (!void_body && is_static == null_instance_return)
-        || item.access_flags
-            & !(ACC_PUBLIC
-                | ACC_PRIVATE
-                | ACC_PROTECTED
-                | ACC_STATIC
-                | ACC_FINAL
-                | ACC_SYNCHRONIZED
-                | ACC_STRICT)
-            != 0
-        || !record.annotations.attributes.is_empty()
-        || !record.parameter_annotations.attributes.is_empty()
-        || !record.type_annotations.attributes.is_empty()
-        || !projection.markers.is_empty()
-    {
-        return Err(refused(
-            "method flags, annotations, or existing source refusals cannot be preserved in this generic shape",
-        ));
-    }
-    if parsed.type_parameters.is_empty() {
-        return Err(refused("method has no local type parameters"));
-    }
-    let mut variables = Vec::new();
-    for parameter in &parsed.type_parameters {
-        let mut bounds = Vec::new();
-        for bound in parameter
-            .class_bound
-            .iter()
-            .chain(parameter.interface_bounds.iter())
-        {
-            let SignatureType::Class(bound) = bound else {
-                return Err(refused("type-variable bound is unsupported"));
-            };
-            let [bound] = bound.segments.as_slice() else {
-                return Err(refused("nested bounds are unsupported"));
-            };
-            if !bound.arguments.is_empty() {
-                return Err(refused("parameterized bounds are unsupported"));
-            }
-            bounds.push(if first_bound_spelling.is_some() && variables.is_empty() {
-                first_bound_spelling.expect("checked above").to_owned()
-            } else {
-                simple_generic_class_name(&bound.binary_name)?
-            });
-        }
-        let variable = std::str::from_utf8(&parameter.name)
-            .map_err(|_| refused("type variable name is not source UTF-8"))?;
-        if !is_java_identifier(variable) {
-            return Err(refused("type variable has no Java source spelling"));
-        }
-        if bounds.is_empty() {
-            bounds.push("java.lang.Object".to_owned());
-        }
-        variables.push((
-            parameter.name.clone(),
-            variable.to_owned(),
-            bounds.join(" & "),
-        ));
-    }
-    let result_name = if void_body {
-        if parsed.result.is_some() {
-            return Err(refused("proved void body has a non-void Signature result"));
-        }
-        "void"
-    } else {
-        let Some(SignatureType::TypeVariable(result_variable)) = &parsed.result else {
-            return Err(refused("result is outside the supported source shape"));
-        };
-        let Some((_, result_name, _)) = variables
-            .iter()
-            .find(|(name, _, _)| name == result_variable)
-        else {
-            return Err(refused("result variable is outside the method scope"));
-        };
-        result_name.as_str()
-    };
-    if parsed.parameters.len() != candidate.parameters.len() {
-        return Err(refused("parameter count differs from the same-run body"));
-    }
-    for exception in &parsed.throws {
-        let physical_class_throws = matches!(
-            exception,
-            SignatureType::Class(class)
-                if class.segments.len() == 1
-                    && class.segments[0].arguments.is_empty()
-                    && simple_generic_class_name(&class.segments[0].binary_name).is_ok()
-        );
-        let proved_local_throws = method_local_throws_proved
-            && matches!(exception, SignatureType::TypeVariable(variable)
-                if parsed.type_parameters.iter().any(|parameter| parameter.name == *variable));
-        if !physical_class_throws && !proved_local_throws {
-            return Err(refused(
-                "generic throws type cannot be preserved by the physical Exceptions clause",
-            ));
-        }
-    }
-    let signature = method_descriptor(&item.descriptor.raw().0, is_static, false)
-        .ok_or_else(|| refused("physical descriptor cannot be spelled"))?;
-    if signature.parameters.len() != candidate.parameters.len() {
-        return Err(refused("parameter slot mapping differs from descriptor"));
-    }
-    let mut arguments = Vec::new();
-    let mut result_slots = Vec::new();
-    let mut bool_slots = Vec::new();
-    for (position, ((ty, slot), (candidate_slot, name))) in signature
-        .parameters
-        .iter()
-        .zip(&candidate.parameters)
-        .enumerate()
-    {
-        if slot != candidate_slot || !is_java_identifier(name) {
-            return Err(refused("same-run parameter name or slot is unproved"));
-        }
-        let spelling = match &parsed.parameters[position] {
-            SignatureType::TypeVariable(name) => {
-                let Some((_, spelling, _)) =
-                    variables.iter().find(|(variable, _, _)| variable == name)
-                else {
-                    return Err(refused("parameter variable is outside the method scope"));
-                };
-                if parsed
-                    .result
-                    .as_ref()
-                    .is_some_and(|result| matches!(result, SignatureType::TypeVariable(result) if result == name))
-                {
-                    result_slots.push(*slot);
-                }
-                spelling.clone()
-            }
-            SignatureType::Base(b'Z') if ty == "boolean" => {
-                bool_slots.push(*slot);
-                "boolean".to_owned()
-            }
-            SignatureType::Base(_) => ty.clone(),
-            SignatureType::Class(class) => {
-                let [segment] = class.segments.as_slice() else {
-                    return Err(refused("nested parameter type is unsupported"));
-                };
-                if !segment.arguments.is_empty()
-                    || simple_generic_class_name(&segment.binary_name).is_err()
-                {
-                    return Err(refused(
-                        "parameterized or unspellable parameter type is unsupported",
-                    ));
-                }
-                ty.clone()
-            }
-            _ => {
-                return Err(refused(
-                    "parameter uses an unsupported generic source shape",
-                ));
-            }
-        };
-        arguments.push(format!("{spelling} {name}"));
-    }
-    let return_proved = match candidate.value {
-        GenericReturnValue::EmptyVoid => false,
-        GenericReturnValue::CompleteBody { .. } => void_body && parsed.result.is_none(),
-        GenericReturnValue::NullLiteral => null_instance_return && parsed.parameters.is_empty(),
-        GenericReturnValue::Parameter(slot) => result_slots.contains(&slot),
-        GenericReturnValue::Conditional {
-            test,
-            when_true,
-            when_false,
-        } => {
-            bool_slots.contains(&test)
-                && result_slots.contains(&when_true)
-                && result_slots.contains(&when_false)
-        }
-        GenericReturnValue::MemberCreation { .. } => false,
-        GenericReturnValue::StaticMemberCreation { .. } => false,
-        GenericReturnValue::ArrayCreation { .. } => false,
-        GenericReturnValue::TypedFunctional { .. } => false,
-    };
-    if !return_proved {
-        return Err(refused(
-            "return value does not come solely from parameters of the result type variable",
-        ));
-    }
-    let (name, aliased) = written_name(&item.name.raw().0);
-    if aliased || !is_java_identifier(&name) {
-        return Err(refused("method name has no faithful source spelling"));
-    }
-    let mut words = Vec::new();
-    words.extend(visibility(item.access_flags));
-    if is_static {
-        words.push("static");
-    }
-    if item.access_flags & ACC_FINAL != 0 {
-        words.push("final")
-    }
-    if item.access_flags & ACC_SYNCHRONIZED != 0 {
-        words.push("synchronized")
-    }
-    if item.access_flags & ACC_STRICT != 0 {
-        words.push("strictfp")
-    }
-    let throws = if method_local_throws_proved {
-        parsed
-            .throws
-            .iter()
-            .map(|throws| match throws {
-                SignatureType::TypeVariable(variable) => variables
-                    .iter()
-                    .find(|(name, _, _)| name == variable)
-                    .map(|(_, name, _)| name.clone())
-                    .ok_or_else(|| refused("throws variable has no emitted method type parameter")),
-                _ => Err(refused(
-                    "strict source gate admits one local throws variable",
-                )),
-            })
-            .collect::<Result<Vec<_>>>()?
-    } else {
-        attributes.throws.clone()
-    };
-    Ok(format!(
-        "{}<{}> {} {}({}){}",
-        if words.is_empty() {
-            String::new()
-        } else {
-            format!("{} ", words.join(" "))
-        },
-        variables
-            .iter()
-            .map(|(_, name, bound)| format!("{name} extends {bound}"))
-            .collect::<Vec<_>>()
-            .join(", "),
-        result_name,
-        name,
-        arguments.join(", "),
-        throws_clause(&throws),
-    ))
+    jarde_java::generic_source_proof::generic_method_declaration(
+        &record.item.name.raw().0,
+        &record.item.descriptor.raw().0,
+        record.item.access_flags,
+        projection.declaration.is_some(),
+        !record.annotations.attributes.is_empty()
+            || !record.parameter_annotations.attributes.is_empty()
+            || !record.type_annotations.attributes.is_empty(),
+        !projection.markers.is_empty(),
+        &attributes.throws,
+        parsed,
+        candidate,
+        method_local_throws_proved,
+        first_bound_spelling,
+    )
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -8978,103 +4281,28 @@ fn generic_null_instance_method_declaration(
     class_scope: &[TypeParameterErasure],
     class_signature_present: bool,
     budget: &mut Budget,
-) -> Result<String> {
-    let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
-    let item = &record.item;
-    if !matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
-        || item.access_flags & (ACC_PUBLIC | ACC_STATIC) != ACC_PUBLIC
-        || item.descriptor.raw().0.as_slice() != b"()Ljava/lang/Number;"
-        || class_internal.contains(&b'$')
-        || class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) != 0
-        || class_superclass != Some(b"java/lang/Object".as_slice())
-        || !class_interfaces.is_empty()
-        || !class_scope.is_empty()
-        || class_signature_present
-        || !attributes.throws_raw.is_empty()
-        || !parsed.parameters.is_empty()
-        || !parsed.throws.is_empty()
-        || !matches!(candidate, Some(GenericReturnCandidate {
-            parameters,
-            value: GenericReturnValue::NullLiteral,
-        }) if parameters.is_empty())
-    {
-        return Err(refused(
-            "null-return method-local type variable requires a public no-argument instance method on a top-level Object subclass with no interfaces",
-        ));
-    }
-    let [parameter] = parsed.type_parameters.as_slice() else {
-        return Err(refused(
-            "null-return method must declare exactly one type variable",
-        ));
-    };
-    let Some(SignatureType::TypeVariable(result)) = parsed.result.as_ref() else {
-        return Err(refused("null-return method result is not a type variable"));
-    };
-    let Some(SignatureType::Class(bound)) = parameter.class_bound.as_ref() else {
-        return Err(refused(
-            "null-return type variable must have one class bound",
-        ));
-    };
-    if parameter.name != *result
-        || !parameter.interface_bounds.is_empty()
-        || bound.segments.len() != 1
-        || bound.segments[0].binary_name.as_slice() != b"java/lang/Number"
-        || !bound.segments[0].arguments.is_empty()
-    {
-        return Err(refused(
-            "null-return Signature must be one method-local T extends Number result",
-        ));
-    }
-    budget.poll()?;
-    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    generic_method_declaration(
-        record, projection, attributes, parsed, candidate, false, None,
+) -> Option<Result<String>> {
+    jarde_java::generic_source_proof::generic_null_instance_method_declaration(
+        &record.item.name.raw().0,
+        &record.item.descriptor.raw().0,
+        record.item.access_flags,
+        projection.declaration.is_some(),
+        !record.annotations.attributes.is_empty()
+            || !record.parameter_annotations.attributes.is_empty()
+            || !record.type_annotations.attributes.is_empty(),
+        !projection.markers.is_empty(),
+        &attributes.throws,
+        !attributes.throws_raw.is_empty(),
+        parsed,
+        candidate,
+        class_internal,
+        class_flags,
+        class_superclass,
+        class_interfaces,
+        class_scope,
+        class_signature_present,
+        budget,
     )
-}
-
-fn simple_generic_class_name(raw: &[u8]) -> Result<String> {
-    let text = std::str::from_utf8(raw).map_err(|_| {
-        Error::unsupported(
-            "generic_source_shape_unproved",
-            "class name is not source UTF-8",
-        )
-    })?;
-    if text.contains('$') || text.split('/').any(|part| !is_java_identifier(part)) {
-        return Err(Error::unsupported(
-            "generic_source_shape_unproved",
-            "class name has no unambiguous Java source spelling",
-        ));
-    }
-    Ok(text.replace('/', "."))
-}
-
-/// The class-header spelling of one binary class name: the class file's own name, its package
-/// separators written as dots and every `$` kept — exactly the name [`class_name`] writes for
-/// every parent the raw header states, so a projected entry is the same reference the raw header
-/// already held and only its type arguments are new.
-///
-/// This is the one position where a `$` name needs no nesting proof: the presentation writes
-/// every class as the top-level unit its binary name states, and the class header is that unit's
-/// own declaration. A member, annotation or type-parameter position cannot call this — there a
-/// `$` name without the member proof that selected a source path keeps the raw descriptor
-/// declaration ([`simple_generic_class_name`]).
-///
-/// A name with a part that is not a Java identifier has no spelling at all, exactly as in the
-/// selected-source-path rule.
-fn binary_pool_class_name(raw: &[u8]) -> Result<String> {
-    let text = std::str::from_utf8(raw).map_err(|_| {
-        Error::unsupported(
-            "generic_source_shape_unproved",
-            "class name is not source UTF-8",
-        )
-    })?;
-    if text.split('/').any(|part| !is_java_identifier(part)) {
-        return Err(Error::unsupported(
-            "generic_source_shape_unproved",
-            "class name has no unambiguous Java source spelling",
-        ));
-    }
-    Ok(text.replace('/', "."))
 }
 
 /// The initializer one field's own `ConstantValue` attribute states (JVMS 4.7.2), as the field's
@@ -9085,16 +4313,9 @@ fn binary_pool_class_name(raw: &[u8]) -> Result<String> {
 /// is exactly this attribute's — and nothing here reads a `<clinit>`, a use site or another member:
 /// the initializer is the constant the field's own attribute declares.
 ///
-/// `None` is "nothing to write": the field declares no `ConstantValue` at all, or its value is one
-/// this presentation has no literal for (see [`resolve_constant_value`]). The field then keeps the
-/// initializer-less declaration its flags and its descriptor state, and not one literal is invented
-/// for it.
-///
-/// An `Err` is the reader's own failure to read the attribute — its bytes are damaged, its charge was
-/// refused, the request was cancelled. A field record states no refusal of its own in this report
-/// (unlike a member's own run), so the caller's decision is the read's own: the presentation stops
-/// where the read that could not be performed happened, rather than publishing a declaration it
-/// could not establish.
+/// `None` means the attribute is absent. An unsupported literal or damaged attribute returns
+/// its error; the caller retains this physical field with a local refusal marker. Budget and
+/// cancellation still stop the shared request before any further member work.
 pub(crate) fn declared_constant_value(
     bytes: &[u8],
     field: &MemberHeader,
@@ -9105,372 +4326,15 @@ pub(crate) fn declared_constant_value(
         return Ok(None);
     }
     let shells = attribute_shells(field, b"ConstantValue");
-    let Some(index) = attribute_facts(bytes, &shells, pool, budget)?.constant_value else {
-        return Ok(None);
-    };
-    Ok(resolve_constant_value(
-        &field.descriptor.raw().0,
-        index.0,
-        pool,
-    ))
-}
-
-/// The initializer one `ConstantValue` attribute states for one field (JVMS 4.7.2), or `None` when
-/// this presentation has no literal for it.
-///
-/// The attribute states one pool index and **no type**: which constant it is comes from the
-/// descriptor of the field it initializes, so the same `CONSTANT_Integer` is `3` in an `int` field,
-/// `true` in a `boolean` field and `'A'` in a `char` field, and the pair has to agree for any
-/// initializer to be written at all. A `float`/`double` constant — which this field path does not
-/// spell — a `Z` that is neither `0` nor `1`, an index that names no entry or an
-/// entry of another kind (a `CONSTANT_Utf8`, a `CONSTANT_Long` in an `int` field) each state no
-/// initializer rather than one that is invented, and a field that declares the attribute keeps the
-/// declaration its flags and its descriptor state.
-fn resolve_constant_value(
-    descriptor: &[u8],
-    index: u16,
-    pool: &[CpEntryFacts],
-) -> Option<MemberDefault> {
-    let entry = &cp_entry(pool, index).ok()?.kind;
-    match (descriptor, entry) {
-        ([b'I'], CpEntryKind::Integer { value }) => Some(MemberDefault::Integer(*value)),
-        ([b'J'], CpEntryKind::Long { value }) => Some(MemberDefault::Long(*value)),
-        ([b'B'], CpEntryKind::Integer { value }) => Some(MemberDefault::Byte(*value)),
-        ([b'S'], CpEntryKind::Integer { value }) => Some(MemberDefault::Short(*value)),
-        ([b'C'], CpEntryKind::Integer { value }) => {
-            Some(MemberDefault::Char(u16::try_from(*value).ok()?))
-        }
-        ([b'Z'], CpEntryKind::Integer { value }) => Some(MemberDefault::Boolean(match value {
-            0 => false,
-            1 => true,
-            _ => return None,
-        })),
-        (b"Ljava/lang/String;", CpEntryKind::String { value, .. }) => {
-            Some(MemberDefault::String(value.clone()))
-        }
-        _ => None,
-    }
-}
-
-/// One declaration's literal, as the class file's own attribute states it.
-///
-/// Two attributes state a literal this presentation writes, and both state it as one of these values:
-/// a member's `AnnotationDefault` (JVMS 4.7.22), written after the `default` keyword of its
-/// declaration, and a field's `ConstantValue` (JVMS 4.7.2), written as that field's initializer. The
-/// value is the attribute's own constant with the pool entries its own indexes name resolved, and it
-/// exists only for the kinds this presentation has a literal for: for an `AnnotationDefault` the
-/// eight constant tags, a string, an enum constant, a class literal, a nested annotation and arrays
-/// of those; for a
-/// `ConstantValue` the kinds [`resolve_constant_value`] accepts. A value that is not here is a value
-/// the declaration writes no default and no initializer for — [`declared_annotation_default`] and
-/// [`declared_constant_value`] resolve nothing for a `float`/`double` field constant or an array
-/// that holds one, because a partial literal would be a claim the attribute does not make. F/D
-/// variants are constructed only by the AnnotationDefault path.
-///
-/// The two paths share this one vocabulary so they spell one constant one way: `3L` is the same
-/// spelling whichever attribute states it, and a string is escaped by the one rule this engine
-/// escapes string literals with.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum MemberDefault {
-    /// `B`: a `byte`, written as the decimal integer it is.
-    Byte(i32),
-    /// `C`: a `char`, written as the character literal of its UTF-16 code unit.
-    Char(u16),
-    /// `I`: an `int`, written as the decimal integer it is.
-    Integer(i32),
-    /// `S`: a `short`, written as the decimal integer it is.
-    Short(i32),
-    /// `Z`: a `boolean`, written as `true` or `false`.
-    Boolean(bool),
-    /// `J`: a `long`, written as the decimal integer it is with the `L` its type needs.
-    Long(i64),
-    /// `F`/`D`: an annotation constant's raw IEEE bits, never used for a field initializer.
-    Float(u32),
-    Double(u64),
-    /// `s`: a string, written as the Java string literal its text is.
-    String(JvmBytes),
-    /// `e`: an enum constant, written as its type's name, a dot, and the constant's own simple name.
-    Enum {
-        type_name: String,
-        constant_name: String,
-    },
-    /// `c`: a class literal, written as its type's name and `.class`.
-    Class {
-        type_name: String,
-    },
-    /// `@`: a nested annotation with its type and explicitly named values in attribute order.
-    Annotation {
-        type_name: String,
-        elements: Vec<(String, MemberDefault)>,
-    },
-    /// `[`: the elements the array declares, written `{ elem, elem }`.
-    Array(Vec<MemberDefault>),
-}
-
-impl MemberDefault {
-    /// The literal this default is written as, after the `default` keyword.
-    fn spelling(&self) -> String {
-        match self {
-            Self::Byte(value) | Self::Integer(value) | Self::Short(value) => value.to_string(),
-            Self::Boolean(value) => if *value { "true" } else { "false" }.to_owned(),
-            Self::Long(value) => format!("{value}L"),
-            Self::Float(bits) => float_default_spelling(*bits)
-                .expect("only a faithfully spellable annotation float is resolved"),
-            Self::Double(bits) => double_default_spelling(*bits)
-                .expect("only a faithfully spellable annotation double is resolved"),
-            Self::Char(value) => char_literal(*value),
-            Self::String(bytes) => {
-                format!("\"{}\"", escape_string(&String::from_utf8_lossy(&bytes.0)))
-            }
-            Self::Enum {
-                type_name,
-                constant_name,
-            } => format!("{type_name}.{constant_name}"),
-            Self::Class { type_name } => format!("{type_name}.class"),
-            Self::Annotation {
-                type_name,
-                elements,
-            } => {
-                let elements: Vec<String> = elements
-                    .iter()
-                    .map(|(name, value)| format!("{name} = {}", value.spelling()))
-                    .collect();
-                format!("@{type_name}({})", elements.join(", "))
-            }
-            Self::Array(elements) if elements.is_empty() => "{}".to_owned(),
-            Self::Array(elements) => {
-                let written: Vec<String> = elements.iter().map(Self::spelling).collect();
-                format!("{{{}}}", written.join(", "))
-            }
-        }
-    }
-}
-
-/// One `element_value` (JVMS 4.7.22.1) resolved against the pool this class's read published, or
-/// `None` when this presentation has no literal for it ([`declared_annotation_default`]).
-///
-/// The tag decides the reading, not the member's descriptor: `B`/`C`/`I`/`S`/`Z` all name one
-/// `CONSTANT_Integer`, and the value `65` is `65` under `I`, `'A'` under `C` and no boolean at all
-/// under `Z`. A value the class file states something else for is no literal either: a `Z` that is
-/// neither `0` nor `1`, a `C` outside the `0..=0xFFFF` one UTF-16 code unit is, an index that does not
-/// hold the constant its tag names, a `c` whose descriptor is the `void` one (a `V` names no type this
-/// presentation spells), and an enum constant whose name is not UTF-8. Each states no default, and no
-/// default is invented for it.
-fn resolve_default(value: &ElementValueFacts, pool: &[CpEntryFacts]) -> Option<MemberDefault> {
-    Some(match value {
-        ElementValueFacts::Constant { tag, index } => {
-            match (tag, &cp_entry(pool, index.0).ok()?.kind) {
-                (ElementConstantTag::Byte, CpEntryKind::Integer { value }) => {
-                    MemberDefault::Byte(*value)
-                }
-                (ElementConstantTag::Char, CpEntryKind::Integer { value }) => {
-                    MemberDefault::Char(u16::try_from(*value).ok()?)
-                }
-                (ElementConstantTag::Integer, CpEntryKind::Integer { value }) => {
-                    MemberDefault::Integer(*value)
-                }
-                (ElementConstantTag::Short, CpEntryKind::Integer { value }) => {
-                    MemberDefault::Short(*value)
-                }
-                (ElementConstantTag::Boolean, CpEntryKind::Integer { value }) => {
-                    MemberDefault::Boolean(match value {
-                        0 => false,
-                        1 => true,
-                        _ => return None,
-                    })
-                }
-                (ElementConstantTag::Long, CpEntryKind::Long { value }) => {
-                    MemberDefault::Long(*value)
-                }
-                (ElementConstantTag::Float, CpEntryKind::Float { bits }) => {
-                    float_default_spelling(*bits).map(|_| MemberDefault::Float(*bits))?
-                }
-                (ElementConstantTag::Double, CpEntryKind::Double { bits }) => {
-                    double_default_spelling(*bits).map(|_| MemberDefault::Double(*bits))?
-                }
-                _ => return None,
-            }
-        }
-        ElementValueFacts::Utf8(bytes) => MemberDefault::String(bytes.clone()),
-        ElementValueFacts::Enum {
-            type_descriptor,
-            constant_name,
-        } => MemberDefault::Enum {
-            type_name: descriptor_type(&type_descriptor.0, DescriptorKind::Field)?,
-            constant_name: String::from_utf8(constant_name.0.clone()).ok()?,
-        },
-        ElementValueFacts::Class(descriptor) => MemberDefault::Class {
-            type_name: descriptor_type(&descriptor.0, DescriptorKind::Return)?,
-        },
-        ElementValueFacts::Annotation {
-            type_descriptor,
-            elements,
-        } => {
-            let type_name = annotation_type_name(&type_descriptor.0)?;
-            let elements = elements
-                .iter()
-                .map(|element| {
-                    let name = String::from_utf8(element.name.0.clone()).ok()?;
-                    is_java_identifier(&name).then_some(())?;
-                    Some((name, resolve_default(&element.value, pool)?))
-                })
-                .collect::<Option<Vec<_>>>()?;
-            MemberDefault::Annotation {
-                type_name,
-                elements,
-            }
-        }
-        ElementValueFacts::Array(elements) => MemberDefault::Array(
-            elements
-                .iter()
-                .map(|element| resolve_default(element, pool))
-                .collect::<Option<Vec<MemberDefault>>>()?,
-        ),
-    })
-}
-
-/// Spell finite IEEE values as exact Java hexadecimal floating-point literals without converting
-/// the raw facts through host floating-point arithmetic. Unsupported NaN patterns have no spelling.
-fn float_default_spelling(bits: u32) -> Option<String> {
-    let sign = if bits >> 31 == 0 { "" } else { "-" };
-    let exponent = (bits >> 23) & 0xff;
-    let fraction = bits & 0x7f_ffff;
-    match (exponent, fraction) {
-        (0xff, 0) => Some(format!(
-            "Float.{}INFINITY",
-            if sign.is_empty() {
-                "POSITIVE_"
-            } else {
-                "NEGATIVE_"
-            }
-        )),
-        (0xff, 0x40_0000) if sign.is_empty() => Some("Float.NaN".to_owned()),
-        (0xff, _) => None,
-        (0, 0) => Some(format!("{sign}0.0f")),
-        (0, fraction) => Some(format!("{sign}0x0.{:06x}p-126f", fraction << 1)),
-        _ => Some(format!(
-            "{sign}0x1.{:06x}p{}f",
-            fraction << 1,
-            i32::try_from(exponent).unwrap() - 127
-        )),
-    }
-}
-
-fn double_default_spelling(bits: u64) -> Option<String> {
-    let sign = if bits >> 63 == 0 { "" } else { "-" };
-    let exponent = (bits >> 52) & 0x7ff;
-    let fraction = bits & 0x000f_ffff_ffff_ffff;
-    match (exponent, fraction) {
-        (0x7ff, 0) => Some(format!(
-            "Double.{}INFINITY",
-            if sign.is_empty() {
-                "POSITIVE_"
-            } else {
-                "NEGATIVE_"
-            }
-        )),
-        (0x7ff, 0x0008_0000_0000_0000) if sign.is_empty() => Some("Double.NaN".to_owned()),
-        (0x7ff, _) => None,
-        (0, 0) => Some(format!("{sign}0.0d")),
-        (0, fraction) => Some(format!("{sign}0x0.{fraction:013x}p-1022d")),
-        _ => Some(format!(
-            "{sign}0x1.{fraction:013x}p{}d",
-            i32::try_from(exponent).unwrap() - 1023
-        )),
-    }
-}
-
-/// The class type a nested annotation descriptor names, when each segment is a source identifier.
-///
-/// Annotation descriptors name a class, not an array or primitive. A slash becomes a package dot;
-/// every resulting segment must remain writable without guessing an alias, because aliases would
-/// name a different annotation type at the use site.
-fn annotation_type_name(descriptor: &[u8]) -> Option<String> {
-    if !descriptor.starts_with(b"L") || !descriptor.ends_with(b";") {
-        return None;
-    }
-    let internal_name = &descriptor[1..descriptor.len() - 1];
-    if internal_name.is_empty()
-        || internal_name.split(|byte| *byte == b'/').any(|segment| {
-            segment.is_empty()
-                || segment
-                    .iter()
-                    .any(|byte| matches!(*byte, b'.' | b'[' | b';'))
-        })
-    {
-        return None;
-    }
-    let type_name = descriptor_type(descriptor, DescriptorKind::Field)?;
-    type_name
-        .split('.')
-        .all(is_java_identifier)
-        .then_some(type_name)
-}
-
-/// The Java type one field or return descriptor names, as the recovery layer spells types.
-///
-/// It is the same spelling the parameters and the field declarations are written with
-/// ([`source_type`]), so a default's enum type or class literal cannot name a type the declaration
-/// beside it would write differently. A descriptor this presentation cannot spell — a `V` class
-/// literal names `void`, which is no type here — states no default.
-fn descriptor_type(descriptor: &[u8], kind: DescriptorKind) -> Option<String> {
-    let facts = descriptor_facts(descriptor, kind).ok()?;
-    source_type(facts.single()?)
-}
-
-/// One `char` value's own text as a character literal, escaped by the rule every literal in this
-/// repository is escaped with: the delimiter, the backslash, the controls and the line terminators
-/// are escapes, every other unit inside the BMP is written as itself, and a unit a literal cannot
-/// carry is spelled `\uXXXX`.
-///
-/// This is the character literal the recovery layer's own `switch` keys are written with (`case
-/// 'a':`), for the one place a declaration states a character: its escape table is the emitter's,
-/// and it is stated here because that table is not published.
-fn char_literal(value: u16) -> String {
-    let mut literal = String::from("'");
-    match value {
-        0x27 => literal.push_str("\\'"),
-        0x5c => literal.push_str("\\\\"),
-        0x08 => literal.push_str("\\b"),
-        0x09 => literal.push_str("\\t"),
-        0x0a => literal.push_str("\\n"),
-        0x0c => literal.push_str("\\f"),
-        0x0d => literal.push_str("\\r"),
-        0x20..=0x7e => literal.push(char::from_u32(u32::from(value)).unwrap_or('?')),
-        other => literal.push_str(&format!("\\u{other:04x}")),
-    }
-    literal.push('\'');
-    literal
-}
-
-/// The `throws` clause one member's own `Exceptions` attribute is written as, after its parameter
-/// list, or nothing at all when the member declares no exception.
-///
-/// The clause is one line of the declaration and it states exactly the types the attribute states,
-/// in the attribute's own order ([`declared_exceptions`]); an empty list is no clause, because
-/// `throws` with nothing after it is not a clause Java writes.
-fn throws_clause(throws: &[String]) -> String {
-    if throws.is_empty() {
-        return String::new();
-    }
-    format!(" throws {}", throws.join(", "))
-}
-
-/// Whether one member is written with `default`: a member of a class whose own flags include
-/// `ACC_INTERFACE`, whose own flags are neither `ACC_STATIC` nor `ACC_ABSTRACT`, and whose
-/// declaration carries a `Code` attribute.
-///
-/// Those are exactly the members the format calls default methods: an interface's body-bearing
-/// member that is not static. A class never gains one — `default` is no class member modifier — and
-/// an interface's `static` member stays `static` with no `default` beside it. The `Code` attribute is
-/// read off the member's own record ([`MethodItem::body`]), which is the same fact the member's run
-/// is decided by, so a member spelled here and a member run there cannot disagree about whether the
-/// class file declares a body.
-fn is_default_member(class_flags: u16, item: &MethodItem) -> bool {
-    class_flags & ACC_INTERFACE != 0
-        && item.access_flags & ACC_STATIC == 0
-        && item.access_flags & ACC_ABSTRACT == 0
-        && matches!(item.body, crate::MemberBodyEvidence::CodeAttribute { .. })
+    let index = attribute_facts(bytes, &shells, pool, budget)?
+        .constant_value
+        .ok_or_else(|| {
+            Error::invalid_input(
+                "classfile_invalid_attribute_content",
+                "declared ConstantValue has no decoded index",
+            )
+        })?;
+    resolve_constant_value(&field.descriptor.raw().0, index.0, pool).map(Some)
 }
 
 /// Spells one method's declaration, and the marker its own spelling needs.
@@ -9500,22 +4364,21 @@ fn is_default_member(class_flags: u16, item: &MethodItem) -> bool {
 /// the attribute's own order, and a member that declares none — or one whose attribute declares no
 /// exception — writes no clause. No exception is inferred from an `athrow`.
 ///
-/// `default` is the member's own `AnnotationDefault` attribute (JVMS 4.7.22), as the read that
-/// resolved it published it: a member that declares one is written `default <literal>` after its
-/// parameter list, and a member that declares none — and one whose value this presentation has no
-/// literal for — writes no `default` at all. Which class declares such a member is not read here:
-/// the attribute's presence is the fact, so an ordinary interface or class member that declares one
-/// is written the same way an annotation type's member is.
+/// `default` is the already resolved Java value of this member's `AnnotationDefault`
+/// (JVMS 4.7.22), written after its parameter list. The caller resolves every present raw
+/// value before reaching this spelling path and publishes a refusal if it is unsupported;
+/// an absent value alone means no `default` clause. Which class declares the member is not
+/// read here: its attribute supplies the value for an annotation, interface or class member.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn spell_method(
     item: &MethodItem,
     facts: Option<&RecoveryFacts>,
     recovered_parameter_names: Option<&[Option<String>]>,
     class: &str,
-    class_internal: &[u8],
-    nested_class_members: &[String],
+    source_names: SourceClassNames<'_>,
     class_flags: u16,
     attributes: Option<&MemberAttributes>,
+    default: Option<&MemberDefault>,
     annotations: &MemberAnnotationFacts,
     pool: &[CpEntryFacts],
 ) -> Spelled {
@@ -9524,13 +4387,20 @@ pub(crate) fn spell_method(
         is_static(item.access_flags),
         item.access_flags & ACC_VARARGS != 0,
     );
+    let source_names_valid = signature.as_ref().is_some_and(|signature| {
+        jarde_java::declaration::method_signature_source_paths_valid(signature, source_names)
+    });
     let parameter_count = signature
         .as_ref()
         .map(|signature| signature.parameters.len());
     let mut member_annotations =
-        spell_member_annotation_uses(annotations.declaration.clone(), pool);
-    let mut parameter_annotations =
-        spell_parameter_annotation_uses(annotations.parameters.clone(), pool, parameter_count);
+        spell_member_annotation_uses(annotations.declaration.clone(), pool, source_names);
+    let mut parameter_annotations = spell_parameter_annotation_uses(
+        annotations.parameters.clone(),
+        pool,
+        parameter_count,
+        source_names,
+    );
     let type_annotations = spell_type_annotation_uses(
         annotations.type_uses.clone(),
         TypeUseOwner::Method,
@@ -9539,192 +4409,39 @@ pub(crate) fn spell_method(
         &member_annotations,
         Some(&annotations.parameters),
         parameter_count,
+        source_names,
     );
-    if item.name.raw().0 == b"<clinit>" {
-        refuse_uses(
-            &mut member_annotations,
-            "class initializer blocks have no Java method declaration to annotate",
-        );
-    }
-    let mut spelled = spell_method_declaration(
-        item,
+    let (declaration, marker) = jarde_java::declaration::spell_method_declaration(
+        &item.name,
+        &item.descriptor,
+        item.access_flags,
+        matches!(item.body, crate::MemberBodyEvidence::CodeAttribute { .. }),
         facts,
         recovered_parameter_names,
         class,
-        class_internal,
-        nested_class_members,
+        source_names,
         class_flags,
-        attributes,
-        &parameter_annotations.uses_by_position,
-        &type_annotations,
+        attributes.map_or(&[][..], |attributes| attributes.throws.as_slice()),
+        default,
+        &mut member_annotations,
+        &mut parameter_annotations,
+        &type_annotations.return_uses,
+        &type_annotations.parameter_uses,
+        attributes.and_then(|attributes| attributes.parameters.as_deref()),
+        signature.is_some(),
+        source_names_valid,
     );
-    if spelled.declaration.is_none() {
-        refuse_uses(
-            &mut member_annotations,
-            "method descriptor cannot be spelled as a Java declaration",
-        );
-        refuse_parameter_uses(
-            &mut parameter_annotations,
-            "method descriptor cannot establish parameter positions",
-        );
-    }
+    let mut spelled = Spelled {
+        declaration,
+        marker,
+        annotations: MemberAnnotationUses::default(),
+        parameter_annotations: ParameterAnnotationUses::default(),
+        type_annotations: TypeAnnotationUses::default(),
+    };
     spelled.annotations = member_annotations;
     spelled.parameter_annotations = parameter_annotations;
     spelled.type_annotations = type_annotations;
     spelled
-}
-
-#[allow(clippy::too_many_arguments)]
-fn spell_method_declaration(
-    item: &MethodItem,
-    facts: Option<&RecoveryFacts>,
-    recovered_parameter_names: Option<&[Option<String>]>,
-    class: &str,
-    class_internal: &[u8],
-    nested_class_members: &[String],
-    class_flags: u16,
-    attributes: Option<&MemberAttributes>,
-    parameter_annotations: &[Vec<String>],
-    type_annotations: &TypeAnnotationUses,
-) -> Spelled {
-    // The class a nested reference in this declaration is spelled against — the class whose text
-    // the declaration is written into — together with the `InnerClasses` row set that gates the
-    // spelling at all.
-    let current = std::str::from_utf8(class_internal).ok();
-    let (default, throws) = attributes.map_or((None, &[][..]), |attributes| {
-        (attributes.default.as_ref(), attributes.throws.as_slice())
-    });
-    let raw = &item.name.raw().0;
-    match raw.as_slice() {
-        b"<clinit>" => {
-            return Spelled {
-                declaration: Some("static".to_owned()),
-                marker: None,
-                annotations: MemberAnnotationUses::default(),
-                parameter_annotations: ParameterAnnotationUses::default(),
-                type_annotations: TypeAnnotationUses::default(),
-            };
-        }
-        b"<init>" => {
-            let Some(signature) = method_descriptor(
-                &item.descriptor.raw().0,
-                is_static(item.access_flags),
-                item.access_flags & ACC_VARARGS != 0,
-            ) else {
-                return Spelled {
-                    declaration: None,
-                    marker: Some(not_a_descriptor(item, "method")),
-                    annotations: MemberAnnotationUses::default(),
-                    parameter_annotations: ParameterAnnotationUses::default(),
-                    type_annotations: TypeAnnotationUses::default(),
-                };
-            };
-            let mut declaration = String::new();
-            if let Some(word) = visibility(item.access_flags) {
-                declaration.push_str(word);
-                declaration.push(' ');
-            }
-            declaration.push_str(class);
-            declaration.push_str(&arguments(
-                facts,
-                recovered_parameter_names,
-                &signature,
-                current,
-                nested_class_members,
-                parameter_annotations,
-                &type_annotations.parameter_uses,
-                attributes.and_then(|attributes| attributes.parameters.as_deref()),
-            ));
-            declaration.push_str(&throws_clause(throws));
-            return Spelled {
-                declaration: Some(declaration),
-                marker: None,
-                annotations: MemberAnnotationUses::default(),
-                parameter_annotations: ParameterAnnotationUses::default(),
-                type_annotations: TypeAnnotationUses::default(),
-            };
-        }
-        _ => {}
-    }
-    let Some(signature) = method_descriptor(
-        &item.descriptor.raw().0,
-        is_static(item.access_flags),
-        item.access_flags & ACC_VARARGS != 0,
-    ) else {
-        return Spelled {
-            declaration: None,
-            marker: Some(not_a_descriptor(item, "method")),
-            annotations: MemberAnnotationUses::default(),
-            parameter_annotations: ParameterAnnotationUses::default(),
-            type_annotations: TypeAnnotationUses::default(),
-        };
-    };
-    let (name, aliased) = written_name(raw);
-    let mut words: Vec<&str> = Vec::new();
-    words.extend(visibility(item.access_flags));
-    if is_static(item.access_flags) {
-        words.push("static");
-    }
-    if item.access_flags & ACC_FINAL != 0 {
-        words.push("final");
-    }
-    if item.access_flags & ACC_ABSTRACT != 0 {
-        words.push("abstract");
-    }
-    if item.access_flags & ACC_NATIVE != 0 {
-        words.push("native");
-    }
-    if item.access_flags & ACC_SYNCHRONIZED != 0 {
-        words.push("synchronized");
-    }
-    if item.access_flags & ACC_STRICT != 0 {
-        words.push("strictfp");
-    }
-    if is_default_member(class_flags, item) {
-        // The last modifier: `default` stands between the access modifiers and the return type,
-        // which is where Java source writes it (`public default int zero()`).
-        words.push("default");
-    }
-    let returns = signature.returns.as_deref().unwrap_or("void");
-    let returns =
-        nested_member_reference_spelling(returns, current, Some(nested_class_members)).into_owned();
-    let returns = if type_annotations.return_uses.is_empty() {
-        returns
-    } else {
-        decorate_qualified_type(&returns, &type_annotations.return_uses).unwrap_or(returns)
-    };
-    let mut declaration = String::new();
-    for word in words {
-        declaration.push_str(word);
-        declaration.push(' ');
-    }
-    declaration.push_str(&returns);
-    declaration.push(' ');
-    declaration.push_str(&name);
-    declaration.push_str(&arguments(
-        facts,
-        recovered_parameter_names,
-        &signature,
-        current,
-        nested_class_members,
-        parameter_annotations,
-        &type_annotations.parameter_uses,
-        attributes.and_then(|attributes| attributes.parameters.as_deref()),
-    ));
-    declaration.push_str(&throws_clause(throws));
-    if let Some(default) = default {
-        // The default stands between the parameter list and the `;` (or the body), which is the one
-        // place Java source states one.
-        declaration.push_str(" default ");
-        declaration.push_str(&default.spelling());
-    }
-    Spelled {
-        declaration: Some(declaration),
-        marker: aliased.then(|| aliased_name(item)),
-        annotations: MemberAnnotationUses::default(),
-        parameter_annotations: ParameterAnnotationUses::default(),
-        type_annotations: TypeAnnotationUses::default(),
-    }
 }
 
 /// Spells one field's declaration, and the marker its own spelling needs.
@@ -9736,32 +4453,19 @@ fn spell_method_declaration(
 /// site, so the one `=` this presentation writes is the one the field's own attribute states.
 fn spell_field_declaration(
     item: &FieldItem,
-    current_class: Option<&str>,
-    nested_class_members: &[String],
+    source_names: SourceClassNames<'_>,
     constant: Option<&MemberDefault>,
 ) -> Spelled {
-    let Some(field_type) = field_type(&item.descriptor.raw().0).map(|ty| {
-        nested_member_reference_spelling(&ty, current_class, Some(nested_class_members))
-            .into_owned()
-    }) else {
-        return Spelled {
-            declaration: None,
-            marker: Some(not_a_descriptor_field(item)),
-            annotations: MemberAnnotationUses::default(),
-            parameter_annotations: ParameterAnnotationUses::default(),
-            type_annotations: TypeAnnotationUses::default(),
-        };
-    };
-    let (name, aliased) = written_name(&item.name.raw().0);
-    let declaration = field_declaration_with_type(item, &field_type, constant);
+    let (declaration, marker) = jarde_java::declaration::spell_field_declaration(
+        &item.name,
+        &item.descriptor,
+        item.access_flags,
+        source_names,
+        constant,
+    );
     Spelled {
-        declaration: Some(declaration),
-        marker: aliased.then(|| {
-            format!(
-                "// jarde: the field's raw name `{}` is not a Java identifier; it is written as `{name}`",
-                comment_name(&item.name)
-            )
-        }),
+        declaration,
+        marker,
         annotations: MemberAnnotationUses::default(),
         parameter_annotations: ParameterAnnotationUses::default(),
         type_annotations: TypeAnnotationUses::default(),
@@ -9773,34 +4477,12 @@ fn field_declaration_with_type(
     ty: &str,
     constant: Option<&MemberDefault>,
 ) -> String {
-    let (name, _) = written_name(&item.name.raw().0);
-    let mut words: Vec<&str> = Vec::new();
-    words.extend(visibility(item.access_flags));
-    if is_static(item.access_flags) {
-        words.push("static");
-    }
-    if item.access_flags & ACC_FINAL != 0 {
-        words.push("final");
-    }
-    if item.access_flags & ACC_VOLATILE != 0 {
-        words.push("volatile");
-    }
-    if item.access_flags & ACC_TRANSIENT != 0 {
-        words.push("transient");
-    }
-    let mut declaration = String::new();
-    for word in words {
-        declaration.push_str(word);
-        declaration.push(' ');
-    }
-    declaration.push_str(ty);
-    declaration.push(' ');
-    declaration.push_str(&name);
-    if let Some(constant) = constant {
-        declaration.push_str(" = ");
-        declaration.push_str(&constant.spelling());
-    }
-    declaration
+    jarde_java::declaration::field_declaration_with_type(
+        &item.name,
+        item.access_flags,
+        ty,
+        constant,
+    )
 }
 
 /// Atomically project one field's generic type after reader erasure proof and the first source
@@ -9908,31 +4590,17 @@ pub(crate) fn project_field_signature(
             }
         }
 
-        if record.declaration.is_none()
-            || !record.markers.is_empty()
-            || !std::str::from_utf8(&record.item.name.raw().0).is_ok_and(is_java_identifier)
-            || record.item.access_flags
-                & !(ACC_PUBLIC
-                    | ACC_PRIVATE
-                    | ACC_PROTECTED
-                    | ACC_STATIC
-                    | ACC_FINAL
-                    | ACC_VOLATILE
-                    | ACC_TRANSIENT)
-                != 0
-            // A `$`-nested class's field keeps a source position only inside the nesting its
-            // own header proof published; without that header the position is unproved and the
-            // field stays on its physical descriptor.
-            || (class_internal.contains(&b'$') && !class_header_projected)
-            || class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) != 0
-            || !record.type_annotations.attributes.is_empty()
-            || !record.type_annotations.refusals.is_empty()
-        {
-            return Err(Error::unsupported(
-                "field_generic_source_unproved",
-                "field name, flags, descriptor, or type-use annotation path cannot be preserved",
-            ));
-        }
+        jarde_java::generic_source_proof::prove_field_signature_source(
+            record.declaration.is_some(),
+            record.markers.is_empty(),
+            &record.item.name.raw().0,
+            record.item.access_flags,
+            class_internal,
+            class_header_projected,
+            class_flags,
+            !record.type_annotations.attributes.is_empty(),
+            !record.type_annotations.refusals.is_empty(),
+        )?;
 
         budget.charge(
             CountedBudgetDimension::AnalysisSteps,
@@ -9998,6 +4666,7 @@ pub(crate) fn project_field_signature(
             )?;
             record.declaration = Some(declaration);
             record.markers = markers;
+            record.generic_signature_projected = true;
             Ok(SignatureProjection::Settled)
         }
         Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => Err(error),
@@ -10022,317 +4691,15 @@ pub(crate) fn project_field_signature(
     }
 }
 
-/// One parameter's type as the list writes it: the type the descriptor states, or — for the last
-/// parameter of a member whose own `ACC_VARARGS` applies — that type's last `[]` written as the
-/// three dots of a variable-arity parameter (`byte[][]` → `byte[]...`).
-///
-/// The cut is exact and not a second reading of the bytes: the spelling it trims is the one
-/// [`source_type`] wrote from the same component, and [`method_descriptor`] states the flag only
-/// for a component that is an array, so a type that does not end in `[]` is written as it stands
-/// rather than trimmed to a type the descriptor never named.
-fn varargs_type(ty: &str, varargs: bool) -> String {
-    match ty.strip_suffix("[]") {
-        Some(element) if varargs => format!("{element}..."),
-        _ => ty.to_owned(),
-    }
-}
-
-/// The argument list one declaration is written with: every parameter of the descriptor, in
-/// declaration order, each with its type and its name.
-///
-/// A parameter's slot is the JVM layer's own derivation ([`Signature::parameters`]) — `this` holds
-/// slot 0 of a member that is not `static`, a `long`/`double` fills two slots and an **array of
-/// either fills one** — and the name is the one the body's own statements use for that slot
-/// ([`parameter_names`]), so the declaration and the body cannot name two different slots for one
-/// parameter.
-///
-/// The one parameter whose type is not written as the descriptor states it is the last one of a
-/// member whose own `ACC_VARARGS` applies ([`Signature::varargs`]): it is written `T...`, the array
-/// it is with the last `[]` spelled as the dots (see [`varargs_type`]). No other position is
-/// touched, and no call site is read: the declaration says the member takes a variable number of
-/// arguments, and the body still reads the slot as the array the descriptor states.
-fn arguments(
-    facts: Option<&RecoveryFacts>,
-    recovered_parameter_names: Option<&[Option<String>]>,
-    signature: &Signature,
-    current_class: Option<&str>,
-    nested_class_members: &[String],
-    parameter_annotations: &[Vec<String>],
-    type_annotations: &[Vec<String>],
-    proved: Option<&[ProvedMethodParameter]>,
-) -> String {
-    let mut names = parameter_names(facts, signature.slots);
-    if let Some(recovered) = recovered_parameter_names {
-        for (name, chosen) in names.iter_mut().zip(recovered) {
-            if let Some(chosen) = chosen {
-                *name = chosen.clone();
-            }
-        }
-    }
-    let proved = proved.filter(|parameters| {
-        facts.is_some_and(|facts| {
-            facts.debug_locals().len() == parameters.len()
-                && parameters
-                    .iter()
-                    .zip(facts.debug_locals())
-                    .all(|(parameter, local)| {
-                        local.slot() == parameter.slot
-                            && local.name() == parameter.name
-                            && local.range().is_none()
-                    })
-        })
-    });
-    let written: Vec<String> = signature
-        .parameters
-        .iter()
-        .enumerate()
-        .map(|(position, (ty, slot))| {
-            let name = names
-                .get(usize::from(*slot))
-                .cloned()
-                .unwrap_or_else(|| format!("arg{slot}"));
-            let varargs = signature.varargs && position + 1 == signature.parameters.len();
-            let ty =
-                nested_member_reference_spelling(ty, current_class, Some(nested_class_members));
-            let ty = type_annotations
-                .get(position)
-                .filter(|items| !items.is_empty())
-                .and_then(|items| decorate_qualified_type(ty.as_ref(), items))
-                .unwrap_or_else(|| ty.into_owned());
-            let ty = varargs_type(&ty, varargs);
-            let annotations = parameter_annotations
-                .get(position)
-                .into_iter()
-                .flatten()
-                .map(|annotation| format!("{annotation} "))
-                .collect::<String>();
-            let final_word = if proved
-                .and_then(|parameters| parameters.get(position))
-                .is_some_and(|parameter| {
-                    parameter.slot == *slot && parameter.name == name && parameter.is_final
-                }) {
-                "final "
-            } else {
-                ""
-            };
-            format!("{annotations}{final_word}{ty} {name}")
-        })
-        .collect();
-    format!("({})", written.join(", "))
-}
-
-/// The marker of a member whose raw descriptor is not the descriptor of its kind (JVMS 4.3.2/4.3.3).
-fn not_a_descriptor(item: &MethodItem, kind: &str) -> String {
-    format!(
-        "// jarde: not spelled: the descriptor `{}` of the member `{}` is not a {kind} descriptor, so this presentation writes no declaration for it and performs no run for it",
-        comment_name(&item.descriptor),
-        comment_name(&item.name)
-    )
-}
-
-fn not_a_descriptor_field(item: &FieldItem) -> String {
-    format!(
-        "// jarde: not spelled: the descriptor `{}` of the field `{}` is not a field descriptor, so this presentation writes no declaration for it",
-        comment_name(&item.descriptor),
-        comment_name(&item.name)
-    )
-}
-
-/// The marker of a member whose raw name Java cannot spell.
-fn aliased_name(item: &MethodItem) -> String {
-    format!(
-        "// jarde: the member's raw name `{}` is not a Java identifier; it is written as `{}`",
-        comment_name(&item.name),
-        written_name(&item.name.raw().0).0
-    )
-}
-
 // ---------------------------------------------------------------------------------------------
 // The text: one class, its members, and the blocks the recovery layer wrote
 // ---------------------------------------------------------------------------------------------
 
-/// One produced artifact, split at its own block: the envelope comment lines the recovery layer
-/// wrote, and the statements it wrote.
-struct Artifact<'a> {
-    /// The envelope: the `//` lines the artifact opens with (`@method`, `@declaration`, the
-    /// statement that the presentation is not claimed to compile).
-    envelope: &'a str,
-    /// The statements, with neither the artifact's opening brace nor its closing one.
-    statements: &'a str,
-}
-
-/// Splits one produced artifact into its envelope and its statements, by the shape the emitter of
-/// [`jarde_java::recover`] writes: comment lines, a line holding `{` alone, the statements at one
-/// level of indentation, and a line holding `}` alone as the last line.
-///
-/// The split is a reading of that shape and it is deliberately strict: the statements of a body are
-/// indented, so `{` alone can only be the block's own opening brace, and `}` alone as the last line
-/// can only be its closing one. Anything else is not placed at all — the caller quotes it line by
-/// line instead of guessing where a statement starts — because placing a statement outside the
-/// member it belongs to would be worse than not placing it.
-fn artifact(text: &str) -> Option<Artifact<'_>> {
-    let mut open: Option<usize> = None;
-    let mut close: Option<usize> = None;
-    let mut at = 0usize;
-    for line in text.split_inclusive('\n') {
-        let bare = line.trim_end_matches('\n');
-        if bare == "{" && open.is_none() {
-            open = Some(at);
-        }
-        if bare == "}" {
-            close = Some(at);
-        }
-        at += line.len();
-    }
-    let open = open?;
-    let close = close?;
-    if close < open + 2 {
-        return None;
-    }
-    let trailing = &text[close..];
-    if trailing != "}\n" && trailing != "}" {
-        return None;
-    }
-    Some(Artifact {
-        envelope: &text[..open],
-        statements: &text[open + 2..close],
-    })
-}
-
-/// One artifact this presentation could not place, quoted line by line as comments: nothing a run
-/// produced is dropped, and none of it is read as a statement.
-fn quote(text: &str) -> String {
-    let mut quoted = String::new();
-    for line in text.lines() {
-        quoted.push_str("// ");
-        quoted.push_str(line);
-        quoted.push('\n');
-    }
-    quoted
-}
-
-/// One block of text, every non-blank line prefixed with `depth` levels of indentation.
-fn indent(text: &str, depth: usize) -> String {
-    let pad = "    ".repeat(depth);
-    let mut out = String::new();
-    for line in text.split_inclusive('\n') {
-        if line.trim_end_matches('\n').is_empty() {
-            out.push_str(line);
-            continue;
-        }
-        out.push_str(&pad);
-        out.push_str(line);
-    }
-    out
-}
-
-/// What one member's block holds.
-enum Placed<'a> {
-    /// The artifact's own envelope and statements, as the recovery layer wrote them.
-    Block(Artifact<'a>),
-    /// A produced artifact whose shape this presentation does not recognize: quoted line by line.
-    Quoted(&'a str),
-    /// No artifact at all: the marker is the whole body.
-    Without,
-}
-
-/// One member written as a declaration and a block, at one level of indentation.
-fn block_member(declaration: &str, placed: Placed<'_>, markers: &[String]) -> String {
-    let mut out = format!("    {declaration} {{\n");
-    for marker in markers {
-        out.push_str(&indent(&format!("{marker}\n"), 2));
-    }
-    match placed {
-        Placed::Without => {}
-        Placed::Block(artifact) => {
-            // The envelope is written one level in from the class body (it stood outside the
-            // artifact's braces, and this presentation writes it inside them), and the statements
-            // keep the one level of indentation their own block gave them: both land at the same
-            // depth, one level below the declaration above them.
-            out.push_str(&indent(artifact.envelope, 2));
-            out.push_str(&indent(artifact.statements, 1));
-        }
-        Placed::Quoted(text) => out.push_str(&indent(&quote(text), 2)),
-    }
-    out.push_str("    }\n");
-    out
-}
-
-/// Exact byte length of one already-known block rendering, used to reserve output budget before
-/// allocating the projection text.
-fn indented_text_bytes(text: &str, depth: usize) -> u64 {
-    let pad = u64::try_from(depth.saturating_mul(4)).unwrap_or(u64::MAX);
-    text.split_inclusive('\n').fold(0u64, |total, line| {
-        let line_bytes = u64::try_from(line.len()).unwrap_or(u64::MAX);
-        let indentation = if line.trim_end_matches('\n').is_empty() {
-            0
-        } else {
-            pad
-        };
-        total.saturating_add(line_bytes).saturating_add(indentation)
-    })
-}
-
-fn block_member_text_bytes(
-    declaration: &str,
-    envelope: &str,
-    statements: &str,
-    markers: &[String],
-    annotations: &MemberAnnotationUses,
-) -> u64 {
-    let marker_bytes = markers.iter().fold(0u64, |total, marker| {
-        total
-            .saturating_add(indented_text_bytes(marker, 2))
-            .saturating_add(1)
-    });
-    let annotation_bytes = annotations.uses.iter().fold(0u64, |total, annotation| {
-        total
-            .saturating_add(4)
-            .saturating_add(u64::try_from(annotation.len()).unwrap_or(u64::MAX))
-            .saturating_add(1)
-    });
-    4u64.saturating_add(u64::try_from(declaration.len()).unwrap_or(u64::MAX))
-        .saturating_add(3) // ` {\n`
-        .saturating_add(marker_bytes)
-        .saturating_add(indented_text_bytes(envelope, 2))
-        .saturating_add(indented_text_bytes(statements, 1))
-        .saturating_add(6) // `    }\n`
-        .saturating_add(annotation_bytes)
-}
-
-fn declaration_member_text_bytes(
-    declaration: &str,
-    markers: &[String],
-    annotations: &MemberAnnotationUses,
-) -> u64 {
-    let marker_bytes = markers.iter().fold(0u64, |total, marker| {
-        total
-            .saturating_add(indented_text_bytes(marker, 1))
-            .saturating_add(1)
-    });
-    let annotation_bytes = annotations.uses.iter().fold(0u64, |total, annotation| {
-        total
-            .saturating_add(4)
-            .saturating_add(u64::try_from(annotation.len()).unwrap_or(u64::MAX))
-            .saturating_add(1)
-    });
-    marker_bytes
-        .saturating_add(4)
-        .saturating_add(u64::try_from(declaration.len()).unwrap_or(u64::MAX))
-        .saturating_add(2) // `;\n`
-        .saturating_add(annotation_bytes)
-}
-
-/// One member written as a declaration and a `;`, which is how Java spells a member that declares no
-/// body at all.
-fn declaration_member(declaration: &str, markers: &[String]) -> String {
-    let mut out = String::new();
-    for marker in markers {
-        out.push_str(&indent(&format!("{marker}\n"), 1));
-    }
-    out.push_str(&format!("    {declaration};\n"));
-    out
-}
+// Shared Java writer; the physical records and final publication remain here.
+use jarde_java::source_proof::{
+    Artifact, Placed, artifact, block_member, block_member_text_bytes, comment_name,
+    declaration_member, declaration_member_text_bytes, indent, placed_artifact_span,
+};
 
 /// One field's written form with a projection's own declaration: the same markers the physical
 /// member carries, beside the re-spelled declaration a static member fold states.
@@ -10342,11 +4709,7 @@ pub(crate) fn field_member_text(field: &ClassSourceField, declaration: &str) -> 
 
 /// One member written as its markers alone: nothing else about it can be spelled.
 fn comment_member(markers: &[String]) -> String {
-    let mut out = String::new();
-    for marker in markers {
-        out.push_str(&indent(&format!("{marker}\n"), 1));
-    }
-    out
+    jarde_java::source_proof::comment_member(markers)
 }
 
 /// The stable code of one execution plane's stop, or `None` when the plane is `Complete`.
@@ -10447,41 +4810,17 @@ fn run_markers(
 // The members, as this presentation builds them
 // ---------------------------------------------------------------------------------------------
 
-/// Which class-header position one parent definition is proved for: the two positions
-/// [`ClassSourceDeclaration::project_generic_signature`] asks the selected environment about.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum ClassHeaderParentPosition {
-    /// The direct superclass the relaxed direct-parent path projects (`extends Parent<String>`,
-    /// whose parent name is the class file's own binary name).
-    DirectSuperclass,
-    /// One interface entry the class `Signature` spells with type arguments.
-    Interface,
-}
-
-/// What one class-header parent's definition in the selected environment states about the
-/// class's own `Signature` claim.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum ClassHeaderParentProof {
-    /// The definition proves the claim this position makes: one single-parameter class parent,
-    /// or one interface declaring exactly the number of type parameters the `Signature` spells
-    /// as arguments.
-    Proved,
-    /// The selected environment does not provide the definition. The entry then keeps its
-    /// physical spelling: an absent definition is not a claim the class file contradicts.
-    Unresolved,
-    /// The definition resolves and contradicts the claim — another kind, another arity, a
-    /// header this read cannot state. The projection refuses rather than spelling a header from
-    /// a contradicted claim.
-    Contradicted,
-}
-
 impl ClassSourceDeclaration {
     /// The declaration of one class-level item, as this presentation spells it: the simple name
     /// `this_class` states, and the declaration line the kind and the flags state.
-    pub(crate) fn of(item: ClassDeclarationItem) -> Self {
-        let name = simple_name(&item.declaration.this_class.raw().0);
-        let declaration = class_declaration(&name, &item.declaration);
-        Self {
+    pub(crate) fn of(item: ClassDeclarationItem) -> Result<Self> {
+        let (name, declaration) = jarde_java::declaration::class_source_declaration(
+            &item.declaration.this_class,
+            item.declaration.access_flags,
+            item.declaration.super_class.as_ref(),
+            &item.declaration.interfaces,
+        )?;
+        Ok(Self {
             item,
             name,
             declaration,
@@ -10493,7 +4832,7 @@ impl ClassSourceDeclaration {
             generic_type_parameters: None,
             generic_scope: None,
             header_interface_arguments: Vec::new(),
-        }
+        })
     }
 
     /// Project the class's own Signature only after its parent identities and variable erasures
@@ -10533,59 +4872,21 @@ impl ClassSourceDeclaration {
                     )
                 })?;
             let parsed = parse_class_signature(&raw.0, budget)?;
-            let parameterized_superclass = parsed.type_parameters.is_empty()
-                && parsed
-                    .superclass
-                    .segments
-                    .iter()
-                    .any(|segment| !segment.arguments.is_empty());
-            let parameterized_interfaces = parsed.interfaces.iter().any(|interface| {
-                interface
-                    .segments
-                    .iter()
-                    .any(|segment| !segment.arguments.is_empty())
-            });
-            let direct_parent_candidate = parsed.type_parameters.is_empty()
-                && matches!(parsed.superclass.segments.as_slice(), [segment]
-                    if matches!(segment.arguments.as_slice(), [TypeArgument::Exact(SignatureType::Class(class))]
-                        if matches!(class.segments.as_slice(), [string]
-                            if string.binary_name == b"java/lang/String" && string.arguments.is_empty())));
-            // The interface-only shape: no type parameters of its own and no parameterized
-            // superclass, so the one generic position the class `Signature` states is an
-            // `implements` entry. It is the fourth path below, and it also decides what the
-            // shared gates mean for this class: they ask about the class's **own** header
-            // position, and a class that entered the projection only through an interface keeps
-            // the raw header they would refuse — the `Ok(None)` this shape returned before an
-            // interface entry could enter the projection at all.
-            let interface_only = parsed.type_parameters.is_empty()
-                && !parameterized_superclass
-                && parameterized_interfaces;
-            if parsed.type_parameters.is_empty()
-                && !parameterized_superclass
-                && !parameterized_interfaces
-            {
+            let Some(shape) =
+                jarde_java::generic_source_proof::class_signature_source_shape(&parsed)
+            else {
                 return Ok(None);
-            }
+            };
             self.generic_signature = Some(raw.clone());
             let facts = &self.item.declaration;
-            let own_header_gate = |error: Error| -> Result<
-                Option<(String, ClassSignatureErasureProof, Vec<Vec<u8>>)>,
-            > {
-                if interface_only { Ok(None) } else { Err(error) }
-            };
-            if facts.access_flags & (ACC_ANNOTATION | ACC_ENUM) != 0
-                || !is_java_identifier(&self.name)
-                || shells.iter().any(|shell| {
-                    matches!(
-                        shell.name.raw().0.as_slice(),
-                        b"RuntimeVisibleTypeAnnotations" | b"RuntimeInvisibleTypeAnnotations"
-                    )
-                })
-            {
-                return own_header_gate(Error::unsupported(
-                    "class_generic_source_unproved",
-                    "class kind, nesting, name, or type-use annotations lack a faithful generic header position",
-                ));
+            let (_, _, interface_only) = shape;
+            if !jarde_java::generic_source_proof::class_signature_source_header_is_eligible(
+                &self.name,
+                facts.access_flags,
+                shells,
+                interface_only,
+            )? {
+                return Ok(None);
             }
             // A `$` in the class's own name states a nesting claim the header cannot spell on
             // its own: only the class's own InnerClasses self row proves the member position
@@ -10600,27 +4901,27 @@ impl ClassSourceDeclaration {
                     budget,
                 )?
             {
-                return own_header_gate(Error::unsupported(
-                    "class_generic_source_unproved",
+                return jarde_java::generic_source_proof::class_signature_own_header_refusal(
+                    interface_only,
                     "class kind, nesting, name, or type-use annotations lack a faithful generic header position",
-                ));
+                );
             }
             let physical_super = match facts.super_class.as_ref() {
                 Some(physical_super) => physical_super,
                 None => {
-                    return own_header_gate(Error::unsupported(
-                        "class_generic_source_unproved",
+                    return jarde_java::generic_source_proof::class_signature_own_header_refusal(
+                        interface_only,
                         "physical superclass is absent",
-                    ));
+                    );
                 }
             };
             if facts.access_flags & ACC_INTERFACE != 0
                 && physical_super.raw().0 != b"java/lang/Object"
             {
-                return own_header_gate(Error::unsupported(
-                    "class_generic_source_unproved",
+                return jarde_java::generic_source_proof::class_signature_own_header_refusal(
+                    interface_only,
                     "interface physical superclass is not java/lang/Object",
-                ));
+                );
             }
             let physical_interfaces: Vec<Vec<u8>> = facts
                 .interfaces
@@ -10633,196 +4934,23 @@ impl ClassSourceDeclaration {
                 &physical_interfaces,
                 budget,
             )?;
-            let mut header_interface_arguments: Vec<Vec<u8>> = Vec::new();
-            let mut projected_interfaces: Option<Vec<String>> = None;
-            if direct_parent_candidate {
-                if !parsed.interfaces.is_empty() || !physical_interfaces.is_empty() {
-                    return Err(Error::unsupported(
-                        "class_generic_source_unproved",
-                        "direct parameterized superclass projection does not include interfaces",
-                    ));
-                }
-                let [parent] = parsed.superclass.segments.as_slice() else {
-                    unreachable!("direct parent candidate has exactly one segment")
-                };
-                // The name proved here is the class file's own binary name (`$` kept): the raw
-                // header already spells every parent that way, so the projected entry adds the
-                // type arguments and changes no name.
-                match prove_header_parent(
-                    ClassHeaderParentPosition::DirectSuperclass,
-                    &parent.binary_name,
-                    parent.arguments.len(),
+            let Some((declaration, type_parameters, header_interface_arguments)) =
+                jarde_java::generic_source_proof::project_class_signature_source_header(
+                    parsed,
+                    &proof,
+                    shape,
+                    &self.name,
+                    &facts.this_class,
+                    facts.access_flags,
+                    physical_super,
+                    &facts.interfaces,
+                    &physical_interfaces,
                     budget,
-                )? {
-                    ClassHeaderParentProof::Proved => {}
-                    ClassHeaderParentProof::Unresolved | ClassHeaderParentProof::Contradicted => {
-                        return Err(Error::unsupported(
-                            "class_generic_source_unproved",
-                            "direct superclass does not resolve to one proved single-parameter parent definition",
-                        ));
-                    }
-                }
-            } else if parameterized_superclass {
-                return Err(Error::unsupported(
-                    "class_generic_source_unproved",
-                    "only a single direct Parent<String> superclass is supported for a class without type parameters",
-                ));
-            } else if !matches!(parsed.superclass.segments.as_slice(), [segment] if segment.arguments.is_empty()) {
-                // A superclass path the header cannot spell from the `Signature` (a nested
-                // binary path with no arguments of its own). Every shape whose own type
-                // parameters or superclass entered the projection refuses here, exactly as
-                // before; the interface-only shape keeps the physical header, which is the
-                // whole projection its raw entries would spell anyway.
-                return own_header_gate(Error::unsupported(
-                    "class_generic_source_unproved",
-                    "parameterized or nested parent needs a separate inherited-member proof",
-                ));
-            } else if interface_only {
-                // Each interface entry is spelled with its type arguments only when the selected
-                // environment's definition proves the arity the class `Signature` states (and
-                // then exactly the entries whose header carries arguments are recorded for the
-                // bridge admission). Every other entry keeps the physical spelling the raw
-                // header states, so a class this path cannot prove is byte-identical to the
-                // header it had before the path existed.
-                let mut header_interfaces = Vec::with_capacity(parsed.interfaces.len());
-                for (interface, physical) in parsed.interfaces.iter().zip(&physical_interfaces) {
-                    match interface.segments.as_slice() {
-                        [segment] if !segment.arguments.is_empty() => {
-                            match prove_header_parent(
-                                ClassHeaderParentPosition::Interface,
-                                &segment.binary_name,
-                                segment.arguments.len(),
-                                budget,
-                            )? {
-                                ClassHeaderParentProof::Proved => {
-                                    header_interfaces.push(spell_class_header_signature_type(
-                                        &SignatureType::Class(interface.clone()),
-                                        &proof.type_parameters,
-                                        budget,
-                                        0,
-                                    )?);
-                                    header_interface_arguments.push(physical.clone());
-                                }
-                                ClassHeaderParentProof::Unresolved => {
-                                    header_interfaces.push(class_name(physical));
-                                }
-                                ClassHeaderParentProof::Contradicted => {
-                                    return Err(Error::unsupported(
-                                        "class_generic_source_unproved",
-                                        "an interface definition contradicts the class Signature's type arguments",
-                                    ));
-                                }
-                            }
-                        }
-                        _ => header_interfaces.push(class_name(physical)),
-                    }
-                }
-                if header_interface_arguments.is_empty() {
-                    // No entry carried its arguments, so this path publishes nothing: the class
-                    // keeps the physical declaration it had, with no projection claim and no
-                    // note. (An interface-only class whose definitions are all absent is the
-                    // whole pre-change state of every such class.)
-                    return Ok(None);
-                }
-                projected_interfaces = Some(header_interfaces);
-            } else if parsed.interfaces.iter().any(|interface| {
-                !matches!(interface.segments.as_slice(), [segment] if segment.arguments.is_empty())
-            }) {
-                return Err(Error::unsupported(
-                    "class_generic_source_unproved",
-                    "parameterized or nested parent needs a separate inherited-member proof",
-                ));
-            }
-            let mut parameters = Vec::with_capacity(parsed.type_parameters.len());
-            for parameter in &parsed.type_parameters {
-                let name = std::str::from_utf8(&parameter.name).map_err(|_| {
-                    Error::unsupported(
-                        "class_generic_source_unproved",
-                        "type variable name is not source UTF-8",
-                    )
-                })?;
-                if !is_java_identifier(name) {
-                    return Err(Error::unsupported(
-                        "class_generic_source_unproved",
-                        "type variable name is not a Java identifier",
-                    ));
-                }
-                let mut bounds = Vec::new();
-                for bound in parameter
-                    .class_bound
-                    .iter()
-                    .chain(&parameter.interface_bounds)
-                {
-                    if !matches!(
-                        bound,
-                        SignatureType::Class(_) | SignatureType::TypeVariable(_)
-                    ) {
-                        return Err(Error::unsupported(
-                            "class_generic_source_unproved",
-                            "type-variable bound is not a Java class or type variable",
-                        ));
-                    }
-                    bounds.push(spell_ordinary_signature_type(
-                        bound,
-                        &proof.type_parameters,
-                        budget,
-                        0,
-                    )?);
-                }
-                let omit_object = bounds.len() == 1
-                    && bounds[0] == "java.lang.Object"
-                    && parameter.interface_bounds.is_empty();
-                parameters.push(if bounds.is_empty() || omit_object {
-                    name.to_owned()
-                } else {
-                    format!("{name} extends {}", bounds.join(" & "))
-                });
-            }
-            let (superclass, interfaces) = match projected_interfaces {
-                // The interface-only path spelled every entry itself: a projected entry keeps
-                // its type arguments, every other entry keeps the physical name — and the bare
-                // superclass keeps the physical name too, exactly the raw header's own spelling.
-                Some(interfaces) => (class_name(&physical_super.raw().0), interfaces),
-                None => {
-                    // The relaxed direct-parent path publishes a superclass whose binary name
-                    // may carry `$` (the raw header's own spelling); every other shape keeps
-                    // the member/annotation spelling, which a `$` name without a selected
-                    // source path has none of.
-                    let superclass = if direct_parent_candidate {
-                        spell_class_header_signature_type(
-                            &SignatureType::Class(parsed.superclass),
-                            &proof.type_parameters,
-                            budget,
-                            0,
-                        )?
-                    } else {
-                        spell_ordinary_signature_type(
-                            &SignatureType::Class(parsed.superclass),
-                            &proof.type_parameters,
-                            budget,
-                            0,
-                        )?
-                    };
-                    let mut interfaces = Vec::with_capacity(parsed.interfaces.len());
-                    for interface in parsed.interfaces {
-                        interfaces.push(spell_ordinary_signature_type(
-                            &SignatureType::Class(interface),
-                            &proof.type_parameters,
-                            budget,
-                            0,
-                        )?);
-                    }
-                    (superclass, interfaces)
-                }
+                    &mut prove_header_parent,
+                )?
+            else {
+                return Ok(None);
             };
-            let type_parameters = (!parameters.is_empty()).then(|| parameters.join(", "));
-            let declaration = class_declaration_with_types(
-                &self.name,
-                facts,
-                type_parameters.as_deref(),
-                Some(&superclass),
-                Some(&interfaces),
-            );
             budget.charge(
                 CountedBudgetDimension::OutputBytes,
                 u64::try_from(declaration.len()).unwrap_or(u64::MAX),
@@ -10866,33 +4994,21 @@ impl ClassSourceDeclaration {
         mut self,
         attributes: Vec<ClassAnnotationAttribute>,
         pool: &[CpEntryFacts],
+        source_names: SourceClassNames<'_>,
     ) -> Self {
-        let mut counts = std::collections::BTreeMap::<Vec<u8>, usize>::new();
-        for attribute in &attributes {
-            for annotation in &attribute.annotations {
-                if let ElementValueFacts::Annotation {
-                    type_descriptor, ..
-                } = annotation
-                {
-                    *counts.entry(type_descriptor.0.clone()).or_default() += 1;
-                }
-            }
-        }
-        for attribute in &attributes {
-            for annotation in &attribute.annotations {
-                match spell_class_annotation(annotation, pool, &counts) {
-                    Ok(spelling) => self.annotation_uses.push(spelling),
-                    Err(reason) => self.annotation_refusals.push(reason),
-                }
-            }
-        }
+        jarde_java::metadata_literal::spell_class_annotation_uses(
+            &attributes,
+            pool,
+            source_names,
+            &mut self.annotation_uses,
+            &mut self.annotation_refusals,
+        );
         self.annotation_attributes = attributes;
         self
     }
 }
 
-/// The narrow Java 8 package-info certificate consumed by the class-source writer. This is a
-/// source projection over the selected read's facts; it does not parse or infer classfile data.
+/// Supply the selected physical facts to the Java package-info source certificate.
 pub(crate) fn proved_package_info_source(
     declaration: &ClassSourceDeclaration,
     facts: &ClassMemberFacts,
@@ -10900,521 +5016,44 @@ pub(crate) fn proved_package_info_source(
     structure_complete: bool,
     execution: &ExecutionReport,
 ) -> std::result::Result<String, &'static str> {
-    let raw_name = &facts.this_class.raw().0;
-    let Some(package_bytes) = raw_name.strip_suffix(b"/package-info") else {
-        return Err("internal name is not a package path ending in package-info");
-    };
-    if !legal_package_name(package_bytes) {
-        return Err("package path is not a legal non-empty Java package name");
-    }
-    if class_version != (52, 0) || facts.access_flags != 0x1600 {
-        return Err(
-            "classfile version or access flags are not the standard Java 8 package-info shape",
-        );
-    }
-    if facts
-        .super_class
-        .as_ref()
-        .map(|name| name.raw().0.as_slice())
-        != Some(b"java/lang/Object".as_slice())
-        || !facts.interfaces.is_empty()
-        || facts.field_count != 0
-        || facts.method_count != 0
-        || facts.stopped_at.is_some()
-        || !structure_complete
-    {
-        return Err("class head or empty member tables are not completely proved");
-    }
-    if !matches!(execution, ExecutionReport::Complete { .. }) {
-        return Err("class-source execution did not complete");
-    }
-    if facts.attributes.len() != 1
-        || facts.attributes[0].name.raw().0 != b"RuntimeVisibleAnnotations"
-        || declaration.annotation_attributes.len() != 1
-        || declaration.annotation_attributes[0].attribute.name.raw().0
-            != b"RuntimeVisibleAnnotations"
-        || !declaration.annotation_refusals.is_empty()
-    {
-        return Err("only one complete RuntimeVisibleAnnotations attribute is supported");
-    }
-    let annotation_count = declaration
-        .annotation_attributes
-        .iter()
-        .map(|attribute| attribute.annotations.len())
-        .sum::<usize>();
-    if annotation_count != 1 || annotation_count != declaration.annotation_uses.len() {
-        return Err("exactly one complete writable package annotation is required");
-    }
-    if !matches!(
-        &declaration.annotation_attributes[0].annotations[0],
-        ElementValueFacts::Annotation { type_descriptor, elements }
-            if type_descriptor.0 == b"Ljava/lang/Deprecated;" && elements.is_empty()
-    ) {
-        return Err("the only supported package annotation is empty java.lang.Deprecated");
-    }
-    let package = String::from_utf8(package_bytes.to_vec())
-        .map_err(|_| "package path is not valid UTF-8")?
-        .replace('/', ".");
-    let mut text = String::new();
-    for annotation in &declaration.annotation_uses {
-        text.push_str(annotation);
-        text.push('\n');
-    }
-    text.push_str(&format!("package {package};\n"));
-    Ok(text)
-}
-
-fn legal_package_name(raw: &[u8]) -> bool {
-    let Ok(package) = std::str::from_utf8(raw) else {
-        return false;
-    };
-    !package.is_empty()
-        && package
-            .split('/')
-            .all(|segment| !segment.is_empty() && is_java_identifier(segment))
-}
-
-fn spell_class_annotation(
-    annotation: &ElementValueFacts,
-    pool: &[CpEntryFacts],
-    counts: &std::collections::BTreeMap<Vec<u8>, usize>,
-) -> std::result::Result<String, String> {
-    let ElementValueFacts::Annotation {
-        type_descriptor, ..
-    } = annotation
-    else {
-        return Err("class annotation entry is not an annotation fact".to_owned());
-    };
-    if counts.get(&type_descriptor.0).copied().unwrap_or(0) > 1 {
-        return Err(format!(
-            "duplicate annotation type `{}` is conservatively refused",
-            String::from_utf8_lossy(&type_descriptor.0)
-        ));
-    }
-    spell_annotation_body(annotation, pool)
-}
-
-fn spell_annotation_body(
-    annotation: &ElementValueFacts,
-    pool: &[CpEntryFacts],
-) -> std::result::Result<String, String> {
-    let ElementValueFacts::Annotation {
-        type_descriptor,
-        elements,
-    } = annotation
-    else {
-        return Err("annotation entry is not an annotation fact".to_owned());
-    };
-    let Some(type_name) = annotation_type_name(&type_descriptor.0) else {
-        return Err(format!(
-            "annotation type `{}` is not a Java source name",
-            String::from_utf8_lossy(&type_descriptor.0)
-        ));
-    };
-    let Some(elements) = elements
-        .iter()
-        .map(|element| {
-            let name = String::from_utf8(element.name.0.clone()).ok()?;
-            is_java_identifier(&name).then_some(())?;
-            Some((name, resolve_default(&element.value, pool)?))
-        })
-        .collect::<Option<Vec<_>>>()
-    else {
-        return Err(format!(
-            "annotation `@{type_name}` has an element with no faithful Java spelling"
-        ));
-    };
-    if elements.is_empty() {
-        Ok(format!("@{type_name}"))
-    } else {
-        let elements = elements
-            .iter()
-            .map(|(name, value)| format!("{name} = {}", value.spelling()))
-            .collect::<Vec<_>>()
-            .join(", ");
-        Ok(format!("@{type_name}({elements})"))
-    }
-}
-
-#[derive(Clone, Copy)]
-enum TypeUseOwner {
-    Field,
-    Method,
-}
-
-fn spell_type_annotation_uses(
-    mut uses: TypeAnnotationUses,
-    owner: TypeUseOwner,
-    descriptor: &[u8],
-    pool: &[CpEntryFacts],
-    declarations: &MemberAnnotationUses,
-    parameter_declarations: Option<&ParameterAnnotationUses>,
-    parameter_count: Option<usize>,
-) -> TypeAnnotationUses {
-    uses.parameter_uses = vec![Vec::new(); parameter_count.unwrap_or_default()];
-    let declaration_types = declarations
-        .attributes
-        .iter()
-        .flat_map(|attribute| {
-            attribute
-                .annotations
-                .iter()
-                .filter_map(|annotation| match annotation {
-                    ElementValueFacts::Annotation {
-                        type_descriptor, ..
-                    } => Some(type_descriptor.0.clone()),
-                    _ => None,
-                })
-        })
-        .collect::<std::collections::BTreeSet<_>>();
-    let parameter_declaration_types = parameter_declarations.map(|parameters| {
-        let mut by_position =
-            vec![std::collections::BTreeSet::<Vec<u8>>::new(); parameter_count.unwrap_or_default()];
-        for attribute in &parameters.attributes {
-            if attribute.parameter_count.map(usize::from) != parameter_count {
-                continue;
-            }
-            for (position, annotations) in attribute.parameters.iter().enumerate() {
-                for annotation in annotations {
-                    if let ElementValueFacts::Annotation {
-                        type_descriptor, ..
-                    } = annotation
-                        && let Some(slot) = by_position.get_mut(position)
-                    {
-                        slot.insert(type_descriptor.0.clone());
-                    }
-                }
-            }
-        }
-        by_position
-    });
-    let parameter_declarations_unmapped = parameter_declarations.is_some_and(|parameters| {
-        parameters
-            .attributes
-            .iter()
-            .any(|attribute| attribute.parameter_count.map(usize::from) != parameter_count)
-    });
-    let mut counts = std::collections::BTreeMap::<(u8, Vec<u8>, Vec<u8>), usize>::new();
-    for attribute in &uses.attributes {
-        for annotation in &attribute.annotations {
-            if let ElementValueFacts::Annotation {
-                type_descriptor, ..
-            } = &annotation.annotation
-            {
-                *counts
-                    .entry((
-                        annotation.target_type,
-                        annotation.target_info.clone(),
-                        type_descriptor.0.clone(),
-                    ))
-                    .or_default() += 1;
-            }
-        }
-    }
-    for attribute in &mut uses.attributes {
-        for annotation in &mut attribute.annotations {
-            let ElementValueFacts::Annotation {
-                type_descriptor, ..
-            } = &annotation.annotation
-            else {
-                annotation.refusal =
-                    Some("type annotation entry is not an annotation fact".to_owned());
-                continue;
-            };
-            let position = match (
-                owner,
-                annotation.target_type,
-                annotation.target_info.as_slice(),
-            ) {
-                (TypeUseOwner::Field, 0x13, []) => None,
-                (TypeUseOwner::Method, 0x14, []) => None,
-                (TypeUseOwner::Method, 0x16, [position]) => Some(usize::from(*position)),
-                (TypeUseOwner::Field, 0x13, _) => {
-                    annotation.refusal = Some("FIELD target_info must be empty".to_owned());
-                    continue;
-                }
-                (TypeUseOwner::Method, 0x14, _) => {
-                    annotation.refusal = Some("METHOD_RETURN target_info must be empty".to_owned());
-                    continue;
-                }
-                (TypeUseOwner::Method, 0x16, _) => {
-                    annotation.refusal = Some(
-                        "METHOD_FORMAL_PARAMETER target_info must contain one index byte"
-                            .to_owned(),
-                    );
-                    continue;
-                }
-                (TypeUseOwner::Field, _, _) => {
-                    annotation.refusal =
-                        Some("type annotation target does not belong to a field".to_owned());
-                    continue;
-                }
-                (TypeUseOwner::Method, _, _) => {
-                    annotation.refusal = Some(
-                        "type annotation target is outside the supported method targets".to_owned(),
-                    );
-                    continue;
-                }
-            };
-            if !annotation.type_path.is_empty() {
-                annotation.refusal =
-                    Some("non-empty type_path is not source-spellable in this change".to_owned());
-                continue;
-            }
-            if let Some(position) = position
-                && parameter_count.is_none_or(|count| position >= count)
-            {
-                annotation.refusal = Some(format!(
-                    "formal parameter position {position} is outside the descriptor parameter count"
-                ));
-                continue;
-            }
-            if position.is_some() && parameter_declarations_unmapped {
-                annotation.refusal = Some(
-                    "parameter declaration annotations do not map to descriptor positions"
-                        .to_owned(),
-                );
-                continue;
-            }
-            if counts
-                .get(&(
-                    annotation.target_type,
-                    annotation.target_info.clone(),
-                    type_descriptor.0.clone(),
-                ))
-                .copied()
-                .unwrap_or(0)
-                > 1
-            {
-                annotation.refusal = Some(
-                    "duplicate annotation type at the same target is conservatively refused"
-                        .to_owned(),
-                );
-                continue;
-            }
-            let declaration_conflict = match position {
-                Some(position) => parameter_declaration_types
-                    .as_ref()
-                    .and_then(|by_position| by_position.get(position))
-                    .is_some_and(|types| types.contains(&type_descriptor.0)),
-                None => declaration_types.contains(&type_descriptor.0),
-            };
-            if declaration_conflict {
-                annotation.refusal = Some(
-                    "same annotation type is present on the declaration and type target".to_owned(),
-                );
-                continue;
-            }
-            let Ok(spelling) = spell_annotation_body(&annotation.annotation, pool) else {
-                annotation.refusal =
-                    Some("annotation value has no faithful Java source spelling".to_owned());
-                continue;
-            };
-            if qualify_type_descriptor(descriptor, owner, position).is_none() {
-                annotation.refusal = Some("target type is primitive, array, single-segment, or has ambiguous nested-class spelling".to_owned());
-                continue;
-            }
-            annotation.spelling = Some(spelling.clone());
-            match position {
-                Some(position) => uses.parameter_uses[position].push(spelling),
-                None if matches!(owner, TypeUseOwner::Field) => uses.field_uses.push(spelling),
-                None => uses.return_uses.push(spelling),
-            }
-        }
-    }
-    for attribute in &uses.attributes {
-        for annotation in &attribute.annotations {
-            if let Some(reason) = &annotation.refusal {
-                uses.refusals.push(format!(
-                    "target=0x{:02x} info={:?} path={:?}: {reason}",
-                    annotation.target_type, annotation.target_info, annotation.type_path
-                ));
-            }
-        }
-    }
-    uses
-}
-
-fn qualify_type_descriptor(
-    descriptor: &[u8],
-    owner: TypeUseOwner,
-    parameter: Option<usize>,
-) -> Option<String> {
-    let facts = descriptor_facts(
-        descriptor,
-        match owner {
-            TypeUseOwner::Field => DescriptorKind::Field,
-            TypeUseOwner::Method => DescriptorKind::Method,
-        },
+    jarde_java::metadata_literal::proved_package_info_source(
+        facts,
+        class_version,
+        structure_complete,
+        execution,
+        &declaration.annotation_attributes,
+        &declaration.annotation_uses,
+        &declaration.annotation_refusals,
     )
-    .ok()?;
-    let component = match owner {
-        TypeUseOwner::Field => facts.single()?,
-        TypeUseOwner::Method => match parameter {
-            Some(position) => facts.parameters().get(position)?,
-            None => facts.result()?,
-        },
-    };
-    if component.is_array() || !matches!(component.base(), Base::Object(_)) {
-        return None;
-    }
-    let name = source_type(component)?;
-    let (package, simple) = name.rsplit_once('.')?;
-    if simple.contains('$') || package.is_empty() {
-        return None;
-    }
-    Some(format!("{package}.@{{annotation}} {simple}"))
-}
-
-fn decorate_qualified_type(ty: &str, annotations: &[String]) -> Option<String> {
-    let (package, simple) = ty.rsplit_once('.')?;
-    if package.is_empty() || simple.contains('$') || ty.contains("[]") {
-        return None;
-    }
-    Some(format!("{package}.{} {simple}", annotations.join(" ")))
-}
-
-fn replace_first(text: &str, from: &str, to: &str) -> String {
-    text.find(from).map_or_else(
-        || text.to_owned(),
-        |at| format!("{}{}{}", &text[..at], to, &text[at + from.len()..]),
-    )
-}
-
-fn spell_member_annotation_uses(
-    mut annotations: MemberAnnotationUses,
-    pool: &[CpEntryFacts],
-) -> MemberAnnotationUses {
-    let mut counts = std::collections::BTreeMap::<Vec<u8>, usize>::new();
-    for attribute in &annotations.attributes {
-        for annotation in &attribute.annotations {
-            if let ElementValueFacts::Annotation {
-                type_descriptor, ..
-            } = annotation
-            {
-                *counts.entry(type_descriptor.0.clone()).or_default() += 1;
-            }
-        }
-    }
-    for attribute in &annotations.attributes {
-        for annotation in &attribute.annotations {
-            match annotation {
-                ElementValueFacts::Annotation {
-                    type_descriptor, ..
-                } if counts.get(&type_descriptor.0).copied().unwrap_or_default() > 1 => {
-                    annotations.refusals.push(format!(
-                        "duplicate annotation type `{}` at one member position is conservatively refused",
-                        String::from_utf8_lossy(&type_descriptor.0)
-                    ));
-                }
-                _ => match spell_annotation_body(annotation, pool) {
-                    Ok(spelling) => annotations.uses.push(spelling),
-                    Err(reason) => annotations.refusals.push(reason),
-                },
-            }
-        }
-    }
-    annotations
-}
-
-fn spell_parameter_annotation_uses(
-    mut annotations: ParameterAnnotationUses,
-    pool: &[CpEntryFacts],
-    expected_count: Option<usize>,
-) -> ParameterAnnotationUses {
-    let Some(expected_count) = expected_count else {
-        for attribute in &annotations.attributes {
-            if attribute.parameter_count.is_some() {
-                annotations.refusals.push(format!(
-                    "parameter annotation attribute `{}` has no descriptor positions to attach to",
-                    String::from_utf8_lossy(&attribute.attribute.name.raw().0)
-                ));
-            }
-        }
-        return annotations;
-    };
-    annotations.uses_by_position = vec![Vec::new(); expected_count];
-    let mut by_position = vec![Vec::<&ElementValueFacts>::new(); expected_count];
-    for attribute in &annotations.attributes {
-        let Some(parameter_count) = attribute.parameter_count else {
-            continue;
-        };
-        if usize::from(parameter_count) != expected_count
-            || attribute.parameters.len() != expected_count
-        {
-            annotations.refusals.push(format!(
-                "parameter annotation attribute `{}` declares {parameter_count} position(s) for a descriptor with {expected_count} parameter(s); its groups are not aligned",
-                String::from_utf8_lossy(&attribute.attribute.name.raw().0)
-            ));
-            continue;
-        }
-        for (position, group) in attribute.parameters.iter().enumerate() {
-            by_position[position].extend(group);
-        }
-    }
-    for (position, entries) in by_position.into_iter().enumerate() {
-        let mut counts = std::collections::BTreeMap::<Vec<u8>, usize>::new();
-        for annotation in &entries {
-            if let ElementValueFacts::Annotation {
-                type_descriptor, ..
-            } = annotation
-            {
-                *counts.entry(type_descriptor.0.clone()).or_default() += 1;
-            }
-        }
-        for annotation in entries {
-            match annotation {
-                ElementValueFacts::Annotation {
-                    type_descriptor, ..
-                } if counts.get(&type_descriptor.0).copied().unwrap_or_default() > 1 => {
-                    annotations.refusals.push(format!(
-                        "parameter position {position}: duplicate annotation type `{}` is conservatively refused",
-                        String::from_utf8_lossy(&type_descriptor.0)
-                    ));
-                }
-                _ => match spell_annotation_body(annotation, pool) {
-                    Ok(spelling) => annotations.uses_by_position[position].push(spelling),
-                    Err(reason) => annotations
-                        .refusals
-                        .push(format!("parameter position {position}: {reason}")),
-                },
-            }
-        }
-    }
-    annotations
-}
-
-fn refuse_uses(annotations: &mut MemberAnnotationUses, reason: &str) {
-    for spelling in annotations.uses.drain(..) {
-        annotations.refusals.push(format!("{reason}: {spelling}"));
-    }
-}
-
-fn refuse_parameter_uses(annotations: &mut ParameterAnnotationUses, reason: &str) {
-    for (position, uses) in annotations.uses_by_position.iter_mut().enumerate() {
-        for spelling in uses.drain(..) {
-            annotations.refusals.push(format!(
-                "parameter position {position}: {reason}: {spelling}"
-            ));
-        }
-    }
 }
 
 impl ClassSourceField {
+    /// Retain the physical field and its explicit initializer gap after a local metadata refusal.
+    pub(crate) fn refuse_constant_value(&mut self, error: &Error) {
+        self.markers.push(format!(
+            "// jarde: ConstantValue refused for field record {} `{}`: {}",
+            self.item.index,
+            comment_text(&format!(
+                "{}:{}",
+                String::from_utf8_lossy(&self.item.name.raw().0),
+                String::from_utf8_lossy(&self.item.descriptor.raw().0)
+            )),
+            comment_text(&error.to_string()),
+        ));
+    }
+
     /// One field record with the spelling the text writes for it, initializer included when the
     /// field's own `ConstantValue` attribute states one.
     pub(crate) fn of(
         item: FieldItem,
-        current_class: Option<&str>,
-        nested_class_members: &[String],
+        source_names: SourceClassNames<'_>,
         constant: Option<&MemberDefault>,
         annotations: MemberAnnotationFacts,
         pool: &[CpEntryFacts],
     ) -> Self {
-        let mut spelled =
-            spell_field_declaration(&item, current_class, nested_class_members, constant);
+        let mut spelled = spell_field_declaration(&item, source_names, constant);
         let mut member_annotations =
-            spell_member_annotation_uses(annotations.declaration.clone(), pool);
+            spell_member_annotation_uses(annotations.declaration.clone(), pool, source_names);
         let type_annotations = spell_type_annotation_uses(
             annotations.type_uses,
             TypeUseOwner::Field,
@@ -11423,41 +5062,22 @@ impl ClassSourceField {
             &member_annotations,
             None,
             None,
+            source_names,
         );
-        if let Some(declaration) = &spelled.declaration
-            && let (Some(ty), Some(decorated)) = (
-                field_type(&item.descriptor.raw().0).map(|ty| {
-                    nested_member_reference_spelling(&ty, current_class, Some(nested_class_members))
-                        .into_owned()
-                }),
-                field_type(&item.descriptor.raw().0).and_then(|ty| {
-                    decorate_qualified_type(
-                        nested_member_reference_spelling(
-                            &ty,
-                            current_class,
-                            Some(nested_class_members),
-                        )
-                        .as_ref(),
-                        &type_annotations.field_uses,
-                    )
-                }),
-            )
-            && !type_annotations.field_uses.is_empty()
-        {
-            spelled.declaration = Some(replace_first(declaration, &ty, &decorated));
-        }
-        if spelled.declaration.is_none() {
-            refuse_uses(
-                &mut member_annotations,
-                "field descriptor cannot be spelled as a Java declaration",
-            );
-        }
+        jarde_java::declaration::place_field_annotations(
+            &mut spelled.declaration,
+            &item.descriptor.raw().0,
+            source_names,
+            &type_annotations.field_uses,
+            &mut member_annotations,
+        );
         spelled.annotations = member_annotations;
         spelled.type_annotations = type_annotations;
         let markers = markers_of(&spelled);
         Self {
             item,
             declaration: spelled.declaration,
+            generic_signature_projected: false,
             annotations: spelled.annotations,
             type_annotations: spelled.type_annotations,
             markers,
@@ -11466,61 +5086,19 @@ impl ClassSourceField {
 }
 
 impl ClassSourceMethod {
-    /// Rebuild the same recovered method envelope around already emitted projected statements.
+    /// Adapt test facts to Java's integer-name placement policy.
+    #[cfg(test)]
     pub(crate) fn integer_constant_projection_text(&self, body: &str) -> Option<String> {
-        let declaration = self.declaration.as_ref()?;
-        let ClassSourceOutcome::Recovered { report, .. } = &self.outcome else {
-            return None;
-        };
-        let original = artifact(&report.text)?;
-        if !self.markers.is_empty() {
-            return None;
-        }
-        let staged = Artifact {
-            envelope: original.envelope,
-            statements: body,
-        };
-        Some(prefix_method_annotations(
-            block_member(declaration, Placed::Block(staged), &self.markers),
+        jarde_java::source_proof::integer_constant_projection_text(
+            self.declaration.as_deref(),
+            match &self.outcome {
+                ClassSourceOutcome::Recovered { report, .. } => Some(report.as_ref()),
+                _ => None,
+            },
+            &self.markers,
             &self.annotations,
-        ))
-    }
-
-    /// Maps a body-only replay range through the exact original envelope and method placement.
-    pub(crate) fn integer_constant_projection_span(
-        &self,
-        body: &str,
-        start: usize,
-        end: usize,
-    ) -> Option<(usize, usize)> {
-        let declaration = self.declaration.as_ref()?;
-        let ClassSourceOutcome::Recovered { report, .. } = &self.outcome else {
-            return None;
-        };
-        let original = artifact(&report.text)?;
-        if !self.markers.is_empty() || start >= end {
-            return None;
-        }
-        let source = body.get(start..end)?;
-        if source.contains('\n') {
-            return None;
-        }
-        let artifact_start = original.envelope.len().checked_add(2)?.checked_add(start)?;
-        let artifact_end = original.envelope.len().checked_add(2)?.checked_add(end)?;
-        let annotations = self
-            .annotations
-            .uses
-            .iter()
-            .map(|annotation| 4 + annotation.len() + 1)
-            .sum::<usize>();
-        let block_prefix = annotations + format!("    {declaration} {{\n").len();
-        let staged = Artifact {
-            envelope: original.envelope,
-            statements: body,
-        };
-        let mapped = placed_artifact_span(&staged, artifact_start, artifact_end, block_prefix)?;
-        let text = self.integer_constant_projection_text(body)?;
-        (text.get(mapped.0..mapped.1)? == source).then_some(mapped)
+            body,
+        )
     }
 
     /// This member's text with its body replaced by the assert projection's staged statements,
@@ -11530,34 +5108,33 @@ impl ClassSourceMethod {
     /// assert fold replaces statement text inside the same block, and a marker another
     /// projection placed above the declaration states a fact this replacement does not touch.
     /// A member whose current body is not its own AST's emission is refused by the caller before
-    /// this composes anything.
+    /// this composes anything. Tests call the proof directly; the assembly paths stage the
+    /// projection through [`jarde_java::bridge`], which composes this text itself.
+    #[cfg(test)]
     pub(crate) fn assert_projection_text(&self, body: &str) -> Option<String> {
-        let declaration = self.declaration.as_ref()?;
-        let ClassSourceOutcome::Recovered { report, .. } = &self.outcome else {
-            return None;
-        };
-        let original = artifact(&report.text)?;
-        let staged = Artifact {
-            envelope: original.envelope,
-            statements: body,
-        };
-        Some(prefix_method_annotations(
-            block_member(declaration, Placed::Block(staged), &self.markers),
+        jarde_java::source_proof::assert_projection_text(
+            self.declaration.as_deref(),
+            match &self.outcome {
+                ClassSourceOutcome::Recovered { report, .. } => Some(report.as_ref()),
+                _ => None,
+            },
+            &self.markers,
             &self.annotations,
-        ))
+            body,
+        )
     }
     /// The one physical-recovery marker that may be replaced by a later complete family re-run.
     /// It remains on this physical record; only the separately assembled source text omits it.
     pub(crate) fn has_only_explanation_marker(&self) -> bool {
-        let ClassSourceOutcome::Recovered { report, .. } = &self.outcome else {
-            return false;
-        };
-        report.content == RecoveryContent::ExplanationOnly
-            && self.markers
-                == [format!(
-                    "// jarde: not recovered: the recovery run for `{}` produced no statement (explanation only); the artifact's own comment lines are below",
-                    label(&self.item)
-                )]
+        jarde_java::source_proof::has_only_explanation_marker(
+            match &self.outcome {
+                ClassSourceOutcome::Recovered { report, .. } => Some(report.as_ref()),
+                _ => None,
+            },
+            &self.markers,
+            &self.item.name,
+            &self.item.descriptor,
+        )
     }
 
     /// Stage the entire declaration, body placement and source note before publishing them.
@@ -11618,45 +5195,11 @@ impl ClassSourceMethod {
         self.text = comment_member(&self.markers);
     }
 
-    /// The complete-source explanation for this bridge's original physical identity, call BCI and
-    /// retained source-level target.
-    pub(crate) fn bridge_projection_marker(&self, target: &Self, call_bci: u32) -> String {
-        format!(
-            "// jarde: projected bridge `{}` at physical method record {}: bridge@1 proved a pure call at BCI {} to source declaration `{}` at method record {}; the resolved erased contract lets javac regenerate the bridge",
-            label(&self.item),
-            self.item.index,
-            call_bci,
-            label(&target.item),
-            target.item.index,
-        )
-    }
-
     /// Replaces this member's complete Java declaration with the supplied proof marker while
     /// retaining its physical declaration and original recovery outcome for the report.
     pub(crate) fn project_bridge(&mut self, marker: String) {
         self.markers.push(marker);
         self.text = comment_member(&self.markers);
-    }
-
-    /// Atomically replaces only the rendered body with a re-emission of the same-run AST.
-    /// Atomically replaces the rendered body once and appends all markers proved for that body.
-    pub(crate) fn project_enum_switch_group(
-        &mut self,
-        recovery_text: &str,
-        markers_to_add: Vec<String>,
-    ) -> bool {
-        let Some(declaration) = self.declaration.as_ref() else {
-            return false;
-        };
-        let Some(artifact) = artifact(recovery_text) else {
-            return false;
-        };
-        let mut markers = self.markers.clone();
-        markers.extend(markers_to_add);
-        let text = block_member(declaration, Placed::Block(artifact), &markers);
-        self.text = prefix_method_annotations(text, &self.annotations);
-        self.markers = markers;
-        true
     }
 
     pub(crate) fn array_projection_text(
@@ -11682,14 +5225,7 @@ impl ClassSourceMethod {
         recovery_text: &str,
         markers: &[String],
     ) -> Option<String> {
-        let declaration = self.declaration.as_ref()?;
-        let artifact = artifact(recovery_text)?;
-        let mut all = self.markers.clone();
-        all.extend(markers.iter().cloned());
-        Some(prefix_method_annotations(
-            block_member(declaration, Placed::Block(artifact), &all),
-            &self.annotations,
-        ))
+        self.projected_body_method_text(recovery_text, None, markers)
     }
 
     /// Whether a fresh emission of this member's own same-run AST is still exactly the body this
@@ -11698,49 +5234,17 @@ impl ClassSourceMethod {
     /// indentation, so a marker written beside the declaration does not fail it, while a body
     /// another projection already rewrote does. Such a member keeps its physical presentation.
     pub(crate) fn matches_current_text(&self, recovery_text: &str) -> bool {
-        let Some(declaration) = self.declaration.as_deref() else {
-            return false;
-        };
-        let Some(artifact) = artifact(recovery_text) else {
-            return false;
-        };
-        let Some(region) = self.current_body_region(declaration) else {
-            return false;
-        };
-        let expected: Vec<&str> = artifact
-            .envelope
-            .lines()
-            .chain(artifact.statements.lines())
-            .map(str::trim)
-            .filter(|line| !line.is_empty())
-            .collect();
-        expected == region
-    }
-
-    /// The trimmed lines between this member's declaration line and its closing brace: the body
-    /// the current text actually shows.
-    fn current_body_region(&self, declaration: &str) -> Option<Vec<&str>> {
-        let opening = format!("    {declaration} {{");
-        let mut opening_at = None;
-        let mut closing_at = None;
-        for (index, line) in self.text.lines().enumerate() {
-            if line == opening && opening_at.is_none() {
-                opening_at = Some(index);
-            }
-            if line == "    }" {
-                closing_at = Some(index);
-            }
-        }
-        let opening = opening_at?;
-        let closing = closing_at.filter(|closing| *closing > opening)?;
-        Some(
-            self.text
-                .lines()
-                .skip(opening + 1)
-                .take(closing - opening - 1)
-                .map(str::trim)
-                .filter(|line| !line.is_empty())
-                .collect(),
+        jarde_java::source_proof::matches_current_text(
+            self.declaration.as_deref(),
+            &self.text,
+            recovery_text,
+            match &self.outcome {
+                ClassSourceOutcome::Recovered { report, .. } => Some(report.as_ref()),
+                _ => None,
+            },
+            &self.markers,
+            &self.item.name,
+            &self.item.descriptor,
         )
     }
 
@@ -11790,14 +5294,20 @@ impl ClassSourceMethod {
         declaration_override: Option<&str>,
         extra_markers: &[String],
     ) -> Option<String> {
-        let declaration = declaration_override.unwrap_or(self.declaration.as_ref()?);
-        let artifact = artifact(body)?;
-        let mut all = self.markers.clone();
-        all.extend(extra_markers.iter().cloned());
-        Some(prefix_method_annotations(
-            block_member(declaration, Placed::Block(artifact), &all),
+        jarde_java::source_proof::projected_body_method_text(
+            self.declaration.as_deref(),
+            match &self.outcome {
+                ClassSourceOutcome::Recovered { report, .. } => Some(report.as_ref()),
+                _ => None,
+            },
+            &self.markers,
+            &self.item.name,
+            &self.item.descriptor,
             &self.annotations,
-        ))
+            body,
+            declaration_override,
+            extra_markers,
+        )
     }
 
     /// The span mapping of [`Self::projected_body_method_text`]: one single-line span of the
@@ -11811,35 +5321,40 @@ impl ClassSourceMethod {
         start: usize,
         end: usize,
     ) -> Option<(usize, usize)> {
-        let declaration = declaration_override.unwrap_or(self.declaration.as_ref()?);
-        let placed = artifact(body)?;
-        let source = body.get(start..end)?;
-        if source.is_empty() || source.contains('\n') {
-            return None;
-        }
-        let annotations = self
-            .annotations
-            .uses
-            .iter()
-            .map(|annotation| 4 + annotation.len() + 1)
-            .sum::<usize>();
-        let marker_len = self
-            .markers
-            .iter()
-            .chain(extra_markers)
-            .map(|marker| indent(&format!("{marker}\n"), 2).len())
-            .sum::<usize>();
-        let block_prefix = annotations + format!("    {declaration} {{\n").len() + marker_len;
-        let mapped = placed_artifact_span(&placed, start, end, block_prefix)?;
-        let text = self.projected_body_method_text(body, declaration_override, extra_markers)?;
-        (text.get(mapped.0..mapped.1)? == source).then_some(mapped)
+        jarde_java::source_proof::projected_body_span(
+            self.declaration.as_deref(),
+            match &self.outcome {
+                ClassSourceOutcome::Recovered { report, .. } => Some(report.as_ref()),
+                _ => None,
+            },
+            &self.markers,
+            &self.item.name,
+            &self.item.descriptor,
+            &self.annotations,
+            body,
+            declaration_override,
+            extra_markers,
+            start,
+            end,
+        )
     }
 
     /// Spells one fully recovered method inside a class-source anonymous expression. The method
     /// declaration and annotations come from its own selected physical class; `body` is emitted
     /// from that method's same-run AST at the corresponding nested indentation.
     pub(crate) fn anonymous_projection_text(&self, body: &str) -> Option<String> {
-        self.anonymous_projection_text_at(body, 3)
+        jarde_java::source_proof::anonymous_projection_text(
+            self.declaration.as_deref(),
+            matches!(self.outcome, ClassSourceOutcome::Recovered { .. }),
+            &self.markers,
+            (
+                &self.annotations,
+                &self.parameter_annotations,
+                &self.type_annotations,
+            ),
+            self.item.access_flags,
+            body,
+        )
     }
 
     pub(crate) fn anonymous_projection_text_at(
@@ -11847,46 +5362,33 @@ impl ClassSourceMethod {
         body: &str,
         declaration_indent: usize,
     ) -> Option<String> {
-        let declaration = self.declaration.as_ref()?;
-        // Java 8 anonymous bodies cannot declare static methods; bridge and synthetic methods
-        // are physical implementation artifacts rather than source declarations.
-        if self.item.access_flags & (ACC_STATIC | 0x0040 | 0x1000) != 0
-            || !self.markers.is_empty()
-            || !self.parameter_annotations.refusals.is_empty()
-            || self
-                .parameter_annotations
-                .uses_by_position
-                .iter()
-                .any(|uses| !uses.is_empty())
-            || !self.type_annotations.refusals.is_empty()
-            || !self.type_annotations.field_uses.is_empty()
-            || !self.type_annotations.return_uses.is_empty()
-            || self
-                .type_annotations
-                .parameter_uses
-                .iter()
-                .any(|uses| !uses.is_empty())
-            || !matches!(self.outcome, ClassSourceOutcome::Recovered { .. })
-        {
-            return None;
-        }
-        let mut text = String::new();
-        let indentation = "    ".repeat(declaration_indent);
-        for annotation in &self.annotations.uses {
-            text.push_str(&indentation);
-            text.push_str(annotation);
-            text.push('\n');
-        }
-        text.push_str(&format!("{indentation}{declaration} {{\n"));
-        text.push_str(body);
-        text.push_str(&indentation);
-        text.push_str("}\n");
-        Some(text)
+        jarde_java::source_proof::anonymous_projection_text_at(
+            self.declaration.as_deref(),
+            matches!(self.outcome, ClassSourceOutcome::Recovered { .. }),
+            &self.markers,
+            (
+                &self.annotations,
+                &self.parameter_annotations,
+                &self.type_annotations,
+            ),
+            self.item.access_flags,
+            body,
+            declaration_indent,
+        )
     }
 
     pub(crate) fn anonymous_return_projection_text(&self, body: &str) -> Option<String> {
-        self.anonymous_return_projection_parts(body, 1)
-            .map(|(text, _)| text)
+        jarde_java::source_proof::anonymous_return_projection_text(
+            self.declaration.as_deref(),
+            matches!(self.outcome, ClassSourceOutcome::Recovered { .. }),
+            &self.markers,
+            (
+                &self.annotations,
+                &self.parameter_annotations,
+                &self.type_annotations,
+            ),
+            body,
+        )
     }
 
     pub(crate) fn anonymous_return_projection(
@@ -11894,22 +5396,27 @@ impl ClassSourceMethod {
         body: &jarde_java::report::ClassSourceAnonymousReturn,
         anchors: Vec<MemberFamilyPhysicalAnchor>,
     ) -> Option<MemberFamilyMethodText> {
-        let (text, body_start) = self.anonymous_return_projection_parts(&body.text, 1)?;
-        let start = body_start.checked_add(body.expression_range.start)?;
-        let end = body_start.checked_add(body.expression_range.end)?;
-        if start >= end || text.get(start..end)? != body.text.get(body.expression_range.clone())? {
-            return None;
-        }
-        Some(MemberFamilyMethodText {
-            index: self.item.index,
-            text,
-            derived: vec![MemberFamilyDerivedProjection {
-                kind: MemberFamilyDerivedKind::NestedAnonymousExpression,
-                start,
-                end,
-                anchors,
-            }],
-        })
+        jarde_java::source_proof::anonymous_return_projection(
+            self.declaration.as_deref(),
+            matches!(self.outcome, ClassSourceOutcome::Recovered { .. }),
+            &self.markers,
+            (
+                &self.annotations,
+                &self.parameter_annotations,
+                &self.type_annotations,
+            ),
+            body,
+            |text, start, end| MemberFamilyMethodText {
+                index: self.item.index,
+                text,
+                derived: vec![MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::NestedAnonymousExpression,
+                    start,
+                    end,
+                    anchors,
+                }],
+            },
+        )
     }
 
     /// [`Self::anonymous_return_projection`] for a member whose text must keep what it already
@@ -11917,7 +5424,7 @@ impl ClassSourceMethod {
     /// every marker line exactly as the pass that wrote it wrote it, and the declaration's own
     /// opening line — instead of being composed from the declaration alone.
     ///
-    /// [`Self::anonymous_return_projection_parts`] composes the member text itself and therefore
+    /// [`jarde_java::source_proof::anonymous_return_projection_text`] composes the member text itself and therefore
     /// has to refuse a member that carries a marker (it cannot reproduce one byte for byte: the
     /// generic Signature refusal writes its line one level in, while the recovery-time composer
     /// writes its own two). Keeping the physical prefix instead makes the placement exact for both
@@ -11930,76 +5437,22 @@ impl ClassSourceMethod {
         body: &jarde_java::report::ClassSourceAnonymousReturn,
         anchors: Vec<MemberFamilyPhysicalAnchor>,
     ) -> Option<MemberFamilyMethodText> {
-        let declaration = self.declaration.as_ref()?;
-        if !matches!(self.outcome, ClassSourceOutcome::Recovered { .. }) {
-            return None;
-        }
-        let declaration_line = format!("    {declaration} {{\n");
-        if self.text.match_indices(&declaration_line).count() != 1 {
-            return None;
-        }
-        let at = self.text.find(&declaration_line)?;
-        let prefix = self.text.get(..at + declaration_line.len())?;
-        let mut text = String::with_capacity(prefix.len() + body.text.len() + "    }\n".len());
-        text.push_str(prefix);
-        let body_start = text.len();
-        text.push_str(&body.text);
-        text.push_str("    }\n");
-        let start = body_start.checked_add(body.expression_range.start)?;
-        let end = body_start.checked_add(body.expression_range.end)?;
-        if start >= end || text.get(start..end)? != body.text.get(body.expression_range.clone())? {
-            return None;
-        }
-        Some(MemberFamilyMethodText {
-            index: self.item.index,
-            text,
-            derived: vec![MemberFamilyDerivedProjection {
-                kind: MemberFamilyDerivedKind::NestedAnonymousExpression,
-                start,
-                end,
-                anchors,
-            }],
-        })
-    }
-
-    fn anonymous_return_projection_parts(
-        &self,
-        body: &str,
-        declaration_indent: usize,
-    ) -> Option<(String, usize)> {
-        let declaration = self.declaration.as_ref()?;
-        if !self.markers.is_empty()
-            || !self.parameter_annotations.refusals.is_empty()
-            || self
-                .parameter_annotations
-                .uses_by_position
-                .iter()
-                .any(|uses| !uses.is_empty())
-            || !self.type_annotations.refusals.is_empty()
-            || !self.type_annotations.field_uses.is_empty()
-            || !self.type_annotations.return_uses.is_empty()
-            || self
-                .type_annotations
-                .parameter_uses
-                .iter()
-                .any(|uses| !uses.is_empty())
-            || !matches!(self.outcome, ClassSourceOutcome::Recovered { .. })
-        {
-            return None;
-        }
-        let mut text = String::new();
-        let indentation = "    ".repeat(declaration_indent);
-        for annotation in &self.annotations.uses {
-            text.push_str(&indentation);
-            text.push_str(annotation);
-            text.push('\n');
-        }
-        text.push_str(&format!("{indentation}{declaration} {{\n"));
-        let body_start = text.len();
-        text.push_str(body);
-        text.push_str(&indentation);
-        text.push_str("}\n");
-        Some((text, body_start))
+        jarde_java::source_proof::projected_statements_method_text(
+            self.declaration.as_deref(),
+            matches!(self.outcome, ClassSourceOutcome::Recovered { .. }),
+            &self.text,
+            body,
+            |text, start, end| MemberFamilyMethodText {
+                index: self.item.index,
+                text,
+                derived: vec![MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::NestedAnonymousExpression,
+                    start,
+                    end,
+                    anchors,
+                }],
+            },
+        )
     }
 
     /// One member whose declaration carries no `Code` attribute: the declaration Java spells for it
@@ -12223,19 +5676,7 @@ fn markers_of(spelled: &Spelled) -> Vec<String> {
     markers
 }
 
-fn prefix_method_annotations(text: String, annotations: &MemberAnnotationUses) -> String {
-    if annotations.uses.is_empty() {
-        return text;
-    }
-    let mut prefixed = String::new();
-    for annotation in &annotations.uses {
-        prefixed.push_str("    ");
-        prefixed.push_str(annotation);
-        prefixed.push('\n');
-    }
-    prefixed.push_str(&text);
-    prefixed
-}
+use jarde_java::source_proof::prefix_method_annotations;
 
 /// The text-only portion of a proved enum projection. The physical member records remain intact.
 pub(crate) struct EnumConstantSourceProjection {
@@ -12249,6 +5690,7 @@ pub(crate) struct EnumConstantSourceProjection {
 
 /// The already-proved choices and bookkeeping that control one class-text assembly.
 pub(crate) struct ClassSourceTextContext<'a> {
+    pub(crate) source_target: crate::SourceTarget,
     pub(crate) initializer_field_order: Option<&'a [usize]>,
     pub(crate) declared_methods: u64,
     pub(crate) member_table: Option<&'a MemberTableStop>,
@@ -12341,39 +5783,6 @@ pub(crate) fn initializer_field_order_from_proof(
     (order.len() == fields.len()).then_some(order)
 }
 
-/// The source text of one arbitrary user-tail enum constructor: the folded declaration spells
-/// the user parameters only, in argument order, each assigned to its own stored field. One
-/// spelling shared by the ordinary constant list and the constant-body projection.
-fn spell_user_tail_constructor_text(
-    declaration_name: &str,
-    access_flags: u16,
-    tail: &crate::enum_constants::ProvedEnumUserConstructorTail,
-) -> String {
-    let mut constructor_declaration = String::new();
-    if let Some(modifier) = visibility(access_flags) {
-        constructor_declaration.push_str(modifier);
-        constructor_declaration.push(' ');
-    }
-    constructor_declaration.push_str(declaration_name);
-    constructor_declaration.push('(');
-    for (index, parameter) in tail.parameters.iter().enumerate() {
-        if index > 0 {
-            constructor_declaration.push_str(", ");
-        }
-        constructor_declaration.push_str(&parameter.type_text);
-        constructor_declaration.push_str(&format!(" arg{index}"));
-    }
-    constructor_declaration.push(')');
-    let mut assignments = String::new();
-    for (index, parameter) in tail.parameters.iter().enumerate() {
-        assignments.push_str(&format!(
-            "        this.{} = arg{index};\n",
-            parameter.field_name
-        ));
-    }
-    format!("    {constructor_declaration} {{\n{assignments}    }}\n")
-}
-
 pub(crate) fn prepare_enum_constant_source_projection(
     declaration: &ClassSourceDeclaration,
     fields: &[ClassSourceField],
@@ -12383,421 +5792,63 @@ pub(crate) fn prepare_enum_constant_source_projection(
     initializer: Option<(u64, String)>,
     budget: &mut Budget,
 ) -> Result<Option<EnumConstantSourceProjection>> {
-    let Ok(constructor_index) = usize::try_from(group.constructor_method_index) else {
-        return Ok(None);
-    };
-    let source_field = group
-        .constructor_field_index
-        .and_then(|index| usize::try_from(index).ok())
-        .and_then(|index| fields.get(index));
-    let Some(constructor) = methods.get(constructor_index) else {
-        return Ok(None);
-    };
-    let user_tail = group.constructor_user_tail.as_ref();
-    let no_source_constructor = group.constructor_field_index.is_none() && user_tail.is_none();
-    let has_only_enum_signature_marker =
-        constructor.enum_constructor_signature_erasure_refused && constructor.markers.len() == 1;
-    // The arbitrary tail's own proof owns the constructor shape; the one marker it can carry is
-    // the same JVM-only name/ordinal Signature erasure refusal the recognized tails absorb.
-    let has_arbitrary_signature_marker = user_tail.is_some()
-        && constructor.markers.len() <= 1
-        && constructor
-            .markers
-            .first()
-            .is_none_or(|marker| marker.contains("jvm_signature_erasure_mismatch"));
-    if constructor.item.index != group.constructor_method_index
-        || (!no_source_constructor && user_tail.is_none() && source_field.is_none())
-        || source_field.is_some_and(|field| {
-            Some(field.item.index) != group.constructor_field_index || field.declaration.is_none()
-        })
-        || (!no_source_constructor && constructor.declaration.is_none())
-        || (!no_source_constructor
-            && user_tail.is_none()
-            && group.constructor_signature_present
-            && !matches!(
-                constructor.enum_constructor_source_tail,
-                EnumConstructorSourceTail::Int
-                    | EnumConstructorSourceTail::SingleString
-                    | EnumConstructorSourceTail::StringVarargs
-            ))
-        || (!constructor.markers.is_empty()
-            && !has_only_enum_signature_marker
-            && !has_arbitrary_signature_marker)
-        || !constructor.annotations.refusals.is_empty()
-        || !constructor.parameter_annotations.refusals.is_empty()
-        || !constructor.type_annotations.refusals.is_empty()
-        || (user_tail.is_some()
-            && (constructor
-                .parameter_annotations
-                .uses_by_position
-                .iter()
-                .any(|uses| !uses.is_empty())
-                || constructor
-                    .type_annotations
-                    .parameter_uses
-                    .iter()
-                    .any(|uses| !uses.is_empty())))
-        || constructor
-            .parameter_annotations
-            .uses_by_position
-            .iter()
-            .take(2)
-            .any(|uses| !uses.is_empty())
-        || constructor
-            .type_annotations
-            .parameter_uses
-            .iter()
-            .take(2)
-            .any(|uses| !uses.is_empty())
-    {
-        return Ok(None);
-    }
-
-    let implicit_signature_shape = if group.constructor_signature_present {
-        constructor.enum_constructor_source_tail == EnumConstructorSourceTail::NoArg
-            && constructor.enum_constructor_signature_erasure_refused
-            && constructor.markers.len() == 1
-    } else {
-        constructor.enum_constructor_source_tail != EnumConstructorSourceTail::NoArg
-            && !constructor.enum_constructor_signature_erasure_refused
-            && constructor.markers.is_empty()
-    };
-    if no_source_constructor
-        && (group.delegating_constructor_method_index.is_some()
-            || constructor.item.descriptor.raw().0 != b"(Ljava/lang/String;I)V"
-            || constructor.enum_constructor_source_tail == EnumConstructorSourceTail::Int
-            || constructor.enum_constructor_source_tail == EnumConstructorSourceTail::SingleString
-            || constructor.enum_constructor_source_tail == EnumConstructorSourceTail::StringVarargs
-            || !implicit_signature_shape)
-    {
-        return Ok(None);
-    }
-
-    let field_name = if let Some(source_field) = source_field {
-        let (name, aliased) = written_name(&source_field.item.name.raw().0);
-        if aliased {
-            return Ok(None);
-        }
-        Some(name)
-    } else {
-        None
-    };
-    let mut constructor_texts = Vec::new();
-    if let Some(delegating_index) = group.delegating_constructor_method_index {
-        if field_name.is_none() {
-            return Ok(None);
-        }
-        let Ok(delegating_index_usize) = usize::try_from(delegating_index) else {
-            return Ok(None);
-        };
-        let Some(delegating) = methods.get(delegating_index_usize) else {
-            return Ok(None);
-        };
-        let valid_hidden_constructor = |method: &ClassSourceMethod| {
-            method.declaration.is_some()
-                && method.enum_constructor_source_tail == EnumConstructorSourceTail::NoArg
-                && method.enum_constructor_signature_erasure_refused
-                && method.markers.len() == 1
-                && method.annotations.refusals.is_empty()
-                && method.parameter_annotations.refusals.is_empty()
-                && method.type_annotations.refusals.is_empty()
-                && method
-                    .parameter_annotations
-                    .uses_by_position
-                    .iter()
-                    .all(Vec::is_empty)
-                && method
-                    .type_annotations
-                    .parameter_uses
-                    .iter()
-                    .all(Vec::is_empty)
-        };
-        if delegating.item.index != delegating_index
-            || delegating.item.name.raw().0 != b"<init>"
-            || delegating.item.descriptor.raw().0 != b"(Ljava/lang/String;I)V"
-            || !valid_hidden_constructor(delegating)
-            || group.constructor_body.is_none()
-            || terminal_constructor_body.is_none()
-            || group.constructor_signature_present
-                != (constructor.enum_constructor_source_tail == EnumConstructorSourceTail::Int)
-        {
-            return Ok(None);
-        }
-
-        let mut delegating_declaration = String::new();
-        if let Some(modifier) = visibility(delegating.item.access_flags) {
-            delegating_declaration.push_str(modifier);
-            delegating_declaration.push(' ');
-        }
-        delegating_declaration.push_str(&declaration.name);
-        delegating_declaration.push_str("()");
-        let delegating_body =
-            format!("    {delegating_declaration} {{\n        this(0);\n    }}\n");
-        constructor_texts.push((
-            delegating_index,
-            prefix_method_annotations(delegating_body, &delegating.annotations),
-        ));
-
-        let source_parameter_type_uses = constructor
-            .type_annotations
-            .parameter_uses
-            .get(2)
-            .map(Vec::as_slice)
-            .unwrap_or(&[]);
-        let Some(parameter_type) = (if source_parameter_type_uses.is_empty() {
-            Some("int".to_owned())
-        } else {
-            decorate_qualified_type("int", source_parameter_type_uses)
-        }) else {
-            return Ok(None);
-        };
-        let source_parameter_annotations = constructor
-            .parameter_annotations
-            .uses_by_position
-            .get(2)
-            .map(Vec::as_slice)
-            .unwrap_or(&[]);
-        let parameter_annotations = source_parameter_annotations
-            .iter()
-            .map(|annotation| format!("{annotation} "))
-            .collect::<String>();
-        let mut terminal_declaration = String::new();
-        if let Some(modifier) = visibility(constructor.item.access_flags) {
-            terminal_declaration.push_str(modifier);
-            terminal_declaration.push(' ');
-        }
-        terminal_declaration.push_str(&declaration.name);
-        terminal_declaration.push('(');
-        terminal_declaration.push_str(&parameter_annotations);
-        terminal_declaration.push_str(&parameter_type);
-        terminal_declaration.push_str(" arg0)");
-        let Some(statements) = terminal_constructor_body else {
-            return Ok(None);
-        };
-        let terminal_body = format!("    {terminal_declaration} {{\n{statements}    }}\n");
-        constructor_texts.push((
-            group.constructor_method_index,
-            prefix_method_annotations(terminal_body, &constructor.annotations),
-        ));
-    } else {
-        if terminal_constructor_body.is_some() {
-            return Ok(None);
-        }
-        if let Some(tail) = user_tail {
-            // The arbitrary tail's proof carries each parameter's type text and its own stored
-            // field; the folded declaration spells the user parameters only, in argument order.
-            constructor_texts.push((
-                group.constructor_method_index,
-                prefix_method_annotations(
-                    spell_user_tail_constructor_text(
-                        &declaration.name,
-                        constructor.item.access_flags,
-                        tail,
-                    ),
-                    &constructor.annotations,
-                ),
-            ));
-        } else if !no_source_constructor {
-            let Some(field_name) = field_name.as_deref() else {
-                return Ok(None);
-            };
-            let string_varargs = constructor.enum_constructor_source_tail
-                == EnumConstructorSourceTail::StringVarargs;
-            let single_string =
-                constructor.enum_constructor_source_tail == EnumConstructorSourceTail::SingleString;
-            if string_varargs
-                && (constructor.item.descriptor.raw().0
-                    != b"(Ljava/lang/String;I[Ljava/lang/String;)V"
-                    || constructor.item.access_flags != 0x0082
-                    || constructor
-                        .type_annotations
-                        .parameter_uses
-                        .get(2)
-                        .is_some_and(|uses| !uses.is_empty()))
-            {
-                return Ok(None);
-            }
-            let source_parameter_type_uses = constructor
-                .type_annotations
-                .parameter_uses
-                .get(2)
-                .map(Vec::as_slice)
-                .unwrap_or(&[]);
-            let Some(parameter_type) = (if string_varargs {
-                Some("java.lang.String...".to_owned())
-            } else if single_string && source_parameter_type_uses.is_empty() {
-                Some("java.lang.String".to_owned())
-            } else if source_parameter_type_uses.is_empty() {
-                Some("int".to_owned())
-            } else {
-                decorate_qualified_type(
-                    if single_string {
-                        "java.lang.String"
-                    } else {
-                        "int"
-                    },
-                    source_parameter_type_uses,
-                )
-            }) else {
-                return Ok(None);
-            };
-            let source_parameter_annotations = constructor
-                .parameter_annotations
-                .uses_by_position
-                .get(2)
-                .map(Vec::as_slice)
-                .unwrap_or(&[]);
-            let parameter_annotations = source_parameter_annotations
-                .iter()
-                .map(|annotation| format!("{annotation} "))
-                .collect::<String>();
-            let mut constructor_declaration = String::new();
-            if let Some(modifier) = visibility(constructor.item.access_flags) {
-                constructor_declaration.push_str(modifier);
-                constructor_declaration.push(' ');
-            }
-            constructor_declaration.push_str(&declaration.name);
-            constructor_declaration.push('(');
-            constructor_declaration.push_str(&parameter_annotations);
-            constructor_declaration.push_str(&parameter_type);
-            constructor_declaration.push_str(" arg0)");
-            let constructor_body = format!(
-                "    {constructor_declaration} {{\n        this.{field_name} = arg0;\n    }}\n"
-            );
-            // The one known marker comes from the JVM-only name/ordinal parameters making the physical
-            // descriptor longer than the already parsed source Signature. The enum proof checks that
-            // source tail independently; no other constructor marker is absorbed by this projection.
-            constructor_texts.push((
-                group.constructor_method_index,
-                prefix_method_annotations(constructor_body, &constructor.annotations),
-            ));
-        }
-    }
-
-    if initializer.is_some() {
-        budget.charge(
-            CountedBudgetDimension::IrItems,
-            u64::try_from(fields.len()).unwrap_or(u64::MAX),
-        )?;
-    }
-    let initializer_text = match initializer {
-        Some((field_index, text)) => {
-            let mut target = None;
-            for field in fields {
-                budget.poll()?;
-                if field.item.index == field_index && target.replace(field).is_some() {
-                    return Ok(None);
-                }
-            }
-            let Some(target) = target else {
-                return Ok(None);
-            };
-            if !((target.item.name.raw().0 == b"totalUnits"
-                && target.item.descriptor.raw().0 == b"I"
-                && target.item.access_flags == 0x0008)
-                || (target.item.descriptor.raw().0 == b"Ljava/util/Map;"
-                    && target.item.access_flags == 0x0019))
-                || target.item.identity.owner != constructor.item.identity.owner
-                || target.declaration.is_none()
-                || (target.item.descriptor.raw().0 == b"I" && !target.markers.is_empty())
-                || (target.item.descriptor.raw().0 == b"Ljava/util/Map;"
-                    && target
-                        .markers
-                        .iter()
-                        .any(|marker| !marker.contains("field_generic_source_unproved")))
-            {
-                return Ok(None);
-            }
-            Some(text)
-        }
-        None => None,
-    };
-
-    let mut constants_text = String::new();
-    for (index, constant) in group.constants.iter().enumerate() {
-        constants_text.push_str("    ");
-        constants_text.push_str(&constant.name);
-        if let Some(argument) = &constant.source_argument {
-            if let crate::enum_constants::ProvedEnumSourceArgument::StringVarargs(values) = argument
-            {
-                let source_capacity = values.iter().fold(0_u64, |total, value| {
-                    total
-                        .saturating_add(
-                            u64::try_from(value.value.len())
-                                .unwrap_or(u64::MAX)
-                                .saturating_mul(6),
-                        )
-                        .saturating_add(4)
-                });
-                budget.charge(CountedBudgetDimension::OutputBytes, source_capacity)?;
-            }
-            constants_text.push('(');
-            constants_text.push_str(&argument.source_text());
-            constants_text.push(')');
-        }
-        if index + 1 == group.constants.len() {
-            constants_text.push_str(";\n");
-        } else {
-            constants_text.push_str(",\n");
-        }
-    }
-    let mut implicit_method_indices: Vec<u64> = [
-        group.initializer_method_index,
-        group.values_method_index,
-        group.value_of_method_index,
-        group.values_factory_method_index,
-    ]
-    .into();
-    if no_source_constructor {
-        implicit_method_indices.push(group.constructor_method_index);
-    }
-    if group.constants.is_empty() {
-        let hidden: std::collections::BTreeSet<u64> =
-            implicit_method_indices.iter().copied().collect();
-        let hidden_fields: std::collections::BTreeSet<u64> = group
-            .constants
-            .iter()
-            .map(|constant| constant.field_index)
-            .chain(std::iter::once(group.backing_field_index))
-            .collect();
-        let has_user_member =
-            fields.iter().any(|field| {
-                !hidden_fields.contains(&field.item.index) && field.declaration.is_some()
-            }) || methods.iter().any(|method| {
-                !hidden.contains(&method.item.index)
-                    && !constructor_texts
-                        .iter()
-                        .any(|(index, _)| *index == method.item.index)
-                    && method.item.name.raw().0 != b"<clinit>"
-            }) || initializer_text.is_some();
-        if has_user_member {
-            constants_text.push_str("    ;\n");
-        }
-    }
-    let output_bytes = u64::try_from(constants_text.len())
-        .unwrap_or(u64::MAX)
-        .saturating_add(constructor_texts.iter().fold(0u64, |total, (_, text)| {
-            total.saturating_add(u64::try_from(text.len()).unwrap_or(u64::MAX))
-        }))
-        .saturating_add(
-            initializer_text
-                .as_ref()
-                .map_or(0, |text| u64::try_from(text.len()).unwrap_or(u64::MAX)),
-        );
-    budget.charge(CountedBudgetDimension::OutputBytes, output_bytes)?;
-
-    Ok(Some(EnumConstantSourceProjection {
-        constant_field_indices: group
-            .constants
-            .iter()
-            .map(|constant| constant.field_index)
-            .collect(),
-        backing_field_index: group.backing_field_index,
-        implicit_method_indices,
-        constants_text,
-        constructor_texts,
-        initializer_text,
-    }))
+    let projection = jarde_java::source_proof::prepare_enum_constant_source_projection(
+        &declaration.name,
+        fields,
+        methods,
+        group,
+        terminal_constructor_body,
+        initializer,
+        |field| {
+            (
+                field.item.index,
+                &field.item.identity.owner,
+                field.item.name.raw().0.as_slice(),
+                field.item.descriptor.raw().0.as_slice(),
+                field.item.access_flags,
+                field.declaration.is_some(),
+                field.markers.as_slice(),
+            )
+        },
+        |method| {
+            (
+                method.item.index,
+                &method.item.identity.owner,
+                method.item.name.raw().0.as_slice(),
+                method.item.descriptor.raw().0.as_slice(),
+                method.item.access_flags,
+            )
+        },
+        |method| {
+            (
+                method.declaration.is_some(),
+                method.enum_constructor_source_tail,
+                method.enum_constructor_signature_erasure_refused,
+                method.markers.as_slice(),
+                &method.annotations,
+                &method.parameter_annotations,
+                &method.type_annotations,
+            )
+        },
+        budget,
+    )?;
+    Ok(projection.map(
+        |(
+            constant_field_indices,
+            backing_field_index,
+            implicit_method_indices,
+            constants_text,
+            constructor_texts,
+            initializer_text,
+        )| EnumConstantSourceProjection {
+            constant_field_indices,
+            backing_field_index,
+            implicit_method_indices,
+            constants_text,
+            constructor_texts,
+            initializer_text,
+        },
+    ))
 }
 
 /// Place the members retained by the proved body group directly inside their owning constant.
@@ -12810,188 +5861,69 @@ pub(crate) fn prepare_enum_constant_body_source_projection(
     shape: &crate::facade::PendingEnumConstantBodyGroupShape,
     budget: &mut Budget,
 ) -> Result<Option<EnumConstantSourceProjection>> {
-    if group.constants.is_empty()
-        || shape.constants.len() != group.constants.len()
-        || shape.implicit_members.len() != 6
-    {
-        return Ok(None);
-    }
-    let mut constants_text = String::new();
-    let mut constant_field_indices = Vec::with_capacity(group.constants.len());
-    for (position, constant) in group.constants.iter().enumerate() {
-        budget.poll()?;
-        let Some(field) = usize::try_from(constant.field_index)
-            .ok()
-            .and_then(|index| fields.get(index))
-        else {
-            return Ok(None);
-        };
-        if shape.constants[position].field_index != constant.field_index
-            || shape.constants[position].constructor_bci != constant.constructor_bci
-            || field.item.index != constant.field_index
-            || field.item.identity.owner != declaration.item.definition
-            || field.declaration.is_none()
-            || !field.markers.is_empty()
-        {
-            return Ok(None);
-        }
-        let (name, aliased) = written_name(&field.item.name.raw().0);
-        if aliased {
-            return Ok(None);
-        }
-        constants_text.push_str("    ");
-        constants_text.push_str(&name);
-        if !constant.source_arguments.is_empty() {
-            // The argument spelling is the one arbitrary-argument channel's own joined text.
-            let arguments =
-                crate::enum_constants::user_arguments_source_text(&constant.source_arguments);
-            budget.charge(
-                CountedBudgetDimension::OutputBytes,
-                u64::try_from(arguments.len().saturating_mul(6).saturating_add(4))
-                    .unwrap_or(u64::MAX),
-            )?;
-            constants_text.push('(');
-            constants_text.push_str(&arguments);
-            constants_text.push(')');
-        }
-        match (&constant.subclass, &constant.methods) {
-            (None, None) => {}
-            (Some(subclass), Some(body_methods)) if !body_methods.is_empty() => {
-                constants_text.push_str(" {\n");
-                constants_text.push_str("        // jarde: selected enum child definition: ");
-                constants_text.push_str(&format!("{subclass:?}"));
-                constants_text.push('\n');
-                for method in body_methods.iter() {
-                    budget.poll()?;
-                    if method.item.identity.owner != *subclass
-                        || method.declaration.is_none()
-                        || !method.markers.is_empty()
-                        || !matches!(method.outcome, ClassSourceOutcome::Recovered { .. })
-                        || !method.text.ends_with("}\n")
-                    {
-                        return Ok(None);
-                    }
-                    constants_text.push_str(&indent(&method.text, 1));
-                }
-                constants_text.push_str("    }");
-            }
-            _ => return Ok(None),
-        }
-        constants_text.push_str(if position + 1 == group.constants.len() {
-            ";\n"
-        } else {
-            ",\n"
-        });
-        constant_field_indices.push(constant.field_index);
-    }
-    let backing_field_index = shape.implicit_members[0].table_index;
-    let backing_field = usize::try_from(backing_field_index)
-        .ok()
-        .and_then(|index| fields.get(index));
-    if shape.implicit_members[0].name != b"$VALUES"
-        || backing_field.is_none_or(|field| {
-            field.item.index != backing_field_index
-                || field.item.identity.owner != declaration.item.definition
-        })
-    {
-        return Ok(None);
-    }
-    let mut implicit_method_indices = Vec::new();
-    for member in shape
-        .implicit_members
-        .iter()
-        .skip(1)
-        .chain(shape.constructors.iter())
-    {
-        let Some(method) = usize::try_from(member.table_index)
-            .ok()
-            .and_then(|index| methods.get(index))
-        else {
-            return Ok(None);
-        };
-        if method.item.index != member.table_index
-            || method.item.identity.owner != declaration.item.definition
-            || method.item.name.raw().0 != member.name
-            || method.item.descriptor.raw().0 != member.descriptor
-        {
-            return Ok(None);
-        }
-        if !implicit_method_indices.contains(&member.table_index) {
-            implicit_method_indices.push(member.table_index);
-        }
-    }
-    let mut constructor_texts = Vec::new();
-    if let Some(text) = &group.constructor_text {
-        let constructors: Vec<_> = shape
-            .constructors
-            .iter()
-            .filter(|member| member.descriptor == b"(Ljava/lang/String;ILjava/lang/String;)V")
-            .collect();
-        let [constructor] = constructors.as_slice() else {
-            return Ok(None);
-        };
-        let Some(method) = usize::try_from(constructor.table_index)
-            .ok()
-            .and_then(|index| methods.get(index))
-        else {
-            return Ok(None);
-        };
-        if method.item.index != constructor.table_index
-            || method.enum_constructor_source_tail != EnumConstructorSourceTail::SingleString
-            || !text.ends_with("}\n")
-        {
-            return Ok(None);
-        }
-        budget.charge(
-            CountedBudgetDimension::OutputBytes,
-            u64::try_from(text.len()).unwrap_or(u64::MAX),
-        )?;
-        constructor_texts.push((constructor.table_index, text.clone()));
-    } else if let Some(tail) = &group.constructor_user_tail {
-        // The arbitrary tail spells through the one shared user-tail constructor text.
-        let constructors: Vec<_> = shape
-            .constructors
-            .iter()
-            .filter(|member| member.descriptor == shape.constants[0].constructor_descriptor)
-            .collect();
-        let [constructor] = constructors.as_slice() else {
-            return Ok(None);
-        };
-        let Some(method) = usize::try_from(constructor.table_index)
-            .ok()
-            .and_then(|index| methods.get(index))
-        else {
-            return Ok(None);
-        };
-        if method.item.index != constructor.table_index || method.item.name.raw().0 != b"<init>" {
-            return Ok(None);
-        }
-        let text =
-            spell_user_tail_constructor_text(&declaration.name, method.item.access_flags, tail);
-        budget.charge(
-            CountedBudgetDimension::OutputBytes,
-            u64::try_from(text.len()).unwrap_or(u64::MAX),
-        )?;
-        constructor_texts.push((constructor.table_index, text));
-    } else if group
-        .constants
-        .iter()
-        .any(|constant| !constant.source_arguments.is_empty())
-    {
-        return Ok(None);
-    }
-    budget.charge(
-        CountedBudgetDimension::OutputBytes,
-        u64::try_from(constants_text.len()).unwrap_or(u64::MAX),
+    let projection = jarde_java::source_proof::prepare_enum_constant_body_source_projection(
+        &declaration.item.definition,
+        &declaration.name,
+        fields,
+        methods,
+        &group.constants,
+        group.constructor_text.as_ref(),
+        group.constructor_user_tail.as_ref(),
+        shape,
+        |field| {
+            (
+                field.item.index,
+                &field.item.identity.owner,
+                field.item.name.raw().0.as_slice(),
+                field.declaration.is_some(),
+                field.markers.is_empty(),
+            )
+        },
+        |method| {
+            (
+                method.item.index,
+                &method.item.identity,
+                method.item.access_flags,
+                method.item.name.raw().0.as_slice(),
+                method.item.descriptor.raw().0.as_slice(),
+            )
+        },
+        |method| {
+            (
+                method.declaration.is_some(),
+                method.markers.is_empty(),
+                matches!(method.outcome, ClassSourceOutcome::Recovered { .. }),
+                method.text.as_str(),
+                method.enum_constructor_source_tail,
+            )
+        },
+        |constant| {
+            (
+                constant.field_index,
+                constant.constructor_bci,
+                constant.source_arguments.as_slice(),
+                constant.subclass.as_ref(),
+                constant.methods.as_deref(),
+            )
+        },
+        budget,
     )?;
-    Ok(Some(EnumConstantSourceProjection {
-        constant_field_indices,
-        backing_field_index,
-        implicit_method_indices,
-        constants_text,
-        constructor_texts,
-        initializer_text: None,
-    }))
+    Ok(projection.map(
+        |(
+            constant_field_indices,
+            backing_field_index,
+            implicit_method_indices,
+            constants_text,
+            constructor_texts,
+        )| EnumConstantSourceProjection {
+            constant_field_indices,
+            backing_field_index,
+            implicit_method_indices,
+            constants_text,
+            constructor_texts,
+            initializer_text: None,
+        },
+    ))
 }
 
 /// The marker of a produced artifact whose shape this presentation does not recognize.
@@ -13094,6 +6026,7 @@ pub(crate) fn source_text_with_method_projections(
 ) -> Option<(String, Vec<MemberFamilyDerivedProjection>)> {
     let declaration = root.declaration.as_ref()?;
     let context = ClassSourceTextContext {
+        source_target: root.source_target,
         initializer_field_order: None,
         declared_methods: u64::try_from(root.methods.len()).ok()?,
         member_table: None,
@@ -13104,36 +6037,29 @@ pub(crate) fn source_text_with_method_projections(
         array_helper_markers: None,
         hidden_fields: None,
     };
-    if source_text(declaration, &root.fields, &root.methods, &context) != root.text {
-        return None;
-    }
-    let mut derived = Vec::new();
-    let text = source_text_with_member(
-        declaration,
-        &root.fields,
-        &[],
-        &root.methods,
-        &context,
-        None,
+    jarde_java::source_proof::assemble_method_projection_root(
+        source_text(declaration, &root.fields, &root.methods, &context),
+        &root.text,
         method_texts,
-        &[],
-        &mut derived,
-        &[],
-    )?;
-    let expected = method_texts
-        .iter()
-        .map(|method| method.derived.len())
-        .sum::<usize>();
-    if derived.len() != expected
-        || derived.iter().any(|entry| {
-            entry.start >= entry.end
-                || text.get(entry.start..entry.end).is_none()
-                || entry.anchors.is_empty()
-        })
-    {
-        return None;
-    }
-    Some((text, derived))
+        |method| method.derived.len(),
+        || {
+            let mut derived = Vec::new();
+            let text = source_text_with_member(
+                declaration,
+                &root.fields,
+                &[],
+                &root.methods,
+                &context,
+                None,
+                method_texts,
+                &[],
+                &mut derived,
+                &[],
+            )?;
+            Some((text, derived))
+        },
+        |entry| (entry.start, entry.end, !entry.anchors.is_empty()),
+    )
 }
 
 /// A family source unit is assembled from physical member records, with only certified body
@@ -13142,7 +6068,7 @@ pub(crate) struct MemberFamilyTextProjection<'a> {
     pub(crate) relation: &'a ClassSourceMemberRelation,
     pub(crate) child: &'a ClassSourceReport,
     pub(crate) capture: Option<&'a MemberCaptureProof>,
-    pub(crate) static_target: Option<&'a jarde_java::report::ProvedStaticMemberTarget>,
+    pub(crate) static_target: Option<&'a jarde_java::report::StaticMemberTargetInput>,
     pub(crate) generic_static: Option<&'a GenericStaticMemberText>,
     pub(crate) root_methods: &'a [MemberFamilyMethodText],
     pub(crate) child_methods: &'a [MemberFamilyMethodText],
@@ -13227,61 +6153,6 @@ pub(crate) fn member_family_recovered_span_with_declaration(
         declaration_override,
     )?;
     (text.get(mapped.0..mapped.1)? == source).then_some(mapped)
-}
-
-/// The offset of one body-artifact span inside `block_member`'s placement of that artifact:
-/// envelope bytes sit one level in from the class body, statement bytes one level below the
-/// declaration — the two depths `block_member` itself indents to — and a span crossing or
-/// outside the artifact's own braces has no placement.
-fn placed_artifact_span(
-    body: &Artifact<'_>,
-    start: usize,
-    end: usize,
-    block_prefix: usize,
-) -> Option<(usize, usize)> {
-    let envelope_end = body.envelope.len();
-    let (part, local_start, local_end, depth, prefix) = if end <= envelope_end {
-        (body.envelope, start, end, 2, block_prefix)
-    } else {
-        let statement_start = envelope_end + 2;
-        if start < statement_start || end > statement_start + body.statements.len() {
-            return None;
-        }
-        (
-            body.statements,
-            start - statement_start,
-            end - statement_start,
-            1,
-            block_prefix + indent(body.envelope, 2).len(),
-        )
-    };
-    let mapped_start = prefix + indented_offset(part, local_start, depth, false)?;
-    let mapped_end = prefix + indented_offset(part, local_end, depth, true)?;
-    Some((mapped_start, mapped_end))
-}
-
-fn indented_offset(text: &str, offset: usize, depth: usize, end_boundary: bool) -> Option<usize> {
-    if offset > text.len() || !text.is_char_boundary(offset) {
-        return None;
-    }
-    let mut source = 0;
-    let mut written = 0;
-    for line in text.split_inclusive('\n') {
-        if end_boundary && offset == source {
-            return Some(written);
-        }
-        let padding = if line.trim_end_matches('\n').is_empty() {
-            0
-        } else {
-            4 * depth
-        };
-        if offset < source + line.len() {
-            return Some(written + padding + offset - source);
-        }
-        written += padding + line.len();
-        source += line.len();
-    }
-    (offset == source).then_some(written)
 }
 
 pub(crate) fn member_family_recovered_method_text(
@@ -13460,6 +6331,7 @@ pub(crate) fn member_family_source_text(
     // with hidden fields), so every other first pass keeps exactly the equality it had.
     let assert_projected = !root.projection_inputs.hidden_fields.is_empty();
     let context = ClassSourceTextContext {
+        source_target: root.source_target,
         initializer_field_order: None,
         declared_methods: root.methods.len() as u64,
         member_table: None,
@@ -13527,6 +6399,7 @@ pub(crate) fn declaration_pair_source_text(
     // other first pass — staged member texts among them — keeps the refusal it had.
     let assert_projected = !root.projection_inputs.hidden_fields.is_empty();
     let context = ClassSourceTextContext {
+        source_target: root.source_target,
         initializer_field_order: None,
         declared_methods: root.methods.len() as u64,
         member_table: None,
@@ -13635,6 +6508,26 @@ fn source_text_with_member(
     derived: &mut Vec<MemberFamilyDerivedProjection>,
     hidden_methods: &[HiddenFoldMethod],
 ) -> Option<String> {
+    if let Some(refusal) = jarde_java::declaration::source_unit_target_refusal(
+        context.source_target,
+        &declaration.item.declaration.this_class,
+        declaration.item.declaration.access_flags,
+        fields,
+        methods,
+        |method| {
+            (
+                method.item.access_flags,
+                matches!(
+                    method.item.body,
+                    crate::MemberBodyEvidence::CodeAttribute { .. }
+                ),
+            )
+        },
+        |field| !field.type_annotations.attributes.is_empty(),
+        |method| !method.type_annotations.attributes.is_empty(),
+    ) {
+        return Some(refusal);
+    }
     let initializer_field_order = context.initializer_field_order;
     let declared_methods = context.declared_methods;
     let member_table = context.member_table;
@@ -13937,55 +6830,69 @@ fn render_member_class(
         .declaration
         .as_ref()
         .expect("validated child declaration");
-    let mut facts = declaration.item.declaration.clone();
-    const SOURCE_CLASS_FLAGS: u16 = ACC_PUBLIC
-        | ACC_PRIVATE
-        | ACC_PROTECTED
-        | ACC_ABSTRACT
-        | ACC_FINAL
-        | ACC_STRICT
-        | ACC_STATIC;
-    facts.access_flags = (facts.access_flags & !SOURCE_CLASS_FLAGS)
-        | (member.relation.access_flags & SOURCE_CLASS_FLAGS);
-    let mut out = String::new();
-    let mut derived = Vec::new();
-    for annotation in &declaration.annotation_uses {
-        out.push_str(&indent(&format!("{annotation}\n"), 1));
-    }
-    let mut class_header_declaration = member.generic_static.map_or_else(
-        || class_declaration(&member.relation.simple_name, &facts),
-        |generic| generic.header.clone(),
-    );
-    if member.relation.access_flags & ACC_STATIC != 0 {
-        let visibility_len = ["public ", "protected ", "private "]
-            .iter()
-            .find(|prefix| class_header_declaration.starts_with(**prefix))
-            .map_or(0, |prefix| prefix.len());
-        class_header_declaration.insert_str(visibility_len, "static ");
-    }
-    let class_header = indent(&format!("{class_header_declaration} {{\n"), 1);
-    let header_start = out.len();
-    out.push_str(&class_header);
-    if let Some(capture) = member.capture {
-        let capture_field = child
-            .fields
-            .iter()
-            .find(|field| field.item.index == capture.field_index)
-            .expect("validated capture field");
-        derived.push(MemberFamilyDerivedProjection {
-            kind: MemberFamilyDerivedKind::HiddenCaptureField,
-            start: header_start,
-            end: out.len() - 1,
-            anchors: vec![MemberFamilyPhysicalAnchor::Field {
-                field: capture_field.item.identity.clone(),
-                index: capture_field.item.index,
-            }],
-        });
-    } else {
-        derived.push(MemberFamilyDerivedProjection {
+    let facts = declaration.item.declaration.clone();
+    jarde_java::source_proof::render_member_class(
+        &member.relation.simple_name,
+        member.relation.access_flags,
+        (
+            &facts.this_class,
+            facts.access_flags,
+            facts.super_class.as_ref(),
+            &facts.interfaces,
+        ),
+        &declaration.name,
+        &declaration.annotation_uses,
+        member.capture.map(|capture| capture.field_index),
+        member.generic_static.map(|generic| {
+            (
+                &generic.header,
+                generic.field_index,
+                &generic.field_declaration,
+                &generic.bridge,
+                generic.bridge_invoke_bci,
+            )
+        }),
+        &child.fields,
+        &child.methods,
+        &child.projection_inputs.hidden_fields,
+        &child.projection_inputs.omitted_methods,
+        member.child_methods,
+        |field| {
+            (
+                field.item.index,
+                field.annotations.uses.as_slice(),
+                field.declaration.as_ref(),
+                field.markers.as_slice(),
+            )
+        },
+        |method| (method.item.index, &method.item.identity, &method.text),
+        |staged| (staged.index, &staged.text, staged.derived.as_slice()),
+        |staged| (&mut staged.text, &mut staged.derived),
+        |entry| (entry.start, entry.end),
+        |entry, start, end| {
+            entry.start = start;
+            entry.end = end;
+        },
+        |start, end, capture_field_index| {
+            let capture_field = child
+                .fields
+                .iter()
+                .find(|field| field.item.index == capture_field_index)
+                .expect("validated capture field");
+            MemberFamilyDerivedProjection {
+                kind: MemberFamilyDerivedKind::HiddenCaptureField,
+                start,
+                end,
+                anchors: vec![MemberFamilyPhysicalAnchor::Field {
+                    field: capture_field.item.identity.clone(),
+                    index: capture_field.item.index,
+                }],
+            }
+        },
+        |start, end| MemberFamilyDerivedProjection {
             kind: MemberFamilyDerivedKind::MemberClassDeclaration,
-            start: header_start,
-            end: out.len() - 1,
+            start,
+            end,
             anchors: vec![
                 MemberFamilyPhysicalAnchor::ClassDefinition {
                     definition: member.relation.child.clone(),
@@ -13994,149 +6901,67 @@ fn render_member_class(
                     definition: member.relation.root.clone(),
                 },
             ],
-        });
-    }
-    if let Some(generic) = member.generic_static {
-        derived.push(MemberFamilyDerivedProjection {
-            kind: MemberFamilyDerivedKind::MemberGenericSignature,
-            start: header_start,
-            end: out.len() - 1,
-            anchors: vec![MemberFamilyPhysicalAnchor::ClassDefinition {
-                definition: member.relation.child.clone(),
-            }],
-        });
-        derived.push(MemberFamilyDerivedProjection {
-            kind: MemberFamilyDerivedKind::MemberMethodDeclaration,
-            start: header_start,
-            end: out.len() - 1,
-            anchors: vec![MemberFamilyPhysicalAnchor::MethodPoint {
-                method: generic.bridge.clone(),
-                bci: generic.bridge_invoke_bci,
-            }],
-        });
-    }
-    let mut first = true;
-    for field in &child.fields {
-        if member
-            .capture
-            .is_some_and(|capture| field.item.index == capture.field_index)
-        {
-            continue;
-        }
-        if child
-            .projection_inputs
-            .hidden_fields
-            .contains(&field.item.index)
-        {
-            // The child's own assert projection hid this field; the nested rendering hides it
-            // too, anchored beside the header its flat text anchored it on.
-            derived.push(MemberFamilyDerivedProjection {
-                kind: MemberFamilyDerivedKind::HiddenAssertSwitchField,
-                start: header_start,
-                end: out.len() - 1,
-                anchors: vec![MemberFamilyPhysicalAnchor::Field {
-                    field: field.item.identity.clone(),
-                    index: field.item.index,
-                }],
-            });
-            continue;
-        }
-        if !first {
-            out.push('\n');
-        }
-        first = false;
-        for annotation in &field.annotations.uses {
-            out.push_str(&indent(&format!("{annotation}\n"), 2));
-        }
-        let text = match &field.declaration {
-            Some(_)
-                if member
-                    .generic_static
-                    .is_some_and(|generic| generic.field_index == field.item.index) =>
-            {
-                declaration_member(&member.generic_static.unwrap().field_declaration, &[])
+        },
+        |start, end, bridge, bci, is_bridge| {
+            if is_bridge {
+                MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::MemberMethodDeclaration,
+                    start,
+                    end,
+                    anchors: vec![MemberFamilyPhysicalAnchor::MethodPoint {
+                        method: bridge.clone(),
+                        bci,
+                    }],
+                }
+            } else {
+                MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::MemberGenericSignature,
+                    start,
+                    end,
+                    anchors: vec![MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: member.relation.child.clone(),
+                    }],
+                }
             }
-            Some(declaration) => declaration_member(declaration, &field.markers),
-            None => comment_member(&field.markers),
-        };
-        let field_start = out.len();
-        out.push_str(&indent(&text, 1));
-        if member
-            .generic_static
-            .is_some_and(|generic| generic.field_index == field.item.index)
-        {
-            derived.push(MemberFamilyDerivedProjection {
-                kind: MemberFamilyDerivedKind::MemberGenericSignature,
-                start: field_start,
-                end: out.len() - 1,
-                anchors: vec![MemberFamilyPhysicalAnchor::Field {
-                    field: field.item.identity.clone(),
-                    index: field.item.index,
-                }],
-            });
-        }
-    }
-    for method in &child.methods {
-        if member
-            .generic_static
-            .is_some_and(|generic| generic.bridge == method.item.identity)
-        {
-            continue;
-        }
-        // A member the child's own assert projection omitted (its switch line was all its
-        // `<clinit>` held) carries no declaration here either, exactly as the child's flat text
-        // omits it. Other first passes keep their members here as before: this channel reaches
-        // the nested writer only beside the child's hidden fields.
-        if !child.projection_inputs.hidden_fields.is_empty()
-            && child
-                .projection_inputs
-                .omitted_methods
-                .contains(&method.item.index)
-        {
-            continue;
-        }
-        if !first {
-            out.push('\n');
-        }
-        first = false;
-        if let Some(projected) = member
-            .child_methods
-            .iter()
-            .find(|projected| projected.index == method.item.index)
-        {
-            let mut projected = projected.clone();
-            if method.item.identity.name.0 == b"<init>" && member.capture.is_none() {
-                let old_name = &declaration.name;
-                let old_token = format!("{old_name}(");
-                let Some(local_start) = projected.text.find(&old_token) else {
-                    return None;
-                };
-                let local_end = local_start + old_name.len();
-                projected
-                    .text
-                    .replace_range(local_start..local_end, &member.relation.simple_name);
-                projected.derived.push(MemberFamilyDerivedProjection {
-                    kind: MemberFamilyDerivedKind::MemberConstructorName,
-                    start: local_start,
-                    end: local_start + member.relation.simple_name.len(),
-                    anchors: vec![
-                        MemberFamilyPhysicalAnchor::MethodPoint {
-                            method: method.item.identity.clone(),
-                            bci: 0,
-                        },
-                        MemberFamilyPhysicalAnchor::ClassDefinition {
-                            definition: member.relation.child.clone(),
-                        },
-                    ],
-                });
+        },
+        |start, end, field, generic| {
+            if generic {
+                MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::MemberGenericSignature,
+                    start,
+                    end,
+                    anchors: vec![MemberFamilyPhysicalAnchor::Field {
+                        field: field.item.identity.clone(),
+                        index: field.item.index,
+                    }],
+                }
+            } else {
+                MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::HiddenAssertSwitchField,
+                    start,
+                    end,
+                    anchors: vec![MemberFamilyPhysicalAnchor::Field {
+                        field: field.item.identity.clone(),
+                        index: field.item.index,
+                    }],
+                }
             }
-            append_family_method(&mut out, &projected, true, &mut derived)?;
-        } else {
-            out.push_str(&indent(&method.text, 1));
-        }
-    }
-    out.push_str("    }\n");
-    Some((out, derived))
+        },
+        |start, end, identity| MemberFamilyDerivedProjection {
+            kind: MemberFamilyDerivedKind::MemberConstructorName,
+            start,
+            end,
+            anchors: vec![
+                MemberFamilyPhysicalAnchor::MethodPoint {
+                    method: identity.clone(),
+                    bci: 0,
+                },
+                MemberFamilyPhysicalAnchor::ClassDefinition {
+                    definition: member.relation.child.clone(),
+                },
+            ],
+        },
+    )
 }
 
 fn append_family_method(
@@ -14145,30 +6970,18 @@ fn append_family_method(
     nested: bool,
     derived: &mut Vec<MemberFamilyDerivedProjection>,
 ) -> Option<()> {
-    let offset = out.len();
-    if nested {
-        out.push_str(&indent(&method.text, 1));
-    } else {
-        out.push_str(&method.text);
-    }
-    for entry in &method.derived {
-        let mut entry = entry.clone();
-        if nested {
-            let source_span = method.text.get(entry.start..entry.end)?;
-            let start = indented_offset(&method.text, entry.start, 1, false)?;
-            let end = indented_offset(&method.text, entry.end, 1, true)?;
-            entry.start = offset + start;
-            entry.end = offset + end;
-            if out.get(entry.start..entry.end) != Some(source_span) {
-                return None;
-            }
-        } else {
-            entry.start += offset;
-            entry.end += offset;
-        }
-        derived.push(entry);
-    }
-    Some(())
+    jarde_java::source_proof::append_family_method(
+        out,
+        &method.text,
+        &method.derived,
+        nested,
+        derived,
+        |entry| (entry.start, entry.end),
+        |entry, start, end| {
+            entry.start = start;
+            entry.end = end;
+        },
+    )
 }
 
 /// Render one direct static member as a nested declaration of the fold's own source unit, from the
@@ -14212,338 +7025,142 @@ pub(crate) fn nested_static_member_source_text(
     elision: Option<InstanceMemberElision>,
     retained: &NestedRetainedTexts<'_>,
 ) -> Option<NestedClassSourceText> {
-    const SOURCE_CLASS_FLAGS: u16 = ACC_PUBLIC
-        | ACC_PRIVATE
-        | ACC_PROTECTED
-        | ACC_ABSTRACT
-        | ACC_FINAL
-        | ACC_STRICT
-        | ACC_STATIC;
-    let rewrite = |name: &str| -> String {
-        fold_targets
-            .iter()
-            .find_map(|(pool, spelling)| (name == *pool).then(|| (*spelling).to_owned()))
-            .unwrap_or_else(|| name.to_owned())
-    };
-    let mut facts = declaration.item.declaration.clone();
-    facts.access_flags =
-        (facts.access_flags & !SOURCE_CLASS_FLAGS) | (access_flags & SOURCE_CLASS_FLAGS);
-    let superclass = facts
-        .super_class
-        .as_ref()
-        .map(|super_class| rewrite(&class_name(&super_class.raw().0)));
-    let interfaces = facts
-        .interfaces
-        .iter()
-        .map(|interface| rewrite(&class_name(&interface.raw().0)))
-        .collect::<Vec<_>>();
-    // A child whose own run projected its type-parameter header carries it verbatim: that
-    // projection is the one Signature position this nested rebuild already spells every other
-    // part of (row flags, physical parents), so the two spellings cannot diverge.
-    let mut class_header_declaration = class_declaration_with_types(
+    // The original physical declaration clone stays owned here through the writer call.
+    let facts = declaration.item.declaration.clone();
+    let (text, derived) = jarde_java::source_proof::nested_static_member_source_text(
         simple_name,
-        &facts,
+        access_flags,
+        (
+            &facts.this_class,
+            facts.access_flags,
+            facts.super_class.as_ref(),
+            &facts.interfaces,
+        ),
         declaration.generic_type_parameters.as_deref(),
-        superclass.as_deref(),
-        Some(&interfaces),
-    );
-    if access_flags & ACC_STATIC != 0 {
-        let visibility_len = ["public ", "protected ", "private "]
-            .iter()
-            .find(|prefix| class_header_declaration.starts_with(**prefix))
-            .map_or(0, |prefix| prefix.len());
-        class_header_declaration.insert_str(visibility_len, "static ");
-    }
-    let mut text = String::new();
-    let mut derived = Vec::new();
-    for annotation in &declaration.annotation_uses {
-        text.push_str(&indent(&format!("{annotation}\n"), 1));
-    }
-    for refusal in &declaration.annotation_refusals {
-        text.push_str(&indent(
-            &format!("// jarde: class annotation refused: {refusal}\n"),
-            1,
-        ));
-    }
-    let header_line = indent(&format!("{class_header_declaration} {{\n"), 1);
-    let own_start = text.len() + "    ".len();
-    text.push_str(&header_line);
-    derived.push(MemberFamilyDerivedProjection {
-        kind: MemberFamilyDerivedKind::MemberClassDeclaration,
-        start: own_start,
-        end: text.len() - 1,
-        anchors: vec![
-            MemberFamilyPhysicalAnchor::ClassDefinition {
-                definition: child_definition.clone(),
-            },
-            MemberFamilyPhysicalAnchor::ClassDefinition {
-                definition: root_definition.clone(),
-            },
-        ],
-    });
-    let hidden_span = (own_start, text.len() - 1);
-    // The first pass's own marker lines — omitted helper and projection notes — sit directly
-    // under the header, before any member, exactly where the flat unit placed them.
-    for marker in retained.markers {
-        text.push_str(&indent(&format!("{marker}\n"), 2));
-    }
-    let mut first = true;
-    for field in fields {
-        if elision.is_some_and(|elision| elision.capture_field_index == field.item.index) {
-            // The synthetic capture field's declaration is hidden with its constructor
-            // parameter: the fold's own text never names it, and the derived record keeps
-            // the physical field it removed, anchored on the declaration it hides beside.
-            derived.push(MemberFamilyDerivedProjection {
-                kind: MemberFamilyDerivedKind::HiddenCaptureField,
-                start: hidden_span.0,
-                end: hidden_span.1,
-                anchors: vec![
-                    MemberFamilyPhysicalAnchor::Field {
-                        field: field.item.identity.clone(),
-                        index: field.item.index,
-                    },
-                    MemberFamilyPhysicalAnchor::ClassDefinition {
-                        definition: child_definition.clone(),
-                    },
-                ],
-            });
-            continue;
-        }
-        if retained.hidden_fields.contains(&field.item.index) {
-            // The child's own assert projection proved its switch field rewritten; the fold's
-            // nested rendering keeps that hiding, anchored beside the header as its flat text
-            // was.
-            derived.push(MemberFamilyDerivedProjection {
-                kind: MemberFamilyDerivedKind::HiddenAssertSwitchField,
-                start: hidden_span.0,
-                end: hidden_span.1,
-                anchors: vec![
-                    MemberFamilyPhysicalAnchor::Field {
-                        field: field.item.identity.clone(),
-                        index: field.item.index,
-                    },
-                    MemberFamilyPhysicalAnchor::ClassDefinition {
-                        definition: child_definition.clone(),
-                    },
-                ],
-            });
-            continue;
-        }
-        if !first {
-            text.push('\n');
-        }
-        first = false;
-        for annotation in &field.annotations.uses {
-            text.push_str(&indent(&format!("{annotation}\n"), 2));
-        }
-        if let Some(projected) = field_texts
-            .iter()
-            .find(|projected| projected.index == field.item.index)
-        {
-            let offset = text.len();
-            text.push_str(&indent(&projected.text, 1));
-            for entry in &projected.derived {
-                let source_span = projected.text.get(entry.start..entry.end)?;
-                let start = indented_offset(&projected.text, entry.start, 1, false)?;
-                let end = indented_offset(&projected.text, entry.end, 1, true)?;
-                let mut translated = entry.clone();
-                translated.start = offset + start;
-                translated.end = offset + end;
-                if text.get(translated.start..translated.end) != Some(source_span) {
-                    return None;
+        &declaration.name,
+        &declaration.annotation_uses,
+        &declaration.annotation_refusals,
+        fields,
+        field_texts,
+        methods,
+        method_texts,
+        fold_targets,
+        elision.map(|elision| elision.capture_field_index),
+        (
+            retained.omitted_methods,
+            retained.markers,
+            retained.member_texts,
+            retained.hidden_fields,
+        ),
+        |field| {
+            (
+                field.item.index,
+                field.annotations.uses.as_slice(),
+                field.declaration.as_ref(),
+                field.markers.as_slice(),
+            )
+        },
+        |method| (method.item.index, &method.item.identity, &method.text),
+        |staged| (staged.index, &staged.text, staged.derived.as_slice()),
+        |staged| (&mut staged.text, &mut staged.derived),
+        |retained| (retained.member, &retained.text),
+        |index, text| MemberFamilyMethodText {
+            index,
+            text,
+            derived: Vec::new(),
+        },
+        |entry| {
+            (
+                entry.start,
+                entry.end,
+                entry.kind == MemberFamilyDerivedKind::HiddenCaptureWrite,
+            )
+        },
+        |entry, start, end| {
+            entry.start = start;
+            entry.end = end;
+        },
+        |start, end| MemberFamilyDerivedProjection {
+            kind: MemberFamilyDerivedKind::MemberClassDeclaration,
+            start,
+            end,
+            anchors: vec![
+                MemberFamilyPhysicalAnchor::ClassDefinition {
+                    definition: child_definition.clone(),
+                },
+                MemberFamilyPhysicalAnchor::ClassDefinition {
+                    definition: root_definition.clone(),
+                },
+            ],
+        },
+        |start, end, field, capture| {
+            if capture {
+                MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::HiddenCaptureField,
+                    start,
+                    end,
+                    anchors: vec![
+                        MemberFamilyPhysicalAnchor::Field {
+                            field: field.item.identity.clone(),
+                            index: field.item.index,
+                        },
+                        MemberFamilyPhysicalAnchor::ClassDefinition {
+                            definition: child_definition.clone(),
+                        },
+                    ],
                 }
-                derived.push(translated);
+            } else {
+                MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::HiddenAssertSwitchField,
+                    start,
+                    end,
+                    anchors: vec![
+                        MemberFamilyPhysicalAnchor::Field {
+                            field: field.item.identity.clone(),
+                            index: field.item.index,
+                        },
+                        MemberFamilyPhysicalAnchor::ClassDefinition {
+                            definition: child_definition.clone(),
+                        },
+                    ],
+                }
             }
-        } else {
-            let member = match &field.declaration {
-                Some(declaration) => declaration_member(declaration, &field.markers),
-                None => comment_member(&field.markers),
-            };
-            text.push_str(&indent(&member, 1));
-        }
-    }
-    for method in methods {
-        // A member the first pass's projection omitted carries no declaration here either: its
-        // uses were rewritten in the retained member texts, and the physical record stays in the
-        // child's own report.
-        if retained.omitted_methods.contains(&method.item.index) {
-            continue;
-        }
-        if !first {
-            text.push('\n');
-        }
-        first = false;
-        // A member whose body the first pass projected keeps that projected text here — the
-        // fold's own staged texts (method_texts) still win, because those are the ones carrying
-        // the fold's re-spelled references.
-        let mut staged = method_texts
-            .iter()
-            .find(|projected| projected.index == method.item.index)
-            .cloned()
-            .or_else(|| {
-                retained
-                    .member_texts
-                    .iter()
-                    .find(|projected| projected.member == method.item.index)
-                    .map(|projected| MemberFamilyMethodText {
-                        index: method.item.index,
-                        text: projected.text.clone(),
-                        derived: Vec::new(),
-                    })
-            })
-            .unwrap_or_else(|| MemberFamilyMethodText {
-                index: method.item.index,
-                text: method.text.clone(),
-                derived: Vec::new(),
-            });
-        if method.item.identity.name.0 == b"<init>" {
-            let old_name = &declaration.name;
-            let old_token = format!("{old_name}(");
-            let Some(local_start) = staged.text.find(&old_token) else {
-                return None;
-            };
-            let local_end = local_start + old_name.len();
-            staged
-                .text
-                .replace_range(local_start..local_end, simple_name);
-            staged.derived.push(MemberFamilyDerivedProjection {
-                kind: MemberFamilyDerivedKind::MemberConstructorName,
-                start: local_start,
-                end: local_start + simple_name.len(),
-                anchors: vec![
-                    MemberFamilyPhysicalAnchor::MethodPoint {
-                        method: method.item.identity.clone(),
-                        bci: 0,
-                    },
-                    MemberFamilyPhysicalAnchor::ClassDefinition {
-                        definition: child_definition.clone(),
-                    },
-                ],
-            });
-            if elision.is_some() {
-                // The synthetic first parameter leaves the constructor's source list: the
-                // descriptor's first parameter is the proved Outer capture, and the capture
-                // write that consumed it is already gone from the staged body. Derived ranges
-                // the facade staged after this list move by exactly the bytes dropped, plus
-                // the rename's own delta.
-                let list_start = local_start + simple_name.len() + "(".len();
-                let Some(drop) = top_level_parameter_end(&staged.text, list_start) else {
-                    return None;
-                };
-                let name_delta = simple_name.len() as isize - old_name.len() as isize;
-                staged.text.replace_range(list_start..drop, "");
-                shift_derived_ranges(
-                    &mut staged.derived,
-                    local_start + old_name.len(),
-                    name_delta - (drop - list_start) as isize,
-                );
-                // The hidden capture write's record keeps the declaration line as its span: the
-                // line itself just changed length, so the range is re-clamped to it.
-                let line_end = staged.text.find('\n').unwrap_or(staged.text.len());
-                for entry in &mut staged.derived {
-                    if entry.kind == MemberFamilyDerivedKind::HiddenCaptureWrite {
-                        entry.start = entry.start.min(line_end);
-                        entry.end = line_end;
-                    }
-                }
-                staged.derived.push(MemberFamilyDerivedProjection {
+        },
+        |start, end, method, parameter| {
+            if parameter {
+                MemberFamilyDerivedProjection {
                     kind: MemberFamilyDerivedKind::HiddenConstructorParameter,
-                    start: local_start,
-                    end: local_start + simple_name.len() + "()".len(),
+                    start,
+                    end,
                     anchors: vec![
                         MemberFamilyPhysicalAnchor::ConstructorParameter {
-                            method: method.item.identity.clone(),
+                            method: method.clone(),
                             index: 0,
                         },
                         MemberFamilyPhysicalAnchor::ClassDefinition {
                             definition: child_definition.clone(),
                         },
                     ],
-                });
+                }
+            } else {
+                MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::MemberConstructorName,
+                    start,
+                    end,
+                    anchors: vec![
+                        MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: method.clone(),
+                            bci: 0,
+                        },
+                        MemberFamilyPhysicalAnchor::ClassDefinition {
+                            definition: child_definition.clone(),
+                        },
+                    ],
+                }
             }
-        }
-        let offset = text.len();
-        text.push_str(&indent(&staged.text, 1));
-        for entry in &staged.derived {
-            let Some(source_span) = staged.text.get(entry.start..entry.end) else {
-                return None;
-            };
-            let Some(start) = indented_offset(&staged.text, entry.start, 1, false) else {
-                return None;
-            };
-            let Some(end) = indented_offset(&staged.text, entry.end, 1, true) else {
-                return None;
-            };
-            let mut translated = entry.clone();
-            translated.start = offset + start;
-            translated.end = offset + end;
-            if text.get(translated.start..translated.end) != Some(source_span) {
-                return None;
-            }
-            derived.push(translated);
-        }
-    }
-    text.push_str("    }\n");
+        },
+    )?;
     Some(NestedClassSourceText { text, derived })
-}
-
-/// The end of a constructor's first source parameter: just past the first top-level separator,
-/// or at the closing parenthesis when the list holds only that parameter. The list begins just
-/// after its opening parenthesis; generic angle brackets, annotations, nested parentheses and
-/// literals never separate parameters.
-fn top_level_parameter_end(text: &str, open: usize) -> Option<usize> {
-    let bytes = text.as_bytes();
-    let mut depth = 1isize;
-    let mut angles = 0isize;
-    let mut index = open;
-    let mut literal: Option<u8> = None;
-    let mut escaped = false;
-    while index < bytes.len() {
-        let byte = bytes[index];
-        if let Some(quote) = literal {
-            if escaped {
-                escaped = false;
-            } else if byte == b'\\' {
-                escaped = true;
-            } else if byte == quote {
-                literal = None;
-            }
-        } else if byte == b'"' || byte == b'\'' {
-            literal = Some(byte);
-        } else {
-            match byte {
-                b'(' => depth += 1,
-                b')' => {
-                    depth -= 1;
-                    if depth == 0 {
-                        return Some(index);
-                    }
-                }
-                b'<' => angles += 1,
-                b'>' => angles -= 1,
-                b',' if depth == 1 && angles == 0 => {
-                    let mut end = index + 1;
-                    if bytes.get(end) == Some(&b' ') {
-                        end += 1;
-                    }
-                    return Some(end);
-                }
-                _ => {}
-            }
-        }
-        index += 1;
-    }
-    None
-}
-
-/// Move every derived range that begins at or after `from` by `delta` byte positions.
-fn shift_derived_ranges(derived: &mut [MemberFamilyDerivedProjection], from: usize, delta: isize) {
-    for entry in derived.iter_mut() {
-        if entry.start >= from {
-            entry.start = (entry.start as isize + delta).max(0) as usize;
-            entry.end = (entry.end as isize + delta).max(0) as usize;
-        }
-    }
 }
 
 /// Render a proved enum as a lexical member using the child's typed declaration and member
@@ -14559,125 +7176,51 @@ pub(crate) fn nested_enum_source_text(
     descendant: Option<&NestedClassSourceText>,
     anchors: Vec<MemberFamilyPhysicalAnchor>,
 ) -> Option<NestedClassSourceText> {
-    const SOURCE_CLASS_FLAGS: u16 =
-        ACC_PUBLIC | ACC_PRIVATE | ACC_PROTECTED | ACC_ABSTRACT | ACC_FINAL | ACC_STRICT;
-    let mut facts = declaration.item.declaration.clone();
-    facts.access_flags =
-        (facts.access_flags & !SOURCE_CLASS_FLAGS) | (access_flags & SOURCE_CLASS_FLAGS);
-    let header = nested_member_class_header(simple_name, &facts);
-    let mut text = format!("    {header} {{\n");
-    let own_start = "    ".len();
-    let mut derived = Vec::new();
-    let mut first = true;
-    text.push_str(&indent(&enum_projection.constants_text, 1));
-    if !enum_projection.constants_text.is_empty() {
-        first = false;
-    }
-    for field in fields {
-        if field.item.index == enum_projection.backing_field_index
-            || enum_projection
-                .constant_field_indices
-                .contains(&field.item.index)
-        {
-            continue;
-        }
-        if !first {
-            text.push('\n');
-        }
-        first = false;
-        for annotation in &field.annotations.uses {
-            text.push_str(&indent(&format!("{annotation}\n"), 2));
-        }
-        let member = match &field.declaration {
-            Some(declaration) => declaration_member(declaration, &field.markers),
-            None => comment_member(&field.markers),
-        };
-        text.push_str(&indent(&member, 1));
-    }
-    if let Some(initializer) = &enum_projection.initializer_text {
-        if !first {
-            text.push('\n');
-        }
-        first = false;
-        text.push_str(&indent(initializer, 1));
-    }
-    for method in methods {
-        if let Some((_, replacement)) = enum_projection
-            .constructor_texts
-            .iter()
-            .find(|(index, _)| *index == method.item.index)
-        {
-            if !first {
-                text.push('\n');
-            }
-            first = false;
-            text.push_str(&indent(replacement, 1));
-            continue;
-        }
-        if enum_projection
-            .implicit_method_indices
-            .contains(&method.item.index)
-            || (enum_projection.initializer_text.is_some()
-                && method.item.identity.name.0 == b"<clinit>"
-                && method.item.identity.descriptor.0 == b"()V")
-        {
-            continue;
-        }
-        if !first {
-            text.push('\n');
-        }
-        first = false;
-        let Some(replacement) = method_texts
-            .iter()
-            .find(|replacement| replacement.index == method.item.index)
-        else {
-            text.push_str(&indent(&method.text, 1));
-            continue;
-        };
-        let offset = text.len();
-        text.push_str(&indent(&replacement.text, 1));
-        for entry in &replacement.derived {
-            let source_span = replacement.text.get(entry.start..entry.end)?;
-            let start = indented_offset(&replacement.text, entry.start, 1, false)?;
-            let end = indented_offset(&replacement.text, entry.end, 1, true)?;
-            let mut translated = entry.clone();
-            translated.start = offset + start;
-            translated.end = offset + end;
-            if text.get(translated.start..translated.end) != Some(source_span) {
-                return None;
-            }
-            derived.push(translated);
-        }
-    }
-    if let Some(descendant) = descendant {
-        if !first {
-            text.push('\n');
-        }
-        let offset = text.len();
-        let descendant_text = indent(&descendant.text, 1);
-        text.push_str(&descendant_text);
-        for entry in &descendant.derived {
-            let start = indented_offset(&descendant.text, entry.start, 1, false)?;
-            let end = indented_offset(&descendant.text, entry.end, 1, true)?;
-            let mut translated = entry.clone();
-            translated.start = offset + start;
-            translated.end = offset + end;
-            if translated.start >= translated.end
-                || !text.is_char_boundary(translated.start)
-                || !text.is_char_boundary(translated.end)
-            {
-                return None;
-            }
-            derived.push(translated);
-        }
-    }
-    text.push_str("    }\n");
-    derived.push(MemberFamilyDerivedProjection {
-        kind: MemberFamilyDerivedKind::NestedEnumDeclaration,
-        start: own_start,
-        end: text.len() - 1,
-        anchors,
-    });
+    let facts = declaration.item.declaration.clone();
+    let (text, derived) = jarde_java::source_proof::nested_enum_source_text(
+        simple_name,
+        access_flags,
+        (
+            &facts.this_class,
+            facts.access_flags,
+            facts.super_class.as_ref(),
+            &facts.interfaces,
+        ),
+        fields,
+        methods,
+        (
+            &enum_projection.constants_text,
+            enum_projection.backing_field_index,
+            &enum_projection.constant_field_indices,
+            &enum_projection.constructor_texts,
+            &enum_projection.implicit_method_indices,
+            enum_projection.initializer_text.as_deref(),
+        ),
+        method_texts,
+        descendant,
+        |field| {
+            (
+                field.item.index,
+                field.annotations.uses.as_slice(),
+                field.declaration.as_ref(),
+                field.markers.as_slice(),
+            )
+        },
+        |method| (method.item.index, &method.item.identity, &method.text),
+        |staged| (staged.index, &staged.text, staged.derived.as_slice()),
+        |nested| (&nested.text, nested.derived.as_slice()),
+        |entry| (entry.start, entry.end),
+        |entry, start, end| {
+            entry.start = start;
+            entry.end = end;
+        },
+        |start, end| MemberFamilyDerivedProjection {
+            kind: MemberFamilyDerivedKind::NestedEnumDeclaration,
+            start,
+            end,
+            anchors,
+        },
+    )?;
     Some(NestedClassSourceText { text, derived })
 }
 
@@ -14694,9 +7237,386 @@ mod tests {
     use super::*;
     use jarde_java::report::GenericConstructorFieldWrite;
 
+    fn cb_physical_method() -> ClassSourceMethod {
+        use crate::*;
+        let engine = Engine::new();
+        let mut budget = task_budget(&[]).unwrap();
+        let snapshot = engine
+            .open(
+                ArtifactInput::bytes(
+                    include_bytes!(
+                        "../tests/fixtures/s1-lambda-handle-names/helper-inline-dash.jar"
+                    )
+                    .to_vec(),
+                ),
+                &mut budget,
+            )
+            .unwrap();
+        let request = ClassSourceRequest {
+            source_target: SourceTarget::JAVA_8,
+            class: ClassRef::Name {
+                class: ClassNameQuery::internal("Subject"),
+            },
+            environment: EnvironmentRequest {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+                policy: EnvironmentPolicy::PlainJar,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                loader: LoaderId("app".into()),
+            },
+        };
+        let OperationOutcome::Performed(class) = engine
+            .class_source_with_evidence(
+                &[snapshot],
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget,
+            )
+            .unwrap()
+        else {
+            panic!("class source did not run")
+        };
+        class
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"run")
+            .unwrap()
+            .clone()
+    }
+
+    #[test]
+    fn cb_anonymous_placement_domains_preserve_distinct_eligibility() {
+        let mut base = cb_physical_method();
+        base.markers.clear();
+        base.item.access_flags &= !(ACC_STATIC | 0x0040 | 0x1000);
+        base.declaration = Some("public Object run()".into());
+        let body = "        return null;\n";
+        assert!(base.anonymous_projection_text(body).is_some());
+        for flag in [ACC_STATIC, 0x0040, 0x1000] {
+            let mut method = base.clone();
+            method.item.access_flags |= flag;
+            assert!(method.anonymous_projection_text(body).is_none());
+            assert!(method.anonymous_return_projection_text(body).is_some());
+        }
+        for variant in 0..6 {
+            let mut method = base.clone();
+            match variant {
+                0 => method.markers.push("// refusal".into()),
+                1 => method.parameter_annotations.refusals.push("refusal".into()),
+                2 => method
+                    .parameter_annotations
+                    .uses_by_position
+                    .push(vec!["@P".into()]),
+                3 => method.type_annotations.refusals.push("refusal".into()),
+                4 => method.type_annotations.return_uses.push("@T".into()),
+                _ => method.outcome = ClassSourceOutcome::NoBody,
+            }
+            assert!(
+                method.anonymous_projection_text(body).is_none(),
+                "{variant}"
+            );
+            assert!(
+                method.anonymous_return_projection_text(body).is_none(),
+                "{variant}"
+            );
+            // The ordinary body writer has no recovered/strict-anonymous eligibility gate.
+            assert!(
+                method
+                    .projected_body_method_text("{\n    return null;\n}\n", None, &[])
+                    .is_some()
+            );
+        }
+    }
+
+    #[test]
+    fn cb_return_and_current_prefix_ranges_are_exact_utf8() {
+        let mut method = cb_physical_method();
+        method.markers.clear();
+        method.declaration = Some("public Object run()".into());
+        let expression = "new Object() { String 名 = \"𐐀\"; }";
+        let text = format!("        return {expression};\n");
+        let from = text.find(expression).unwrap();
+        let body = jarde_java::report::ClassSourceAnonymousReturn {
+            text,
+            expression_range: from..from + expression.len(),
+        };
+        let anchor = MemberFamilyPhysicalAnchor::ClassDefinition {
+            definition: method.item.identity.owner.clone(),
+        };
+        let placed = method
+            .anonymous_return_projection(&body, vec![anchor.clone()])
+            .unwrap();
+        assert_eq!(placed.index, method.item.index);
+        assert_eq!(
+            &placed.text[placed.derived[0].start..placed.derived[0].end],
+            expression
+        );
+        assert_eq!(placed.derived[0].anchors, vec![anchor.clone()]);
+        let prefix = "    // generic Signature refusal\n    public Object run() {\n";
+        method.text = format!("{prefix}        old();\n    }}\n");
+        method.markers.push("// generic Signature refusal".into());
+        method.parameter_annotations.refusals.push("refusal".into());
+        let original = method.clone();
+        assert!(method.anonymous_return_projection(&body, vec![]).is_none());
+        let placed = method
+            .projected_statements_method_text(&body, vec![anchor.clone()])
+            .unwrap();
+        assert!(placed.text.starts_with(prefix));
+        assert_eq!(
+            &placed.text[placed.derived[0].start..placed.derived[0].end],
+            expression
+        );
+        assert_eq!(placed.derived[0].anchors, vec![anchor]);
+        for range in [
+            from..from,
+            0..usize::MAX,
+            body.text.find('𐐀').unwrap() + 1..body.text.find('𐐀').unwrap() + 4,
+        ] {
+            let mut bad = body.clone();
+            bad.expression_range = range;
+            assert!(
+                method
+                    .projected_statements_method_text(&bad, vec![])
+                    .is_none()
+            );
+            let mut strict = method.clone();
+            strict.markers.clear();
+            strict.parameter_annotations.refusals.clear();
+            assert!(strict.anonymous_return_projection(&bad, vec![]).is_none());
+        }
+        assert_eq!(method, original);
+        method.text.push_str("    public Object run() {\n");
+        assert!(
+            method
+                .projected_statements_method_text(&body, vec![])
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn cb_body_writer_and_span_keep_markers_annotations_and_declaration_gate() {
+        let mut method = cb_physical_method();
+        assert!(method.has_only_explanation_marker());
+        method.annotations.uses.push("@名".into());
+        let body = "// envelope\n{\n    return \"𐐀\";\n}\n";
+        let markers = ["// derived 名".to_string()];
+        let text = method
+            .projected_body_method_text(body, Some("Object 名()"), &markers)
+            .unwrap();
+        assert!(text.starts_with("    @名\n    Object 名() {\n"));
+        assert!(text.contains("// derived 名"));
+        assert!(!text.contains("produced no statement"));
+        let at = body.find('𐐀').unwrap();
+        let mapped = method
+            .projected_body_span(body, Some("Object 名()"), &markers, at, at + 4)
+            .unwrap();
+        assert_eq!(&text[mapped.0..mapped.1], "𐐀");
+        for (start, end) in [(at + 1, at + 4), (at, at), (0, body.len())] {
+            assert!(
+                method
+                    .projected_body_span(body, None, &markers, start, end)
+                    .is_none()
+            );
+        }
+        assert!(
+            method
+                .projected_body_method_text("not an artifact", None, &[])
+                .is_none()
+        );
+        method.declaration = None;
+        assert!(
+            method
+                .projected_body_method_text(body, Some("Object 名()"), &markers)
+                .is_none()
+        );
+        assert!(
+            method
+                .projected_body_span(body, Some("Object 名()"), &markers, at, at + 4)
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn physical_explanation_marker_preserves_exact_body_matching_and_projected_spans() {
+        use crate::*;
+        let engine = Engine::new();
+        let mut budget = task_budget(&[]).unwrap();
+        let snapshot = engine
+            .open(
+                ArtifactInput::bytes(
+                    include_bytes!(
+                        "../tests/fixtures/s1-lambda-handle-names/helper-inline-dash.jar"
+                    )
+                    .to_vec(),
+                ),
+                &mut budget,
+            )
+            .unwrap();
+        let request = ClassSourceRequest {
+            source_target: SourceTarget::JAVA_8,
+            class: ClassRef::Name {
+                class: ClassNameQuery::internal("Subject"),
+            },
+            environment: EnvironmentRequest {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+                policy: EnvironmentPolicy::PlainJar,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                loader: LoaderId("app".into()),
+            },
+        };
+        let OperationOutcome::Performed(class) = engine
+            .class_source_with_evidence(
+                &[snapshot],
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget,
+            )
+            .unwrap()
+        else {
+            panic!("class source did not run")
+        };
+        let method = class
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"run")
+            .unwrap();
+        let ClassSourceOutcome::Recovered { report, .. } = &method.outcome else {
+            panic!("missing method")
+        };
+        assert!(method.has_only_explanation_marker());
+        assert!(method.matches_current_text(&report.text));
+        let mut changed = method.clone();
+        changed.text = changed.text.replace("@bytecode 0 5", "@bytecode 0");
+        assert!(!changed.matches_current_text(&report.text));
+        changed = method.clone();
+        changed.markers.push("// jarde: another projection".into());
+        changed.text = block_member(
+            changed.declaration.as_deref().unwrap(),
+            Placed::Block(artifact(&report.text).unwrap()),
+            &changed.markers,
+        );
+        assert!(!changed.matches_current_text(&report.text));
+        let notes = ["// jarde: derived body".to_string()];
+        let placed = method
+            .projected_body_method_text(&report.text, None, &notes)
+            .unwrap();
+        assert!(!placed.contains("produced no statement"));
+        let start = report.text.find("@bytecode").unwrap();
+        let end = start + "@bytecode 0 5".len();
+        let (from, to) = method
+            .projected_body_span(&report.text, None, &notes, start, end)
+            .unwrap();
+        assert_eq!(&placed[from..to], &report.text[start..end]);
+    }
+
+    #[test]
+    fn member_descriptor_type_tokens_do_not_rewrite_enclosing_prefixes() {
+        let physical = "p.𐐀pkg.Outer$Inner";
+        let source = "p.𐐀pkg.Outer.Inner";
+        let declaration =
+            "public static p.𐐀pkg.Outer$Inner make(p.𐐀pkg.Outer outer, p.𐐀pkg.Outer[][] rest)";
+        let (projected, count) = replace_java_type_token(declaration, physical, source);
+        assert_eq!(count, 1);
+        assert_eq!(replace_java_type_token(&projected, source, source).1, 1);
+        assert_eq!(
+            replace_java_type_token(&projected, "p.𐐀pkg.Outer", "p.𐐀pkg.Outer").1,
+            2
+        );
+        for outside in [
+            "𐐀p.𐐀pkg.Outer$Inner",
+            "p.𐐀pkg.Outer$InnerExtra",
+            "other.p.𐐀pkg.Outer$Inner",
+        ] {
+            assert_eq!(
+                replace_java_type_token(outside, physical, source),
+                (outside.to_owned(), 0)
+            );
+        }
+        assert_eq!(
+            descriptor_component_base("p.𐐀pkg.Outer[][]"),
+            "p.𐐀pkg.Outer"
+        );
+        assert_eq!(
+            replace_java_type_token("p.𐐀pkg.Outer... rest", "p.𐐀pkg.Outer", "Outer"),
+            ("Outer... rest".to_owned(), 1)
+        );
+        assert_eq!(
+            replace_java_type_token("p.𐐀pkg.Outer...Extra", "p.𐐀pkg.Outer", "Outer"),
+            ("p.𐐀pkg.Outer...Extra".to_owned(), 0)
+        );
+    }
+
+    #[test]
+    fn binary_pool_class_spelling_uses_mutf8_for_package_and_member_segments() {
+        for (raw, expected) in [
+            ("p/𐐀pkg/Outer$Inner", "p.𐐀pkg.Outer$Inner"),
+            ("p/𐐀Outer$𐐀Inner", "p.𐐀Outer$𐐀Inner"),
+            ("p/Lfoo", "p.Lfoo"),
+            ("p/_", "p._"),
+        ] {
+            assert_eq!(
+                binary_pool_class_name(&JvmBytes::from_unicode(raw).0).unwrap(),
+                expected
+            );
+        }
+        for raw in [
+            JvmBytes::from_unicode("p/😀"),
+            JvmBytes::from_unicode("p/Outer;Inner"),
+            JvmBytes(vec![b'p', b'/', 0xed, 0xa0, 0x80]),
+            JvmBytes(vec![b'p', b'/', 0xf0, 0x90, 0x90, 0x80]),
+        ] {
+            assert!(binary_pool_class_name(&raw.0).is_err(), "{raw:?}");
+        }
+    }
+
     const ARRAY_RETURN_CLASS: &[u8] = include_bytes!(
         "../tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Main.class"
     );
+
+    struct MissingHeaders {
+        loader: jarde_reader::view::LoaderId,
+    }
+
+    impl jarde_java::source_proof::RecoveryHeaders for MissingHeaders {
+        type Error = jarde_reader::error::Error;
+
+        fn caller_loader(&self) -> &jarde_reader::view::LoaderId {
+            &self.loader
+        }
+
+        fn selected_from(
+            &mut self,
+            _initiating_loader: &jarde_reader::view::LoaderId,
+            _owner: &[u8],
+            budget: &mut Budget,
+        ) -> std::result::Result<
+            jarde_java::source_proof::DependencyResult<
+                jarde_java::source_proof::ReferenceClassHeader,
+            >,
+            Self::Error,
+        > {
+            budget.poll()?;
+            Ok(jarde_java::source_proof::DependencyResult::Missing)
+        }
+
+        fn platform_unprovided(
+            &mut self,
+            _owner: &[u8],
+            budget: &mut Budget,
+        ) -> std::result::Result<bool, Self::Error> {
+            budget.poll()?;
+            Ok(true)
+        }
+    }
 
     const MEMBER_ANNOTATION_TARGET: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
@@ -14872,28 +7792,29 @@ mod tests {
             name: jarde_reader::model::JvmBytes(b"collectionGridDirect".to_vec()),
             descriptor: jarde_reader::model::JvmBytes(b"()[[Ljava/util/Collection;".to_vec()),
         };
+        let analysis_request = jarde_jvm::ir::MethodAnalysisRequest {
+            environment: jarde_jvm::environment::ResolutionEnvironment {
+                runtime: jarde_reader::view::RuntimeView {
+                    physical: jarde_reader::view::PhysicalView {
+                        snapshot: snapshot.id().clone(),
+                        scope: jarde_reader::view::PhysicalScope::SnapshotAll,
+                    },
+                    profile: jarde_reader::view::RuntimeProfile {
+                        java_release: 8,
+                        multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                        layout: jarde_reader::view::LayoutMode::Generic,
+                    },
+                    load_domain: domain.clone(),
+                },
+                domains: vec![domain],
+                providers: Vec::new(),
+            },
+            method: method.clone(),
+            stages: jarde_jvm::ir::AnalysisStage::ALL.to_vec(),
+        };
         let analysis = jarde_jvm::engine::analyze_method_ir(
             std::slice::from_ref(&snapshot),
-            &jarde_jvm::ir::MethodAnalysisRequest {
-                environment: jarde_jvm::environment::ResolutionEnvironment {
-                    runtime: jarde_reader::view::RuntimeView {
-                        physical: jarde_reader::view::PhysicalView {
-                            snapshot: snapshot.id().clone(),
-                            scope: jarde_reader::view::PhysicalScope::SnapshotAll,
-                        },
-                        profile: jarde_reader::view::RuntimeProfile {
-                            java_release: 8,
-                            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
-                            layout: jarde_reader::view::LayoutMode::Generic,
-                        },
-                        load_domain: domain.clone(),
-                    },
-                    domains: vec![domain],
-                    providers: Vec::new(),
-                },
-                method: method.clone(),
-                stages: jarde_jvm::ir::AnalysisStage::ALL.to_vec(),
-            },
+            &analysis_request,
             &mut setup_budget,
         )
         .expect("the physical array method analyzes");
@@ -14906,15 +7827,41 @@ mod tests {
             analysis.ir(),
             &recovery_facts,
             jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
         );
+        let reference_relations = jarde_java::source_proof::prove_reference_relations(
+            &analysis_request,
+            analysis.ir(),
+            &mut MissingHeaders {
+                loader: analysis_request
+                    .environment
+                    .runtime
+                    .load_domain
+                    .loader
+                    .clone(),
+            },
+            &mut setup_budget,
+        )
+        .expect("the direct-array reference relation walk completes");
+        let request = request.with_reference_relations(&reference_relations);
         let mut recovery_budget = Budget::new(unlimited_annotation_test_limits());
         let recovered = jarde_java::report::recover_for_class_source(
             &request,
             &mut recovery_budget,
-            true,
-            false,
+            jarde_java::report::ClassSourceOptions {
+                prove_generic_return: true,
+                ast_retention: jarde_java::report::ClassSourceAstRetention::All,
+
+                ..Default::default()
+            },
+            None,
         );
         let candidate = recovered
+            .candidates
             .generic_return
             .clone()
             .expect("the frozen complete body supplies an array candidate");
@@ -15062,6 +8009,8 @@ mod tests {
             throws: Vec::new(),
         };
         let candidate = GenericReturnCandidate {
+            #[cfg(feature = "test-support")]
+            observation: jarde_java::observation::Token::candidate(),
             parameters: vec![(1, "arg1".to_owned()), (2, "arg2".to_owned())],
             value: GenericReturnValue::CompleteBody {
                 result_type: None,
@@ -15099,6 +8048,7 @@ mod tests {
             &[],
             &mut success_budget,
         )
+        .expect("Java selects the generic void route")
         .expect("state-aware generic void proof reads the retained overlay");
         assert!(declaration.contains("<T extends probe.Bound> void set(T arg1, boolean arg2)"));
 
@@ -15117,6 +8067,7 @@ mod tests {
             &[],
             &mut cancelled_budget,
         )
+        .expect("Java selects the generic void route")
         .expect_err("pre-cancellation stops the void Signature proof");
         assert!(matches!(error, Error::Cancelled { .. }));
         assert_eq!(detached_record, before);
@@ -15135,6 +8086,7 @@ mod tests {
             &[],
             &mut exhausted,
         )
+        .expect("Java selects the generic void route")
         .expect_err("an exhausted analysis budget stops the void Signature proof");
         assert!(matches!(error, Error::BudgetExceeded { .. }));
         assert_eq!(detached_record, before);
@@ -15426,28 +8378,32 @@ mod tests {
             variant: jarde_reader::model::PhysicalVariant::Base,
         };
         let path = vec![
-            jarde_java::report::ProvedMemberInnerSourceSegment {
+            jarde_java::report::MemberInnerSourceSegmentInput {
                 definition: identity.clone(),
-                binary_name: "matrix/Outer".to_owned(),
+                binary_name: jarde_reader::model::JvmBytes::from_unicode("matrix/Outer"),
                 source_name: "matrix.Outer".to_owned(),
                 type_parameter_count: 0,
                 enclosing_binary_name: None,
                 is_static: true,
             },
-            jarde_java::report::ProvedMemberInnerSourceSegment {
+            jarde_java::report::MemberInnerSourceSegmentInput {
                 definition: identity.clone(),
-                binary_name: "matrix/Outer$A".to_owned(),
+                binary_name: jarde_reader::model::JvmBytes::from_unicode("matrix/Outer$A"),
                 source_name: "matrix.Outer.A".to_owned(),
                 type_parameter_count: 1,
-                enclosing_binary_name: Some("matrix/Outer".to_owned()),
+                enclosing_binary_name: Some(jarde_reader::model::JvmBytes::from_unicode(
+                    "matrix/Outer",
+                )),
                 is_static: true,
             },
-            jarde_java::report::ProvedMemberInnerSourceSegment {
+            jarde_java::report::MemberInnerSourceSegmentInput {
                 definition: identity,
-                binary_name: "matrix/Outer$A$Generic".to_owned(),
+                binary_name: jarde_reader::model::JvmBytes::from_unicode("matrix/Outer$A$Generic"),
                 source_name: "matrix.Outer.A.Generic".to_owned(),
                 type_parameter_count: 1,
-                enclosing_binary_name: Some("matrix/Outer$A".to_owned()),
+                enclosing_binary_name: Some(jarde_reader::model::JvmBytes::from_unicode(
+                    "matrix/Outer$A",
+                )),
                 is_static: false,
             },
         ];
@@ -15646,8 +8602,6 @@ mod tests {
         );
         for entries in [
             [entry(None, 0), entry(Some(b"second"), 0)],
-            [entry(Some(b"first"), 0), entry(Some(b"first"), 0)],
-            [entry(Some(b"class"), 0), entry(Some(b"second"), 0)],
             [entry(Some(b"first"), 0x1000), entry(Some(b"second"), 0)],
             [entry(Some(b"first"), 0x8000), entry(Some(b"second"), 0)],
         ] {
@@ -15660,9 +8614,54 @@ mod tests {
                 b"(JLjava/lang/String;)V",
                 0,
             )
-            .is_none(),
-            "an invented name for a wide slot cannot alias a source parameter"
+            .is_some(),
+            "source spelling resolves a wide-slot fallback collision after slot proof"
         );
+    }
+
+    #[test]
+    fn method_parameter_names_preserve_raw_metadata_and_share_body_spelling() {
+        let names = [
+            JvmBytes::from_unicode("𐐀"),
+            JvmBytes(vec![0xed, 0xa0, 0x81]),
+            JvmBytes::from_unicode("class"),
+            JvmBytes::from_unicode("class"),
+        ];
+        let entries = names
+            .iter()
+            .map(|name| jarde_reader::classfile::MethodParameterFacts {
+                name_index: 1,
+                name: Some(name.clone()),
+                access_flags: 0,
+            })
+            .collect::<Vec<_>>();
+        let proved = prove_method_parameters(&entries, b"(IIII)V", ACC_STATIC).unwrap();
+        assert_eq!(
+            proved
+                .iter()
+                .map(|parameter| &parameter.name)
+                .collect::<Vec<_>>(),
+            names.iter().collect::<Vec<_>>()
+        );
+        let evidence = proved
+            .iter()
+            .map(|parameter| SlotEvidence::Whole(parameter.name.clone()))
+            .collect::<Vec<_>>();
+        let table = NameTable::build(4, 4, &evidence);
+        assert_eq!(table.whole(0).unwrap().text(), "𐐀");
+        assert!(table.whole(1).unwrap().aliased().is_some());
+        assert_ne!(
+            table.whole(2).unwrap().text(),
+            table.whole(3).unwrap().text()
+        );
+        for raw in [vec![0], vec![0xf0, 0x90, 0x90, 0x80], vec![0xed, 0xa0]] {
+            let entries = [jarde_reader::classfile::MethodParameterFacts {
+                name_index: 1,
+                name: Some(JvmBytes(raw)),
+                access_flags: 0,
+            }];
+            assert!(prove_method_parameters(&entries, b"(I)V", ACC_STATIC).is_none());
+        }
     }
 
     #[test]
@@ -15789,7 +8788,7 @@ mod tests {
             );
             if accepted {
                 assert_eq!(
-                    projected.unwrap(),
+                    projected.unwrap().0,
                     "public static java.util.Collection<?>[][] collectionGridDirect()"
                 );
             } else {
@@ -15881,12 +8880,12 @@ mod tests {
         let parameters = vec![
             ProvedMethodParameter {
                 slot: 1,
-                name: "paramStr".into(),
+                name: JvmBytes::from_unicode("paramStr"),
                 is_final: false,
             },
             ProvedMethodParameter {
                 slot: 2,
-                name: "number".into(),
+                name: JvmBytes::from_unicode("number"),
                 is_final: true,
             },
         ];
@@ -15903,8 +8902,7 @@ mod tests {
                 Some(&facts),
                 None,
                 &signature,
-                None,
-                &[],
+                SourceClassNames::default(),
                 &[],
                 &[],
                 Some(&parameters)
@@ -15916,8 +8914,7 @@ mod tests {
                 None,
                 None,
                 &signature,
-                None,
-                &[],
+                SourceClassNames::default(),
                 &[],
                 &[],
                 Some(&parameters)
@@ -15933,8 +8930,7 @@ mod tests {
                 Some(&lvt),
                 None,
                 &signature,
-                None,
-                &[],
+                SourceClassNames::default(),
                 &[],
                 &[],
                 Some(&parameters)
@@ -15958,7 +8954,15 @@ mod tests {
         );
         assert!(ints.varargs);
         assert_eq!(
-            arguments(None, None, &ints, None, &[], &[], &[], None),
+            arguments(
+                None,
+                None,
+                &ints,
+                SourceClassNames::default(),
+                &[],
+                &[],
+                None
+            ),
             "(int arg0, int... arg1)"
         );
 
@@ -15966,7 +8970,15 @@ mod tests {
         // it has and the parameter is written `byte[]...`, never `byte[][]` or `byte...`.
         let grid = method_descriptor(b"([[B)V", true, true).expect("a method descriptor");
         assert_eq!(
-            arguments(None, None, &grid, None, &[], &[], &[], None),
+            arguments(
+                None,
+                None,
+                &grid,
+                SourceClassNames::default(),
+                &[],
+                &[],
+                None
+            ),
             "(byte[]... arg0)"
         );
 
@@ -15976,13 +8988,29 @@ mod tests {
             method_descriptor(b"(I[I)V", true, false).expect("a method descriptor");
         assert!(!without_the_flag.varargs);
         assert_eq!(
-            arguments(None, None, &without_the_flag, None, &[], &[], &[], None),
+            arguments(
+                None,
+                None,
+                &without_the_flag,
+                SourceClassNames::default(),
+                &[],
+                &[],
+                None
+            ),
             "(int arg0, int[] arg1)"
         );
         let not_an_array = method_descriptor(b"(II)V", true, true).expect("a method descriptor");
         assert!(!not_an_array.varargs, "no `...` is invented for an `int`");
         assert_eq!(
-            arguments(None, None, &not_an_array, None, &[], &[], &[], None),
+            arguments(
+                None,
+                None,
+                &not_an_array,
+                SourceClassNames::default(),
+                &[],
+                &[],
+                None
+            ),
             "(int arg0, int arg1)"
         );
         let no_parameters = method_descriptor(b"()V", true, true).expect("a method descriptor");
@@ -15991,7 +9019,15 @@ mod tests {
             "there is no last parameter to reach"
         );
         assert_eq!(
-            arguments(None, None, &no_parameters, None, &[], &[], &[], None),
+            arguments(
+                None,
+                None,
+                &no_parameters,
+                SourceClassNames::default(),
+                &[],
+                &[],
+                None
+            ),
             "()"
         );
 
@@ -15999,7 +9035,15 @@ mod tests {
         // instance member's `this` is no position of the list, so the dots land on slot 1 here.
         let instance = method_descriptor(b"([I)V", false, true).expect("a method descriptor");
         assert_eq!(
-            arguments(None, None, &instance, None, &[], &[], &[], None),
+            arguments(
+                None,
+                None,
+                &instance,
+                SourceClassNames::default(),
+                &[],
+                &[],
+                None
+            ),
             "(int... arg1)"
         );
     }
@@ -16013,8 +9057,7 @@ mod tests {
                 None,
                 Some(&recovered),
                 &signature,
-                None,
-                &[],
+                SourceClassNames::default(),
                 &[],
                 &[],
                 None
@@ -16100,28 +9143,64 @@ mod tests {
 
     #[test]
     fn one_internal_name_is_spelled_dotted_and_nothing_else_about_it_changes() {
-        assert_eq!(class_name(b"p/Outer$Inner"), "p.Outer$Inner");
+        assert_eq!(
+            class_name(b"p/Outer$Inner"),
+            Some("p.Outer$Inner".to_owned())
+        );
         assert_eq!(
             class_name(b"HistoricalControlFlow"),
-            "HistoricalControlFlow"
+            Some("HistoricalControlFlow".to_owned())
         );
-        assert_eq!(class_name(b"a/b/C"), "a.b.C");
+        assert_eq!(class_name(b"a/b/C"), Some("a.b.C".to_owned()));
     }
 
     #[test]
     fn a_binary_name_is_split_where_its_own_last_slash_is() {
         // The class's own name: the package is everything before the **last** `/`, and a `$` inside
         // either part stays where it is — no nesting relation is read out of it.
-        assert_eq!(simple_name(b"a/b/C"), "C");
-        assert_eq!(simple_name(b"p/Outer$Inner"), "Outer$Inner");
-        assert_eq!(simple_name(b"p/More17$1"), "More17$1");
-        assert_eq!(simple_name(b"C"), "C");
+        assert_eq!(simple_name(b"a/b/C"), Some("C".to_owned()));
+        assert_eq!(
+            simple_name(b"p/Outer$Inner"),
+            Some("Outer$Inner".to_owned())
+        );
+        assert_eq!(simple_name(b"p/More17$1"), Some("More17$1".to_owned()));
+        assert_eq!(simple_name(b"C"), Some("C".to_owned()));
+        assert_eq!(simple_name(b"p/_"), Some("_".to_owned()));
+        for raw in [
+            b"p/a-b".as_slice(),
+            b"p/class",
+            b"p/9Box",
+            b"p/package-info",
+        ] {
+            assert_eq!(simple_name(raw), None);
+        }
 
         // The package line the same split states; a name with no `/` is the default package, which
         // writes no line at all.
         assert_eq!(package_name(b"a/b/C"), Some("a.b".to_owned()));
         assert_eq!(package_name(b"p/Outer$Inner"), Some("p".to_owned()));
         assert_eq!(package_name(b"C"), None);
+    }
+
+    #[test]
+    fn raw_class_names_decode_mutf8_without_using_display_identity() {
+        let raw = JvmBytes::from_unicode("𐐀pkg/𐐁Outer$𐐂Inner");
+        assert_eq!(class_name(&raw.0), Some("𐐀pkg.𐐁Outer$𐐂Inner".to_owned()));
+        assert_eq!(simple_name(&raw.0), Some("𐐁Outer$𐐂Inner".to_owned()));
+        assert_eq!(package_name(&raw.0), Some("𐐀pkg".to_owned()));
+        assert!(legal_package_name(&JvmBytes::from_unicode("𐐀pkg/𐐁part").0));
+        assert_eq!(class_name(b"p/\xed\xa0\x81"), None);
+        assert_eq!(simple_name(b"p/\xed\xa0\x81"), None);
+        assert_eq!(class_name(b"p/\xf0\x90\x90\x80"), None);
+        assert_eq!(class_name(&JvmBytes::from_unicode("p/\u{fffd}").0), None);
+        assert!(!legal_package_name(b"p/\xed\xa0\x81"));
+        assert!(!legal_package_name(b"p/bad-name"));
+    }
+
+    #[test]
+    fn raw_field_supplementary_declaration_keeps_its_scalar_spelling() {
+        let name = JvmBytes::from_unicode("𐐀count");
+        assert_eq!(written_name(&name.0), ("𐐀count".to_owned(), false));
     }
 
     #[test]
@@ -16134,6 +9213,66 @@ mod tests {
             written_name(b"weird-name"),
             "the alias is a function of the raw name alone"
         );
+    }
+
+    #[test]
+    fn shared_member_writer_lengths_preserve_unicode_blank_lines_and_annotations() {
+        let declaration = "public void 𐐀雪()";
+        let marker_sets = [
+            vec![],
+            vec![String::new()],
+            vec!["// 𐐀 marker".to_owned()],
+            vec!["// first\n\n// 雪\n".to_owned()],
+        ];
+        let envelopes = ["", "// @method 𐐀雪()V\n", "\n// 注\n\n"];
+        let bodies = ["", "    return;\n", "    String value = \"𐐀雪\";\n\n"];
+        let annotation_sets = [vec![], vec!["@p.𐐀A".to_owned(), "@p.注".to_owned()]];
+        let mut checked = 0;
+        for markers in &marker_sets {
+            for envelope in envelopes {
+                for body in bodies {
+                    for annotations in &annotation_sets {
+                        let uses = MemberAnnotationUses {
+                            uses: annotations.clone(),
+                            ..Default::default()
+                        };
+                        let block = prefix_method_annotations(
+                            block_member(
+                                declaration,
+                                Placed::Block(Artifact {
+                                    envelope,
+                                    statements: body,
+                                }),
+                                markers,
+                            ),
+                            &uses,
+                        );
+                        assert_eq!(
+                            block_member_text_bytes(declaration, envelope, body, markers, &uses),
+                            u64::try_from(block.len()).unwrap(),
+                            "UTF-8 bytes and blank-line indentation must match real rendering"
+                        );
+                        let no_body = prefix_method_annotations(
+                            declaration_member(declaration, markers),
+                            &uses,
+                        );
+                        assert_eq!(
+                            declaration_member_text_bytes(declaration, markers, &uses),
+                            u64::try_from(no_body.len()).unwrap()
+                        );
+                        if !annotations.is_empty() {
+                            assert!(block.starts_with("    @p.𐐀A\n    @p.注\n"));
+                            assert!(no_body.starts_with("    @p.𐐀A\n    @p.注\n"));
+                        }
+                        assert!(block.ends_with("    }\n"));
+                        assert!(no_body.ends_with("public void 𐐀雪();\n"));
+                        checked += 1;
+                    }
+                }
+            }
+        }
+        assert_eq!(checked, 72);
+        println!("BU_WRITER_LENGTH pairs={checked}");
     }
 
     #[test]
@@ -16723,14 +9862,14 @@ mod tests {
 
         let write = GenericConstructorFieldWrite {
             bci: 9,
-            owner: "Hold".to_owned(),
-            name: "value".to_owned(),
-            descriptor: "Ljava/lang/Object;".to_owned(),
+            owner: JvmBytes::from_unicode("Hold"),
+            name: JvmBytes::from_unicode("value"),
+            descriptor: JvmBytes::from_unicode("Ljava/lang/Object;"),
             parameter_slot: 1,
         };
         let mut budget = Budget::new(unlimited_annotation_test_limits());
         assert!(
-            generic_constructor_field_matches_physical_field(
+            jarde_java::generic_source_proof::generic_constructor_field_matches_physical_field(
                 &write,
                 b"Hold",
                 &[member(b"value", b"Ljava/lang/Object;", 0)],
@@ -16749,7 +9888,7 @@ mod tests {
         ] {
             let mut budget = Budget::new(unlimited_annotation_test_limits());
             assert!(
-                !generic_constructor_field_matches_physical_field(
+                !jarde_java::generic_source_proof::generic_constructor_field_matches_physical_field(
                     &write,
                     b"Hold",
                     &fields,
@@ -18185,3 +11324,8 @@ mod same_class_overload_proof_tests {
         );
     }
 }
+
+#[cfg(test)]
+use jarde_java::generic_source_proof::{
+    SameClassOverloadActual, prove_same_class_overload_argument_upcasts,
+};

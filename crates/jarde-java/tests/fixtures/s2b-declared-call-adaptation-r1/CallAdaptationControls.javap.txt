@@ -1,0 +1,159 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-declared-call-adaptation-r1/classes/flow/CallAdaptationControls.class
+  Last modified 2026-10-27; size 1372 bytes
+  MD5 checksum a6e7183a15a48b16992df8652026b3ef
+  Compiled from "CallAdaptationControls.java"
+public class flow.CallAdaptationControls
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #6.#39         // java/lang/Object."<init>":()V
+   #2 = InterfaceMethodref #40.#41        // java/util/List.add:(Ljava/lang/Object;)Z
+   #3 = InterfaceMethodref #40.#42        // java/util/List.get:(I)Ljava/lang/Object;
+   #4 = Class              #43            // identity/Foo
+   #5 = Class              #44            // flow/CallAdaptationControls
+   #6 = Class              #45            // java/lang/Object
+   #7 = Utf8               <init>
+   #8 = Utf8               ()V
+   #9 = Utf8               Code
+  #10 = Utf8               LineNumberTable
+  #11 = Utf8               LocalVariableTable
+  #12 = Utf8               this
+  #13 = Utf8               Lflow/CallAdaptationControls;
+  #14 = Utf8               typedAdd
+  #15 = Utf8               (Ljava/util/List;Lidentity/Foo;I)Lidentity/Foo;
+  #16 = Utf8               input
+  #17 = Utf8               Ljava/util/List;
+  #18 = Utf8               value
+  #19 = Utf8               Lidentity/Foo;
+  #20 = Utf8               index
+  #21 = Utf8               I
+  #22 = Utf8               local
+  #23 = Utf8               LocalVariableTypeTable
+  #24 = Utf8               Ljava/util/List<Lidentity/Foo;>;
+  #25 = Utf8               Signature
+  #26 = Utf8               (Ljava/util/List<Lidentity/Foo;>;Lidentity/Foo;I)Lidentity/Foo;
+  #27 = Utf8               genericForward
+  #28 = Utf8               (Ljava/util/List;Ljava/util/List;I)V
+  #29 = Utf8               source
+  #30 = Utf8               target
+  #31 = Utf8               (Ljava/util/List<Lidentity/Foo;>;Ljava/util/List<Lidentity/Foo;>;I)V
+  #32 = Utf8               rawWrite
+  #33 = Utf8               (Ljava/util/List;Ljava/lang/Object;)V
+  #34 = Utf8               Ljava/lang/Object;
+  #35 = Utf8               raw
+  #36 = Utf8               (Ljava/util/List<Lidentity/Foo;>;Ljava/lang/Object;)V
+  #37 = Utf8               SourceFile
+  #38 = Utf8               CallAdaptationControls.java
+  #39 = NameAndType        #7:#8          // "<init>":()V
+  #40 = Class              #46            // java/util/List
+  #41 = NameAndType        #47:#48        // add:(Ljava/lang/Object;)Z
+  #42 = NameAndType        #49:#50        // get:(I)Ljava/lang/Object;
+  #43 = Utf8               identity/Foo
+  #44 = Utf8               flow/CallAdaptationControls
+  #45 = Utf8               java/lang/Object
+  #46 = Utf8               java/util/List
+  #47 = Utf8               add
+  #48 = Utf8               (Ljava/lang/Object;)Z
+  #49 = Utf8               get
+  #50 = Utf8               (I)Ljava/lang/Object;
+{
+  public flow.CallAdaptationControls();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 6: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lflow/CallAdaptationControls;
+
+  public static identity.Foo typedAdd(java.util.List<identity.Foo>, identity.Foo, int);
+    descriptor: (Ljava/util/List;Lidentity/Foo;I)Lidentity/Foo;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=3
+         0: aload_0
+         1: astore_3
+         2: aload_3
+         3: aload_1
+         4: invokeinterface #2,  2            // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+         9: pop
+        10: aload_3
+        11: iload_2
+        12: invokeinterface #3,  2            // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        17: checkcast     #4                  // class identity/Foo
+        20: areturn
+      LineNumberTable:
+        line 8: 0
+        line 9: 2
+        line 10: 10
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      21     0 input   Ljava/util/List;
+            0      21     1 value   Lidentity/Foo;
+            0      21     2 index   I
+            2      19     3 local   Ljava/util/List;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      21     0 input   Ljava/util/List<Lidentity/Foo;>;
+            2      19     3 local   Ljava/util/List<Lidentity/Foo;>;
+    Signature: #26                          // (Ljava/util/List<Lidentity/Foo;>;Lidentity/Foo;I)Lidentity/Foo;
+
+  public static void genericForward(java.util.List<identity.Foo>, java.util.List<identity.Foo>, int);
+    descriptor: (Ljava/util/List;Ljava/util/List;I)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_1
+         1: aload_0
+         2: iload_2
+         3: invokeinterface #3,  2            // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+         8: invokeinterface #2,  2            // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+        13: pop
+        14: return
+      LineNumberTable:
+        line 14: 0
+        line 15: 14
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0 source   Ljava/util/List;
+            0      15     1 target   Ljava/util/List;
+            0      15     2 index   I
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0 source   Ljava/util/List<Lidentity/Foo;>;
+            0      15     1 target   Ljava/util/List<Lidentity/Foo;>;
+    Signature: #31                          // (Ljava/util/List<Lidentity/Foo;>;Ljava/util/List<Lidentity/Foo;>;I)V
+
+  public static void rawWrite(java.util.List<identity.Foo>, java.lang.Object);
+    descriptor: (Ljava/util/List;Ljava/lang/Object;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: aload_0
+         1: astore_2
+         2: aload_2
+         3: aload_1
+         4: invokeinterface #2,  2            // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+         9: pop
+        10: return
+      LineNumberTable:
+        line 19: 0
+        line 20: 2
+        line 21: 10
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      11     0 input   Ljava/util/List;
+            0      11     1 value   Ljava/lang/Object;
+            2       9     2   raw   Ljava/util/List;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      11     0 input   Ljava/util/List<Lidentity/Foo;>;
+    Signature: #36                          // (Ljava/util/List<Lidentity/Foo;>;Ljava/lang/Object;)V
+}
+SourceFile: "CallAdaptationControls.java"

@@ -144,6 +144,7 @@ fn source_with(jar: &[u8], class: &str, limits: Limits) -> ClassSourceReport {
         .open(ArtifactInput::bytes(jar.to_vec()), &mut budget)
         .expect("the family jar opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -295,6 +296,76 @@ const MV1_SOURCE: &str = r#"public class MV1 {
     public static void main(String[] args) { System.out.println(new MV1().run()); }
 }
 "#;
+
+#[test]
+fn s1_raw_access_bridge_field_keeps_the_source_spelling_at_projection() {
+    let jar = include_bytes!("fixtures/s1-raw-projections/bridge/input.jar");
+    let report = source_of(jar, "N1");
+    assert!(
+        report.text.contains("return this.tag + N1.this.𐐀base;"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("access$000"), "{}", report.text);
+    assert!(matches!(
+        report.member_family,
+        ClassSourceMemberFamily::PreparedFold {
+            projection: ClassSourceMemberProjection::Projected { .. },
+            ..
+        }
+    ));
+    assert!(
+        report
+            .methods
+            .iter()
+            .any(|method| method.item.identity.name.0 == b"access$000"),
+        "physical bridge remains in the method census"
+    );
+}
+
+#[test]
+fn s1_supplementary_capture_field_keeps_its_exact_write_origin() {
+    let jar = include_bytes!("fixtures/s1-synthetic-field-origin/supplementary.jar");
+    let report = source_of(jar, "N1");
+    let ClassSourceMemberFamily::PreparedFold {
+        members,
+        projection: ClassSourceMemberProjection::Projected { derived },
+    } = &report.member_family
+    else {
+        panic!(
+            "the raw capture name must not prevent the family fold:\n{}",
+            report.text
+        );
+    };
+    assert!(
+        report
+            .text
+            .contains("class Inner extends java.lang.Object {")
+    );
+    assert!(report.text.contains("return this.tag + N1.this.base;"));
+    assert!(!report.text.contains("this$𐐀"));
+    let write = derived
+        .iter()
+        .find(|entry| {
+            entry.kind == jarde::class_source::MemberFamilyDerivedKind::HiddenCaptureWrite
+        })
+        .expect("the hidden capture write retains its physical source");
+    assert!(write.anchors.iter().any(|anchor| matches!(
+        anchor,
+        jarde::class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, bci }
+            if *bci == 2 && method.name.0 == b"<init>" && method.descriptor.0 == b"(LN1;I)V"
+                && members.iter().any(|member|
+                    member.relation.simple_name == "Inner" && method.owner == member.relation.child)
+    )));
+    let physical = source_of(jar, "N1$Inner");
+    assert!(physical.text.contains("this.this$𐐀 = arg1;"));
+    assert!(
+        physical
+            .fields
+            .iter()
+            .any(|field| field.item.name.raw().0 == b"this$\xed\xa0\x81\xed\xb0\x80")
+    );
+}
 
 #[test]
 fn n1_folds_stat_and_inner_together_with_the_synthetics_elided() {
@@ -557,6 +628,7 @@ fn budget_and_cancellation_stop_the_mixed_fold_atomically() {
         .expect("the family jar opens");
     cancellation.cancel();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("MV2"),
         },

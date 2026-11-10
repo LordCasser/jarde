@@ -8,7 +8,7 @@ use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest, Quality};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-use jarde_reader::budget::{Budget, CountedBudgetDimension, Limits};
+use jarde_reader::budget::{Budget, Limits};
 use jarde_reader::model::{
     ClassBytesId, Digest, ExecutionReport, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
     PhysicalMethodId, PhysicalVariant,
@@ -240,7 +240,17 @@ fn analyze_target(
 // CLI default class-source requests SourceMap; library essential alone materializes no map.
 fn recover_default(analyzed: &Analyzed, budget: &mut Budget) -> RecoveryReport {
     recover(
-        &RecoveryRequest::new(analyzed.analysis.ir(), &analyzed.facts, JAVA_8).with_evidence(
+        &RecoveryRequest::new(
+            analyzed.analysis.ir(),
+            &analyzed.facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(
             RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
         ),
         budget,
@@ -249,8 +259,17 @@ fn recover_default(analyzed: &Analyzed, budget: &mut Budget) -> RecoveryReport {
 
 fn recover_all(analyzed: &Analyzed, budget: &mut Budget) -> RecoveryReport {
     recover(
-        &RecoveryRequest::new(analyzed.analysis.ir(), &analyzed.facts, JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            analyzed.analysis.ir(),
+            &analyzed.facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         budget,
     )
 }
@@ -376,7 +395,7 @@ fn assert_late_budget_does_not_publish(
         matches!(
             stopped.stop(),
             Some(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 ..
             })
         ),

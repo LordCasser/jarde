@@ -34,7 +34,7 @@ use std::collections::BTreeMap;
 
 use jarde_jvm::method_ir::parameter_positions;
 use jarde_reader::classfile::{DescriptorKind, descriptor_facts};
-use jarde_reader::model::PhysicalMethodId;
+use jarde_reader::model::{JvmBytes, JvmString, PhysicalMethodId};
 use serde::Serialize;
 
 use crate::ast::Type;
@@ -78,8 +78,10 @@ pub const ACC_ABSTRACT: u16 = 0x0400;
 /// member the compiler declared as one ([`ACC_BRIDGE`]), so a run that states no flags has no
 /// bridge to present and says so by having no verdict to record, rather than by guessing from the
 /// body's shape.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct MethodFacts {
+    raw_name: JvmBytes,
+    raw_descriptor: JvmBytes,
     name: String,
     descriptor: String,
     parameters: u16,
@@ -88,11 +90,22 @@ pub struct MethodFacts {
 }
 
 impl MethodFacts {
-    /// One method's identity: its name, its descriptor and its number of parameter slots.
+    /// One method stated as Unicode text, encoded canonically as class-file MUTF-8.
     pub fn new(name: impl Into<String>, descriptor: impl Into<String>, parameters: u16) -> Self {
+        Self::from_raw(
+            JvmBytes::from_unicode(&name.into()),
+            JvmBytes::from_unicode(&descriptor.into()),
+            parameters,
+        )
+    }
+
+    /// Preserve the class file's name and descriptor without a text round trip.
+    pub fn from_raw(name: JvmBytes, descriptor: JvmBytes, parameters: u16) -> Self {
         Self {
-            name: name.into(),
-            descriptor: descriptor.into(),
+            name: display_jvm_bytes(&name),
+            descriptor: display_jvm_bytes(&descriptor),
+            raw_name: name,
+            raw_descriptor: descriptor,
             parameters,
             access_flags: None,
             declaring_class: None,
@@ -140,7 +153,7 @@ impl MethodFacts {
     /// an object type or an array of either — keeps the descriptor's exact Java type, which is also
     /// the fact a call argument uses to preserve overload selection.
     pub fn parameter_types(&self) -> BTreeMap<u16, Type> {
-        let Ok(facts) = descriptor_facts(self.descriptor.as_bytes(), DescriptorKind::Method) else {
+        let Ok(facts) = descriptor_facts(&self.raw_descriptor.0, DescriptorKind::Method) else {
             return BTreeMap::new();
         };
         let is_static = match self.access_flags {
@@ -171,6 +184,11 @@ impl MethodFacts {
             types.insert(slot, ty);
         }
         types
+    }
+
+    /// The raw descriptor's source result type, when spellable; `V` has no result type.
+    pub fn return_type(&self) -> Option<Type> {
+        crate::lambda::parse_method_bytes(&self.raw_descriptor.0)?.1
     }
 
     /// The class the member is declared in, when the caller stated it.
@@ -209,12 +227,22 @@ impl MethodFacts {
         matches!(self.access_flags, Some(flags) if flags & ACC_STATIC == 0)
     }
 
-    /// The method's own name as the class file spells it.
+    /// The exact class-file name. Use this for identity and member selection.
+    pub fn raw_name(&self) -> &JvmBytes {
+        &self.raw_name
+    }
+
+    /// The exact descriptor, including MUTF-8 object names.
+    pub fn raw_descriptor(&self) -> &JvmBytes {
+        &self.raw_descriptor
+    }
+
+    /// The name's text view; a non-scalar or damaged value is diagnostic text, not identity.
     pub fn name(&self) -> &str {
         &self.name
     }
 
-    /// The method's descriptor as the class file spells it.
+    /// The descriptor's text view. Parse [`Self::raw_descriptor`] for type facts.
     pub fn descriptor(&self) -> &str {
         &self.descriptor
     }
@@ -533,6 +561,9 @@ pub fn is_discarded_null_check(
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CallTarget {
     kind: InvokeKind,
+    raw_owner: JvmBytes,
+    raw_name: JvmBytes,
+    raw_descriptor: JvmBytes,
     owner: String,
     name: String,
     descriptor: String,
@@ -549,13 +580,43 @@ impl CallTarget {
         descriptor: impl Into<String>,
         interface_reference: bool,
     ) -> Self {
+        Self::from_raw(
+            kind,
+            JvmBytes::from_unicode(&owner.into()),
+            JvmBytes::from_unicode(&name.into()),
+            JvmBytes::from_unicode(&descriptor.into()),
+            interface_reference,
+        )
+    }
+
+    /// A symbolic reference from the constant pool, without a text round trip.
+    pub fn from_raw(
+        kind: InvokeKind,
+        owner: JvmBytes,
+        name: JvmBytes,
+        descriptor: JvmBytes,
+        interface_reference: bool,
+    ) -> Self {
         Self {
             kind,
-            owner: owner.into(),
-            name: name.into(),
-            descriptor: descriptor.into(),
+            owner: display_jvm_bytes(&owner),
+            name: display_jvm_bytes(&name),
+            descriptor: display_jvm_bytes(&descriptor),
+            raw_owner: owner,
+            raw_name: name,
+            raw_descriptor: descriptor,
             interface_reference,
         }
+    }
+
+    pub fn raw_owner(&self) -> &JvmBytes {
+        &self.raw_owner
+    }
+    pub fn raw_name(&self) -> &JvmBytes {
+        &self.raw_name
+    }
+    pub fn raw_descriptor(&self) -> &JvmBytes {
+        &self.raw_descriptor
     }
 
     /// How the invocation reaches the target.
@@ -563,17 +624,17 @@ impl CallTarget {
         self.kind
     }
 
-    /// The owner in internal form, exactly as the class file states it.
+    /// The owner's decoded or escaped diagnostic view; exact identity uses `raw_owner`.
     pub fn owner(&self) -> &str {
         &self.owner
     }
 
-    /// The member name.
+    /// The member's decoded or escaped diagnostic name; exact identity uses `raw_name`.
     pub fn name(&self) -> &str {
         &self.name
     }
 
-    /// The member descriptor.
+    /// The descriptor's decoded or escaped diagnostic view; parsing uses `raw_descriptor`.
     pub fn descriptor(&self) -> &str {
         &self.descriptor
     }
@@ -597,47 +658,61 @@ impl CallTarget {
 pub struct DynamicSite {
     cp: u16,
     bootstrap_index: u16,
-    name: String,
-    descriptor: String,
+    raw_name: JvmBytes,
+    raw_descriptor: JvmBytes,
 }
 
 impl DynamicSite {
-    /// One dynamic site from the pool entry that states it.
+    /// A site supplied as Unicode; encode once using the class-file name encoding.
     pub fn new(
         cp: u16,
         bootstrap_index: u16,
         name: impl Into<String>,
         descriptor: impl Into<String>,
     ) -> Self {
+        Self::from_raw(
+            cp,
+            bootstrap_index,
+            JvmBytes::from_unicode(&name.into()),
+            JvmBytes::from_unicode(&descriptor.into()),
+        )
+    }
+
+    /// The site's physical name and descriptor, without a diagnostic text round trip.
+    pub fn from_raw(cp: u16, bootstrap_index: u16, name: JvmBytes, descriptor: JvmBytes) -> Self {
         Self {
             cp,
             bootstrap_index,
-            name: name.into(),
-            descriptor: descriptor.into(),
+            raw_name: name,
+            raw_descriptor: descriptor,
         }
     }
 
-    /// The constant-pool index of the site's own `InvokeDynamic` entry — the use site's own
-    /// reference, which a report reads back rather than re-deriving from the BCI.
+    pub fn raw_name(&self) -> &JvmBytes {
+        &self.raw_name
+    }
+    pub fn raw_descriptor(&self) -> &JvmBytes {
+        &self.raw_descriptor
+    }
+
+    /// The constant-pool index of the site's own InvokeDynamic entry.
     pub fn cp(&self) -> u16 {
         self.cp
     }
 
-    /// The `BootstrapMethods` entry this site names, or `None`-like when the class states a table
-    /// that does not reach it (the caller checks the table; this is the index alone).
+    /// The BootstrapMethods entry this site names; the consumer checks the table.
     pub fn bootstrap_index(&self) -> u16 {
         self.bootstrap_index
     }
 
-    /// The name the site presents; for a lambda site, the SAM method's name.
-    pub fn name(&self) -> &str {
-        &self.name
+    /// Decoded or escaped diagnostic name; exact comparisons use raw_name.
+    pub fn name(&self) -> String {
+        display_jvm_bytes(&self.raw_name)
     }
 
-    /// The descriptor the site presents; for a lambda site, the captured variables' types and the
-    /// functional interface the site instantiates.
-    pub fn descriptor(&self) -> &str {
-        &self.descriptor
+    /// Decoded or escaped diagnostic descriptor; parsing uses raw_descriptor.
+    pub fn descriptor(&self) -> String {
+        display_jvm_bytes(&self.raw_descriptor)
     }
 }
 
@@ -706,7 +781,7 @@ pub enum Operation {
     /// The name is the internal form the class's own pool states (`java/lang/StringBuilder`), and
     /// it is the only thing this instruction says: an allocation is not yet an instance, and until
     /// a constructor has run on it the presentation must not write anything for it.
-    Allocate { ty: String },
+    Allocate { ty: JvmBytes },
     /// Duplicates the value on top of the stack (`dup`).
     ///
     /// It is not a value of its own and not an effect on the program's state: it is the shape a
@@ -726,9 +801,9 @@ pub enum Operation {
         /// Whether the instruction names a field of the class itself rather than of an instance.
         is_static: bool,
         /// The owner in internal form, exactly as the class file states it.
-        owner: String,
-        name: String,
-        descriptor: String,
+        owner: JvmBytes,
+        name: JvmBytes,
+        descriptor: JvmBytes,
     },
     /// Checks that the value it reads is assignable to the class it names (`checkcast`).
     ///
@@ -736,9 +811,9 @@ pub enum Operation {
     /// type already proves the check can neither fail nor change the value. That proof is the
     /// `bridge@1` rule's, and a cast no rule has claimed is [`Self::Other`]'s business — quoted,
     /// never silently dropped.
-    CheckCast { ty: String },
-    /// Tests one reference against the named CP class, producing a JVM int-shaped boolean.
-    InstanceOf { ty: String },
+    CheckCast { ty: JvmBytes },
+    /// Tests one reference against the raw CP class, producing a JVM int-shaped boolean.
+    InstanceOf { ty: JvmBytes },
     /// A dynamic call site: it reads the captured values the site's descriptor names and produces
     /// the instance the descriptor returns.
     ///
@@ -861,15 +936,11 @@ pub enum FieldAccess {
 /// The class that declares the presented member: its own name and access flags, as the header read
 /// of that class states them.
 ///
-/// One recovery run presents **one body**, and its payload holds that body's graph, frames, names,
-/// decode and pool. Of what the class file says about the **class** it carries exactly two facts —
-/// the class's raw internal name (`this_class`) and its access flags — inside the member declaration
-/// of the same header read that decoded the body (the declaring-class handoff). Everything else a
-/// class states about itself is still not in the payload: not its superclass, not its `InnerClasses`
-/// attribute, nor any other class-level attribute. The caller may also be the one that read the
-/// member out of a header and states the two facts itself; the entry point fills them from the run's
-/// own declaration instead. Either way they are handed over as **declaration** facts, never as a
-/// verdict about what the class means.
+/// The member's same-read declaration supplies its raw class name, access flags and the complete
+/// ordered `InnerClasses` rows. The JVM declaration and retained source consumers share the
+/// immutable row payload; spelling borrows a view of it. These are physical declaration facts,
+/// not a runtime binding or proof that an external type is available. A low-level caller can
+/// supply the same facts; the Engine entry validates them against the selected read.
 ///
 /// What the rules that read it do with them:
 ///
@@ -882,36 +953,57 @@ pub enum FieldAccess {
 /// * `field@1` compares it the same way for a write the body makes on that uninitialized `this`
 ///   before the call, which JVMS 4.10.1.9 lets reach only a `Fieldref` that names the class being
 ///   constructed.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct DeclaringClass {
+    raw_name: JvmBytes,
     name: String,
     access_flags: u16,
-    /// The member classes this class's own `InnerClasses` attribute states, in the source spelling
-    /// (`V1$Op`, `p.A$B$C`). The row set is what separates a nested binary name from a top-level
-    /// name that merely carries `$`, and the presentation layer's nested source spelling reads
-    /// exactly this fact; a class that states no attribute states no members.
-    inner_class_members: Vec<String>,
+    #[serde(serialize_with = "serialize_inner_classes")]
+    inner_classes: std::sync::Arc<[jarde_reader::classfile::ResolvedInnerClass]>,
 }
 
 impl DeclaringClass {
     /// One class's declaration: its name in the class file's own internal form (`p/Outer`) and its
     /// access flags, exactly as the header states them.
     pub fn new(name: impl Into<String>, access_flags: u16) -> Self {
+        Self::from_raw(JvmBytes::from_unicode(&name.into()), access_flags)
+    }
+
+    /// The declaring name as the class file supplied it, without a text round trip.
+    pub fn from_raw(name: JvmBytes, access_flags: u16) -> Self {
         Self {
-            name: name.into(),
+            name: display_jvm_bytes(&name),
+            raw_name: name,
             access_flags,
-            inner_class_members: Vec::new(),
+            inner_classes: std::sync::Arc::from([]),
         }
     }
 
-    /// The member classes the class's own `InnerClasses` attribute states, by their internal
-    /// names, spelled the source way (`/` becomes `.`).
-    pub fn with_inner_class_members(mut self, members: impl IntoIterator<Item = String>) -> Self {
-        self.inner_class_members = members.into_iter().collect();
+    /// The same-read raw row set, shared with the JVM declaration and every source consumer.
+    pub fn with_inner_classes(
+        mut self,
+        rows: std::sync::Arc<[jarde_reader::classfile::ResolvedInnerClass]>,
+    ) -> Self {
+        self.inner_classes = rows;
         self
     }
 
-    /// The class's name in internal form, as `this_class` spells it.
+    pub fn inner_classes(&self) -> &std::sync::Arc<[jarde_reader::classfile::ResolvedInnerClass]> {
+        &self.inner_classes
+    }
+
+    pub(crate) fn source_names(&self) -> crate::names::SourceClassNames<'_> {
+        crate::names::SourceClassNames {
+            current_class: Some(&self.raw_name.0),
+            inner_classes: &self.inner_classes,
+        }
+    }
+
+    pub fn raw_name(&self) -> &JvmBytes {
+        &self.raw_name
+    }
+
+    /// The internal name's text view, for presentation; not a class identity.
     pub fn name(&self) -> &str {
         &self.name
     }
@@ -921,16 +1013,28 @@ impl DeclaringClass {
         self.access_flags
     }
 
-    /// The member classes the class's own `InnerClasses` attribute states, in the source spelling.
-    pub fn inner_class_members(&self) -> &[String] {
-        &self.inner_class_members
-    }
-
     /// Whether the class declares itself an interface (or an annotation type, which JVMS 4.1 makes
     /// one kind of interface).
     pub fn is_interface(&self) -> bool {
         self.access_flags & (ACC_INTERFACE | ACC_ANNOTATION) != 0
     }
+}
+
+fn serialize_inner_classes<S: serde::Serializer>(
+    rows: &std::sync::Arc<[jarde_reader::classfile::ResolvedInnerClass]>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    serde::Serialize::serialize(rows.as_ref(), serializer)
+}
+
+/// Derived diagnostic text, never an identity or a validated Java source spelling.
+pub fn display_jvm_bytes(raw: &JvmBytes) -> String {
+    raw.to_unicode().unwrap_or_else(|| {
+        JvmString::from_mutf8(raw.0.clone()).map_or_else(
+            || format!("<invalid MUTF-8: {:02X?}>", raw.0),
+            |name| name.escaped(),
+        )
+    })
 }
 
 /// One reference type name as a frame or a pool states it, in the class file's internal form
@@ -975,6 +1079,7 @@ pub fn internal_form(name: &str) -> &str {
 /// member", and the rule states the difference.
 #[derive(Clone, Debug)]
 pub struct MemberBody {
+    raw_owner: JvmBytes,
     owner: String,
     identity: PhysicalMethodId,
     access_flags: u16,
@@ -989,11 +1094,27 @@ impl MemberBody {
         access_flags: u16,
         code: jarde_reader::classfile::MethodCodeFacts,
     ) -> Self {
-        Self {
-            owner: owner.into(),
+        Self::from_raw(
+            JvmBytes::from_unicode(&owner.into()),
             identity,
             access_flags,
-            code: Some(code),
+            Some(code),
+        )
+    }
+
+    /// One member from the same class read. The physical identity already retains its raw signature.
+    pub fn from_raw(
+        owner: JvmBytes,
+        identity: PhysicalMethodId,
+        access_flags: u16,
+        code: Option<jarde_reader::classfile::MethodCodeFacts>,
+    ) -> Self {
+        Self {
+            owner: display_jvm_bytes(&owner),
+            raw_owner: owner,
+            identity,
+            access_flags,
+            code,
         }
     }
 
@@ -1004,12 +1125,22 @@ impl MemberBody {
         identity: PhysicalMethodId,
         access_flags: u16,
     ) -> Self {
-        Self {
-            owner: owner.into(),
+        Self::from_raw(
+            JvmBytes::from_unicode(&owner.into()),
             identity,
             access_flags,
-            code: None,
-        }
+            None,
+        )
+    }
+
+    pub fn raw_owner(&self) -> &JvmBytes {
+        &self.raw_owner
+    }
+    pub fn raw_name(&self) -> &JvmBytes {
+        &self.identity.name
+    }
+    pub fn raw_descriptor(&self) -> &JvmBytes {
+        &self.identity.descriptor
     }
 
     /// The class the member is declared in, in internal form.
@@ -1025,12 +1156,12 @@ impl MemberBody {
 
     /// The member's name, in the spelling the class file's bytes decode to.
     pub fn name(&self) -> String {
-        String::from_utf8_lossy(&self.identity.name.0).into_owned()
+        display_jvm_bytes(&self.identity.name)
     }
 
     /// The member's descriptor, in the spelling the class file's bytes decode to.
     pub fn descriptor(&self) -> String {
-        String::from_utf8_lossy(&self.identity.descriptor.0).into_owned()
+        display_jvm_bytes(&self.identity.descriptor)
     }
 
     /// The member's access flags, as the class declared them.
@@ -1060,6 +1191,7 @@ impl MemberBody {
 /// against.
 #[derive(Clone, Debug)]
 pub struct ClassMembers {
+    raw_owner: JvmBytes,
     owner: String,
     members: Vec<MemberBody>,
 }
@@ -1067,10 +1199,19 @@ pub struct ClassMembers {
 impl ClassMembers {
     /// The declared members of one class.
     pub fn new(owner: impl Into<String>, members: Vec<MemberBody>) -> Self {
+        Self::from_raw(JvmBytes::from_unicode(&owner.into()), members)
+    }
+
+    pub fn from_raw(owner: JvmBytes, members: Vec<MemberBody>) -> Self {
         Self {
-            owner: owner.into(),
+            owner: display_jvm_bytes(&owner),
+            raw_owner: owner,
             members,
         }
+    }
+
+    pub fn raw_owner(&self) -> &JvmBytes {
+        &self.raw_owner
     }
 
     /// The class these members are declared in, in internal form.
@@ -1092,7 +1233,7 @@ impl ClassMembers {
 /// [`jarde_jvm::method_ir::MethodIr`] with the tables of that run. A caller can state a method's
 /// name and its debug names because the payload does not hold them; it cannot state what an
 /// instruction does, because the run that decoded the instruction already said so.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct RecoveryFacts {
     method: MethodFacts,
     debug_locals: Vec<DebugLocal>,
@@ -1136,6 +1277,124 @@ mod tests {
     use super::*;
 
     #[test]
+    fn raw_call_identity_cannot_be_reconstructed_from_diagnostic_text() {
+        let call = CallTarget::from_raw(
+            InvokeKind::Static,
+            JvmBytes::from_unicode("p/𐐀"),
+            JvmBytes([b"access$".as_slice(), &[0xed, 0xa0, 0x81]].concat()),
+            JvmBytes::from_unicode("(Lp/𐐀;)I"),
+            false,
+        );
+        let alias = CallTarget::new(
+            call.kind(),
+            call.owner(),
+            call.name(),
+            call.descriptor(),
+            false,
+        );
+        assert_eq!(call.name(), alias.name());
+        assert_ne!(call.raw_name(), alias.raw_name());
+        assert_ne!(call, alias);
+        assert_eq!(call.raw_owner(), &JvmBytes::from_unicode("p/𐐀"));
+        assert_eq!(
+            serde_json::to_value(&call).unwrap()["raw_name"],
+            serde_json::to_value(call.raw_name()).unwrap()
+        );
+    }
+
+    #[test]
+    fn raw_declaration_names_do_not_alias_their_text_views() {
+        let names = [
+            JvmBytes(vec![0xed, 0xa0, 0x81]),
+            JvmBytes(vec![0xed, 0xa0, 0x82]),
+            JvmBytes::from_unicode("\u{fffd}"),
+            JvmBytes::from_unicode("\\uD801"),
+            JvmBytes::from_unicode("p/𐐀"),
+            JvmBytes(vec![0xf0, 0x90, 0x90, 0x80]),
+        ];
+        for (index, raw) in names.iter().enumerate() {
+            let method = MethodFacts::from_raw(raw.clone(), JvmBytes(b"()I".to_vec()), 0);
+            let class = DeclaringClass::from_raw(raw.clone(), 0x20).with_inner_classes(
+                names
+                    .iter()
+                    .map(|name| jarde_reader::classfile::ResolvedInnerClass {
+                        class: name.0.clone(),
+                        outer_class: None,
+                        inner_name: None,
+                        access_flags: 0,
+                    })
+                    .collect::<Vec<_>>()
+                    .into(),
+            );
+            assert_eq!(method.raw_name(), raw);
+            assert_eq!(class.raw_name(), raw);
+            assert_eq!(
+                class
+                    .inner_classes()
+                    .iter()
+                    .map(|row| JvmBytes(row.class.clone()))
+                    .collect::<Vec<_>>(),
+                names
+            );
+            let serialized = serde_json::to_value(&method).unwrap();
+            assert_eq!(serialized["raw_name"], serde_json::to_value(raw).unwrap());
+            for other in &names[..index] {
+                assert_ne!(method.raw_name(), other);
+                assert_ne!(
+                    serialized,
+                    serde_json::to_value(MethodFacts::from_raw(
+                        other.clone(),
+                        JvmBytes(b"()I".to_vec()),
+                        0,
+                    ))
+                    .unwrap()
+                );
+            }
+        }
+        assert_eq!(
+            MethodFacts::new("𐐀", "()I", 0).raw_name(),
+            &JvmBytes(vec![0xed, 0xa0, 0x81, 0xed, 0xb0, 0x80])
+        );
+        let row = jarde_reader::classfile::ResolvedInnerClass {
+            class: JvmBytes::from_unicode("p/𐐀$Child").0,
+            outer_class: Some(JvmBytes::from_unicode("p/𐐀").0),
+            inner_name: Some(JvmBytes::from_unicode("Child")),
+            access_flags: 9,
+        };
+        let rows: std::sync::Arc<[_]> = vec![row.clone()].into();
+        let class = DeclaringClass::new("p/𐐀", 0x20).with_inner_classes(rows.clone());
+        assert_eq!(class.name(), "p/𐐀");
+        assert!(std::sync::Arc::ptr_eq(class.inner_classes(), &rows));
+        assert_eq!(class.inner_classes().as_ref(), &[row]);
+        assert_eq!(
+            serde_json::to_value(&class).unwrap()["inner_classes"][0]["inner_name"],
+            serde_json::to_value(JvmBytes::from_unicode("Child")).unwrap()
+        );
+    }
+
+    #[test]
+    fn method_types_read_raw_mutf8_descriptors_and_refuse_non_scalar_names() {
+        let descriptor = JvmBytes::from_unicode("(Lp/𐐀;[Lp/𐐀;)Lp/𐐀;");
+        let method = MethodFacts::from_raw(JvmBytes(b"f".to_vec()), descriptor.clone(), 2)
+            .with_access_flags(ACC_STATIC);
+        assert_eq!(method.raw_descriptor(), &descriptor);
+        assert_eq!(
+            method.parameter_types(),
+            BTreeMap::from([
+                (0, Type::Reference("p.𐐀".into())),
+                (1, Type::Reference("p.𐐀[]".into())),
+            ])
+        );
+        assert_eq!(method.return_type(), Some(Type::Reference("p.𐐀".into())));
+        for raw in [vec![0xed, 0xa0, 0x81], vec![0xf0, 0x90, 0x90, 0x80]] {
+            let descriptor = [b"(L".as_slice(), &raw, b";)L", &raw, b";"].concat();
+            let method = MethodFacts::from_raw(JvmBytes(b"f".to_vec()), JvmBytes(descriptor), 1);
+            assert!(method.parameter_types().is_empty());
+            assert!(method.return_type().is_none());
+        }
+    }
+
+    #[test]
     fn the_caller_states_identity_and_debug_names_and_nothing_about_the_body() {
         // The seam this test states: a caller can build these facts, and there is no way to state
         // an operation in them — no method to call, no field to set. Polarity, slot numbers and
@@ -1149,7 +1408,10 @@ mod tests {
         assert_eq!(facts.method().descriptor(), "(II)I");
         assert_eq!(facts.method().parameters(), 3);
         assert_eq!(facts.debug_locals().len(), 2);
-        assert_eq!(facts.debug_locals()[1].name(), "left");
+        assert_eq!(
+            facts.debug_locals()[1].name(),
+            &JvmBytes::from_unicode("left")
+        );
         assert_eq!(facts.debug_locals()[1].range(), Some((0, 4)));
         assert_eq!(
             RecoveryFacts::new(MethodFacts::new("run", "()V", 1))

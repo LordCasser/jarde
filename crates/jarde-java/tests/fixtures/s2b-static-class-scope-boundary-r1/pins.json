@@ -1,0 +1,60 @@
+{
+  "compiler": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+  "compiler_version": "javac 1.8.0_432",
+  "source_options": [
+    "-g",
+    "-source",
+    "8",
+    "-target",
+    "8"
+  ],
+  "mutation": {
+    "method": "pass(Ljava/lang/Object;)Ljava/lang/Object;",
+    "added_constant_pool_entry": {
+      "index": 25,
+      "tag": "CONSTANT_Utf8",
+      "bytes": "(TT;)TT;"
+    },
+    "added_method_attribute": {
+      "name": "Signature",
+      "length": 2,
+      "signature_index": 25
+    },
+    "Code_attribute_bytes_identical": true,
+    "descriptor_identical": true,
+    "shadow_method_unchanged": true,
+    "variant_status": "caller-supplied Signature mutation; not a javac-legal source declaration"
+  },
+  "files": {
+    "source": {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-class-scope-boundary-r1/GenericScopeBoundary.java",
+      "bytes": 284,
+      "sha256": "e458e99b85a04cb06e2234261eae2897ecc9c00fff3d859f0bc6e2148ad714ad"
+    },
+    "original": {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-class-scope-boundary-r1/classes/scope/GenericScopeBoundary.class",
+      "bytes": 597,
+      "sha256": "d6e49a4e16e02e953a7da93c2e9d940c1e28e9b64c9d36c4e7d1e7c138085088"
+    },
+    "mutant": {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-class-scope-boundary-r1/classes/scope/GenericScopeBoundary-invalid-static-signature.class",
+      "bytes": 616,
+      "sha256": "7bd00e8808f6a0d355c1691f4b79d6d6ad7be1ae956bc67793a75cf58e04d939"
+    },
+    "shadow_class": {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-class-scope-boundary-r1/classes/scope/GenericScopeShadow.class",
+      "bytes": 666,
+      "sha256": "1668afeb4a0e8ba17d15f07e12449ec5ccb1c444db914a63d82487073cbcae85"
+    },
+    "original_javap": {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-class-scope-boundary-r1/original.javap.txt",
+      "bytes": 2851,
+      "sha256": "b84d4043e4fd239bf60eef332a6c1a50e3a2bfb7323c84d05d3a085586e2691d"
+    },
+    "mutant_javap": {
+      "path": "crates/jarde-java/tests/fixtures/s2b-static-class-scope-boundary-r1/mutant.javap.txt",
+      "bytes": 2938,
+      "sha256": "b07f298d27d769cfdcc8c72c7ad115c0f924c3ee97a5ef26e25c8292e13d27cf"
+    }
+  }
+}

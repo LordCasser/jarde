@@ -67,6 +67,7 @@ fn class_source_of(snapshot: &ArtifactSnapshot, class: &str) -> ClassSourceRepor
     let engine = Engine::new();
     let mut budget = task_budget(&[]).expect("task defaults provide a bounded budget");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },

@@ -1,0 +1,53 @@
+{
+  "schema": "s2b-return-consumption-fixture-r1",
+  "javac": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+  "javac_args": [
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-g",
+    "-classpath",
+    "crates/jarde-java/tests/fixtures/s2b-declared-local-consumer-r5/classes:crates/jarde-java/tests/fixtures/s2b-bound-type-identities-r1/identity-a/classes"
+  ],
+  "javap_args": [
+    "-p",
+    "-s",
+    "-v",
+    "-c",
+    "flow.ReturnConsumptionControls"
+  ],
+  "runtime_execution": false,
+  "files": [
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-return-consumption-r1/src/flow/ReturnConsumptionControls.java",
+      "size": 548,
+      "sha256": "4a2e2814a4fe9a55885914ab9c927f35b3551e655daac002bf2c32c668a1c685"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-return-consumption-r1/classes/flow/ReturnConsumptionControls.class",
+      "size": 1329,
+      "sha256": "19592179bc67d4924754ca704c34e6aa2d8570e0188c73bfa35834f78b54af5e"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-return-consumption-r1/javac.log",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-return-consumption-r1/ReturnConsumptionControls.javap.txt",
+      "size": 6139,
+      "sha256": "6512449f02888419622967dc5c0688ece81a4ce15b6d779bce2a5c4bc61de4dd"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-declared-local-consumer-r5/classes/flow/Base.class",
+      "size": 565,
+      "sha256": "1c1e893fbc92e1b941cd1396ce359c94049b8656d4bdf6ed086761b62b0d3e88"
+    },
+    {
+      "path": "crates/jarde-java/tests/fixtures/s2b-bound-type-identities-r1/identity-a/classes/identity/Foo.class",
+      "size": 349,
+      "sha256": "96d648ea785ae03101917c65039409cf125ad6228f6e1ddf8e873ee231111bec"
+    }
+  ]
+}

@@ -69,6 +69,7 @@ fn opened(bytes: &[u8], internal_name: &str) -> (ArtifactSnapshot, ClassSourceRe
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
         .expect("the frozen complete class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(internal_name),
         },
@@ -367,6 +368,7 @@ fn measured_public_single_method_late_stop_does_not_publish_partial_target_artif
         let complete = Engine::new()
             .recover_method_with_evidence(
                 slice::from_ref(&snapshot),
+                jarde::SourceTarget::JAVA_8,
                 &method_request,
                 &RecoveryEvidenceRequest::all(),
                 &mut complete_budget,
@@ -397,6 +399,7 @@ fn measured_public_single_method_late_stop_does_not_publish_partial_target_artif
         let stopped = Engine::new()
             .recover_method_with_evidence(
                 slice::from_ref(&snapshot),
+                jarde::SourceTarget::JAVA_8,
                 &method_request,
                 &RecoveryEvidenceRequest::all(),
                 &mut stopped_budget,

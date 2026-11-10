@@ -221,6 +221,7 @@ fn present_class(bytes: &[u8], name: &str, headers: u64) -> ClassSourceReport {
         )
         .expect("original DT-29 opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -265,7 +266,10 @@ fn physical_set_with_descriptor<'a>(
 
 #[test]
 fn dt29_wide_preserves_parent_owner_casts_and_physical_accessor_call() {
-    let report = present(4096);
+    assert_parent_owner_casts_and_physical_accessor_call(&present(4096));
+}
+
+fn assert_parent_owner_casts_and_physical_accessor_call(report: &ClassSourceReport) {
     assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
     assert_eq!(report.methods.len(), 2);
     let member = physical_set(&report).expect("set(ZZ)V is the actual physical method");
@@ -416,8 +420,27 @@ fn dt29_header_cap1_stops_at_the_first_direct_parent_dependency() {
 }
 
 #[test]
-fn dt29_header_cap2_preserves_the_direct_parent_field_header_stop() {
-    assert_header_stop(2);
+fn dt29_header_cap2_shares_parent_facts_across_accessor_and_field_proofs() {
+    let wide = present(4096);
+    let report = present(2);
+    assert_parent_owner_casts_and_physical_accessor_call(&report);
+    assert_eq!(report.usage.class_headers, 2);
+    assert_eq!(report.text, wide.text, "复用事实不能通过丢恢复工作满足预算");
+    assert_eq!(report.usage.method_bodies, wide.usage.method_bodies);
+    let ClassSourceOutcome::Recovered { report: body, .. } =
+        &physical_set(&report).unwrap().outcome
+    else {
+        unreachable!()
+    };
+    let ClassSourceOutcome::Recovered {
+        report: wide_body, ..
+    } = &physical_set(&wide).unwrap().outcome
+    else {
+        unreachable!()
+    };
+    assert_eq!(body.source_map.segments(), wide_body.source_map.segments());
+    // fresh 字段需求的停止由 root 的 field-only 输入测试继续验证；cap1 和外部 receiver
+    // 的公开停止测试也保留。该 cap2 曾依赖的第二次父 Header 读取已经被事实复用消除。
 }
 
 #[test]

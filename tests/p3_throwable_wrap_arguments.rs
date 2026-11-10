@@ -103,6 +103,7 @@ fn opened(bytes: &[u8], class: &str) -> (artifact::ArtifactSnapshot, ClassSource
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -369,8 +370,8 @@ fn table_out_presentations_keep_the_refusal_and_the_original_runtime() {
     assert_eq!(
         text.matches("no safe reference conversion evidence")
             .count(),
-        6,
-        "the six table-out calls stay refused:\n{text}"
+        5,
+        "the five calls without selected or registered hierarchy evidence stay refused:\n{text}"
     );
 
     // N1: the user exception classes are real Throwables but no java.lang rows.
@@ -403,10 +404,17 @@ fn table_out_presentations_keep_the_refusal_and_the_original_runtime() {
         ),
         "{cause_only_user}"
     );
-    // N4: arrays stay invariant on their component; the presented array arrives as a parameter.
-    let array_wrap = &member(&report, "arrayWrap").text;
+    // The shared hierarchy proof lifts the actual platform relation through reference arrays.
+    // The original array value is kept, and the descriptor cast fixes this call's parameter type.
+    let array_report = member(&report, "arrayWrap");
+    let ClassSourceOutcome::Recovered { report: body, .. } = &array_report.outcome else {
+        panic!("the proved reference-array conversion must recover");
+    };
+    assert_eq!(body.quality, jarde_jvm::ir::Quality::Structured);
+    let array_wrap = &array_report.text;
     assert!(
-        array_wrap.contains("presents `java.lang.IllegalStateException[]` but the invocation requires `java.lang.Throwable[]`"),
+        array_wrap.contains("allMessages((java.lang.Throwable[]) arg0)")
+            && !array_wrap.contains("@bytecode"),
         "{array_wrap}"
     );
     let user_array_wrap = &member(&report, "userArrayWrap").text;

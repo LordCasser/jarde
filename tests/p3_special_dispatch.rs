@@ -66,9 +66,14 @@ fn open_jar_without_dependencies() -> ArtifactSnapshot {
 }
 
 fn class_source_of(snapshot: &ArtifactSnapshot) -> ClassSourceReport {
+    class_source_named(snapshot, "SpecialProbe")
+}
+
+fn class_source_named(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
-            class: ClassNameQuery::internal("SpecialProbe"),
+            class: ClassNameQuery::internal(name),
         },
         environment: EnvironmentRequest {
             snapshot: snapshot.id().clone(),
@@ -240,6 +245,7 @@ fn method_only_uses_the_same_proof_and_ordinary_special_calls_read_no_dependenci
     let interface = match Engine::new()
         .recover_target(
             std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request(identity(b"defaultCall")),
             &mut interface_budget,
         )
@@ -265,6 +271,7 @@ fn method_only_uses_the_same_proof_and_ordinary_special_calls_read_no_dependenci
     let ordinary = match Engine::new()
         .recover_target(
             std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request(identity(b"callOwnPrivate")),
             &mut ordinary_budget,
         )
@@ -377,4 +384,69 @@ superThrowingArgument=java.lang.IllegalArgumentException
 superThrowingParent=java.lang.IllegalStateException
 "#
     );
+}
+
+#[test]
+fn interface_super_raw_targets_keep_supplementary_names_and_descriptors() {
+    for (bytes, needle, call_bci) in [
+        (
+            include_bytes!("fixtures/s1-raw-interface-super/owner.jar").as_slice(),
+            "p.𐐀I.super.value",
+            11,
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-interface-super/method.jar").as_slice(),
+            "p.I.super.𐐀value",
+            11,
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-interface-super/parameter.jar").as_slice(),
+            "p.I.super.value",
+            2,
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-interface-super/return.jar").as_slice(),
+            "p.I.super.value",
+            2,
+        ),
+    ] {
+        let snapshot = Engine::new()
+            .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
+            .unwrap();
+        let class = class_source_named(&snapshot, "p/Subject");
+        assert!(class.text.contains(needle), "{needle}: {}", class.text);
+        assert!(!class.text.contains("not recovered:"), "{}", class.text);
+        let method = class
+            .methods
+            .iter()
+            .find(|m| m.item.name.raw().0 == b"run")
+            .unwrap();
+        let ClassSourceOutcome::Recovered { report, .. } = &method.outcome else {
+            panic!("run needs its own recovery report")
+        };
+        assert!(!report.source_map.direct_of_bci(call_bci).is_empty());
+    }
+}
+
+#[test]
+fn interface_super_jvm_only_method_name_keeps_alias_and_refuses_invalid_call() {
+    let snapshot = Engine::new()
+        .open(
+            ArtifactInput::bytes(
+                include_bytes!("fixtures/s1-raw-interface-super/dash.jar").to_vec(),
+            ),
+            &mut budget(),
+        )
+        .unwrap();
+    let class = class_source_named(&snapshot, "p/Subject");
+    let renamed = class
+        .methods
+        .iter()
+        .find(|m| m.item.name.raw().0 == b"bad-name")
+        .unwrap();
+    assert!(renamed.declaration.as_ref().unwrap().contains("bad_name("));
+    let run = text_of(&class, "run");
+    assert!(run.contains("not recovered:"), "{run}");
+    assert!(run.contains("@bytecode"), "{run}");
+    assert!(!run.contains("super.bad-name("), "{run}");
 }

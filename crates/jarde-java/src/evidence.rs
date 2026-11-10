@@ -277,6 +277,13 @@ impl RecoveryEvidenceRequest {
         self
     }
 
+    /// Remove an expectation that an outer read-owning adapter handles itself.
+    #[doc(hidden)]
+    pub fn without_expected_artifact(mut self) -> Self {
+        self.expected_artifact = None;
+        self
+    }
+
     /// The artifact this request wants its evidence attached to, when it names one.
     pub fn expected_artifact(&self) -> Option<&ArtifactBinding> {
         self.expected_artifact.as_ref()
@@ -484,6 +491,13 @@ impl RecoveryEvidence {
         &self.requested
     }
 
+    /// Record the expectation handled by an outer adapter. This only edits report metadata;
+    /// it does not validate a binding, change provenance or mark any evidence delivered.
+    #[doc(hidden)]
+    pub fn record_expected_artifact(&mut self, expected: Option<ArtifactBinding>) {
+        self.requested.expected_artifact = expected;
+    }
+
     /// One category's status.
     pub fn state(&self, kind: RecoveryEvidenceKind) -> EvidenceState {
         self.categories[kind.index()].state
@@ -662,7 +676,7 @@ impl Publication {
 /// of *this* order.
 pub(crate) struct EvidencePhase {
     materialized: u64,
-    stopped: bool,
+    stop: Option<crate::StopReason>,
 }
 
 impl EvidencePhase {
@@ -670,7 +684,7 @@ impl EvidencePhase {
     pub(crate) fn new() -> Self {
         Self {
             materialized: 0,
-            stopped: false,
+            stop: None,
         }
     }
 
@@ -689,7 +703,7 @@ impl EvidencePhase {
     ) -> (Vec<R>, Materialized) {
         let mut records = Vec::new();
         let mut build = build;
-        let mut complete = !self.stopped;
+        let mut complete = self.stop.is_none();
         for item in selected {
             if !self.may_continue(budget) {
                 complete = false;
@@ -715,7 +729,7 @@ impl EvidencePhase {
     /// states that prefix and a real stop: it never deletes what a previous stage committed and never
     /// claims the categories it did not reach.
     pub(crate) fn may_continue(&mut self, budget: &mut Budget) -> bool {
-        if self.stopped {
+        if self.stop.is_some() {
             return false;
         }
         match budget.charge(CountedBudgetDimension::IrItems, 1) {
@@ -723,8 +737,8 @@ impl EvidencePhase {
                 self.materialized += 1;
                 true
             }
-            Err(_) => {
-                self.stopped = true;
+            Err(error) => {
+                self.stop = Some(crate::stop::stop_from_error(budget, error, None));
                 false
             }
         }
@@ -732,23 +746,15 @@ impl EvidencePhase {
 
     /// Whether the phase stopped before it could materialize everything the request selected.
     pub(crate) fn stopped(&self) -> bool {
-        self.stopped
+        self.stop.is_some()
     }
 
     /// The stop the phase hit, stated in the same vocabulary the rest of the run stops in.
-    pub(crate) fn reason(&self, budget: &Budget) -> crate::StopReason {
-        if budget.cancellation_token().is_cancelled() {
-            return crate::StopReason::Cancelled { at: None };
-        }
-        let usage = budget.usage();
-        crate::StopReason::Budget {
-            dimension: CountedBudgetDimension::IrItems,
-            written: usage.counted_usage(CountedBudgetDimension::IrItems),
-            limit: budget
-                .limits()
-                .counted_limit(CountedBudgetDimension::IrItems),
-            at: None,
-        }
+    pub(crate) fn reason(&self) -> crate::StopReason {
+        self.stop
+            .as_ref()
+            .expect("only a stopped phase has a reason")
+            .clone()
     }
 }
 
@@ -871,16 +877,23 @@ mod tests {
             RecoveryFacts::new(MethodFacts::new("method", "()V", 0)).with_debug_locals(debug);
         let mut budget = jarde_reader::budget::Budget::new(limits());
         recover(
-            &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                .with_evidence(selection),
+            &RecoveryRequest::new(
+                analysis.ir(),
+                &facts,
+                crate::pass::JAVA_8,
+                jarde_reader::view::RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: jarde_reader::view::LayoutMode::Generic,
+                },
+            )
+            .with_evidence(selection),
             &mut budget,
         )
     }
 
-    /// The subject the entry that performed the read states for this run (D3'): the physical
-    /// identity the analysis was bound to, the member record a preparation would have established
-    /// (none here — the unit fixtures walk no member table) and the environment it was validated
-    /// under.
+    /// A caller label for the analyzed fixture. Passing it to public recovery does not
+    /// authenticate the facts or grant a trusted binding; no member ordinal is claimed here.
     fn subject_of(analysis: &jarde_jvm::method_ir::MethodIrAnalysis) -> crate::ArtifactSubject {
         crate::ArtifactSubject::new(
             analysis.report().method.clone(),
@@ -900,21 +913,30 @@ mod tests {
             RecoveryFacts::new(MethodFacts::new("method", "()V", 0)).with_debug_locals(debug);
         let mut budget = jarde_reader::budget::Budget::new(limits());
         recover(
-            &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                .with_evidence(selection)
-                .with_subject(subject.clone()),
+            &RecoveryRequest::new(
+                analysis.ir(),
+                &facts,
+                crate::pass::JAVA_8,
+                jarde_reader::view::RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: jarde_reader::view::LayoutMode::Generic,
+                },
+            )
+            .with_evidence(selection)
+            .with_subject(subject.clone()),
             &mut budget,
         )
     }
 
     /// A text that is not this run's artifact is a mismatch, and no selected evidence is attached to
-    /// it: the same payload, the same subject and the same configuration, one other debug table.
+    /// it: the same payload and subject, with another debug table in the semantic handoff.
     ///
     /// The two texts are the same **length** on purpose: what tells two artifacts of one slot shape
     /// apart is the digest of the exact bytes, and a judgement made from a length, a member spelling
     /// or a bytecode index would answer this request with evidence of a text the caller does not hold.
     #[test]
-    fn the_evidence_of_one_text_is_never_attached_to_another() {
+    fn caller_subjects_cannot_authorize_evidence_for_another_debug_handoff() {
         // `iconst_0; istore_1; iload_1; ireturn`: one local slot, named by the debug table.
         const BODY: &[u8] = &[0x03, 0x3c, 0x1b, 0xac];
         let analysis = analyze(BODY, 2);
@@ -927,11 +949,18 @@ mod tests {
         );
         assert!(first.produced(), "{:?}", first.outcome);
         assert!(first.text.contains("aa"), "{}", first.text);
-        let binding = first
-            .artifact
-            .binding()
-            .expect("a run presented with a subject publishes its binding")
-            .clone();
+        assert!(first.artifact.binding().is_none());
+        let binding = ArtifactBinding::of(
+            &subject,
+            &first.source_target,
+            &first.text,
+            crate::ArtifactConfiguration {
+                pool_spelled_members: false,
+                projection_types: Vec::new(),
+                allow_array_constructor_method_references: true,
+                inputs_digest: "caller-metadata".into(),
+            },
+        );
         assert_eq!(
             first.artifact.agreement(),
             &crate::ArtifactAgreement::NotStated,
@@ -951,23 +980,20 @@ mod tests {
             first.text.len(),
             "the two texts are one length, so only their bytes tell them apart"
         );
-        let crate::ArtifactAgreement::Mismatched { mismatch } = second.artifact.agreement() else {
-            panic!(
-                "the verdict is a mismatch: {:?}",
-                second.artifact.agreement()
-            );
-        };
+        assert!(second.artifact.binding().is_none());
         assert_eq!(
-            mismatch.dimensions(),
-            [crate::ArtifactDimension::Text],
-            "the text is the dimension that changed: {}",
-            mismatch.message()
+            second.input_origin,
+            crate::report::RecoveryInputOrigin::CallerSupplied
         );
+        assert!(matches!(
+            second.artifact.agreement(),
+            crate::ArtifactAgreement::Unverifiable { .. }
+        ));
         assert!(
             second
                 .diagnostics
                 .iter()
-                .any(|diagnostic| diagnostic.code == crate::ARTIFACT_MISMATCH_CODE),
+                .any(|diagnostic| diagnostic.code == crate::ARTIFACT_UNVERIFIABLE_CODE),
             "the verdict is stated as a gap: {:?}",
             second.diagnostics
         );
@@ -1020,7 +1046,16 @@ mod tests {
     fn the_request_type_defaults_to_the_essential_selection() {
         let analysis = analyze(&[0xb1], 0);
         let facts = RecoveryFacts::new(MethodFacts::new("method", "()V", 0));
-        let request = RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8);
+        let request = RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            crate::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        );
         assert!(
             request.evidence.is_essential(),
             "the ordinary request selects nothing optional: {:?}",
@@ -1156,8 +1191,17 @@ mod tests {
             ..limits()
         });
         let stopped = recover(
-            &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                .with_evidence(RecoveryEvidenceRequest::all()),
+            &RecoveryRequest::new(
+                analysis.ir(),
+                &facts,
+                crate::pass::JAVA_8,
+                jarde_reader::view::RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: jarde_reader::view::LayoutMode::Generic,
+                },
+            )
+            .with_evidence(RecoveryEvidenceRequest::all()),
             &mut budget,
         );
         assert!(!stopped.produced(), "{:?}", stopped.outcome);
@@ -1190,8 +1234,17 @@ mod tests {
             let facts = RecoveryFacts::new(MethodFacts::new("method", "()V", 0))
                 .with_debug_locals(names.clone());
             let report = recover(
-                &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                    .with_evidence(selection.clone()),
+                &RecoveryRequest::new(
+                    analysis.ir(),
+                    &facts,
+                    crate::pass::JAVA_8,
+                    jarde_reader::view::RuntimeProfile {
+                        java_release: 8,
+                        multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                        layout: jarde_reader::view::LayoutMode::Generic,
+                    },
+                )
+                .with_evidence(selection.clone()),
                 &mut budget,
             );
             assert!(report.evidence.agrees_with(&report));
@@ -1213,8 +1266,17 @@ mod tests {
         let facts =
             RecoveryFacts::new(MethodFacts::new("method", "()V", 0)).with_debug_locals(names);
         let partial = recover(
-            &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
-                .with_evidence(selection),
+            &RecoveryRequest::new(
+                analysis.ir(),
+                &facts,
+                crate::pass::JAVA_8,
+                jarde_reader::view::RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: jarde_reader::view::LayoutMode::Generic,
+                },
+            )
+            .with_evidence(selection),
             &mut budget,
         );
         assert!(partial.produced(), "the committed artifact is kept");

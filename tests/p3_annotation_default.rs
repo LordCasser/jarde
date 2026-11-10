@@ -84,13 +84,18 @@ fn class_source_default(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceR
 
 fn class_source_request(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
         environment: EnvironmentRequest {
             snapshot: snapshot.id().clone(),
             scope: PhysicalScope::SnapshotAll,
-            policy: EnvironmentPolicy::SingleClass,
+            policy: if snapshot.kind() == ArtifactKind::Zip {
+                EnvironmentPolicy::PlainJar
+            } else {
+                EnvironmentPolicy::SingleClass
+            },
             profile: RuntimeProfile {
                 java_release: 8,
                 multi_release: MultiReleasePolicy::Disabled,
@@ -984,4 +989,236 @@ fn a_member_whose_attribute_does_not_read_is_refused_beside_the_members_that_do(
         "{}",
         report.text
     );
+}
+
+#[test]
+fn metadata_strings_preserve_mutf8_units_in_defaults_uses_and_constant_fields() {
+    for (bytes, literal) in [
+        (
+            include_bytes!("fixtures/s1-raw-metadata-literals/string.jar").as_slice(),
+            "\"A𐐀😀Z\"",
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-metadata-literals/nul.jar").as_slice(),
+            "\"a\\u0000z\"",
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-metadata-literals/surrogate.jar").as_slice(),
+            "\"\\ud800x\\udc00\"",
+        ),
+    ] {
+        let snapshot = open(bytes);
+        let marker = class_source_of(&snapshot, "p/Marker");
+        assert!(
+            declaration_of(&marker, "text").contains(&format!("default {literal}")),
+            "{}",
+            marker.text
+        );
+        let subject = class_source_of(&snapshot, "p/Subject");
+        assert!(
+            subject.text.contains(&format!("TEXT = {literal}")),
+            "{}",
+            subject.text
+        );
+        assert!(
+            subject.text.contains(&format!("text = {literal}")),
+            "{}",
+            subject.text
+        );
+        assert!(!subject.text.contains('�'), "{}", subject.text);
+    }
+}
+
+#[test]
+fn annotation_identifiers_keep_raw_supplementary_enum_and_nested_element_names() {
+    for (bytes, marker_needle, use_needle) in [
+        (
+            include_bytes!("fixtures/s1-raw-metadata-literals/enum-constant.jar").as_slice(),
+            "p.Kind.𐐀ONE",
+            "p.Kind.𐐀ONE",
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-metadata-literals/element.jar").as_slice(),
+            "𐐀text() default",
+            "𐐀text = ",
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-metadata-literals/nested-element.jar").as_slice(),
+            "@p.Nested(𐐀named = ",
+            "@p.Nested(𐐀named = ",
+        ),
+    ] {
+        let snapshot = open(bytes);
+        let marker = class_source_of(&snapshot, "p/Marker");
+        assert!(marker.text.contains(marker_needle), "{}", marker.text);
+        let subject = class_source_of(&snapshot, "p/Subject");
+        assert!(subject.text.contains(use_needle), "{}", subject.text);
+    }
+}
+
+#[test]
+fn an_unspellable_present_default_is_refused_without_erasing_absence_or_neighbors() {
+    let snapshot = open(include_bytes!("fixtures/s1-metadata-refusal/array-nan.jar"));
+    for evidence in [
+        RecoveryEvidenceRequest::essential(),
+        RecoveryEvidenceRequest::all(),
+    ] {
+        let report = class_source_with_evidence(&snapshot, "p/States", &evidence);
+        assert!(
+            matches!(&report.execution, ExecutionReport::Partial {
+            reason: TerminationReason::Unsupported { code }, ..
+        } if code == "metadata_literal_unspellable"),
+            "{:?}",
+            report.execution
+        );
+        let refused = member(&report, "refused");
+        assert!(matches!(
+            refused.outcome,
+            ClassSourceOutcome::Refused { .. }
+        ));
+        assert!(
+            refused
+                .markers
+                .iter()
+                .any(|m| m.contains("metadata_literal_unspellable"))
+        );
+        assert!(
+            !refused
+                .declaration
+                .as_deref()
+                .unwrap()
+                .contains(" default ")
+        );
+        let required = member(&report, "required");
+        assert_eq!(required.outcome, ClassSourceOutcome::NoBody);
+        assert!(
+            !required
+                .declaration
+                .as_deref()
+                .unwrap()
+                .contains(" default ")
+        );
+        for name in ["before", "after", "empty"] {
+            let method = member(&report, name);
+            assert_eq!(method.outcome, ClassSourceOutcome::NoBody);
+            assert!(method.declaration.as_deref().unwrap().contains(" default "));
+        }
+        assert!(declaration_of(&report, "empty").ends_with("default {}"));
+        assert_eq!(report.usage.method_bodies, 0);
+    }
+}
+
+#[test]
+fn a_constant_value_refusal_preserves_the_field_and_later_independent_members() {
+    for (bytes, damaged) in [
+        (
+            include_bytes!("fixtures/s1-metadata-refusal/field-float.jar").as_slice(),
+            false,
+        ),
+        (
+            include_bytes!("fixtures/s1-metadata-refusal/field-damaged.jar").as_slice(),
+            true,
+        ),
+    ] {
+        let snapshot = open(bytes);
+        for evidence in [
+            RecoveryEvidenceRequest::essential(),
+            RecoveryEvidenceRequest::all(),
+        ] {
+            let report = class_source_with_evidence(&snapshot, "p/Fields", &evidence);
+            if damaged {
+                assert!(matches!(&report.execution, ExecutionReport::Failed { .. }));
+            } else {
+                assert!(
+                    matches!(&report.execution, ExecutionReport::Partial {
+                    reason: TerminationReason::Unsupported { code }, ..
+                } if code == "metadata_literal_unspellable"),
+                    "{:?}",
+                    report.execution
+                );
+            }
+            assert_eq!(report.fields.len(), 5, "{:?}", report.execution);
+            for name in ["m_float", "m_double"] {
+                let field = report
+                    .fields
+                    .iter()
+                    .find(|f| f.item.name.raw().0 == name.as_bytes())
+                    .unwrap();
+                assert!(field.markers.iter().any(|m| m.contains("ConstantValue")));
+                assert!(!field.declaration.as_deref().unwrap().contains(" = "));
+                for marker in &field.markers {
+                    assert!(report.text.contains(marker));
+                }
+            }
+            for name in ["before", "after", "plain"] {
+                let field = report
+                    .fields
+                    .iter()
+                    .find(|f| f.item.name.raw().0 == name.as_bytes())
+                    .unwrap();
+                assert!(field.markers.is_empty(), "{:?}", field.markers);
+                assert_eq!(
+                    field.declaration.as_deref().unwrap().contains(" = "),
+                    name != "plain"
+                );
+            }
+            assert!(matches!(
+                member(&report, "echo").outcome,
+                ClassSourceOutcome::Recovered { .. }
+            ));
+            assert!(text_of(&report, "echo").contains("return 3;"));
+        }
+    }
+}
+
+#[test]
+fn nested_metadata_defaults_use_the_same_member_paths_as_their_declarations() {
+    let snapshot = open(include_bytes!("fixtures/s1-metadata-type-paths/ascii.jar"));
+    let report = class_source_of(&snapshot, "p/Marker");
+    for (name, literal) in [
+        ("kind", "default p.Family.Kind.ONE"),
+        ("token", "default p.Family.Token.class"),
+        ("nested", "default @p.Family.Nested(value = \"base\")"),
+        ("many", "default {@p.Family.Nested(value = \"base\")}"),
+        ("tokens", "default {p.Family.Token[].class}"),
+    ] {
+        assert!(
+            declaration_of(&report, name).contains(literal),
+            "{}",
+            report.text
+        );
+        assert_eq!(member(&report, name).outcome, ClassSourceOutcome::NoBody);
+    }
+    assert_eq!(report.usage.method_bodies, 0);
+}
+
+#[test]
+fn nested_annotation_type_paths_are_shared_by_every_metadata_position() {
+    let snapshot = open(include_bytes!("fixtures/s1-metadata-type-paths/ascii.jar"));
+    for evidence in [
+        RecoveryEvidenceRequest::essential(),
+        RecoveryEvidenceRequest::all(),
+    ] {
+        let report = class_source_with_evidence(&snapshot, "p/Subject", &evidence);
+        for spelling in [
+            "kind = p.Family.Kind.ONE",
+            "token = p.Family.Token.class",
+            "@p.Family.Nested(value = \"class\")",
+            "@p.Family.Nested(value = \"field\")",
+            "@p.Family.Nested(value = \"method\")",
+            "@p.Family.Nested(value = \"parameter\")",
+        ] {
+            assert!(report.text.contains(spelling), "{}", report.text);
+        }
+        assert!(
+            report.text.contains("@p.Family.TypeMark"),
+            "{}",
+            report.text
+        );
+        assert!(!report.text.contains("p.Family$"), "{}", report.text);
+        assert!(matches!(
+            member(&report, "echo").outcome,
+            ClassSourceOutcome::Recovered { .. }
+        ));
+    }
 }

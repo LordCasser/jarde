@@ -90,6 +90,7 @@ fn outcome_with_budget(bytes: Vec<u8>, budget: &mut Budget) -> OperationOutcome<
         .open(ArtifactInput::bytes(bytes), &mut task_budget(&[]).unwrap())
         .expect("family archive opens independently of the class-source budget");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("dt19/Outer"),
         },

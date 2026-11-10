@@ -1,0 +1,70 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-static-class-scope-boundary-r1/classes/scope/GenericScopeBoundary.class
+  Last modified 2026-10-27; size 597 bytes
+  MD5 checksum cb2ac08092fb4696b0dc177741df96d4
+  Compiled from "GenericScopeBoundary.java"
+public class scope.GenericScopeBoundary<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#22         // java/lang/Object."<init>":()V
+   #2 = Class              #23            // scope/GenericScopeBoundary
+   #3 = Class              #24            // java/lang/Object
+   #4 = Utf8               <init>
+   #5 = Utf8               ()V
+   #6 = Utf8               Code
+   #7 = Utf8               LineNumberTable
+   #8 = Utf8               LocalVariableTable
+   #9 = Utf8               this
+  #10 = Utf8               Lscope/GenericScopeBoundary;
+  #11 = Utf8               LocalVariableTypeTable
+  #12 = Utf8               Lscope/GenericScopeBoundary<TT;>;
+  #13 = Utf8               pass
+  #14 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #15 = Utf8               value
+  #16 = Utf8               Ljava/lang/Object;
+  #17 = Utf8               copy
+  #18 = Utf8               Signature
+  #19 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #20 = Utf8               SourceFile
+  #21 = Utf8               GenericScopeBoundary.java
+  #22 = NameAndType        #4:#5          // "<init>":()V
+  #23 = Utf8               scope/GenericScopeBoundary
+  #24 = Utf8               java/lang/Object
+{
+  public scope.GenericScopeBoundary();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lscope/GenericScopeBoundary;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lscope/GenericScopeBoundary<TT;>;
+
+  public static java.lang.Object pass(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: aload_0
+         1: astore_1
+         2: aload_1
+         3: areturn
+      LineNumberTable:
+        line 5: 0
+        line 6: 2
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       4     0 value   Ljava/lang/Object;
+            2       2     1  copy   Ljava/lang/Object;
+}
+Signature: #19                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "GenericScopeBoundary.java"

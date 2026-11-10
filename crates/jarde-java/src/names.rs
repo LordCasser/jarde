@@ -39,13 +39,15 @@
 //! [`NameTable::build_with_receiver`], from the member's own `ACC_STATIC` fact — never from a name
 //! the class file happens to carry.
 //!
-//! The grammar accepted here is the practical subset for names that reach a recovered body: ASCII
-//! `$`/`_`/letters followed by those plus digits. A non-ASCII identifier character is treated as
-//! unspellable and aliased — widening the accepted grammar is a 3.1 question with its own corpus
-//! (multi-generation javac/ECJ output), and guessing it here would mean emitting identifiers this
-//! layer cannot check.
+//! Identifier categories come from frozen Java 8 Character ranges. IdentifierIgnorable characters
+//! are excluded because javac erases them, which could change physical identity or collapse two
+//! source names. Local names may take deterministic aliases; class/type identities must have a
+//! faithful spelling and cannot be repaired by inventing another class name.
 
+use jarde_reader::model::JvmBytes;
 use std::collections::{BTreeMap, BTreeSet};
+#[path = "identifier_ranges.rs"]
+mod identifier_ranges;
 
 /// Words Java does not accept as an identifier, including the literals and the two reserved words.
 ///
@@ -121,40 +123,14 @@ pub const JAVA_KEYWORDS: &[&str] = &[
 /// body declares can carry it, because Java forbids declaring it.
 pub const RECEIVER: &str = "this";
 
-/// Whether `text` is an identifier this layer is willing to write.
+/// Whether a name is writable under this layer's Java 8 naming policy.
 ///
-/// The grammar is Java's (JLS §3.8): a *Java letter* first, then Java letters and digits. What
-/// "letter" and "digit" mean is Unicode's and not ASCII's, and that is not decoration: the names
-/// this function judges are JVMS §4.7.7 UTF-8, and a class file that declares a field `变量` and
-/// reads it back names **one** string. An answer of `false` for it would spell the declaration `__`
-/// (through [`alias_for`]) while the same run's own body statements write the pool's `变量` — one
-/// name with two spellings, which is the collision this function exists to prevent and a text no
-/// compiler accepts. So the predicate is the JLS one, decided from the Unicode properties `std`
-/// states, with Java's two additions kept exactly as they were: `$` and `_` are letters, and the
-/// keywords (`true`/`false`/`null` and the reserved `const`/`goto` included) are not identifiers.
-///
-/// The relation to `Character.isJavaIdentifierStart`/`Character.isJavaIdentifierPart` is the JLS
-/// rule as far as `std`'s Unicode properties state it, and the difference runs both ways:
-///
-/// * accepted, where Java accepts them: the letters (`Alphabetic` is Unicode's letters plus the
-///   numeric letters `Ⅷ` its start rule admits too) and the digits `is_alphanumeric` adds
-///   (`变量`, `café`, `x١٢٣` — a leading digit starts no identifier for either of us);
-/// * accepted, where Java does not: the **other numeric** characters — `is_alphanumeric` is
-///   `Alphabetic || Numeric`, and `Numeric` covers `No` (`²`, `①`) on top of the decimal digits
-///   `Nd` and the numeric letters `Nl` Java admits — and a mark Unicode counts as `Alphabetic`
-///   (a Devanagari vowel sign) in the start position, where Java asks for a letter. Both are the
-///   superset side: the layer spells the pool's name instead of hiding it behind an alias;
-/// * refused, where Java accepts them: the characters Java admits under its *other* categories —
-///   a currency symbol other than `$` (`€`), connecting punctuation other than `_`, a combining
-///   mark, an identifier-ignorable format character (U+200B). `std` states no Unicode general
-///   category, and the alternative to refusing would be admitting whatever is neither space nor
-///   control, which would write `。` and `·` — names Java cannot spell either — into identifier
-///   positions. Such a name keeps [`alias_for`] and the marker that states its raw spelling, which
-///   is the presentation every revision before this one gave it;
-/// * the ASCII half is answered byte-wise before any of that ([`ascii_identifier`]), so every name
-///   of every corpus written before non-ASCII names were admitted is decided by the exact table it
-///   was decided by: an ASCII identifier's rendering cannot move by one byte, and ASCII punctuation
-///   (`-`, `.`, `/`, `;`) still never takes an identifier position.
+/// Character categories come from the frozen JDK 8 Character ranges, rather than Rust's newer
+/// Alphabetic/Numeric approximation. IdentifierIgnorable characters remain refused: javac removes
+/// them from identifiers, so writing them would lose raw JVM identity or hide a source collision.
+/// The ASCII path and keyword/literal policy are unchanged, including aliasing a lone `_` for local
+/// names. Class/type identities cannot be aliased; [`source_class_name`] admits `_` for the registered
+/// Java 7/8 source targets where it is still a legal identifier.
 pub fn is_java_identifier(text: &str) -> bool {
     if text.is_empty() || JAVA_KEYWORDS.contains(&text) {
         return false;
@@ -166,9 +142,248 @@ pub fn is_java_identifier(text: &str) -> bool {
     let first = characters
         .next()
         .expect("non-empty text was established above");
-    (first.is_alphabetic() || first == '_' || first == '$')
+    identifier_ranges::contains(identifier_ranges::START, first)
         && characters
-            .all(|character| character.is_alphanumeric() || character == '_' || character == '$')
+            .all(|character| identifier_ranges::contains(identifier_ranges::PART, character))
+}
+
+/// One faithful identifier from raw JVM MUTF-8. This never creates an alias or changes
+/// a raw scope key. Invalid encoding, isolated surrogates and source-inexpressible names
+/// have no spelling, including identifier-ignorable names that javac would erase.
+pub fn source_identifier(raw: &[u8]) -> Option<String> {
+    JvmBytes(raw.to_vec())
+        .to_unicode()
+        .filter(|name| is_java_identifier(name))
+}
+
+/// Faithful identifier positions for the registered Java 7/8 source targets.
+/// Local aliases keep their conservative `is_java_identifier` policy.
+pub(crate) fn is_source_identifier(text: &str) -> bool {
+    text == "_" || is_java_identifier(text)
+}
+
+/// A declared type parameter or its scoped reference, without an alias or scope-key change.
+/// Decode raw JVM MUTF-8 only at spelling; scope and erasure continue to use the raw bytes.
+pub fn source_type_parameter_name(raw: &[u8]) -> Option<String> {
+    JvmBytes(raw.to_vec())
+        .to_unicode()
+        .filter(|name| is_source_identifier(name))
+}
+
+/// The name the text writes for one raw member name, and whether it had to be changed.
+///
+/// The change is [`alias_for`]'s and it is deterministic: a raw name Java cannot spell (a method
+/// named `foo-bar`) becomes the alias that function states, and the marker the caller writes says
+/// which raw name that alias came from. `<init>` and `<clinit>` never reach this rule — they are
+/// spelled as the declarations they are — and a name that is already an identifier is unchanged.
+pub fn written_name(raw: &[u8]) -> (String, bool) {
+    let text = JvmBytes(raw.to_vec())
+        .to_unicode()
+        .unwrap_or_else(|| String::from_utf8_lossy(raw).into_owned());
+    if is_java_identifier(&text) {
+        (text, false)
+    } else {
+        (alias_for(&text), true)
+    }
+}
+
+/// A faithful method declaration or invocation name for the registered Java 7/8 targets.
+/// Unlike local aliases, method references keep the legal lone underscore. No alias is
+/// invented for a reference whose raw identity cannot be written as a Java identifier.
+pub fn source_method_name(raw: &JvmBytes) -> Option<String> {
+    raw.to_unicode().filter(|name| is_source_identifier(name))
+}
+
+/// One method declaration's faithful spelling or the existing deterministic alias.
+/// A reference may use this alias only after its declaration and all affected uses are
+/// proved and renamed together; ordinary references require [`source_method_name`].
+pub fn method_declaration_name(raw: &JvmBytes) -> (String, bool) {
+    match source_method_name(raw) {
+        Some(name) => (name, false),
+        None => {
+            let text = raw
+                .to_unicode()
+                .unwrap_or_else(|| String::from_utf8_lossy(&raw.0).into_owned());
+            (alias_for(&text), true)
+        }
+    }
+}
+
+/// The faithful Java spelling of one raw internal class name, keeping `$` as a binary-name
+/// character. This states no nesting relation and never aliases an unspellable type identity.
+/// A lone underscore is legal for the registered Java 7/8 targets, unlike this layer's more
+/// conservative local-name alias policy. All segments must survive javac without ignored bytes.
+pub fn source_class_name(raw: &JvmBytes) -> Option<String> {
+    let name = raw.to_unicode()?;
+    name.split('/')
+        .all(is_source_identifier)
+        .then(|| name.replace('/', "."))
+}
+
+use jarde_reader::classfile::ResolvedInnerClass;
+
+/// The same borrowed naming facts for declarations and metadata values in one source unit.
+/// No reads, aliases, or inferred `$` boundaries are introduced here.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SourceClassNames<'a> {
+    pub current_class: Option<&'a [u8]>,
+    pub inner_classes: &'a [ResolvedInnerClass],
+}
+
+impl SourceClassNames<'_> {
+    /// A named member path follows unique, physically matching raw rows. A missing row
+    /// preserves a binary name (including a genuine top-level `$`); a stated but unusable
+    /// row refuses the path. Every successful edge strictly shortens the raw class name.
+    pub(crate) fn stated_path(&self, raw: &[u8]) -> Option<(String, Vec<u8>)> {
+        let mut current = raw;
+        let mut members = Vec::<String>::new();
+        loop {
+            let mut rows = self.inner_classes.iter().filter(|row| row.class == current);
+            let row = rows.next();
+            if row.is_none() || row.is_some_and(|row| row.outer_class.is_none()) {
+                // Local/anonymous physical units have no named member edge to project.
+                if rows.next().is_some() {
+                    return None;
+                }
+                let mut path = source_class_name(&JvmBytes(current.to_vec()))?;
+                for member in members.iter().rev() {
+                    path.push('.');
+                    path.push_str(member);
+                }
+                return Some((path, current.to_vec()));
+            }
+            let row = row?;
+            if rows.next().is_some() {
+                return None;
+            }
+            let outer = row.outer_class.as_deref()?;
+            let inner = row.inner_name.as_ref()?;
+            let member = inner.to_unicode()?;
+            if !(member == "_" || is_java_identifier(&member))
+                || current.len() != outer.len() + 1 + inner.0.len()
+                || !current.starts_with(outer)
+                || current.get(outer.len()) != Some(&b'$')
+                || &current[outer.len() + 1..] != inner.0.as_slice()
+            {
+                return None;
+            }
+            members.push(member);
+            current = outer;
+        }
+    }
+
+    pub fn class_name(&self, raw: &JvmBytes) -> Option<String> {
+        let (path, root) = self.stated_path(&raw.0)?;
+        // Own-family declarations still use their physical names until the existing fold
+        // projection commits the whole family. External member names use the stated path.
+        if self.current_class.is_some_and(|current| {
+            current == root
+                || self
+                    .stated_path(current)
+                    .is_some_and(|(_, own)| own == root)
+        }) {
+            source_class_name(raw)
+        } else {
+            Some(path)
+        }
+    }
+
+    /// A descriptor already checked by the shared type parser has a faithful Unicode
+    /// binary spelling. Re-encoding it preserves that name; only row-proved boundaries move.
+    pub fn reference(&self, name: &str) -> Option<String> {
+        let (element, suffix) = name
+            .split_once("[]")
+            .map_or((name, ""), |(element, _)| (element, &name[element.len()..]));
+        if matches!(
+            element,
+            "void" | "boolean" | "byte" | "char" | "short" | "int" | "long" | "float" | "double"
+        ) {
+            return Some(name.to_owned());
+        }
+        let raw = JvmBytes::from_unicode(&element.replace('.', "/"));
+        self.class_name(&raw).map(|path| format!("{path}{suffix}"))
+    }
+}
+
+/// A non-empty raw JVM package path whose segments have faithful Java identifiers.
+pub fn legal_package_name(raw: &[u8]) -> bool {
+    let Some(package) = JvmBytes(raw.to_vec()).to_unicode() else {
+        return false;
+    };
+    !package.is_empty()
+        && package
+            .split('/')
+            .all(|segment| !segment.is_empty() && is_java_identifier(segment))
+}
+
+#[cfg(test)]
+mod source_class_path_tests {
+    use super::*;
+
+    fn member(class: &str, outer: &str, inner: &str) -> ResolvedInnerClass {
+        ResolvedInnerClass {
+            class: JvmBytes::from_unicode(class).0,
+            outer_class: Some(JvmBytes::from_unicode(outer).0),
+            inner_name: Some(JvmBytes::from_unicode(inner)),
+            access_flags: 0x0009,
+        }
+    }
+
+    #[test]
+    fn member_boundaries_preserve_real_dollars_arrays_unicode_and_own_physical_units() {
+        let rows = [
+            member("p/Family$Top$Level", "p/Family$Top", "Level"),
+            member(
+                "p/Family$Top$Level$Node$Part",
+                "p/Family$Top$Level",
+                "Node$Part",
+            ),
+            member("p/𐐀Family$𐐀Node", "p/𐐀Family", "𐐀Node"),
+        ];
+        let names = SourceClassNames {
+            current_class: Some(b"p/Client"),
+            inner_classes: &rows,
+        };
+        assert_eq!(
+            names
+                .reference("p.Family$Top$Level$Node$Part[][]")
+                .as_deref(),
+            Some("p.Family$Top.Level.Node$Part[][]")
+        );
+        assert_eq!(
+            names.reference("p.𐐀Family$𐐀Node").as_deref(),
+            Some("p.𐐀Family.𐐀Node")
+        );
+        assert_eq!(
+            names.reference("p.Named$Top").as_deref(),
+            Some("p.Named$Top")
+        );
+        let own = SourceClassNames {
+            current_class: Some(b"p/Family$Top"),
+            ..names
+        };
+        assert_eq!(
+            own.reference("p.Family$Top$Level$Node$Part").as_deref(),
+            Some("p.Family$Top$Level$Node$Part")
+        );
+    }
+
+    #[test]
+    fn contradictory_member_rows_cannot_create_a_source_path() {
+        let row = member("p/A$B", "p/A", "B");
+        for rows in [
+            vec![row.clone(), row.clone()],
+            vec![member("p/A$B", "p/A", "C")],
+            vec![member("p/A$B", "p/A$B", "B")],
+            vec![member("p/A$B", "p/A", "bad-name")],
+        ] {
+            let names = SourceClassNames {
+                current_class: Some(b"p/Client"),
+                inner_classes: &rows,
+            };
+            assert_eq!(names.reference("p.A$B"), None);
+        }
+    }
 }
 
 /// The ASCII half of [`is_java_identifier`], byte-wise: `[A-Za-z_$][A-Za-z0-9_$]*`.
@@ -185,107 +400,30 @@ fn ascii_identifier(text: &str) -> bool {
     start && bytes.all(|byte| byte == b'_' || byte == b'$' || byte.is_ascii_alphanumeric())
 }
 
-/// The Java source spelling of one class-file nested name, as the **reference** a body of
-/// `current_class` writes in a type position.
-///
-/// A binary name spells nesting with `$` (`V1$Op`), and Java source cannot write that token in a
-/// type position. This function is the presentation layer of the **cross-class** half of that
-/// rule: a nested name whose top-level owner is a *different* class than the one whose text is
-/// being written is spelled with the nesting dotted (`Other.Inner` from `VN1`, `p.A.B.C` for a
-/// deeper chain), which is legal source wherever the owner is resolvable — the same situation a
-/// package-level reference is in, and deliberately not this layer's problem.
-///
-/// The **self-nested** half — a reference to a member of the class's own top-level owner
-/// (`V1$Op` inside `V1`, `N1$Numbers$NumString` inside `N1$Numbers`) — is **not** converted here,
-/// and that is a decision, not an omission. A recovery text states such a member's declaration
-/// only when a family projection folds it into the same text (the nested-enum fold, the proved
-/// static member writer); the member is otherwise presented as its own physical unit under the
-/// pool's `$` name, and a project built from those units resolves exactly that name. The simple
-/// source spelling (`Op`) is therefore written by the projection that renders the nested
-/// declaration, never by this generic rule — the two spellings must not diverge from the
-/// declaration the text actually carries.
-///
-/// `current_class` is the class whose text the reference is written into, in either the internal
-/// (`p/Outer`) or the source (`p.Outer`) spelling; its top-level owner is everything before the
-/// first `$`. The conversion is refused, and the name returned exactly as it is, in every case
-/// this layer cannot spell better than the bytes: a name with no `$`, a name whose `$`-separated
-/// tail has a segment that is not a Java identifier (javac's synthetic families: the anonymous
-/// `X$1`, the local `X$1Local`), a self-nested name as defined above, and `current_class` of
-/// `None` — a run that stated no declaring class has no owner to compare against.
-///
-/// An array suffix (`V1$Op[]`) is not part of the nesting: it is split off, the element name is
-/// spelled, and the suffix is written back after it.
-pub fn nested_reference_spelling<'n>(
-    name: &'n str,
-    current_class: Option<&str>,
-) -> std::borrow::Cow<'n, str> {
-    use std::borrow::Cow;
-    // The fast path is also the guarantee the no-`$` families keep byte-identical text: platform
-    // names, simple names and already-dotted names never allocate and never change.
-    if !name.contains('$') {
-        return Cow::Borrowed(name);
-    }
-    let Some(current) = current_class else {
-        return Cow::Borrowed(name);
-    };
-    let current = current.replace('/', ".");
-    // The `[]` of an array type is a suffix of the whole spelling, so the element name is
-    // everything before its first occurrence and the suffix is the rest of the text unchanged.
-    let (element, suffix) = match name.split_once("[]") {
-        Some((element, _)) => (element, &name[element.len()..]),
-        None => (name, ""),
-    };
-    let Some((head, tail)) = element.split_once('$') else {
-        return Cow::Borrowed(name);
-    };
-    // Both sides of the split must be names Java can write: the head is a package prefix plus a
-    // top-level class (`p.Outer`, `V1`), and every segment of the tail is a nested member's own
-    // name. A name that fails this is one the pool states in a form source cannot improve on —
-    // the synthetic families above, or a hostile spelling — and it keeps the pool's form.
-    if head.is_empty()
-        || !head.split('.').all(is_java_identifier)
-        || !tail.split('$').all(is_java_identifier)
-    {
-        return Cow::Borrowed(name);
-    }
-    // The self-nested boundary: the name's top-level owner is the class whose text this is, so
-    // the member's declaration belongs to this unit's own family and only a fold projection may
-    // spell it as source nesting (see this function's doc). Everything else keeps the pool name.
-    let owner = current.split('$').next().unwrap_or(&current);
-    if head == owner {
-        return Cow::Borrowed(name);
-    }
-    let nested = tail.split('$').collect::<Vec<&str>>();
-    let mut spelled = format!("{head}.{}", nested.join("."));
-    spelled.push_str(suffix);
-    Cow::Owned(spelled)
-}
-
-/// The source spelling of one nested class name, as a **member of the class whose own
-/// `InnerClasses` attribute is `members`** writes it.
-///
-/// This is [`nested_reference_spelling`] behind the one piece of evidence the rule cannot invent:
-/// a `$` alone does not state a nesting relation, because `$` is a legal character of a **top
-/// level** class's own name (`Named$Top` is one class, not `Named`'s member `Top`), and JVMS
-/// §4.7.6 states the fact that does — a class file that references a member class carries an
-/// `InnerClasses` row naming it. `members` is that row set of the class whose text is being
-/// written, each name in the source spelling this module compares with (`V1$Op`, `p.A$B$C`); a
-/// name that is not one of them keeps the pool's own spelling exactly, and so does every name
-/// when the run stated no rows at all.
+/// Spell an exact row-stated binary reference through the shared raw naming context.
+/// Already projected source types and names with no matching row retain their spelling;
+/// a stated but contradictory row refuses instead of inventing a `$` boundary.
 pub fn nested_member_reference_spelling<'n>(
     name: &'n str,
-    current_class: Option<&str>,
-    members: Option<&[String]>,
-) -> std::borrow::Cow<'n, str> {
-    let element = match name.split_once("[]") {
-        Some((element, _)) => element,
-        None => name,
-    };
-    let stated = members.is_some_and(|members| members.iter().any(|member| member == element));
-    if !stated {
-        return std::borrow::Cow::Borrowed(name);
+    context: SourceClassNames<'_>,
+) -> Option<std::borrow::Cow<'n, str>> {
+    use std::borrow::Cow;
+    if !name.contains('$') || context.current_class.is_none() {
+        return Some(Cow::Borrowed(name));
     }
-    nested_reference_spelling(name, current_class)
+    let element = name.split_once("[]").map_or(name, |(element, _)| element);
+    let raw = JvmBytes::from_unicode(&element.replace('.', "/"));
+    // Only a named member row proposes a source nesting edge. Local/anonymous rows
+    // (including a repeated physical target after a refused class projection) keep the
+    // binary spelling; their presence alone is not a failed named-path proof.
+    if !context
+        .inner_classes
+        .iter()
+        .any(|row| row.class == raw.0 && row.outer_class.is_some() && row.inner_name.is_some())
+    {
+        return Some(Cow::Borrowed(name));
+    }
+    context.reference(name).map(Cow::Owned)
 }
 
 /// The deterministic alias of a raw name Java cannot spell.
@@ -323,10 +461,10 @@ pub fn alias_for(raw: &str) -> String {
 /// exactly what a compiler that reuses a storage location for two variables in disjoint scopes
 /// writes, and whether that becomes two variables in the produced text is [`crate::reuse`]'s
 /// decision — taken from the slot's own uses — rather than this record's.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct DebugLocal {
     slot: u16,
-    name: String,
+    name: JvmBytes,
     range: Option<(u32, u32)>,
     descriptor: Option<Vec<u8>>,
     generic_signature: Option<Vec<u8>>,
@@ -335,9 +473,19 @@ pub struct DebugLocal {
 impl DebugLocal {
     /// A record naming one slot over the bytecode range `[start_bci, end_bci)`.
     pub fn over(slot: u16, name: impl Into<String>, start_bci: u32, end_bci: u32) -> Self {
+        Self::over_raw(
+            slot,
+            JvmBytes::from_unicode(&name.into()),
+            start_bci,
+            end_bci,
+        )
+    }
+
+    /// A record retaining the reader's exact MUTF-8 name, before source spelling.
+    pub fn over_raw(slot: u16, name: JvmBytes, start_bci: u32, end_bci: u32) -> Self {
         Self {
             slot,
-            name: name.into(),
+            name,
             range: Some((start_bci, end_bci)),
             descriptor: None,
             generic_signature: None,
@@ -347,9 +495,14 @@ impl DebugLocal {
     /// A name for one slot with no range stated: what an entry point that was handed one name per
     /// slot states. A slot whose records all state no range is never split.
     pub fn named(slot: u16, name: impl Into<String>) -> Self {
+        Self::named_raw(slot, JvmBytes::from_unicode(&name.into()))
+    }
+
+    /// The exact name of a slot with no bytecode range stated.
+    pub fn named_raw(slot: u16, name: JvmBytes) -> Self {
         Self {
             slot,
-            name: name.into(),
+            name,
             range: None,
             descriptor: None,
             generic_signature: None,
@@ -372,8 +525,8 @@ impl DebugLocal {
         self.slot
     }
 
-    /// The name the record states, as text.
-    pub fn name(&self) -> &str {
+    /// The exact MUTF-8 name stated by the record.
+    pub fn name(&self) -> &JvmBytes {
         &self.name
     }
 
@@ -399,7 +552,7 @@ impl DebugLocal {
 /// disjoint ranges: the compiler reused one storage location for two source variables whose scopes
 /// do not overlap, and the presentation writes two variables with their own names and their own
 /// declarations, exactly as the source did.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, serde::Serialize)]
 pub struct LocalVariable {
     slot: u16,
     index: u16,
@@ -439,16 +592,16 @@ pub enum SlotEvidence {
     /// run declined to split. The ordinal name is the deterministic fallback either way.
     Unnamed,
     /// One variable for the whole slot, named by the one record that covers it.
-    Whole(String),
+    Whole(JvmBytes),
     /// Several variables in one slot, with a debug name only where a record belongs to that
     /// variable. An inferred lifetime can precede the only LVT record for its slot.
-    Split(Vec<Option<String>>),
+    Split(Vec<Option<JvmBytes>>),
 }
 
 impl SlotEvidence {
     /// The raw name of each variable of this slot, in variable order: one `None` for a slot the
     /// evidence does not name at all.
-    fn vars(&self) -> Vec<Option<String>> {
+    fn vars(&self) -> Vec<Option<JvmBytes>> {
         match self {
             Self::Unnamed => vec![None],
             Self::Whole(name) => vec![Some(name.clone())],
@@ -461,16 +614,17 @@ impl SlotEvidence {
 }
 
 /// The name one local variable is written as, with the evidence it came from.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct RenderedName {
     text: String,
-    raw: Option<String>,
+    raw: Option<JvmBytes>,
     aliased: Option<AliasReason>,
     variable: LocalVariable,
 }
 
 /// Why a raw name was not written as it stood.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AliasReason {
     /// The raw spelling is a keyword, a literal, or outside the identifier grammar.
     Unspellable,
@@ -485,8 +639,15 @@ impl RenderedName {
     }
 
     /// The evidence this name came from, when the body had any.
-    pub fn raw(&self) -> Option<&str> {
-        self.raw.as_deref()
+    pub fn raw(&self) -> Option<&JvmBytes> {
+        self.raw.as_ref()
+    }
+
+    /// Allocated bytes owned by this record's text and original name, excluding its frame.
+    pub fn allocation_capacity(&self) -> usize {
+        self.text
+            .capacity()
+            .saturating_add(self.raw.as_ref().map_or(0, |raw| raw.0.capacity()))
     }
 
     /// Why the text is not the raw spelling, when it is not.
@@ -612,8 +773,14 @@ impl NameTable {
                         table.invented += 1;
                         (invented_name(slot, parameters), None)
                     }
-                    (false, Some(raw)) if is_java_identifier(raw) => (raw.clone(), None),
-                    (false, Some(raw)) => (alias_for(raw), Some(AliasReason::Unspellable)),
+                    (false, Some(raw)) => match raw.to_unicode() {
+                        Some(text) if is_java_identifier(&text) => (text, None),
+                        Some(text) => (alias_for(&text), Some(AliasReason::Unspellable)),
+                        None => (
+                            alias_for(&crate::facts::display_jvm_bytes(raw)),
+                            Some(AliasReason::Unspellable),
+                        ),
+                    },
                 };
                 let (text, aliased) = match taken.contains(&text) {
                     false => (text, aliased),
@@ -749,126 +916,128 @@ fn invented_name(slot: u16, parameters: u16) -> String {
 mod tests {
     use super::*;
 
+    fn rows() -> Vec<ResolvedInnerClass> {
+        [
+            ("p/Outer$Node$Part", "p/Outer", "Node$Part"),
+            ("p/Family$Top$Node$Part", "p/Family$Top", "Node$Part"),
+        ]
+        .into_iter()
+        .map(|(class, outer, inner)| ResolvedInnerClass {
+            class: JvmBytes::from_unicode(class).0,
+            outer_class: Some(JvmBytes::from_unicode(outer).0),
+            inner_name: Some(JvmBytes::from_unicode(inner)),
+            access_flags: 9,
+        })
+        .collect()
+    }
+
     #[test]
-    fn cross_class_nested_references_spell_dotted_and_self_nested_stays_pool() {
-        // Cross-class: the tail is dotted onto the head, package included, however deep.
+    fn local_and_anonymous_rows_preserve_physical_names_without_proposing_a_member_edge() {
+        let class = b"p/Host$1".to_vec();
+        for (outer_class, inner_name) in [
+            (None, None),
+            (None, Some(JvmBytes(b"Local".to_vec()))),
+            (Some(b"p/Host".to_vec()), None),
+        ] {
+            let row = ResolvedInnerClass {
+                class: class.clone(),
+                outer_class,
+                inner_name,
+                access_flags: 0,
+            };
+            let rows = [row.clone(), row];
+            let names = SourceClassNames {
+                current_class: Some(b"p/Host"),
+                inner_classes: &rows,
+            };
+            assert_eq!(
+                nested_member_reference_spelling("p.Host$1", names).as_deref(),
+                Some("p.Host$1")
+            );
+        }
+        let rows = [
+            ResolvedInnerClass {
+                class: b"p/Host$Node".to_vec(),
+                outer_class: None,
+                inner_name: None,
+                access_flags: 0,
+            },
+            ResolvedInnerClass {
+                class: b"p/Host$Node".to_vec(),
+                outer_class: Some(b"p/Host".to_vec()),
+                inner_name: Some(JvmBytes(b"Node".to_vec())),
+                access_flags: 9,
+            },
+        ];
+        let names = SourceClassNames {
+            current_class: Some(b"p/Client"),
+            inner_classes: &rows,
+        };
+        assert_eq!(nested_member_reference_spelling("p.Host$Node", names), None);
+    }
+
+    #[test]
+    fn cross_class_nested_references_use_complete_row_boundaries() {
+        let rows = rows();
+        let context = SourceClassNames {
+            current_class: Some(b"p/Client"),
+            inner_classes: &rows,
+        };
         assert_eq!(
-            nested_reference_spelling("Other$Inner", Some("V1")).as_ref(),
-            "Other.Inner"
+            nested_member_reference_spelling("p.Outer$Node$Part[]", context).as_deref(),
+            Some("p.Outer.Node$Part[]")
         );
         assert_eq!(
-            nested_reference_spelling("p.A$B$C", Some("p/VN2")).as_ref(),
-            "p.A.B.C"
+            nested_member_reference_spelling("p.Family$Top$Node$Part", context).as_deref(),
+            Some("p.Family$Top.Node$Part")
         );
+        let own = SourceClassNames {
+            current_class: Some(b"p/Family$Top"),
+            ..context
+        };
         assert_eq!(
-            nested_reference_spelling("p.A$B$C", Some("VN2")).as_ref(),
-            "p.A.B.C",
-            "the owner comparison is whole-name: a same-named class in another package is another class"
-        );
-        // The head is compared as a whole: a same-named class in another package is another class.
-        assert_eq!(
-            nested_reference_spelling("q.Outer$Inner", Some("p/Outer")).as_ref(),
-            "q.Outer.Inner"
-        );
-        // An array's element carries the nesting; the brackets are written back.
-        assert_eq!(
-            nested_reference_spelling("Other$Inner[]", Some("V1")).as_ref(),
-            "Other.Inner[]"
-        );
-        // Self-nested — the name's top-level owner is the class whose text this is — keeps the
-        // pool spelling: only a family projection that declares the member in this text may spell
-        // it as source nesting, and this generic rule never does.
-        assert_eq!(
-            nested_reference_spelling("V1$Op", Some("V1")).as_ref(),
-            "V1$Op",
-            "the enum fold owns the simple spelling of its own child"
-        );
-        assert_eq!(
-            nested_reference_spelling("V1$Op", Some("V1$Op")).as_ref(),
-            "V1$Op",
-            "a member's own text keeps the pool spelling of itself and its siblings"
-        );
-        assert_eq!(
-            nested_reference_spelling("p.VN2$Mid$Leaf", Some("p/VN2")).as_ref(),
-            "p.VN2$Mid$Leaf",
-            "a deep self-nested chain keeps the pool spelling"
-        );
-        assert_eq!(
-            nested_reference_spelling("N1$Numbers$NumString", Some("N1$Numbers")).as_ref(),
-            "N1$Numbers$NumString",
-            "a grandchild keeps the pool spelling inside its owner's own text"
+            nested_member_reference_spelling("p.Family$Top$Node$Part", own).as_deref(),
+            Some("p.Family$Top$Node$Part")
         );
     }
 
     #[test]
-    fn names_source_already_spells_or_cannot_improve_stay_verbatim() {
-        for name in ["java.util.List", "Other", "V1.Op", "int", ""] {
-            assert_eq!(
-                nested_reference_spelling(name, Some("V1")).as_ref(),
-                name,
-                "`{name}` is already a source spelling"
-            );
-        }
-        // The synthetic families: an anonymous capture class and javac's local-class spellings,
-        // including the one whose tail would pass an identifier check if the head were not checked.
+    fn names_without_row_evidence_or_already_projected_types_stay_verbatim() {
+        let rows = rows();
+        let context = SourceClassNames {
+            current_class: Some(b"p/Client"),
+            inner_classes: &rows,
+        };
         for name in [
-            "C1$1",
-            "C1$12",
-            "More17$1",
+            "java.util.List",
+            "p.Named$Top",
             "Outer$1Local",
-            "A$1$B",
-            "$Op",
-            "A$",
-            "p.$Op",
+            "p.Outer.Node$Part<T>",
+            "int",
         ] {
             assert_eq!(
-                nested_reference_spelling(name, Some("A")).as_ref(),
-                name,
-                "`{name}` keeps the pool's own spelling"
+                nested_member_reference_spelling(name, context).as_deref(),
+                Some(name)
             );
         }
-        // No class to nest against: the pool spelling, never a guess.
-        assert_eq!(nested_reference_spelling("V1$Op", None).as_ref(), "V1$Op");
-        // A nested class referencing itself whole: the reference's top-level owner is the owner
-        // of the text itself, so it is self-nested and keeps the pool spelling.
         assert_eq!(
-            nested_reference_spelling("V1$Op", Some("V1$Op")).as_ref(),
-            "V1$Op"
+            nested_member_reference_spelling("p.Outer$Node$Part", SourceClassNames::default())
+                .as_deref(),
+            Some("p.Outer$Node$Part")
         );
     }
 
     #[test]
-    fn a_dollar_top_level_class_is_a_member_of_nothing_the_rows_do_not_state() {
-        let members = vec!["V1$Op".to_owned(), "p.A$B$C".to_owned(), "V1$1".to_owned()];
-        // A top-level class whose own name carries `$` is not nested, and no rule of this module
-        // may turn it into a nesting: the pool spelling is the only faithful one.
+    fn contradictory_stated_body_paths_refuse_instead_of_guessing() {
+        let mut rows = rows();
+        rows.push(rows[0].clone());
+        let context = SourceClassNames {
+            current_class: Some(b"p/Client"),
+            inner_classes: &rows,
+        };
         assert_eq!(
-            nested_member_reference_spelling(
-                "Named$Top",
-                Some("StaticMemberBasic"),
-                Some(&members)
-            )
-            .as_ref(),
-            "Named$Top"
-        );
-        // A cross-class name the class's own rows state converts; the same name without that
-        // evidence keeps the pool spelling, and so does a run that stated no rows at all.
-        assert_eq!(
-            nested_member_reference_spelling("p.A$B$C", Some("p/VN2"), Some(&members)).as_ref(),
-            "p.A.B.C"
-        );
-        assert_eq!(
-            nested_member_reference_spelling("p.A$B$C", Some("p/VN2"), Some(&[])).as_ref(),
-            "p.A$B$C"
-        );
-        assert_eq!(
-            nested_member_reference_spelling("p.A$B$C", Some("p/VN2"), None).as_ref(),
-            "p.A$B$C"
-        );
-        // The row set gates the whole name, arrays included by their element.
-        assert_eq!(
-            nested_member_reference_spelling("p.A$B$C[]", Some("p/VN2"), Some(&members)).as_ref(),
-            "p.A.B.C[]"
+            nested_member_reference_spelling("p.Outer$Node$Part", context),
+            None
         );
     }
 
@@ -910,9 +1079,14 @@ mod tests {
         ] {
             assert!(!is_java_identifier(refused), "{refused} is not one");
         }
-        // The Unicode half: the letters, digits and `$`/`_` the JLS admits — and the marks,
-        // currency symbols and punctuation it does not, which keep their alias and marker.
+        // Java 8 accepts currency starts and combining parts, but not Numeric(No), a combining
+        // start, or an ignorable character that javac would remove from the physical identifier.
         assert!(is_java_identifier("café"));
+        assert!(is_java_identifier("€Box"));
+        assert!(is_java_identifier("x\u{0301}"));
+        assert!(!is_java_identifier("x²"));
+        assert!(!is_java_identifier("\u{0903}Box"));
+        assert!(!is_java_identifier("a\u{200b}b"));
         assert!(is_java_identifier("变量"));
         assert!(is_java_identifier("内部类"));
         assert!(is_java_identifier("方法2"));
@@ -934,6 +1108,38 @@ mod tests {
             alias_for("变量。"),
             alias_for("变量。"),
             "pure in the spelling"
+        );
+    }
+
+    #[test]
+    fn raw_names_are_decoded_only_for_spelling_and_keep_exact_alias_evidence() {
+        let raw = [
+            JvmBytes::from_unicode("𐐀"),
+            JvmBytes(vec![0xed, 0xa0, 0x81]),
+            JvmBytes(vec![0xed, 0xa0, 0x82]),
+            JvmBytes::from_unicode("�"),
+            JvmBytes::from_unicode("class"),
+            JvmBytes::from_unicode("class_"),
+        ];
+        let evidence = raw
+            .iter()
+            .cloned()
+            .map(SlotEvidence::Whole)
+            .collect::<Vec<_>>();
+        let table = NameTable::build(0, 6, &evidence);
+        assert_eq!(table.whole(0).unwrap().text(), "𐐀");
+        let mut written = BTreeSet::new();
+        for (slot, raw) in raw.iter().enumerate() {
+            let name = table.whole(slot as u16).unwrap();
+            assert_eq!(name.raw(), Some(raw));
+            assert!(is_java_identifier(name.text()));
+            assert!(written.insert(name.text()));
+            let value = serde_json::to_value(name).unwrap();
+            assert_eq!(value["raw"], serde_json::to_value(raw).unwrap());
+        }
+        assert_eq!(
+            table.whole(5).unwrap().aliased(),
+            Some(AliasReason::Collision)
         );
     }
 
@@ -967,16 +1173,16 @@ mod tests {
             3,
             3,
             &[
-                SlotEvidence::Whole("this".to_string()),
-                SlotEvidence::Whole("left".to_string()),
-                SlotEvidence::Whole("right".to_string()),
+                SlotEvidence::Whole(JvmBytes::from_unicode("this")),
+                SlotEvidence::Whole(JvmBytes::from_unicode("left")),
+                SlotEvidence::Whole(JvmBytes::from_unicode("right")),
             ],
         );
         let receiver = LocalVariable::whole(0);
         assert_eq!(named.text(receiver), Some(RECEIVER));
         assert_eq!(
             named.name(receiver).and_then(RenderedName::raw),
-            Some("this"),
+            Some(&JvmBytes::from_unicode("this")),
             "the record still states what the table said"
         );
         assert_eq!(
@@ -993,8 +1199,8 @@ mod tests {
         // The spelling does not come from the table at all: `this$0`, `self` and no record at all
         // are one spelling.
         for evidence in [
-            SlotEvidence::Whole("this$0".to_string()),
-            SlotEvidence::Whole("self".to_string()),
+            SlotEvidence::Whole(JvmBytes::from_unicode("this$0")),
+            SlotEvidence::Whole(JvmBytes::from_unicode("self")),
             SlotEvidence::Unnamed,
         ] {
             let table = NameTable::build_with_receiver(2, 2, &[evidence, SlotEvidence::Unnamed]);
@@ -1022,14 +1228,15 @@ mod tests {
         assert_eq!(unnamed.text(LocalVariable::whole(0)), Some("arg0"));
         assert_ne!(unnamed.text(LocalVariable::whole(0)), Some(RECEIVER));
 
-        let named = NameTable::build(2, 2, &[SlotEvidence::Whole("seed".to_string())]);
+        let named = NameTable::build(2, 2, &[SlotEvidence::Whole(JvmBytes::from_unicode("seed"))]);
         assert_eq!(named.text(LocalVariable::whole(0)), Some("seed"));
         assert_eq!(named.text(LocalVariable::whole(1)), Some("arg1"));
 
         // A debug table that names a `static` method's slot 0 `this` states a name Java cannot
         // spell, and it takes the alias path it took before: the fact that decides the receiver is
         // the member's own `ACC_STATIC`, never the name in front of it.
-        let aliased = NameTable::build(1, 1, &[SlotEvidence::Whole("this".to_string())]);
+        let aliased =
+            NameTable::build(1, 1, &[SlotEvidence::Whole(JvmBytes::from_unicode("this"))]);
         assert_eq!(aliased.text(LocalVariable::whole(0)), Some("this_"));
         assert_eq!(aliased.aliased(), 1);
         assert!(aliased.any_aliased());
@@ -1038,13 +1245,16 @@ mod tests {
     #[test]
     fn evidence_wins_where_it_exists_and_aliases_where_it_cannot_be_written() {
         let evidence = vec![
-            SlotEvidence::Whole("int".to_string()),
+            SlotEvidence::Whole(JvmBytes::from_unicode("int")),
             SlotEvidence::Unnamed,
-            SlotEvidence::Whole("count".to_string()),
+            SlotEvidence::Whole(JvmBytes::from_unicode("count")),
         ];
         let table = NameTable::build(1, 3, &evidence);
         let first = LocalVariable::whole(0);
-        assert_eq!(table.name(first).and_then(RenderedName::raw), Some("int"));
+        assert_eq!(
+            table.name(first).and_then(RenderedName::raw),
+            Some(&JvmBytes::from_unicode("int"))
+        );
         assert_eq!(table.text(first), Some("int_"));
         assert_eq!(
             table.name(first).and_then(RenderedName::aliased),
@@ -1063,8 +1273,8 @@ mod tests {
     #[test]
     fn a_collision_resolves_by_slot_order_and_is_an_alias() {
         let evidence = vec![
-            SlotEvidence::Whole("value".to_string()),
-            SlotEvidence::Whole("value".to_string()),
+            SlotEvidence::Whole(JvmBytes::from_unicode("value")),
+            SlotEvidence::Whole(JvmBytes::from_unicode("value")),
         ];
         let table = NameTable::build(0, 2, &evidence);
         assert_eq!(table.text(LocalVariable::whole(0)), Some("value"));
@@ -1129,8 +1339,11 @@ mod tests {
         // another, so the table states two names for that one slot — and neither is a name for the
         // whole of it, which is what `whole` answers.
         let evidence = vec![
-            SlotEvidence::Whole("arg0".to_string()),
-            SlotEvidence::Split(vec![Some("c".to_string()), Some("d".to_string())]),
+            SlotEvidence::Whole(JvmBytes::from_unicode("arg0")),
+            SlotEvidence::Split(vec![
+                Some(JvmBytes::from_unicode("c")),
+                Some(JvmBytes::from_unicode("d")),
+            ]),
         ];
         let table = NameTable::build(1, 2, &evidence);
         assert_eq!(table.text(LocalVariable::new(1, 0)), Some("c"));
@@ -1152,8 +1365,11 @@ mod tests {
             1,
             2,
             &[
-                SlotEvidence::Whole("c".to_string()),
-                SlotEvidence::Split(vec![Some("int".to_string()), Some("c".to_string())]),
+                SlotEvidence::Whole(JvmBytes::from_unicode("c")),
+                SlotEvidence::Split(vec![
+                    Some(JvmBytes::from_unicode("int")),
+                    Some(JvmBytes::from_unicode("c")),
+                ]),
             ],
         );
         assert_eq!(aliased.text(LocalVariable::new(1, 0)), Some("int_"));
@@ -1177,17 +1393,23 @@ mod tests {
                 SlotEvidence::Unnamed,
                 SlotEvidence::Unnamed,
                 SlotEvidence::Unnamed,
-                SlotEvidence::Split(vec![Some("value".to_owned()), Some("value".to_owned())]),
+                SlotEvidence::Split(vec![
+                    Some(JvmBytes::from_unicode("value")),
+                    Some(JvmBytes::from_unicode("value")),
+                ]),
             ],
         );
         let first = LocalVariable::new(5, 0);
         let second = LocalVariable::new(5, 1);
         assert_eq!(table.text(first), Some("value"));
         assert_eq!(table.text(second), Some("value_2"));
-        assert_eq!(table.name(first).and_then(RenderedName::raw), Some("value"));
+        assert_eq!(
+            table.name(first).and_then(RenderedName::raw),
+            Some(&JvmBytes::from_unicode("value"))
+        );
         assert_eq!(
             table.name(second).and_then(RenderedName::raw),
-            Some("value")
+            Some(&JvmBytes::from_unicode("value"))
         );
         assert_eq!(
             table.name(second).and_then(RenderedName::aliased),
@@ -1203,12 +1425,125 @@ mod tests {
         for evidence in [
             SlotEvidence::Unnamed,
             SlotEvidence::Split(Vec::new()),
-            SlotEvidence::Split(vec![Some("only".to_string())]),
+            SlotEvidence::Split(vec![Some(JvmBytes::from_unicode("only"))]),
         ] {
-            let table = NameTable::build(1, 2, &[SlotEvidence::Whole("b".to_string()), evidence]);
+            let table = NameTable::build(
+                1,
+                2,
+                &[SlotEvidence::Whole(JvmBytes::from_unicode("b")), evidence],
+            );
             assert_eq!(table.text(LocalVariable::whole(1)), Some("local1"));
             assert_eq!(table.text(LocalVariable::new(1, 1)), None);
             assert_eq!(table.invented(), 1);
         }
     }
+}
+
+#[cfg(test)]
+mod raw_source_identifier_tests {
+    use super::*;
+
+    #[test]
+    fn source_identifiers_decode_canonical_mutf8_without_aliasing() {
+        for name in ["T", "汉", "𐐀T", "$T"] {
+            let raw = JvmBytes::from_unicode(name);
+            assert_eq!(source_identifier(&raw.0).as_deref(), Some(name));
+            assert_eq!(source_type_parameter_name(&raw.0).as_deref(), Some(name));
+        }
+        assert_eq!(source_type_parameter_name(b"_").as_deref(), Some("_"));
+        assert_eq!(source_identifier(b"_"), None);
+        assert!(!is_java_identifier("_"));
+        for raw in [
+            JvmBytes(vec![0xed, 0xa0]),
+            JvmBytes(vec![0xed, 0xa0, 0x80]),
+            JvmBytes("𐐀T".as_bytes().to_vec()), // UTF-8 is not JVM MUTF-8.
+            JvmBytes::from_unicode("bad-name"),
+            JvmBytes::from_unicode("class"),
+            JvmBytes::from_unicode("a\u{200b}b"),
+        ] {
+            assert_eq!(source_identifier(&raw.0), None, "{:?}", raw.0);
+            assert_eq!(source_type_parameter_name(&raw.0), None, "{:?}", raw.0);
+        }
+        assert_eq!(source_type_parameter_name(&[0xc1, 0x9f]), None);
+
+        let family_name = crate::source_proof::member_family_root_source_name;
+        let child = JvmBytes::from_unicode("p/Outer$Inner");
+        for name in ["p/Outer", "汉/𐐀Root", "Root$Carrier"] {
+            assert_eq!(
+                family_name(&JvmBytes::from_unicode(name).0, &child),
+                Ok(name.replace('/', "."))
+            );
+        }
+        let invalid = JvmBytes(vec![0xed, 0xa0]);
+        assert_eq!(
+            family_name(&invalid.0, &invalid),
+            Err("root binary name cannot be used for a Java source path")
+        );
+        assert_eq!(
+            family_name(b"p/_", &invalid),
+            Err("member binary name cannot be used for a Java source path")
+        );
+        for name in ["p/_", "_/Root", "p/class", "p/a\u{200b}b", "p//Root"] {
+            assert_eq!(
+                family_name(&JvmBytes::from_unicode(name).0, &child),
+                Err("root binary name has no proved Java source spelling")
+            );
+        }
+        assert_eq!(
+            family_name(b"p/Outer", &JvmBytes::from_unicode("p/_")),
+            Ok("p.Outer".to_owned())
+        );
+
+        let static_name = crate::source_proof::static_member_root_source_name;
+        for name in ["p/Outer", "汉/𐐀Root", "Root$Carrier"] {
+            assert_eq!(
+                static_name(&JvmBytes::from_unicode(name).0, &child.0),
+                Some(name.replace('/', "."))
+            );
+        }
+        for (root, member) in [
+            (invalid.0.as_slice(), child.0.as_slice()),
+            (b"p/Outer".as_slice(), invalid.0.as_slice()),
+            (b"p/_".as_slice(), child.0.as_slice()),
+            (b"p//Outer".as_slice(), child.0.as_slice()),
+        ] {
+            assert_eq!(static_name(root, member), None);
+        }
+        let decoded_child = JvmBytes::from_unicode("p/bad-name");
+        assert_eq!(
+            static_name(b"p/Outer", &decoded_child.0),
+            Some("p.Outer".to_owned())
+        );
+        assert_eq!(
+            family_name(b"p/Outer", &decoded_child),
+            Err("member binary name cannot be used for a Java source path")
+        );
+    }
+}
+
+/// The simple name one internal name states: everything after its last `/`, with `$` kept.
+///
+/// This is the name a class's **own** declaration and its constructors are spelled with. The package
+/// the name states before that `/` is not dropped: it is written as the text's `package` statement
+/// ([`class_package_name`]), which is the one place Java source states it. Only the last `/` is a package
+/// boundary — `$` is a legal Java identifier character, so `p/More17$1` states the simple name
+/// `More17$1`, exactly as `p/Outer$Inner` states `Outer$Inner`.
+pub fn class_simple_name(raw: &[u8]) -> Option<String> {
+    let simple = match raw.iter().rposition(|byte| *byte == b'/') {
+        Some(position) => &raw[position + 1..],
+        None => raw,
+    };
+    source_class_name(&JvmBytes(simple.to_vec()))
+}
+
+/// The package one internal name states, as a `package` statement spells it, or `None` for a name
+/// that states none (the default package).
+///
+/// The package is the internal name in front of its last `/`, with every remaining `/` written as
+/// `.` — the same rule [`source_class_name`] applies to the whole name. `None` means the text writes no
+/// `package` line at all: a name with no `/` is in the unnamed package, which source spells with no
+/// statement rather than with an empty one.
+pub fn class_package_name(raw: &[u8]) -> Option<String> {
+    let position = raw.iter().rposition(|byte| *byte == b'/')?;
+    source_class_name(&JvmBytes(raw[..position].to_vec()))
 }

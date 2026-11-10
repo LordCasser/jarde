@@ -146,6 +146,7 @@ fn source_under(
         .open(ArtifactInput::bytes(artifact.to_vec()), &mut budget)
         .expect("the artifact opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },

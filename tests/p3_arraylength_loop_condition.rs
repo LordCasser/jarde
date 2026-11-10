@@ -17,6 +17,7 @@ fn source(evidence: RecoveryEvidenceRequest) -> ClassSourceReport {
         .open(ArtifactInput::bytes(STEP_INDEX.to_vec()), &mut budget)
         .expect("the frozen Java 8 class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("StepIndex"),
         },
@@ -58,6 +59,7 @@ fn every_other(report: &ClassSourceReport) -> (&ClassSourceMethod, &jarde_java::
 
 fn request_for(snapshot: SnapshotId) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("StepIndex"),
         },

@@ -140,6 +140,7 @@ fn limits() -> Limits {
 
 fn request(snapshot: &ArtifactSnapshot, class: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },

@@ -949,7 +949,12 @@ fn the_operation_publishes_its_stages_and_explicit_stages_reproduce_the_schedule
     };
     let report = performed(
         engine
-            .recover_target(slice::from_ref(&snapshot), &request, &mut budget())
+            .recover_target(
+                slice::from_ref(&snapshot),
+                jarde::SourceTarget::JAVA_8,
+                &request,
+                &mut budget(),
+            )
             .expect("a legal task request is answered, not raised"),
     );
     assert_eq!(report.operation, MethodOperation::Recovery);
@@ -1420,10 +1425,10 @@ fn a_tight_override_stops_with_the_terminating_dimension() {
     );
     assert!(codes(&report.diagnostics).contains(&"budget_exceeded_method_bodies".to_string()));
 
-    // A tight output budget stops the analysis of a standalone class before its body is read, and
-    // the report says so instead of claiming a completed run.
+    // A tight physical-read budget stops the analysis of a standalone class before its body is
+    // read, and the report says so instead of claiming a completed run.
     let standalone = nested_eval();
-    let tight = task_limits(&[BudgetOverride::new("output_bytes", 8).expect("named")])
+    let tight = task_limits(&[BudgetOverride::new("read_bytes", 8).expect("named")])
         .expect("a legal override");
     let mut budget = Budget::new(tight.clone());
     let analyzed = performed(
@@ -1451,7 +1456,7 @@ fn a_tight_override_stops_with_the_terminating_dimension() {
         analyzed.analysis.execution,
         ExecutionReport::Partial {
             reason: TerminationReason::BudgetExceeded {
-                dimension: BudgetDimension::OutputBytes,
+                dimension: BudgetDimension::ReadBytes,
             },
             usage: execution_usage(&analyzed.analysis.execution).clone(),
         }
@@ -1488,7 +1493,14 @@ fn the_single_class_policy_declares_its_own_root() {
         problems.is_empty(),
         "the built declaration validates: {problems:?}"
     );
-    assert_eq!(identity.domain_loaders, vec![LoaderId("app".to_string())]);
+    assert_eq!(
+        identity
+            .domains
+            .iter()
+            .map(|domain| domain.loader.clone())
+            .collect::<Vec<_>>(),
+        vec![LoaderId("app".to_string())]
+    );
     assert!(identity.providers.is_empty());
 
     // The policy refuses a snapshot of another kind instead of inventing a container identity for
@@ -2642,6 +2654,7 @@ fn an_unfinished_name_search_is_neither_a_unique_nor_a_missing_target() {
         engine
             .recover_target(
                 slice::from_ref(&valid),
+                jarde::SourceTarget::JAVA_8,
                 &method_request(&valid),
                 &mut valid_budget,
             )
@@ -2661,6 +2674,7 @@ fn an_unfinished_name_search_is_neither_a_unique_nor_a_missing_target() {
         engine
             .recover_target(
                 slice::from_ref(&damaged_last),
+                jarde::SourceTarget::JAVA_8,
                 &method_request(&damaged_last),
                 &mut after_budget,
             )
@@ -2703,6 +2717,7 @@ fn an_unfinished_name_search_is_neither_a_unique_nor_a_missing_target() {
         engine
             .recover_target(
                 slice::from_ref(&damaged_last),
+                jarde::SourceTarget::JAVA_8,
                 &method_request(&damaged_last),
                 &mut again_budget,
             )
@@ -2717,6 +2732,7 @@ fn an_unfinished_name_search_is_neither_a_unique_nor_a_missing_target() {
         engine
             .recover_target(
                 slice::from_ref(&damaged_first),
+                jarde::SourceTarget::JAVA_8,
                 &method_request(&damaged_first),
                 &mut before_budget,
             )
@@ -2773,6 +2789,7 @@ fn an_unfinished_name_search_is_neither_a_unique_nor_a_missing_target() {
     let error = engine
         .recover_target(
             slice::from_ref(&valid),
+            jarde::SourceTarget::JAVA_8,
             &MethodOperationRequest {
                 method: MethodRef::Name {
                     class: ClassNameQuery::internal("NestedEval"),
@@ -2966,6 +2983,7 @@ fn a_stopped_selection_publishes_zero_or_more_candidates_and_runs_nothing() {
         engine
             .recover_target(
                 slice::from_ref(&damaged_snapshot),
+                jarde::SourceTarget::JAVA_8,
                 &MethodOperationRequest {
                     method: MethodRef::Name {
                         class: ClassNameQuery::internal("p/Damaged"),
@@ -3253,7 +3271,12 @@ fn repeated_operations_over_one_snapshot_are_identical() {
         };
         let report = performed(
             engine
-                .recover_target(slice::from_ref(&snapshot), &request, &mut budget)
+                .recover_target(
+                    slice::from_ref(&snapshot),
+                    jarde::SourceTarget::JAVA_8,
+                    &request,
+                    &mut budget,
+                )
                 .expect("a legal task request is answered"),
         );
         (
@@ -3310,6 +3333,7 @@ fn recover_fixture(
         engine
             .recover_target(
                 slice::from_ref(snapshot),
+                jarde::SourceTarget::JAVA_8,
                 &MethodOperationRequest {
                     method: MethodRef::Method { method },
                     environment: environment_request(snapshot, EnvironmentPolicy::SingleClass),

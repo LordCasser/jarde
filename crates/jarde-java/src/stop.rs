@@ -29,9 +29,11 @@ pub enum StopReason {
     /// The payload has no such table, so the phase validity of the run does not reach the recovery
     /// layer and nothing can be presented. Never an empty artifact with a success state.
     IrTableMissing { table: &'static str },
-    /// A counted bound refused a charge before the work it pays for.
+    /// A budget bound refused work. The original quota includes elapsed-time stops.
     Budget {
-        dimension: CountedBudgetDimension,
+        dimension: BudgetDimension,
+        consumed: u64,
+        requested: u64,
         /// Bytes of text written before the refusal; `0` when the refusal happened before the
         /// emitter ran.
         written: u64,
@@ -42,10 +44,7 @@ pub enum StopReason {
     },
     /// The run's cancellation token was set.
     Cancelled { at: Option<u32> },
-    /// The budget refused to continue for a reason that is neither the output bound nor a flagged
-    /// cancellation (elapsed time, for instance), or the recovery recursion refused to descend any
-    /// further: `code` is the stable name of what interrupted the run — `jre_budget_interrupted`,
-    /// [`RECURSION_BOUND_CODE`] or [`RECURSION_REENTRY_CODE`] — and `at` is the node it stopped on.
+    /// A structural boundary interrupted recovery, such as recursion or replay disagreement.
     Interrupted { code: &'static str, at: Option<u32> },
     /// The request's own evidence selection cannot be answered for this body (change
     /// `add-demand-driven-core-results`, D1): a category this entry does not materialize, a driver
@@ -125,7 +124,7 @@ pub(crate) fn charge(
         return Err(StopReason::Cancelled { at });
     }
     if let Err(error) = budget.charge(dimension, requested) {
-        return Err(stop_from_error(budget, dimension, error, at));
+        return Err(stop_from_error(budget, error, at));
     }
     Ok(())
 }
@@ -142,33 +141,26 @@ pub(crate) fn check(
 ) -> Result<(), StopReason> {
     budget
         .check(dimension, requested)
-        .map_err(|error| stop_from_error(budget, dimension, error, at))
+        .map_err(|error| stop_from_error(budget, error, at))
 }
 
-fn stop_from_error(
-    budget: &Budget,
-    dimension: CountedBudgetDimension,
-    error: Error,
-    at: Option<u32>,
-) -> StopReason {
+pub(crate) fn stop_from_error(budget: &Budget, error: Error, at: Option<u32>) -> StopReason {
     match error {
         Error::Cancelled { .. } => StopReason::Cancelled { at },
         Error::BudgetExceeded {
-            dimension: BudgetDimension::ElapsedMillis,
-            ..
-        } => StopReason::Interrupted {
-            code: BUDGET_INTERRUPTED_CODE,
+            dimension,
+            limit,
+            consumed,
+            requested,
+        } => StopReason::Budget {
+            dimension,
+            limit,
+            consumed,
+            requested,
+            written: budget.usage().output_bytes,
             at,
         },
-        _ => {
-            let limit = budget.limits().counted_limit(dimension);
-            StopReason::Budget {
-                dimension,
-                written: budget.usage().output_bytes,
-                limit,
-                at,
-            }
-        }
+        _ => unreachable!("budget checks return cancellation or a refused quota"),
     }
 }
 
@@ -178,16 +170,9 @@ pub(crate) fn poll(budget: &Budget, at: Option<u32>) -> Result<(), StopReason> {
     if budget.cancellation_token().is_cancelled() {
         return Err(StopReason::Cancelled { at });
     }
-    if let Err(error) = budget.poll() {
-        if matches!(error, jarde_reader::error::Error::Cancelled { .. }) {
-            return Err(StopReason::Cancelled { at });
-        }
-        return Err(StopReason::Interrupted {
-            code: BUDGET_INTERRUPTED_CODE,
-            at,
-        });
-    }
-    Ok(())
+    budget
+        .poll()
+        .map_err(|error| stop_from_error(budget, error, at))
 }
 
 #[cfg(test)]
@@ -233,6 +218,65 @@ mod tests {
     }
 
     #[test]
+    fn s1_projection_adapter_keeps_the_original_budget_quota() {
+        let mut budget = Budget::new(Limits {
+            ir_items: 1,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        charge(&mut budget, CountedBudgetDimension::IrItems, 1, None).unwrap();
+        let stop = charge(&mut budget, CountedBudgetDimension::IrItems, 3, Some(17))
+            .expect_err("the original quota refuses three more items");
+        assert_eq!(stop.at(), Some(17));
+        assert_eq!(
+            crate::source_proof::enum_projection_stop_error(stop, "test projection", "missing"),
+            Error::BudgetExceeded {
+                dimension: BudgetDimension::IrItems,
+                limit: 1,
+                consumed: 1,
+                requested: 3,
+            }
+        );
+    }
+
+    #[test]
+    fn s1_projection_and_evidence_keep_elapsed_as_the_first_stop() {
+        let mut budget = Budget::new(Limits {
+            elapsed_millis: 0,
+            ..Limits::default()
+        });
+        let stop = charge(
+            &mut budget,
+            CountedBudgetDimension::OutputBytes,
+            1,
+            Some(23),
+        )
+        .expect_err("the elapsed limit refuses before output work");
+        assert!(matches!(
+            crate::source_proof::enum_projection_stop_error(stop, "test projection", "missing"),
+            Error::BudgetExceeded {
+                dimension: BudgetDimension::ElapsedMillis,
+                ..
+            }
+        ));
+        let mut phase = crate::evidence::EvidencePhase::new();
+        assert!(!phase.may_continue(&mut budget));
+        budget.cancellation_token().cancel();
+        assert!(!phase.may_continue(&mut budget));
+        assert!(matches!(
+            crate::source_proof::enum_projection_stop_error(
+                phase.reason(),
+                "test replay",
+                "missing"
+            ),
+            Error::BudgetExceeded {
+                dimension: BudgetDimension::ElapsedMillis,
+                ..
+            }
+        ));
+    }
+
+    #[test]
     fn cancellation_inside_budget_poll_keeps_the_cancelled_reason() {
         let budget = checkpoint_cancelled_budget();
         assert_eq!(
@@ -257,7 +301,7 @@ mod tests {
     }
 
     #[test]
-    fn deadline_inside_budget_charge_keeps_the_interrupted_reason() {
+    fn deadline_inside_budget_charge_keeps_the_elapsed_dimension() {
         let dimensions = [
             CountedBudgetDimension::OutputBytes,
             CountedBudgetDimension::IrItems,
@@ -279,22 +323,19 @@ mod tests {
             };
             assert_eq!(charged, 0);
         }
-        let expected: Vec<_> = dimensions
-            .into_iter()
-            .map(|dimension| {
-                (
-                    dimension,
-                    Err(StopReason::Interrupted {
-                        code: BUDGET_INTERRUPTED_CODE,
+        for (dimension, result) in actual {
+            assert!(
+                matches!(
+                    result,
+                    Err(StopReason::Budget {
+                        dimension: BudgetDimension::ElapsedMillis,
                         at: Some(23),
-                    }),
-                )
-            })
-            .collect();
-        assert_eq!(
-            actual, expected,
-            "both real deadline refusals must remain Interrupted"
-        );
+                        ..
+                    })
+                ),
+                "{dimension:?}: {result:?}"
+            );
+        }
     }
 
     #[test]
@@ -314,7 +355,9 @@ mod tests {
         assert_eq!(
             stop,
             StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: BudgetDimension::IrItems,
+                consumed: 1,
+                requested: 1,
                 written: 0,
                 limit: 1,
                 at: Some(9),

@@ -397,7 +397,11 @@ pub fn owned_bytes(recovered: &RecoveredMethod) -> u64 {
     bytes = bytes
         .saturating_add(slice(recovery.source_map.segments()))
         .saturating_add(u64::try_from(recovery.method.capacity()).unwrap_or(u64::MAX))
-        .saturating_add(strings(&recovery.aliased_names))
+        .saturating_add(buffer(&recovery.aliased_names).saturating_add(
+            recovery.aliased_names.iter().fold(0_u64, |total, name| {
+                total.saturating_add(u64::try_from(name.allocation_capacity()).unwrap_or(u64::MAX))
+            }),
+        ))
         .saturating_add(diagnostics(&recovery.diagnostics))
         .saturating_add(buffer(&recovery.rules))
         .saturating_add(buffer(&recovery.regions))

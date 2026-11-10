@@ -1,0 +1,4 @@
+crates/jarde-java/tests/fixtures/s2b-declared-call-adaptation-r1/src/flow/CallAdaptationControls.java:10: 错误: 不兼容的类型: Foo无法转换为List<Foo>
+        return local.get(index);
+                        ^
+1 个错误

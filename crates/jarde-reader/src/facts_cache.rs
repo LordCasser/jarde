@@ -855,6 +855,15 @@ impl FactsCache {
         );
     }
 
+    /// Retains a complete structural parse as the shared payload, deriving its key from the bytes
+    /// rather than accepting a caller-supplied identity.
+    pub(crate) fn remember_structure_shared(&self, bytes: &[u8], facts: Arc<ClassFacts>) {
+        self.keep(
+            FactsKey::of(bytes, ParsePolicy::Structure),
+            FactsPayload::Structure(facts),
+        );
+    }
+
     /// The header inspection of `bytes` under `mode`, when this store holds one.
     ///
     /// The owned-value shape of [`FactsCache::header_shared`], for the same reason its structural

@@ -312,6 +312,8 @@ pub(crate) struct ClassView {
 #[derive(Debug, Args)]
 pub(crate) struct ClassSource {
     #[command(flatten)]
+    source: SourceArgs,
+    #[command(flatten)]
     common: Common,
     #[command(flatten)]
     evidence: EvidenceArgs,
@@ -330,6 +332,8 @@ pub(crate) struct ClassSource {
 
 #[derive(Debug, Args)]
 pub(crate) struct Recover {
+    #[command(flatten)]
+    source: SourceArgs,
     #[command(flatten)]
     common: Common,
     #[command(flatten)]
@@ -352,6 +356,20 @@ pub(crate) struct Recover {
     descriptor: Option<String>,
     #[command(flatten)]
     environment: EnvironmentArgs,
+}
+
+/// Output language options belong only to source-bearing commands.
+#[derive(Debug, Args)]
+pub(crate) struct SourceArgs {
+    /// Java source syntax to emit (7 or 8); does not select runtime classes or APIs.
+    #[arg(long, value_name = "RELEASE", default_value = "8")]
+    source_target: u16,
+}
+
+impl SourceArgs {
+    pub(crate) fn target(&self) -> Result<jarde::SourceTarget, Error> {
+        jarde::SourceTarget::new(self.source_target)
+    }
 }
 
 /// The optional evidence a recovery-bearing command materializes (change
@@ -1011,6 +1029,7 @@ fn class_view(args: ClassView) -> Result<(Answer, Session), Failure> {
 
 fn recover(args: Recover) -> Result<(Answer, Session), Failure> {
     let Recover {
+        source,
         common,
         method,
         class_name,
@@ -1041,6 +1060,7 @@ fn recover(args: Recover) -> Result<(Answer, Session), Failure> {
             )));
         }
     };
+    let source_target = source.target()?;
     let declaration = environment.declaration()?;
     let mut session = Session::open(common)?;
     let request = MethodOperationRequest {
@@ -1053,7 +1073,13 @@ fn recover(args: Recover) -> Result<(Answer, Session), Failure> {
     // propagated verbatim: the adapter chooses no default of its own.
     let evidence = evidence.selection()?;
     let outcome = session.call(|engine, snapshot, budget| {
-        engine.recover_target_with_evidence(slice::from_ref(snapshot), &request, &evidence, budget)
+        engine.recover_target_with_evidence(
+            slice::from_ref(snapshot),
+            source_target,
+            &request,
+            &evidence,
+            budget,
+        )
     })?;
     let mut answer = Answer::outcome(&outcome, method_recovery_plane)?;
     answer.body = Some(RECOVERED_BODY);
@@ -1068,6 +1094,7 @@ const CLASS_SOURCE_TEXT: &[&str] = &["text"];
 
 fn class_source(args: ClassSource) -> Result<(Answer, Session), Failure> {
     let ClassSource {
+        source,
         common,
         class,
         environment,
@@ -1076,9 +1103,11 @@ fn class_source(args: ClassSource) -> Result<(Answer, Session), Failure> {
     // The parameter is read before the artifact is opened, as in every other command: a value this
     // adapter cannot read never becomes a read of anything.
     let class = class_argument(&class)?;
+    let source_target = source.target()?;
     let declaration = environment.declaration()?;
     let mut session = Session::open(common)?;
     let request = ClassSourceRequest {
+        source_target,
         class,
         // The snapshot and scope bound here are the ones this invocation opened, like every other
         // content binding this adapter makes; the policy, the profile and the loader are the caller's.
@@ -1178,7 +1207,7 @@ fn class_name_query(spelling: &str) -> ClassNameQuery {
 }
 
 fn jvm_bytes(text: &str) -> JvmBytes {
-    JvmBytes(text.as_bytes().to_vec())
+    JvmBytes::from_unicode(text)
 }
 
 /// One body reference the `--body` spelling states: `name`, or `name(descriptor)`.

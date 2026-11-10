@@ -216,33 +216,36 @@ fn recover_class_method_with_budget(
                 String::from_utf8_lossy(&declaration.class_name().0).into_owned(),
                 declaration.class_access_flags(),
             )
-            .with_inner_class_members(
-                declaration
-                    .inner_class_members()
-                    .iter()
-                    .map(|member| String::from_utf8_lossy(&member.0).replace('/', ".")),
-            ),
+            .with_inner_classes(declaration.inner_classes().clone()),
         ),
     )
     .with_debug_locals(debug_locals);
     let mut recovery_budget = recovery_budget.unwrap_or(analysis_budget);
     let report = recover(
-        &RecoveryRequest::new(ir, &facts, JAVA_8)
-            .with_evidence(evidence)
-            .with_subject(subject),
+        &RecoveryRequest::new(
+            ir,
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(evidence)
+        .with_subject(subject),
         &mut recovery_budget,
     );
     if report.produced() {
-        let binding = report
-            .artifact
-            .binding()
-            .expect("trusted subject binds the artifact");
-        assert_eq!(binding.method(), &analysis.report().method);
-        assert_eq!(binding.member_ordinal(), Some(member_ordinal));
         assert_eq!(
-            binding.environment(),
-            &analysis.report().environment_identity
+            report.input_origin,
+            jarde_java::report::RecoveryInputOrigin::CallerSupplied
         );
+        assert!(
+            report.artifact.binding().is_none(),
+            "caller subject metadata is not a verified read binding"
+        );
+        assert_eq!(analysis.ir().declaration().unwrap().identity(), &method);
     }
     (report, method)
 }
@@ -288,28 +291,6 @@ fn assert_full_physical_method_coverage(
     }
 }
 
-fn read_unique_ordinal(
-    class: &[u8],
-    name: &str,
-    descriptor: &str,
-) -> jarde_reader::prepared::MethodOrdinal {
-    let mut budget = Budget::new(limits());
-    let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
-        .expect("frozen class opens for the trusted declaration lookup");
-    let read = snapshot
-        .prepared_root_class(&mut budget)
-        .expect("frozen root class is read");
-    let prepared = jarde_reader::prepared::PreparedClass::prepare(&read, &mut budget)
-        .expect("frozen member table is complete");
-    let ordinals = prepared.locate_method(name.as_bytes(), descriptor.as_bytes());
-    assert_eq!(
-        ordinals.len(),
-        1,
-        "selector must locate exactly one declared record"
-    );
-    ordinals[0]
-}
-
 fn assert_default_equals_all(
     class: &[u8],
     owner: &str,
@@ -334,14 +315,10 @@ fn assert_default_equals_all(
     assert_eq!(default.text, all.text);
     assert_eq!(default.source_map, all.source_map);
     assert!(!all.text.contains("@bytecode"), "{}", all.text);
-    let binding = all
-        .artifact
-        .binding()
-        .expect("subject binds the committed artifact");
-    assert_eq!(binding.method(), &method);
+    assert!(all.artifact.binding().is_none());
     assert_eq!(
-        binding.member_ordinal(),
-        Some(read_unique_ordinal(class, name, descriptor))
+        all.input_origin,
+        jarde_java::report::RecoveryInputOrigin::CallerSupplied
     );
     (all, method)
 }
@@ -528,12 +505,20 @@ fn consumed_and_local_deferred_calls_keep_their_existing_body_and_map() {
 #[test]
 fn exact_pop_charge_and_cancel_publish_no_partial_statement() {
     use jarde_java::StopReason;
-    use jarde_reader::budget::{CancellationToken, CountedBudgetDimension};
+    use jarde_reader::budget::CancellationToken;
     let owner = "discardprobe/DiscardedCallSourceProbe";
-    // Measured with the frozen real method and a fresh recovery budget: 13 steps precede
-    // call_statement_origin(1)'s pop@4 charge. Temporary trace/raw: budget-diagnostic-root-v1.
+    // Measured with the frozen real method and a fresh recovery budget: 137 steps precede
+    // call_statement_origin(1)'s pop@4 charge.
+    //
+    // Re-pinned 2026-11-08 (cross-domain-regression-r1). The earlier 13 was measured before the
+    // `collect_reference_relations` pre-pass (`report.rs::recover_inner`) existed: a direct request
+    // that states no relations now walks this payload's own call sites once, before any pass runs.
+    // A fresh sweep over 1..=400 confirms pop@4 is the first stop at BCI 4 and first appears at
+    // limit 137 (the next stops, at=5, begin at 138; the whole method produces at 168). This is a
+    // budget sweep bound, not a product pin: the test's claim — the pop charge stops the run
+    // atomically with no partial statement — is unchanged.
     let mut at_pop = limits();
-    at_pop.analysis_steps = 13;
+    at_pop.analysis_steps = 137;
     let (stopped, _) = recover_class_method_with_budget(
         PROBE_CLASS,
         owner,
@@ -542,15 +527,16 @@ fn exact_pop_charge_and_cancel_publish_no_partial_statement() {
         RecoveryEvidenceRequest::all(),
         Some(Budget::new(at_pop)),
     );
-    assert_eq!(
+    assert!(matches!(
         stopped.stop(),
-        Some(&StopReason::Budget {
-            dimension: CountedBudgetDimension::AnalysisSteps,
+        Some(StopReason::Budget {
+            dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
             written: 0,
-            limit: 13,
+            limit: 137,
             at: Some(4),
+            ..
         })
-    );
+    ));
     assert!(!stopped.produced());
     assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
     let (full, method) = recover_class_method_with_budget(

@@ -31,6 +31,7 @@ fn source_named(
         .open(ArtifactInput::bytes(class_bytes.to_vec()), &mut budget())
         .expect("the committed qualifier fixture opens as a standalone CLASS");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },

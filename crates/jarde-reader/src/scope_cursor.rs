@@ -189,9 +189,9 @@ impl ScopeCursor {
     /// not opened a container yet (`next_class` opens the root on its first call), and a standalone
     /// `CLASS` snapshot has no container at all.
     pub fn container_facts(&self) -> Option<ContainerFactsHandle> {
-        self.stack.last().map(|walk| ContainerFactsHandle {
-            facts: Arc::clone(&walk.facts),
-        })
+        self.stack
+            .last()
+            .map(|walk| ContainerFactsHandle::new(Arc::clone(&walk.facts)))
     }
 
     /// Every failure that ended a subtree, each carrying the physical position it hangs from.

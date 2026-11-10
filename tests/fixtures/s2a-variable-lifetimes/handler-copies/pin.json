@@ -1,0 +1,53 @@
+{
+  "schema": "s2a-handler-copies-fixture-pin-v1",
+  "input_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/handler-copies-boundary-v1/input-manifest.json",
+  "input_manifest_sha256": "3033fdbc88a4c2626221202e2643cdfb0350177d52fbe597a110888a97c7d5d9",
+  "source_sha256": "375413ad4b53b32bf4bf777f21f6c5b8e86d99c8fad62f9eddb17f4f9acee706",
+  "driver_sha256": "b1e0ac419f9604cb4a45806e66d44cc2d8d88dc26ab08bb98114ceb04d796d6a",
+  "jars": [
+    {
+      "repo_relative_path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/jars/corretto8-debug.jar",
+      "bytes": 639,
+      "sha256": "8c8995dac347cf10e26c489f78c67c39985bba9e45c54e2dc51ff673537b96ad",
+      "members": [
+        "HandlerCopies.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/jars/corretto8-no-debug.jar",
+      "bytes": 461,
+      "sha256": "7b2c2fb0cbe453f71944d7206d4dfc2047e847e37a5e6f0ea9fee24b8f5dde2c",
+      "members": [
+        "HandlerCopies.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/jars/openjdk23-debug.jar",
+      "bytes": 640,
+      "sha256": "cf23a6cdbdde284fca7b446a4ce8c950ebabe10efef5f4779547546793d1dd29",
+      "members": [
+        "HandlerCopies.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/jars/openjdk23-no-debug.jar",
+      "bytes": 459,
+      "sha256": "9e92dcde6174d119ba4219258d2f7ccb4f50f670ca4e7d71fafff2d65b522ebf",
+      "members": [
+        "HandlerCopies.class"
+      ]
+    }
+  ],
+  "invalid_call_name_class": {
+    "repo_relative_path": "tests/fixtures/s2a-variable-lifetimes/handler-copies/invalid-call-name.class",
+    "bytes": 448,
+    "sha256": "5339c33b0934a351bdb19e76a0feaec6d87f09e48436cb51229a9e73bea3f2c4",
+    "blake3": "181af01043a7d3537127d12f2833d7d32d5cb6f1b6ffe36fcbea9eb74cf38e99",
+    "mutation_receipt": "openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/s2a-da-ownership-r52/negative-call-name/mutation-receipt.json",
+    "constant_pool_index": 24,
+    "tag": "CONSTANT_Utf8",
+    "old_name": "parseInt",
+    "new_name": "parse-nt",
+    "code_attributes_unchanged": true
+  }
+}

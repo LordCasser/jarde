@@ -90,8 +90,8 @@ use crate::query::{
 };
 use jarde_reader::classfile::{
     AttributeFacts, AttributeShell, ClassFacts, CpEntryFacts, CpEntryKind, DescriptorKind,
-    attribute_content, attribute_facts, attribute_slice, class_facts, code_nested_attributes,
-    cp_class_name, cp_entry, cp_utf8, descriptor_types,
+    attribute_content, attribute_facts, attribute_slice, class_facts_shared,
+    code_nested_attributes, cp_class_name, cp_entry, cp_utf8, descriptor_types,
 };
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
@@ -101,6 +101,7 @@ use jarde_reader::model::{
 use jarde_reader::signature::{
     parse_class_signature, parse_field_signature, parse_method_signature,
 };
+use std::sync::Arc;
 
 const MODULE_INFO_CLASS: &[u8] = b"module-info";
 
@@ -137,7 +138,7 @@ pub(super) fn scan(
     });
     let facts = {
         let budget = ctx.budget();
-        class_facts(&content.bytes, budget)?
+        class_facts_shared(&content.bytes, budget)?
     };
     let units = UnitFacts {
         bytes: &content.bytes,
@@ -229,7 +230,7 @@ impl Wanted {
 /// Reader facts and physical identity shared by one unit's metadata categories.
 struct UnitFacts<'a> {
     bytes: &'a [u8],
-    facts: ClassFacts,
+    facts: Arc<ClassFacts>,
     definition: PhysicalDefinitionId,
     length: u64,
 }

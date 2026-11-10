@@ -94,7 +94,12 @@ fn recover(
     };
     let mut budget = Budget::new(limits());
     let recovered = engine
-        .recover_method(slice::from_ref(snapshot), &request, &mut budget)
+        .recover_method(
+            slice::from_ref(snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            &mut budget,
+        )
         .expect("a legal request completes");
     let report = recovered.recovery();
     assert!(

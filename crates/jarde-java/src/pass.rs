@@ -10,24 +10,10 @@
 //! P3's design defers those to the second consumer, and the shapes below are `const` data a reader
 //! can check against the code that consults them.
 //!
-//! # The recovery profile is the fact layer's own type
+//! # Source syntax and runtime selection are independent
 //!
-//! The P3 spec's sentence is "在 Java 8 RuntimeProfile 下" — it *names* an existing type, and that
-//! type already carries the release a gate needs. So [`RecoveryProfile`] is a re-export of
-//! [`jarde_reader::view::RuntimeProfile`], not a second enum: a `RecoveryProfile::Java8` beside
-//! `RuntimeProfile { java_release: 8, … }` would be two spellings of one fact, and the two would
-//! drift the first time either moved. What the recovery layer adds is the *use* — the release a pass
-//! requires, and the predicate [`Pass::admits`] the gate reads — not the vocabulary.
-//!
-//! A pass's `required_release` is `None` when the rule is independent of what the profile presents
-//! the artifact as (every *structure* rule in this crate: a `while`, an `if` and a `switch` are the
-//! same Java in every release). It is `Some(release)` for a rule whose output only exists from that
-//! release on — and as of P3 2.1 there is one: [`LAMBDA`] presents `invokedynamic` call sites, a
-//! Java 8 construct, so a profile that presents the artifact as Java 7 is refused it.[^lambda]
-//!
-//! [^lambda]: Until that slice the recorded gap was that `admits`'s refusing branch had no
-//! production instance; `lambda@1` is the first rule that has one, and its tests check it through the
-//! gate the run really reads (`crate::lambda` refuses a site the profile does not admit).
+//! [`SourceTarget`] admits output syntax. Runtime profiles belong to the reader and resolver:
+//! source preferences never select MR entries or platform APIs. Only Java 7 and 8 are registered.
 //!
 //! # Preconditions fail as fallbacks; missing tables stop the run
 //!
@@ -42,24 +28,55 @@ use std::fmt;
 
 use serde::Serialize;
 
-/// The recovery profile a run is presented under.
+/// The registered Java source language requested for a recovery.
 ///
-/// This is [`jarde_reader::view::RuntimeProfile`] — the same type the request's environment states
-/// as its runtime view. It is re-exported under the name the recovery side's own vocabulary uses
-/// for it, so that a reader of a recovery report does not have to know that the profile it names
-/// also decides multi-release selection and layout.
-pub use jarde_reader::view::RuntimeProfile as RecoveryProfile;
+/// This value never participates in physical parsing, MR selection or symbol resolution.
+#[derive(
+    Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize, serde::Deserialize,
+)]
+#[serde(try_from = "SourceTargetWire")]
+pub struct SourceTarget {
+    java_release: u16,
+}
 
-/// The profile this build's promise is written for: the Java 8 target of P3.
-///
-/// A caller that has a runtime view states its own profile (the entry point hands the request's
-/// environment profile to the gate); this constant is what "the Java 8 recovery profile" means
-/// where a test or a documentation sentence has to name one value.
-pub const JAVA_8: RecoveryProfile = RecoveryProfile {
-    java_release: 8,
-    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
-    layout: jarde_reader::view::LayoutMode::Generic,
-};
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct SourceTargetWire {
+    java_release: u16,
+}
+
+impl TryFrom<SourceTargetWire> for SourceTarget {
+    type Error = jarde_reader::error::Error;
+    fn try_from(value: SourceTargetWire) -> Result<Self, Self::Error> {
+        Self::new(value.java_release)
+    }
+}
+
+impl SourceTarget {
+    pub const JAVA_7: Self = Self { java_release: 7 };
+    pub const JAVA_8: Self = Self { java_release: 8 };
+
+    /// Reject an unregistered target before starting recovery work.
+    pub fn new(java_release: u16) -> jarde_reader::error::Result<Self> {
+        match java_release {
+            7 => Ok(Self::JAVA_7),
+            8 => Ok(Self::JAVA_8),
+            _ => Err(jarde_reader::error::Error::unsupported(
+                "source_target_unregistered",
+                format!(
+                    "Java source target {java_release} is not registered; supported targets: 7, 8"
+                ),
+            )),
+        }
+    }
+
+    pub const fn java_release(self) -> u16 {
+        self.java_release
+    }
+}
+
+/// The ordinary source target; independent of the runtime environment.
+pub const JAVA_8: SourceTarget = SourceTarget::JAVA_8;
 
 /// One table of the same run's payload that a pass reads.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -266,10 +283,10 @@ impl Pass {
     /// this predicate has no refusing instance in production yet; it is the gate the Java 8
     /// presentation rules of 2.x will be admitted through, and its contract is stated by this
     /// module's own tests rather than by a fabricated pass.
-    pub fn admits(self, profile: &RecoveryProfile) -> bool {
+    pub fn admits(self, profile: &SourceTarget) -> bool {
         match self.required_release {
             None => true,
-            Some(release) => profile.java_release >= release,
+            Some(release) => profile.java_release() >= release,
         }
     }
 
@@ -630,38 +647,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_profile_is_the_fact_layers_own_type_and_the_gate_reads_its_release() {
-        // The one thing this module must not do is spell the profile twice. `RecoveryProfile` *is*
-        // `RuntimeProfile`: a value built as one is the other, so the gate cannot end up reading a
-        // release the request did not state.
-        let profile: RecoveryProfile = JAVA_8;
-        assert_eq!(profile.java_release, 8);
-        let as_fact_layer: jarde_reader::view::RuntimeProfile = profile;
-        assert_eq!(as_fact_layer.java_release, 8);
-
-        let java8_only = Pass::new(RuleVersion::new("lambda", "1"), Some(8), &[]);
-        assert!(java8_only.admits(&JAVA_8), "release 8 admits a Java 8 rule");
-        assert!(
-            java8_only.admits(&RecoveryProfile {
-                java_release: 9,
-                ..JAVA_8
-            }),
-            "a later release presents Java 8 shapes too"
-        );
-        assert!(
-            !java8_only.admits(&RecoveryProfile {
-                java_release: 7,
-                ..JAVA_8
-            }),
-            "a profile that presents Java 7 does not admit a rule whose output is Java 8"
-        );
-        assert!(
-            STRAIGHT.admits(&RecoveryProfile {
-                java_release: 7,
-                ..JAVA_8
-            }),
-            "a structure rule is release-independent"
-        );
+    fn source_targets_are_registered_independently_of_runtime_profiles() {
+        assert_eq!(JAVA_8.java_release(), 8);
+        assert!(LAMBDA.admits(&JAVA_8));
+        assert!(!LAMBDA.admits(&SourceTarget::JAVA_7));
+        assert!(STRAIGHT.admits(&SourceTarget::JAVA_7));
+        for release in [0, 6, 9, 17, u16::MAX] {
+            assert!(SourceTarget::new(release).is_err());
+        }
     }
 
     #[test]

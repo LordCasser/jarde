@@ -69,6 +69,8 @@ use std::slice;
 /// One `export` request: the artifact, the scope, the environment, the destination and the workers.
 #[derive(Debug, Args)]
 pub(crate) struct Export {
+    #[command(flatten)]
+    source: crate::task::SourceArgs,
     /// The artifact to open: an archive or a standalone class file.
     #[arg(long, value_name = "PATH")]
     input: PathBuf,
@@ -247,6 +249,7 @@ fn declaration(dimension: BudgetDimension, limit: u64) -> String {
 /// from a document that was rendered beside it.
 pub(crate) fn run(args: Export) -> Result<ExitCode, Failure> {
     let Export {
+        source,
         input,
         scope,
         budget,
@@ -257,6 +260,7 @@ pub(crate) fn run(args: Export) -> Result<ExitCode, Failure> {
     } = args;
     // The parameters are read before anything is opened, as in every other command: a value this
     // adapter cannot read never becomes a read of anything.
+    let source_target = source.target()?;
     let declaration = environment.declaration()?;
     let workers = jobs_requested(&jobs)?;
     let framing = format.framing();
@@ -291,6 +295,7 @@ pub(crate) fn run(args: Export) -> Result<ExitCode, Failure> {
         workers,
         method_limits()?,
     )
+    .with_source_target(source_target)
     .with_evidence(RecoveryEvidenceRequest::all());
     let mut stream = Stream::new(file, output, framing);
     // One process, one library operation: the stream is this call's sink, and there is no second run

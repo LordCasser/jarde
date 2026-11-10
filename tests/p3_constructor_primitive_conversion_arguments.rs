@@ -400,6 +400,7 @@ fn archive(files: &[(&str, &[u8])]) -> Vec<u8> {
 
 fn request(snapshot: &artifact::ArtifactSnapshot, class: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -937,11 +938,15 @@ fn assert_all_constructor_targets(report: &ClassSourceReport) {
         let classes = body
             .news
             .iter()
-            .map(|record| record.class.as_str())
+            .map(|record| record.class.0.as_slice())
             .collect::<Vec<_>>();
         assert_eq!(
             classes.as_slice(),
-            target.classes,
+            target
+                .classes
+                .iter()
+                .map(|class| class.as_bytes())
+                .collect::<Vec<_>>(),
             "{} physical allocation sequence",
             target.method
         );
@@ -1151,7 +1156,7 @@ fn same_handler_constructor_argument_is_a_complete_source_and_site_positive() {
         );
         assert_eq!(body.news.len(), 1, "{leg} same-handler allocation record");
         let site = &body.news[0];
-        assert_eq!(site.class, "java/lang/Long");
+        assert_eq!(site.class.0, b"java/lang/Long");
         assert!(
             site.presented && site.refusal.is_none(),
             "{leg} same-handler site: {site:?}"
@@ -1290,7 +1295,7 @@ fn boolean_parameter_keeps_the_structural_new_site_but_refuses_its_constructor_b
             "{leg} wrapperByte retains its one new-site record"
         );
         let site = &body.news[0];
-        assert_eq!(site.class, "java/lang/Byte");
+        assert_eq!(site.class.0, b"java/lang/Byte");
         assert_eq!(site.arguments.len(), 1);
         assert_eq!(site.head, 0);
         assert_eq!(site.dup, Some(3));

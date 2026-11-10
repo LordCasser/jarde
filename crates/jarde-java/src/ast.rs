@@ -53,6 +53,23 @@ pub enum Type {
 }
 
 impl Type {
+    /// The component of the array type Java will actually read, after local legalization.
+    pub(crate) fn array_component(&self) -> Option<Self> {
+        let Self::Reference(name) = self else {
+            return None;
+        };
+        Some(match name.strip_suffix("[]")? {
+            "boolean" => Self::Boolean,
+            "byte" => Self::Byte,
+            "short" => Self::Short,
+            "char" => Self::Char,
+            "int" => Self::Int,
+            "long" => Self::Long,
+            "float" => Self::Float,
+            "double" => Self::Double,
+            component => Self::Reference(component.to_owned()),
+        })
+    }
     /// The Java spelling of this type.
     pub fn spell(&self) -> &str {
         match self {
@@ -385,7 +402,12 @@ pub enum ExprKind {
     /// The printer writes exactly this node and nothing else: a cast's text is its own type and the
     /// value it converts, so a position can no longer decide the value's type by writing the value
     /// in a context of its own choosing.
-    Cast { ty: Type, value: Box<Expr> },
+    Cast {
+        ty: Type,
+        value: Box<Expr>,
+        /// A proved Signature spelling with the same erasure. The emitter does not infer it.
+        source_type_name: Option<String>,
+    },
     /// `!value` — the negation of a **boolean** value.
     ///
     /// This node exists for one fact the frames cannot state: a `boolean` parameter and an `int`
@@ -509,6 +531,14 @@ pub struct Expr {
     /// `char`, `byte` and `short` reach this field from the member's own parameter descriptor and
     /// from nothing else.
     pub presented: Option<Type>,
+    /// Request-local index into the builder's declared-type input. It is never a definition
+    /// identity or a cross-program binding; physical identities live in that input's arena.
+    pub(crate) declared_type: Option<usize>,
+    /// This call consumed its bound source formals and physical descriptor in the builder.
+    pub(crate) declared_call: bool,
+    /// Test-support ownership token; absent from normal builds.
+    #[cfg(any(test, feature = "test-support"))]
+    pub(crate) observation: crate::observation::Token,
 }
 
 impl Expr {
@@ -519,6 +549,10 @@ impl Expr {
             kind,
             origin,
             presented,
+            declared_type: None,
+            declared_call: false,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::Expr),
         }
     }
 
@@ -536,6 +570,11 @@ impl Expr {
     /// so no consumer has to look a name or a BCI up again to learn what the text is.
     pub fn presenting(mut self, ty: Type) -> Self {
         self.presented = Some(ty);
+        self
+    }
+
+    pub(crate) fn declaring(mut self, ty: usize) -> Self {
+        self.declared_type = Some(ty);
         self
     }
 
@@ -982,12 +1021,23 @@ pub struct Stmt {
     pub kind: StmtKind,
     /// Where its text comes from.
     pub origin: OriginSet,
+    /// This field write consumed a bound source field type in the builder.
+    pub(crate) declared_field: bool,
+    /// Test-support ownership token; absent from normal builds.
+    #[cfg(any(test, feature = "test-support"))]
+    pub(crate) observation: crate::observation::Token,
 }
 
 impl Stmt {
     /// One statement from its shape and its anchors.
     pub fn new(kind: StmtKind, origin: OriginSet) -> Self {
-        Self { kind, origin }
+        Self {
+            kind,
+            origin,
+            declared_field: false,
+            #[cfg(any(test, feature = "test-support"))]
+            observation: crate::observation::Token::new(crate::observation::Kind::Stmt),
+        }
     }
 }
 

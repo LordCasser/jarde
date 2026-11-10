@@ -88,6 +88,7 @@ fn report_with_limits(bytes: Vec<u8>, limits: Limits) -> ClassSourceReport {
         .open(ArtifactInput::bytes(bytes), &mut budget)
         .expect("external-use fixture jar opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("NamedMemberFamilyStage1"),
         },

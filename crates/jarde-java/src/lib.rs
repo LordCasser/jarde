@@ -54,9 +54,14 @@
 //! criterion). `petgraph` is reused for the projection's graph algorithms, exactly as the layer below
 //! reuses it for the raw CFG.
 
+/// Conservative workspace source/build identity; independent of package and format versions.
+pub const IMPLEMENTATION_ID: &str = env!("JARDE_IMPLEMENTATION_ID");
+
 pub mod accessor;
 pub mod artifact;
+mod artifact_inputs;
 mod asserts;
+mod assignability;
 pub mod ast;
 pub mod bridge;
 pub mod concat;
@@ -67,15 +72,27 @@ pub mod evidence;
 pub mod facts;
 pub mod field;
 mod fragmented_catch;
+#[doc(hidden)]
+pub mod generic_source_proof;
+#[doc(hidden)]
+pub mod generic_types;
 pub mod guard;
 pub mod init;
 pub mod lambda;
+#[doc(hidden)]
+pub mod member_capture;
+#[doc(hidden)]
+pub mod metadata_literal;
 pub mod names;
 pub mod normal_flow;
+#[cfg(any(test, feature = "test-support"))]
+pub mod observation;
 pub mod pass;
 pub mod region;
 pub mod report;
 pub mod source_map;
+#[doc(hidden)]
+pub mod source_proof;
 pub mod stop;
 pub(crate) mod stringswitch;
 
@@ -91,7 +108,7 @@ pub(crate) mod reuse;
 /// Whether one reference source type widens to a required reference type under a release's
 /// transcribed platform relationships. This closed relation does not inspect or infer user types.
 pub fn release_reference_argument_widens(java_release: u16, source: &str, required: &str) -> bool {
-    build::release_reference_argument_widens(java_release, source, required)
+    assignability::release_reference_argument_widens(java_release, source, required)
 }
 
 pub use accessor::{
@@ -99,8 +116,9 @@ pub use accessor::{
 };
 pub use artifact::{
     ARTIFACT_MISMATCH_CODE, ARTIFACT_SCHEMA, ARTIFACT_UNVERIFIABLE_CODE, ArtifactAgreement,
-    ArtifactBinding, ArtifactDimension, ArtifactMismatch, ArtifactSubject, EXPECTATION_SHAPE_CODE,
-    RecoveryArtifact, TEXT_DIGEST,
+    ArtifactBinding, ArtifactConfiguration, ArtifactDependency, ArtifactDimension,
+    ArtifactMismatch, ArtifactSubject, EXPECTATION_SHAPE_CODE, RECOVERY_SEMANTICS,
+    RecoveryArtifact, RecoverySemantics, TEXT_DIGEST,
 };
 pub use bridge::{BridgeRecord, BridgeRefusal};
 pub use concat::{ConcatAppend, ConcatRecord, ConcatRefusal};
@@ -113,9 +131,9 @@ pub use evidence::{
 pub use field::{FieldRecord, FieldRefusal};
 pub use init::{InitRecord, InitRefusal, NewRecord, NewRefusal};
 pub use lambda::{LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, type_of_component};
-pub use pass::{IrTable, Pass, Precondition, RecoveryProfile, RuleVersion};
+pub use pass::{IrTable, Pass, Precondition, RuleVersion, SourceTarget};
 pub use report::{
-    ProvedCapturedOuterRead, ProvedCapturedParameterRead, ProvedOuterSuperCall, RecoveryContent,
+    CapturedOuterReadInput, CapturedParameterReadInput, OuterSuperCallInput, RecoveryContent,
     RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord, recover,
 };
 
@@ -129,7 +147,7 @@ pub use facts::{
 pub use guard::{Plan as GuardPlan, Resource as GuardResource, Shape as GuardShape};
 pub use names::{
     AliasReason, DebugLocal, LocalVariable, NameTable, RenderedName, SlotEvidence, alias_for,
-    is_java_identifier, nested_member_reference_spelling, nested_reference_spelling,
+    is_java_identifier, nested_member_reference_spelling,
 };
 pub use normal_flow::{ExcludedEdges, NormalFlowView};
 pub use region::{FallbackReason, Recovered, Region};

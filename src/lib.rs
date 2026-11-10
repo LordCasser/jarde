@@ -32,6 +32,10 @@
 //! (`HeaderClosure`, `FactLedger`, `AnalysisRun`, `IrPhase`, `CallContexts`, …) the driver keeps
 //! to itself.
 
+// The facade supplies source proofs and projection decisions, so it participates in recovery identity.
+const IMPLEMENTATION_ID: &str = env!("JARDE_IMPLEMENTATION_ID");
+
+pub use jarde_jvm::semantics::{RESOLUTION_SEMANTICS, ResolutionSemantics};
 pub use jarde_jvm::{environment, ir, reflection, resolver};
 // The on-demand callee read (P3 3.2) crosses as its report's own types: [`RecoveredMethod::callees`]
 // hands one over and an adapter serializes it, so a consumer needs the names to hold. The entry that
@@ -61,8 +65,8 @@ pub use jarde_reader::{artifact, budget, error, model, multi_release, runtime_ma
 pub use jarde_java::{
     BytecodeRange, EvidenceCategory, EvidenceState, IrTable, LambdaCapture, LambdaForm,
     LambdaRecord, LambdaRefusal, MethodFacts, Precondition, RecoveryContent, RecoveryEvidence,
-    RecoveryEvidenceKind, RecoveryEvidenceRequest, RecoveryFacts, RecoveryOutcome, RecoveryProfile,
-    RecoveryReport, RecoveryRequest, RegionRecord, RuleVersion, SourceMap, StopReason, recover,
+    RecoveryEvidenceKind, RecoveryEvidenceRequest, RecoveryFacts, RecoveryOutcome, RecoveryReport,
+    RecoveryRequest, RegionRecord, RuleVersion, SourceMap, SourceTarget, StopReason, recover,
 };
 
 pub mod bulk;

@@ -169,6 +169,7 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut Budget::new(limits()),
@@ -416,7 +417,12 @@ fn the_conversion_costs_no_ir_item_and_no_normalization_clone() {
     // charge, and the optional evidence of a selected category is billed beside them rather than
     // inside them (`add-demand-driven-core-results`, D1).
     let recovered = engine
-        .recover_method(slice::from_ref(&sample.snapshot), &request, &mut budget)
+        .recover_method(
+            slice::from_ref(&sample.snapshot),
+            jarde::SourceTarget::JAVA_8,
+            &request,
+            &mut budget,
+        )
         .expect("a legal request is answered, not raised");
     let usage = budget.usage();
     println!(

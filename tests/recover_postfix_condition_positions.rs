@@ -230,25 +230,47 @@ const CN_NEGATIVES: &[(&str, &str)] = &[
 /// declined the chain.
 const CHAIN_POSITION_BOUND: &str = "jre_region_chain_position_bound";
 
-/// The A-phase traps, verbatim (the texts `recover_postfix_old_value_snapshot` pins for its own
-/// fixture): the two local self-assignment traps, the field self-assignment and the multi-consumer
-/// form. None of them may move for a condition position to be presented.
-const A_PHASE_TRAPS: &[(&str, &str)] = &[
+/// The A-phase refusals that remain, verbatim. The two local self-assignment methods now present a
+/// typed saved-value/update/store-back sequence; the field self-assignment remains refused.
+const A_PHASE_TRAPS: &[(&str, &str)] = &[(
+    "fieldSelf",
+    "// the old-value update ending at BCI 19 has no complete same-target, single-consumer, same-handler and evaluation-order proof",
+)];
+
+const A_PHASE_RECOVERED_SEQUENCES: &[(&str, &str, &[&str])] = &[
     (
         "postSelf",
-        "// the value at BCI 6 is the value local 0 held at BCI 2, and the slot does not hold it at BCI 6",
+        "static int postSelf()",
+        &[
+            "int local0 = 5;",
+            "int saved0 = local0;",
+            "local0 = local0 + 1;",
+            "local0 = saved0;",
+            "return local0;",
+        ],
     ),
     (
         "postSelfDec",
-        "// the value at BCI 6 is the value local 0 held at BCI 2, and the slot does not hold it at BCI 6",
-    ),
-    (
-        "fieldSelf",
-        "// the old-value update ending at BCI 19 has no complete same-target, single-consumer, same-handler and evaluation-order proof",
+        "static int postSelfDec()",
+        &[
+            "int local0 = 5;",
+            "int saved0 = local0;",
+            "local0 = local0 - 1;",
+            "local0 = saved0;",
+            "return local0;",
+        ],
     ),
     (
         "compoundSelf",
-        "// the value at BCI 10 is the value local 1 held at BCI 2, and the slot does not hold it at BCI 10",
+        "int compoundSelf()",
+        &[
+            "int local1 = 5;",
+            "int saved0 = local1;",
+            "int saved1 = local1;",
+            "local1 = local1 + 1;",
+            "local1 = saved0 + (saved1 + 1);",
+            "return local1;",
+        ],
     ),
 ];
 
@@ -269,6 +291,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// One class-source presentation over the snapshot's own root container.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -465,9 +488,9 @@ fn the_control_chain_stays_byte_identical_on_both_legs() {
 // The negatives keep their refusals.
 // -------------------------------------------------------------------------------------------
 
-/// The two negatives this slice states keep their refusals, and the region they are refused under
-/// is the slice's own bound. The A-phase traps keep theirs verbatim: none of them moved for a
-/// condition position to be presented.
+/// The two negatives this slice states keep their refusals and the A-phase local self-assignments
+/// retain their typed old-value sequence. The field self-assignment refusal stays
+/// verbatim; none of these outcomes is changed by presenting condition positions.
 #[test]
 fn the_negatives_keep_their_refusals_on_both_legs() {
     for leg in LEGS {
@@ -525,6 +548,25 @@ fn the_negatives_keep_their_refusals_on_both_legs() {
             assert!(
                 body.contains("not recovered"),
                 "the A-phase trap `NG.{method}` on {} is not quoted whole:\n{body}",
+                leg.label
+            );
+        }
+        for (method, signature, expected) in A_PHASE_RECOVERED_SEQUENCES {
+            let body = method_body(&report.text, signature);
+            assert!(
+                !body.contains("not recovered"),
+                "the A-phase local self-assignment `NG.{method}` on {} should be presented:\n{body}",
+                leg.label
+            );
+            let statements: Vec<_> = body
+                .lines()
+                .map(str::trim)
+                .filter(|line| !line.is_empty() && !line.starts_with("//") && !line.ends_with('{'))
+                .collect();
+            assert_eq!(
+                statements.as_slice(),
+                *expected,
+                "the A-phase method `NG.{method}` on {} lost its typed value/update ordering:\n{body}",
                 leg.label
             );
         }

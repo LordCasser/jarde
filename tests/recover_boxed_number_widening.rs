@@ -171,6 +171,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// One class-source presentation over the snapshot's own root container.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -280,7 +281,14 @@ const BN_LARGER: &str = "    // jarde: generic Signature projection refused for 
 
 /// `BNX.main`: BigDecimal no longer refuses at BCI 21; AtomicInteger at BCI 46 still refuses.
 /// The whole body falls back because the refused AtomicInteger call blocks partial publication.
-const BNX_MAIN: &str = "    public static void main(java.lang.String[] arg0) {\n        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `BNX`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 49 27 46 0 3 6 7 9 12 15 16 18 21 24 30 33 34 35 38 41 42 43 52\n        // the parameter 0 of the invocation at BCI 46 is declared `java.lang.Number` presents `java.util.concurrent.atomic.AtomicInteger` but the invocation requires `java.lang.Number` and this layer has no safe reference conversion evidence\n        jarde_refused_body();\n    }\n";
+/// Re-recorded 2025: the refusal sentence now carries its relation-evidence suffix
+/// ` (relation: Some(Missing))` (deliberate mechanism change, accepted on the mainline; the green
+/// `p3_platform_collection_widening` pin states the same suffix verbatim). Field-by-field diff
+/// against the previous constant: the suffix is the only difference — the
+/// `@bytecode 49 27 46 0 3 … 43 52` list, member flags, the refusal sentence itself and the
+/// `jarde_refused_body()` fallback are byte-identical. `BN_MAIN` needed no re-recording: it
+/// contains no refusal sentence and its assertions pass verbatim.
+const BNX_MAIN: &str = "    public static void main(java.lang.String[] arg0) {\n        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method main([Ljava/lang/String;)V\n        // @declaration a static method of `BNX`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 49 27 46 0 3 6 7 9 12 15 16 18 21 24 30 33 34 35 38 41 42 43 52\n        // the parameter 0 of the invocation at BCI 46 is declared `java.lang.Number` presents `java.util.concurrent.atomic.AtomicInteger` but the invocation requires `java.lang.Number` and this layer has no safe reference conversion evidence (relation: Some(Missing))\n        jarde_refused_body();\n    }\n";
 
 /// The refusal text every negative below states: the one reference-conversion sentence this layer
 /// writes, unchanged by this change.

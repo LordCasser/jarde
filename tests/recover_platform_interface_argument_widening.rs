@@ -37,9 +37,8 @@
 //!   — render exactly as they did before this change: a same-run interface is not this change's
 //!   subject;
 //! * `AW.viaNamedPlatform` proves the platform interface a snapshot class header names
-//!   (`java.lang.Runnable`), while `AW.viaAbsent` keeps the refusal verbatim where the target
-//!   (`java.lang.Throwable`) appears in no snapshot header at all — the walk states the relation it
-//!   read and guesses no classpath.
+//!   (`java.lang.Runnable`), and `AW.viaAbsent` now proves the selected user header's superclass
+//!   chain through the actual platform headers to `java.lang.Throwable`.
 //!
 //! The ignored replay (`cargo test -- --ignored`) strips the presentations the way the patrol's own
 //! `isolated-rendered-wrong.java` was made — comment lines dropped — compiles `CP`, `AH`/`AC` and
@@ -323,6 +322,7 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 /// One class-source presentation over the snapshot's own root container.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },
@@ -425,13 +425,7 @@ const AN_LOCAL_VAR: &str = "    static int localVar() {\n        // @method loca
 /// states `implements java.lang.Runnable` and the call presents.
 const AW_VIA_NAMED_PLATFORM: &str = "    static void viaNamedPlatform() {\n        // @method viaNamedPlatform()V\n        // @declaration a static method of `AW`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        runRunnable((java.lang.Runnable) new AW$Work());\n        return;\n    }\n";
 
-/// `AW.viaAbsent`: the target appears in no snapshot header at all (`AW$MyErr extends
-/// java.lang.Exception`, and the platform chain up to `java.lang.Throwable` is not in this
-/// snapshot), so the refusal stands verbatim — no classpath is consulted and nothing is guessed.
-const AW_VIA_ABSENT: &str = "    static void viaAbsent() {\n        // jarde: not recovered: the recovery run for `viaAbsent()V` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method viaAbsent()V\n        // @declaration a static method of `AW`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 7 0 3 4 10\n        // the parameter 0 of the invocation at BCI 7 is declared `java.lang.Throwable` presents `AW$MyErr` but the invocation requires `java.lang.Throwable` and this layer has no safe reference conversion evidence\n        jarde_refused_body();\n    }\n";
-
-/// The refusal text both fixture legs write for the nameless platform target.
-const AW_ABSENT_REFUSAL: &str = "presents `AW$MyErr` but the invocation requires `java.lang.Throwable` and this layer has no safe reference conversion evidence";
+const AW_VIA_ABSENT_RECOVERED: &str = "    static void viaAbsent() {\n        // @method viaAbsent()V\n        // @declaration a static method of `AW`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        sinkT((java.lang.Throwable) new AW$MyErr());\n        return;\n    }\n";
 
 // -------------------------------------------------------------------------------------------
 // The anchors.
@@ -515,7 +509,7 @@ fn the_own_interface_positions_do_not_move() {
 }
 
 #[test]
-fn the_named_platform_target_is_proved_and_the_absent_one_still_refuses() {
+fn the_named_platform_target_and_selected_user_header_chain_are_proved() {
     for leg in LEGS {
         let snapshot = open(&leg.fixture("AW"));
         let report = class_source_of(&snapshot, "AW");
@@ -527,23 +521,50 @@ fn the_named_platform_target_is_proved_and_the_absent_one_still_refuses() {
         );
         assert_eq!(
             text_of(&report, "viaAbsent"),
-            AW_VIA_ABSENT,
+            AW_VIA_ABSENT_RECOVERED,
+            "{}",
+            leg.label
+        );
+        let via_absent = method_of(&report, "viaAbsent");
+        assert!(via_absent.markers.is_empty(), "{}", leg.label);
+        let ClassSourceOutcome::Recovered { report: body, .. } = &via_absent.outcome else {
+            panic!("viaAbsent is a recovered method on {}", leg.label);
+        };
+        assert_eq!(
+            body.quality,
+            jarde_jvm::ir::Quality::Structured,
             "{}",
             leg.label
         );
         assert!(
-            report.text.contains(AW_ABSENT_REFUSAL),
-            "the nameless platform target keeps its refusal verbatim on `{}`:\n{}",
+            !body.text.contains("@bytecode"),
+            "{}: {}",
             leg.label,
-            report.text
+            body.text
+        );
+        let binding = body
+            .artifact
+            .binding()
+            .expect("the recovery binding records selected physical inputs");
+        assert!(
+            binding.dependencies().iter().any(|dependency| {
+                dependency.loader == LoaderId("app".to_owned())
+                    && dependency
+                        .definition
+                        .entry()
+                        .is_some_and(|entry| entry.raw_name.0.as_slice() == b"AW$MyErr.class")
+            }),
+            "{} records AW$MyErr.class as a selected physical header dependency: {:?}",
+            leg.label,
+            binding.dependencies()
         );
         assert_eq!(
             report
                 .text
                 .matches("no safe reference conversion evidence")
                 .count(),
-            1,
-            "only the nameless target stays refused on `{}`:\n{}",
+            0,
+            "both supported target relations are proved on `{}`:\n{}",
             leg.label,
             report.text
         );

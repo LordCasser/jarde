@@ -1,0 +1,76 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-field-consumption-r1/classes/flow/FieldBox.class
+  Last modified 2026-10-27; size 575 bytes
+  MD5 checksum 92749cc629fe6fdb9b5407ef27c71787
+  Compiled from "FieldBox.java"
+public class flow.FieldBox<T extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#27         // java/lang/Object."<init>":()V
+   #2 = Class              #28            // flow/FieldBox
+   #3 = Class              #29            // java/lang/Object
+   #4 = Utf8               value
+   #5 = Utf8               Ljava/lang/Object;
+   #6 = Utf8               Signature
+   #7 = Utf8               TT;
+   #8 = Utf8               count
+   #9 = Utf8               I
+  #10 = Utf8               title
+  #11 = Utf8               Ljava/lang/String;
+  #12 = Utf8               shared
+  #13 = Utf8               Ljava/util/List;
+  #14 = Utf8               Ljava/util/List<Lidentity/Foo;>;
+  #15 = Utf8               <init>
+  #16 = Utf8               ()V
+  #17 = Utf8               Code
+  #18 = Utf8               LineNumberTable
+  #19 = Utf8               LocalVariableTable
+  #20 = Utf8               this
+  #21 = Utf8               Lflow/FieldBox;
+  #22 = Utf8               LocalVariableTypeTable
+  #23 = Utf8               Lflow/FieldBox<TT;>;
+  #24 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;
+  #25 = Utf8               SourceFile
+  #26 = Utf8               FieldBox.java
+  #27 = NameAndType        #15:#16        // "<init>":()V
+  #28 = Utf8               flow/FieldBox
+  #29 = Utf8               java/lang/Object
+{
+  public T value;
+    descriptor: Ljava/lang/Object;
+    flags: ACC_PUBLIC
+    Signature: #7                           // TT;
+
+  public int count;
+    descriptor: I
+    flags: ACC_PUBLIC
+
+  public java.lang.String title;
+    descriptor: Ljava/lang/String;
+    flags: ACC_PUBLIC
+
+  public static java.util.List<identity.Foo> shared;
+    descriptor: Ljava/util/List;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Signature: #14                          // Ljava/util/List<Lidentity/Foo;>;
+
+  public flow.FieldBox();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 6: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lflow/FieldBox;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lflow/FieldBox<TT;>;
+}
+Signature: #24                          // <T:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "FieldBox.java"

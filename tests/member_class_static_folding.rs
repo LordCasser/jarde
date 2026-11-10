@@ -140,6 +140,7 @@ fn source_with(jar: &[u8], class: &str, limits: Limits) -> ClassSourceReport {
         .open(ArtifactInput::bytes(jar.to_vec()), &mut budget)
         .expect("the family jar opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -331,6 +332,42 @@ fn single_child_family_folds_when_the_narrow_certificate_refuses() {
         } if members.len() == 1
     ));
     assert_eq!(recompile_and_run("m2", &report.text, "M2", &jar), "7\n");
+
+    // Only the row's root-to-member edge is nesting; the other dollars are identifier text.
+    let source = M2_SOURCE
+        .replace("M2", "Root$Owner")
+        .replace("Solo", "Node$Part");
+    let (jar, _) = compile_family("literal-dollars", &source);
+    let report = source_of(&jar, "Root$Owner");
+    assert!(
+        report.text.contains("static class Node$Part"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("new Node$Part().v()"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("Node.Part"));
+    let ClassSourceMemberFamily::PreparedStatic {
+        members,
+        projection: ClassSourceMemberProjection::Projected { derived },
+    } = &report.member_family
+    else {
+        panic!(
+            "literal dollars keep the proved direct member fold: {:?}",
+            report.member_family
+        );
+    };
+    assert_eq!(members.len(), 1);
+    assert_eq!(members[0].relation.simple_name, "Node$Part");
+    assert!(members[0].child.text.contains("Root$Owner$Node$Part"));
+    assert!(
+        derived
+            .iter()
+            .all(|projection| report.text.get(projection.start..projection.end).is_some())
+    );
 }
 
 #[test]
@@ -554,6 +591,7 @@ fn budget_and_cancellation_stop_the_whole_fold_atomically() {
         .expect("the family jar opens");
     cancellation.cancel();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("M2"),
         },

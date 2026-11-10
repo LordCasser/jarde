@@ -1301,6 +1301,7 @@ fn w1(config: &Config) -> Vec<Sample> {
         .clone();
     let mut source_budget = request_budget(config, &opened.store);
     let source_request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(String::from_utf8_lossy(&class.0).into_owned()),
         },
@@ -1382,6 +1383,7 @@ fn recover_one(
                 .engine
                 .recover_target_with_evidence(
                     std::slice::from_ref(&opened.snapshot),
+                    jarde::SourceTarget::JAVA_8,
                     &request,
                     &RecoveryEvidenceRequest::essential(),
                     &mut budget,
@@ -1588,6 +1590,7 @@ fn w3(config: &Config) -> Vec<Sample> {
                     .engine
                     .recover_target_with_evidence(
                         std::slice::from_ref(&opened.snapshot),
+                        jarde::SourceTarget::JAVA_8,
                         &request,
                         &RecoveryEvidenceRequest::essential(),
                         &mut budget,
@@ -1660,6 +1663,7 @@ fn w3(config: &Config) -> Vec<Sample> {
                     .engine
                     .recover_target_with_evidence(
                         std::slice::from_ref(&opened.snapshot),
+                        jarde::SourceTarget::JAVA_8,
                         &request,
                         &RecoveryEvidenceRequest::essential(),
                         &mut budget,
@@ -2452,6 +2456,7 @@ fn w5(config: &Config) -> Vec<Sample> {
                     .engine
                     .recover_target_with_evidence(
                         std::slice::from_ref(&opened.snapshot),
+                        jarde::SourceTarget::JAVA_8,
                         &request,
                         &RecoveryEvidenceRequest::essential(),
                         &mut budget,

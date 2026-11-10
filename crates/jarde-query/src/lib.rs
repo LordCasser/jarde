@@ -13,6 +13,9 @@
 //! ([`xref::CandidateFilter`]) are the whole seam, and the scanner's exact-target rule stays
 //! internal.
 
+/// Conservative workspace source/build identity; independent of package and format versions.
+pub const IMPLEMENTATION_ID: &str = env!("JARDE_IMPLEMENTATION_ID");
+
 pub mod plugin;
 pub mod query;
 pub mod xref;

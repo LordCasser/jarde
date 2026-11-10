@@ -137,8 +137,17 @@ fn recovered_text(class: &[u8], name: &str, descriptor: &str, parameter_slots: u
         .with_declaring_class(DeclaringClass::new(declaring_name, header.access_flags)),
     );
     let report = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, jarde_java::pass::JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::essential()),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            jarde_java::pass::JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::essential()),
         &mut budget,
     );
     report.text

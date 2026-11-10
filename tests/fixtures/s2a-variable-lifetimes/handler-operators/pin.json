@@ -1,0 +1,51 @@
+{
+  "schema": "s2a-handler-operators-fixture-pin-v1",
+  "input_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/handler-operators-boundary-v1/input-manifest.json",
+  "input_manifest_sha256": "6c6627a7e794523dd0f8041c658809234792c81547653d25eee857eb72ba9dc1",
+  "source_files": [
+    {
+      "name": "HandlerOperators.java",
+      "bytes": 1623,
+      "sha256": "0f3886dc21d69471dc77b9f2a4cde3648df58c6f3446afd741269e9cb966eaf7"
+    },
+    {
+      "name": "HandlerOperatorsDriver.java",
+      "bytes": 1668,
+      "sha256": "8a2c4a82d7170400a5e0db7ce78964bea99ced7458285353223c06240e452293"
+    }
+  ],
+  "jars": [
+    {
+      "repo_relative_path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/jars/corretto8-debug.jar",
+      "bytes": 935,
+      "sha256": "f889e02caf902c3088cc99ed2d15a028eff5bc43344c8e89e8892083d63eff1c",
+      "members": [
+        "HandlerOperators.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/jars/corretto8-no-debug.jar",
+      "bytes": 613,
+      "sha256": "cafa0bc85451f06f16dd4f23edef0716552226ff37635eac7c4b56e9cb455e91",
+      "members": [
+        "HandlerOperators.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/jars/openjdk23-debug.jar",
+      "bytes": 935,
+      "sha256": "662575cb7e16eae4213214802f356b7507d9264d3ffa6816dae6e916242b2f4a",
+      "members": [
+        "HandlerOperators.class"
+      ]
+    },
+    {
+      "repo_relative_path": "tests/fixtures/s2a-variable-lifetimes/handler-operators/jars/openjdk23-no-debug.jar",
+      "bytes": 613,
+      "sha256": "66d36e700c326b1ee4950c095fb281a34a2f08ea5790f88835a49e2097f17124",
+      "members": [
+        "HandlerOperators.class"
+      ]
+    }
+  ]
+}

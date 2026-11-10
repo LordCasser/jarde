@@ -24,6 +24,7 @@ fn recover_with_evidence(
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .expect("fixture opens as a standalone class");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },
@@ -221,6 +222,7 @@ fn analysis_budget_during_switch_join_proof_does_not_publish_a_complete_class() 
         .open(ArtifactInput::bytes(SAMPLE.to_vec()), &mut budget)
         .expect("fixture opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("Join"),
         },

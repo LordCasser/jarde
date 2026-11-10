@@ -114,7 +114,10 @@ fn historical_ecj_headers_and_finally_bytecode_are_stable() {
         assert_eq!(actual, expected, "classfile major {version}");
         assert_eq!(
             report.code_span.length,
-            expected.iter().map(|(_, _, width)| u64::from(*width)).sum()
+            expected
+                .iter()
+                .map(|(_, _, width)| u64::from(*width))
+                .sum::<u64>()
         );
         assert_eq!(
             report

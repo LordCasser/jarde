@@ -146,7 +146,7 @@ use jarde_reader::classfile::{
     BootstrapMethodFacts, ClassFacts, CpEntryFacts, DescriptorFacts, DescriptorKind, MemberHeader,
     MethodCodeFacts, descriptor_facts,
 };
-use jarde_reader::model::{JvmBytes, JvmString, PhysicalMethodId};
+use jarde_reader::model::{JvmBytes, JvmString, PhysicalDefinitionId, PhysicalMethodId};
 use std::sync::Arc;
 
 /// The access-flag bit a member sets when it is `static` (JVMS 4.6).
@@ -192,12 +192,10 @@ pub struct MethodDeclaration {
     identity: PhysicalMethodId,
     class_name: JvmBytes,
     class_access_flags: u16,
-    /// The member classes the declaring class's own `InnerClasses` attribute states, by their
-    /// internal names. This is the one fact that separates a nested binary name from a **top
-    /// level** name that merely carries `$` (JVMS §4.7.6: a class file that references a member
-    /// names it in this attribute), and the presentation layer needs exactly that distinction to
-    /// spell a reference as source nesting.
-    inner_class_members: Vec<JvmBytes>,
+    /// Complete ordered rows from the declaring class's own `InnerClasses` attribute, including
+    /// raw class/outer/inner names and flags. Consumers share the immutable payload so no name
+    /// boundary is lost by reducing it to a list of class names. This is no runtime binding.
+    inner_classes: Arc<[jarde_reader::classfile::ResolvedInnerClass]>,
 }
 
 impl MethodDeclaration {
@@ -215,7 +213,7 @@ impl MethodDeclaration {
         identity: PhysicalMethodId,
         class_name: JvmBytes,
         class_access_flags: u16,
-        inner_class_members: Vec<JvmBytes>,
+        inner_classes: Arc<[jarde_reader::classfile::ResolvedInnerClass]>,
     ) -> Option<Self> {
         let parameter_slots = parameter_slots(&descriptor.0, access_flags & ACC_STATIC != 0)?;
         Some(Self {
@@ -226,7 +224,7 @@ impl MethodDeclaration {
             identity,
             class_name,
             class_access_flags,
-            inner_class_members,
+            inner_classes,
         })
     }
 
@@ -288,10 +286,9 @@ impl MethodDeclaration {
         self.class_access_flags
     }
 
-    /// The member classes the declaring class's own `InnerClasses` attribute states, by their
-    /// internal names. Empty when the class file declares no such attribute.
-    pub fn inner_class_members(&self) -> &[JvmBytes] {
-        &self.inner_class_members
+    /// Complete same-read raw rows, shared with source consumers. Empty when no attribute exists.
+    pub fn inner_classes(&self) -> &Arc<[jarde_reader::classfile::ResolvedInnerClass]> {
+        &self.inner_classes
     }
 }
 
@@ -343,7 +340,7 @@ pub struct MethodIr {
     canonical: Option<Box<CanonicalCfg>>,
     frames: Option<Box<FrameTable>>,
     ssa: Option<Box<SsaTable>>,
-    code: Option<Box<MethodCodeFacts>>,
+    code: Option<Arc<MethodCodeFacts>>,
     /// The facts bundle of the read that decoded [`Self::code`], held as the **shared handle** of
     /// that read ([`jarde_reader::prepared::PreparedClass::facts_handle`] for a prepared class, the
     /// request's own header read otherwise).
@@ -356,9 +353,17 @@ pub struct MethodIr {
     facts: Option<Arc<ClassFacts>>,
     bootstrap_methods: Vec<BootstrapMethodFacts>,
     declaration: Option<Box<MethodDeclaration>>,
+    #[cfg(feature = "test-support")]
+    _live: crate::observation::LiveMethodIr,
 }
 
 impl MethodIr {
+    /// The immutable physical read that travelled with this body. Runtime bindings remain the
+    /// resolver's decision; sharing these bytes' header does not share a loader or resolution.
+    pub(crate) fn class_read(&self) -> Option<(&PhysicalDefinitionId, &Arc<ClassFacts>)> {
+        Some((&self.declaration()?.identity().owner, self.facts.as_ref()?))
+    }
+
     /// One payload from the artifacts of one run, in the order the passes publish them.
     ///
     /// `code`, `facts` and `bootstrap_methods` are the facts the `raw_facts` pass read: the decoded
@@ -374,7 +379,7 @@ impl MethodIr {
         canonical: Option<Box<CanonicalCfg>>,
         frames: Option<Box<FrameTable>>,
         ssa: Option<Box<SsaTable>>,
-        code: Option<Box<MethodCodeFacts>>,
+        code: Option<Arc<MethodCodeFacts>>,
         facts: Option<Arc<ClassFacts>>,
         bootstrap_methods: Vec<BootstrapMethodFacts>,
         declaration: Option<Box<MethodDeclaration>>,
@@ -403,6 +408,8 @@ impl MethodIr {
             facts,
             bootstrap_methods,
             declaration,
+            #[cfg(feature = "test-support")]
+            _live: crate::observation::LiveMethodIr::new(),
         }
     }
 
@@ -436,6 +443,11 @@ impl MethodIr {
     /// Nothing re-decodes and nothing re-states them.
     pub fn code(&self) -> Option<&MethodCodeFacts> {
         self.code.as_deref()
+    }
+
+    /// 同一次可信分析的 Body 句柄，仅供 JVM 内部向候选读取交接。
+    pub(crate) fn code_handle(&self) -> Option<&Arc<MethodCodeFacts>> {
+        self.code.as_ref()
     }
 
     /// The class's constant pool as the same read decoded it; empty when no body was read.
@@ -670,7 +682,7 @@ mod tests {
             Some(graph),
             Some(table),
             Some(names),
-            Some(Box::new(facts)),
+            Some(Arc::new(facts)),
             Some(Arc::new(header)),
             Vec::new(),
             // These parts are assembled instead of read, so the payload states no member declaration:

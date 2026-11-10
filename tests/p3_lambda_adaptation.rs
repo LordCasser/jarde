@@ -65,6 +65,7 @@ fn class_source_of_named(
 ) -> ClassSourceReport {
     let mut budget = budget();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },
@@ -123,6 +124,7 @@ fn recover_method_result_named(
     class_name: &str,
 ) -> jarde::Result<RecoveredMethod> {
     let environment = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },
@@ -148,6 +150,7 @@ fn recover_method_result_named(
     };
     Engine::new().recover_method_with_evidence(
         slice::from_ref(snapshot),
+        jarde::SourceTarget::JAVA_8,
         &request,
         evidence,
         budget,
@@ -591,7 +594,7 @@ fn adaptation_budget_stops_without_publishing_a_partial_body() {
         if matches!(
             &recovery.outcome,
             RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(0),
                 ..
             })
@@ -790,7 +793,7 @@ fn captured_adapter_budget_stops_inside_nested_value_rendering() {
         if matches!(
             recovery.outcome,
             RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: CountedBudgetDimension::IrItems,
+                dimension: jarde_reader::budget::BudgetDimension::IrItems,
                 at: Some(5),
                 ..
             })
@@ -854,7 +857,7 @@ fn bound_null_refusal_does_not_swallow_an_internal_plan_budget_stop() {
         if matches!(
             recovery.outcome,
             RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 at: Some(9),
                 ..
             })

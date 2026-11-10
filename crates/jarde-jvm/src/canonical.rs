@@ -73,7 +73,7 @@ pub(crate) enum CanonicalOutcome {
 /// first; it is empty exactly for the blocks of the method's own code. The path is what makes a
 /// clone a different node from the original block and from the clone of another call site,
 /// which is the whole point of the slice: two call sites never share one cloned block.
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, serde::Serialize)]
 pub struct CanonicalBlockId {
     /// BCI of the first original block of this node.
     pub(crate) bci: u32,

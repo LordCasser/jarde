@@ -13,6 +13,7 @@ fn fresh_recovery() -> ClassSourceReport {
         .open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
         .expect("class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("ExceptionChain"),
         },

@@ -1,0 +1,56 @@
+{
+  "inputs": [
+    {
+      "bytes": 2462,
+      "copied_from": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/corretto8-debug.jar",
+      "path": "jars/corretto8-debug.jar",
+      "sha256": "efea68e33eb1d8cd80bee616a57c9bfa4d7298be5d6b3de35336eb1a7b33b052"
+    },
+    {
+      "bytes": 1896,
+      "copied_from": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/corretto8-no-debug.jar",
+      "path": "jars/corretto8-no-debug.jar",
+      "sha256": "6e435a94b60517d22b0aa0470442cc0dc90356a9a9abaed7ba666ae5e23cf876"
+    },
+    {
+      "bytes": 2479,
+      "copied_from": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/openjdk23-debug.jar",
+      "path": "jars/openjdk23-debug.jar",
+      "sha256": "55578d2d7a753586db5a577daaaec495f328eb13d63d890d539a3e5f70c631bb"
+    },
+    {
+      "bytes": 1896,
+      "copied_from": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/jars/openjdk23-no-debug.jar",
+      "path": "jars/openjdk23-no-debug.jar",
+      "sha256": "5b8adaefc8b7939112608f9c8a239c5ec569072783f38126c927551ce8e8e479"
+    },
+    {
+      "bytes": 2071,
+      "copied_from": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/fixtures/dev/src/ReferenceCases.java",
+      "path": "src/ReferenceCases.java",
+      "sha256": "6f6d6291bb70a70ccfc6036199bdb05ce5bd374d24b8592b78c53ae160ca488d"
+    },
+    {
+      "bytes": 1340,
+      "copied_from": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/fixtures/dev/src/ReferenceDevDriver.java",
+      "path": "src/ReferenceDevDriver.java",
+      "sha256": "24f59b8921e93a3575dfdd16b7d46d013ff397322513366d017108a4e517cd42"
+    },
+    {
+      "bytes": 16764,
+      "copied_from": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/dev-class-source-pins.json",
+      "path": "dev-class-source-pins.json",
+      "sha256": "c768f210bee1e4cff52b1a60061114c290444e11b89e0eb860ee720c584396e4"
+    },
+    {
+      "bytes": 93,
+      "copied_from": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/inputs/dev-class-source-pins.sha256",
+      "path": "dev-class-source-pins.sha256",
+      "sha256": "81f43b6089de04ab95ec49b6ffbd7566834a26a31aa1aabe09b06255a5e77094"
+    }
+  ],
+  "schema": "s2a-reference-constraints-dev-fixture-inputs-v1",
+  "scope": "dev-only permanent fixture copy; no holdout inputs or sources included",
+  "source_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/reference-constraints-v1/manifest.json",
+  "source_manifest_sha256": "1bccd5e95931ea689661bb9789e3d9e51c86e365841b1d26637fcb2c1fb9a6b0"
+}

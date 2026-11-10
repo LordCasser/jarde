@@ -643,6 +643,10 @@ fn recover_operation(request: &MethodAnalysisRequest) -> Value {
         .expect("the request serializes as an object");
     fields.insert("kind".to_string(), json!("recover_method"));
     fields.insert(
+        "source_target".to_string(),
+        json!(jarde::SourceTarget::JAVA_8),
+    );
+    fields.insert(
         "evidence".to_string(),
         serde_json::to_value(recovery_evidence()).expect("a selection serializes"),
     );
@@ -1357,6 +1361,7 @@ fn recovery_matches_the_library_entry_field_by_field() {
     let direct = engine
         .recover_method_with_evidence(
             std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &analysis,
             &recovery_evidence(),
             &mut budget,
@@ -1394,7 +1399,8 @@ fn recovery_matches_the_library_entry_field_by_field() {
     // other two values are asserted by the stop case and by `fieldCast` below.
     assert_eq!(report["content"], "contains_statements", "{report}");
     assert_eq!(report["method"], "run()V");
-    assert_eq!(report["profile"]["java_release"], 8);
+    assert_eq!(report["source_target"]["java_release"], 8);
+    assert_eq!(report["runtime_profile"]["java_release"], 8);
     let rules: Vec<&str> = report["rules"]
         .as_array()
         .expect("the report names the rules it used")
@@ -1470,6 +1476,7 @@ fn a_presented_accessor_and_the_members_it_reads_cross_the_wire() {
     let direct = engine
         .recover_method_with_evidence(
             std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &analysis,
             &recovery_evidence(),
             &mut budget,
@@ -1589,6 +1596,7 @@ fn a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_response() 
     let direct = engine
         .recover_method_with_evidence(
             std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &analysis,
             &recovery_evidence(),
             &mut budget,
@@ -1712,6 +1720,7 @@ fn one_recovery_through_both_entry_paths(path: &Path, name: &[u8], descriptor: &
     let direct = engine
         .recover_method_with_evidence(
             std::slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &analysis,
             &recovery_evidence(),
             &mut budget,

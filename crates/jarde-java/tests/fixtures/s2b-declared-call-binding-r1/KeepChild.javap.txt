@@ -1,0 +1,57 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/classes/flow/KeepChild.class
+  Last modified 2026-10-27; size 384 bytes
+  MD5 checksum 900fe53378907e31f167243f8f61b3d9
+  Compiled from "CallBox.java"
+class flow.KeepChild extends flow.KeepBase
+  minor version: 0
+  major version: 52
+  flags: ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#17         // flow/KeepBase."<init>":()V
+   #2 = Class              #18            // flow/KeepChild
+   #3 = Class              #19            // flow/KeepBase
+   #4 = Utf8               <init>
+   #5 = Utf8               ()V
+   #6 = Utf8               Code
+   #7 = Utf8               LineNumberTable
+   #8 = Utf8               LocalVariableTable
+   #9 = Utf8               this
+  #10 = Utf8               Lflow/KeepChild;
+  #11 = Utf8               keep
+  #12 = Utf8               (Ljava/lang/String;)V
+  #13 = Utf8               value
+  #14 = Utf8               Ljava/lang/String;
+  #15 = Utf8               SourceFile
+  #16 = Utf8               CallBox.java
+  #17 = NameAndType        #4:#5          // "<init>":()V
+  #18 = Utf8               flow/KeepChild
+  #19 = Utf8               flow/KeepBase
+{
+  flow.KeepChild();
+    descriptor: ()V
+    flags:
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method flow/KeepBase."<init>":()V
+         4: return
+      LineNumberTable:
+        line 32: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lflow/KeepChild;
+
+  public void keep(java.lang.String);
+    descriptor: (Ljava/lang/String;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=0, locals=2, args_size=2
+         0: return
+      LineNumberTable:
+        line 33: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       1     0  this   Lflow/KeepChild;
+            0       1     1 value   Ljava/lang/String;
+}
+SourceFile: "CallBox.java"

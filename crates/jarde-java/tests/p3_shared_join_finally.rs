@@ -10,7 +10,7 @@ use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest, Quality};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+use jarde_reader::budget::{Budget, CancellationToken, Limits};
 use jarde_reader::model::{
     ClassBytesId, Digest, ExecutionReport, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
     PhysicalMethodId, PhysicalVariant,
@@ -913,8 +913,17 @@ fn recover_method_with_parameters(
     );
     let mut budget = recovery_budget.unwrap_or(budget);
     recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8)
-            .with_evidence(RecoveryEvidenceRequest::all()),
+        &RecoveryRequest::new(
+            analysis.ir(),
+            &facts,
+            JAVA_8,
+            jarde_reader::view::RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: jarde_reader::view::LayoutMode::Generic,
+            },
+        )
+        .with_evidence(RecoveryEvidenceRequest::all()),
         &mut budget,
     )
 }
@@ -1095,7 +1104,7 @@ fn empty_catch_test16_has_one_finally_and_two_real_rows() {
     assert!(matches!(
         stopped.stop(),
         Some(StopReason::Budget {
-            dimension: CountedBudgetDimension::AnalysisSteps,
+            dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
             ..
         })
     ));
@@ -1106,7 +1115,7 @@ fn empty_catch_test16_has_one_finally_and_two_real_rows() {
     assert!(matches!(
         stopped.stop(),
         Some(StopReason::Budget {
-            dimension: CountedBudgetDimension::OutputBytes,
+            dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
             ..
         })
     ));
@@ -1439,7 +1448,7 @@ fn shared_join_stop_discards_text_and_source_map() {
     assert!(matches!(
         stopped.stop(),
         Some(StopReason::Budget {
-            dimension: CountedBudgetDimension::IrItems,
+            dimension: jarde_reader::budget::BudgetDimension::IrItems,
             ..
         })
     ));

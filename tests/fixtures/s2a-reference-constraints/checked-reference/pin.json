@@ -1,0 +1,38 @@
+{
+  "schema": "s2a-checked-reference-fixture-pin-v1",
+  "source_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/restructure-demand-driven-recovery/results/s2a-variable-legalization-v1/checked-reference-boundary-v1/manifest.json",
+  "source_manifest_sha256": "3a85580b5092c27e8b7a1ab6ce1dc517e7f2deb79a3578b12f6f2bf9daac9b3a",
+  "source_declared_sha256": "5c3b11a9a23e27b6a769605a4e7001dd2c99f81b32f5ff3674fded2dfb308e2c",
+  "original_class_actual_sha256": "7f32c14e7d2affa36caacf3ea327f5a36f73f1a9b578068eba54249e5eb94c2d",
+  "original_class_actual_bytes": 276,
+  "prior_report_class_digest": "94db13de1ff4ece3a31e79c50774eec824b866126f0bf1b3623208f17a398244",
+  "prior_report_class_bytes": 276,
+  "prior_report_class_digest_matches_actual_sha256": false,
+  "files": [
+    {
+      "name": "CheckedReference.class",
+      "bytes": 276,
+      "sha256": "7f32c14e7d2affa36caacf3ea327f5a36f73f1a9b578068eba54249e5eb94c2d"
+    },
+    {
+      "name": "CheckedReference.java",
+      "bytes": 217,
+      "sha256": "5c3b11a9a23e27b6a769605a4e7001dd2c99f81b32f5ff3674fded2dfb308e2c"
+    },
+    {
+      "name": "CheckedReferenceDriver.java",
+      "bytes": 533,
+      "sha256": "e2cd34846cac96dbb213e284d6eb526b99cc0faf2091bfb2f3d7b2587bec3eeb"
+    }
+  ],
+  "note": "The before-r32 text is retained only to reproduce the recorded generated-source compile failure; it is not canonical source. Prior report class digest differs from actual class SHA despite equal byte length.",
+  "class_digest_algorithm": "BLAKE3 (confirmed crates/jarde-reader/src/inspect.rs:122)",
+  "prior_report_class_digest_matches_blake3": true,
+  "historical_sha256_comparison_error": {
+    "comparison_used": "SHA-256(actual file) against BLAKE3(report digest)",
+    "sha256_actual": "7f32c14e7d2affa36caacf3ea327f5a36f73f1a9b578068eba54249e5eb94c2d",
+    "blake3_actual": "94db13de1ff4ece3a31e79c50774eec824b866126f0bf1b3623208f17a398244",
+    "corrected_conclusion": "The digest matches under BLAKE3; prior mismatch was an algorithm-comparison error."
+  },
+  "driver_sha256": "e2cd34846cac96dbb213e284d6eb526b99cc0faf2091bfb2f3d7b2587bec3eeb"
+}

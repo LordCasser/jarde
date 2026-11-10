@@ -172,6 +172,7 @@ fn environment(snapshot: &ArtifactSnapshot) -> EnvironmentRequest {
 /// One class-source presentation of one committed sample, under the entry point the CLI calls.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(name),
         },

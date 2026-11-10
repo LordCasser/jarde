@@ -167,7 +167,8 @@ fn fixture_with_members(engine: &Engine, bytes: &[u8], expected: &[&[u8]]) -> Fi
 }
 
 /// One recovery run over one member of a sample, through the entry point the CLI calls: both halves of
-/// the answer, so the run's own usage is readable beside the presentation.
+/// the answer, so the run's own usage is readable beside the presentation. A raise surfaces here;
+/// every caller but the budget probes below still expects the answer.
 fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -> RecoveredMethod {
     recover_with_budget(
         engine,
@@ -176,6 +177,7 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
         descriptor,
         &mut Budget::new(limits()),
     )
+    .expect("a legal request is answered, not raised")
 }
 
 fn recover_with_budget(
@@ -184,7 +186,7 @@ fn recover_with_budget(
     name: &[u8],
     descriptor: &[u8],
     budget: &mut Budget,
-) -> RecoveredMethod {
+) -> Result<RecoveredMethod> {
     let request = MethodAnalysisRequest {
         environment: environment(&fixture.snapshot),
         method: PhysicalMethodId {
@@ -200,9 +202,12 @@ fn recover_with_budget(
         },
         stages: AnalysisStage::ALL.to_vec(),
     };
-    engine
-        .recover_method(slice::from_ref(&fixture.snapshot), &request, budget)
-        .expect("a legal request is answered, not raised")
+    Ok(engine.recover_method(
+        slice::from_ref(&fixture.snapshot),
+        jarde::SourceTarget::JAVA_8,
+        &request,
+        budget,
+    )?)
 }
 
 #[test]
@@ -276,32 +281,41 @@ fn a_stopped_monitor_reuse_run_publishes_no_partial_local() {
         b"synchronizedLoop",
         b"(I)I",
         &mut full_budget,
-    );
+    )
+    .expect("a legal request is answered, not raised");
     assert!(full.recovery().produced());
     let analysis_items = match &full.analysis().execution {
         ExecutionReport::Complete { usage } => usage.counted_usage(CountedBudgetDimension::IrItems),
         other => panic!("the fixture analysis completes: {other:?}"),
     };
     // Find a bound that stops while accounting for the monitor handler block (BCI 14), after
-    // analysis has completed. The small window is fixed by this compiled method's region shape.
-    let stopped = (analysis_items..analysis_items + 32)
+    // analysis has completed. The intent is unchanged — some bound in this window must let the
+    // finished analysis' recovery stop exactly on that block's proof and publish nothing partial —
+    // but this day's accepted mechanism rounds bill more per run (the 479 → 497 round
+    // `p3_hoisted_boolean.rs` records), and the terrain moved with them. 2026-11-07: the full
+    // run's analysis charges 727 items, so a bound landing exactly on that total raises instead of
+    // stopping — accepted billing terrain, which the probe skips — and the first `Some(14)` anchor
+    // sits 71 items above the total. The window reaches past it.
+    let stopped = (analysis_items..analysis_items + 128)
         .find_map(|limit| {
             let mut bounded = Budget::new(Limits {
                 ir_items: limit,
                 ..limits()
             });
-            let result = recover_with_budget(
+            recover_with_budget(
                 &engine,
                 &fixture,
                 b"synchronizedLoop",
                 b"(I)I",
                 &mut bounded,
-            );
-            matches!(
-                result.analysis().execution,
-                ExecutionReport::Complete { .. }
             )
-            .then_some(result)
+            .ok()
+            .filter(|result| {
+                matches!(
+                    result.analysis().execution,
+                    ExecutionReport::Complete { .. }
+                )
+            })
             .filter(|result| {
                 matches!(
                     result.recovery().stop(),
@@ -327,7 +341,8 @@ fn a_stopped_monitor_reuse_run_publishes_no_partial_local() {
         b"synchronizedLoop",
         b"(I)I",
         &mut cancelled,
-    );
+    )
+    .expect("a legal request is answered, not raised");
     assert!(!stopped.recovery().produced());
     assert_eq!(stopped.recovery().text, "");
     assert!(stopped.recovery().source_map.is_empty());
@@ -499,12 +514,17 @@ fn an_arms_own_local_is_still_declared_inside_that_arm() {
 }
 
 #[test]
-fn without_debug_evidence_a_reused_slot_stays_one_variable() {
+fn without_debug_evidence_a_provably_exclusive_slot_splits_and_the_join_read_stays_whole() {
     // The `-g:none` sample: no `LocalVariableTable`, so nothing states that slot 3 carried two
-    // variables — the only honest reading of "one storage location, one variable" is the one this
-    // layer had before the table was read at all. Both of the slot's uses are in an arm, so its
-    // declaration is hoisted above the branch and both writes assign it; the ordinal names are the
-    // deterministic fallback `Deterministic names and scopes` requires when evidence is missing.
+    // variables — and since the reuse rewrite the split no longer waits for the table to say it.
+    // The definitions are provably exclusive from structure alone (`exclusive_definition_split`):
+    // each owns one block no clone shares, every edge out of a definition block is `Normal`, neither
+    // definition block reaches the other, and `local_value_stays_before` proves the earlier value
+    // dead before the later write. The missing table costs only the names — the arms take the
+    // ordinal fallback `reference_split_names` spells for empty records. The split stays selective:
+    // slot 2 is read by the join, so it keeps one hoisted declaration while each arm's exclusive
+    // slot declares itself with its value. 2026-11-07: replaces the pin that held the slot together
+    // as one variable before the exclusive split was accepted.
     let engine = Engine::new();
     let fixture = fixture(&engine, NO_DEBUG);
     let text = body(&engine, &fixture, b"reuse", b"(ZI)I");
@@ -512,31 +532,33 @@ fn without_debug_evidence_a_reused_slot_stays_one_variable() {
     let if_at = text
         .find("if (")
         .unwrap_or_else(|| panic!("the branch is presented:\n{text}"));
-    for declaration in ["int local2;", "int local3;"] {
-        let at = text
-            .find(declaration)
-            .unwrap_or_else(|| panic!("`{declaration}` is declared once:\n{text}"));
-        assert!(
-            at < if_at,
-            "the shared slot's declaration precedes both arms:\n{text}"
-        );
-        assert_eq!(
-            text.matches(declaration).count(),
-            1,
-            "one storage location, one declaration:\n{text}"
-        );
-    }
+    let join_slot = text
+        .find("int local2;")
+        .unwrap_or_else(|| panic!("the slot the join reads is declared:\n{text}"));
     assert!(
-        text.contains("local3 = arg1 + 1;") && text.contains("local3 = arg1 + 2;"),
-        "each arm writes the reused slot:\n{text}"
+        join_slot < if_at,
+        "the join-read slot's declaration precedes the branch:\n{text}"
+    );
+    assert_eq!(
+        text.matches("int local2;").count(),
+        1,
+        "the slot the join reads stays one storage location, one declaration:\n{text}"
     );
     assert!(
-        text.contains("local2 = local3;"),
-        "and each arm stores it where the join reads it:\n{text}"
+        text.contains("int local3 = arg1 + 1;"),
+        "the `then` arm declares its exclusive slot with the value it writes:\n{text}"
+    );
+    assert!(
+        text.contains("int local3_2 = arg1 + 2;"),
+        "the `else` arm declares its own exclusive slot with the value it writes:\n{text}"
+    );
+    assert!(
+        text.contains("local2 = local3;") && text.contains("local2 = local3_2;"),
+        "each arm stores its slot where the join reads it:\n{text}"
     );
     assert!(
         text.contains("return local2;"),
-        "the join reads the slot the body really declares:\n{text}"
+        "the join reads the slot the body declares once:\n{text}"
     );
 }
 

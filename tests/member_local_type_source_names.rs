@@ -49,6 +49,7 @@ fn recover(evidence: &RecoveryEvidenceRequest) -> ClassSourceReport {
         .open(ArtifactInput::bytes(family_jar()), &mut budget())
         .expect("the frozen family JAR opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("OuterSuperEffects"),
         },
@@ -87,6 +88,7 @@ fn recover(evidence: &RecoveryEvidenceRequest) -> ClassSourceReport {
 
 fn request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("OuterSuperEffects"),
         },
@@ -233,6 +235,7 @@ fn standalone_method_recovery_does_not_inherit_family_source_aliases() {
     let standalone = Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut budget(),

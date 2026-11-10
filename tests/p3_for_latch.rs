@@ -34,6 +34,7 @@ fn class_source_report(
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
         .expect("frozen class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },
@@ -177,6 +178,7 @@ fn for_proof_obeys_the_request_budget_and_cancellation() {
         .open(ArtifactInput::bytes(CLASS.to_vec()), &mut open_budget)
         .expect("frozen class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("ForBoundaries"),
         },

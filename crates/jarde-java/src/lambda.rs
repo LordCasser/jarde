@@ -100,7 +100,7 @@ use jarde_reader::model::{ExecutionReport, JvmBytes};
 use crate::ast::Type;
 use crate::decode::Operations;
 use crate::facts::{ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC, ClassMembers, DynamicSite, Operation};
-use crate::pass::{IrTable, LAMBDA, Precondition, RecoveryProfile, RuleVersion};
+use crate::pass::{IrTable, LAMBDA, Precondition, RuleVersion, SourceTarget};
 use crate::stop::{StopReason, charge, poll};
 
 /// The class that owns the factories this layer verifies.
@@ -143,11 +143,11 @@ pub(crate) struct Evidence {
     /// How many static arguments that entry states.
     pub(crate) bootstrap_arguments: usize,
     /// The SAM method type the bootstrap states, when it states one.
-    pub(crate) sam_method_type: Option<String>,
+    pub(crate) sam_method_type: Option<JvmBytes>,
     /// The instantiated method type the bootstrap states, when it states one.
-    pub(crate) instantiated_method_type: Option<String>,
-    /// The implementation handle as `owner.name(descriptor) (kind)`, when it resolves.
-    pub(crate) implementation: Option<String>,
+    pub(crate) instantiated_method_type: Option<JvmBytes>,
+    /// The resolved physical handle. Diagnostic text is derived only at publication.
+    pub(crate) implementation: Option<Member>,
 }
 
 /// How one verified site is written.
@@ -202,14 +202,72 @@ pub struct SyntheticLambdaHelperCandidate {
 }
 
 /// The implementation handle of one verified site, resolved.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Member {
     kind: u8,
+    raw_owner: JvmBytes,
+    raw_name: JvmBytes,
+    raw_descriptor: JvmBytes,
     owner: String,
     name: String,
     descriptor: String,
 }
 
 impl Member {
+    pub(crate) fn diagnostic(&self) -> String {
+        format!(
+            "{}.{}{} ({})",
+            source_name(&self.owner),
+            self.name,
+            self.descriptor,
+            kind_word(self.kind)
+        )
+    }
+
+    pub(crate) fn needs_source_name(&self) -> bool {
+        !self.constructs() && crate::names::source_method_name(&self.raw_name).is_none()
+    }
+
+    pub(crate) fn unclosed_name_refusal(&self, at: u32, cp: u16) -> Refusal {
+        Refusal::shape(
+            "jre_lambda_implementation_name",
+            format!(
+                "the implementation at BCI {at}, CP {cp}, has raw owner {:?}, raw method name {:?}, raw descriptor {:?}, handle kind {}; no committed projection has removed or faithfully renamed this source-inexpressible reference",
+                self.raw_owner.0, self.raw_name.0, self.raw_descriptor.0, self.kind
+            ),
+        )
+    }
+
+    fn from_raw(kind: u8, owner: JvmBytes, name: JvmBytes, descriptor: JvmBytes) -> Self {
+        Self {
+            kind,
+            owner: crate::facts::display_jvm_bytes(&owner),
+            name: crate::facts::display_jvm_bytes(&name),
+            descriptor: crate::facts::display_jvm_bytes(&descriptor),
+            raw_owner: owner,
+            raw_name: name,
+            raw_descriptor: descriptor,
+        }
+    }
+
+    #[cfg(test)]
+    fn new(kind: u8, owner: &str, name: &str, descriptor: &str) -> Self {
+        Self::from_raw(
+            kind,
+            JvmBytes::from_unicode(owner),
+            JvmBytes::from_unicode(name),
+            JvmBytes::from_unicode(descriptor),
+        )
+    }
+    fn owner_type(&self) -> Option<Type> {
+        self.source_owner().map(Type::Reference)
+    }
+
+    /// Type spelling from the physical owner, including array owners, never from diagnostics.
+    pub(crate) fn source_owner(&self) -> Option<String> {
+        crate::build::spell_reference(&self.raw_owner.to_unicode()?)
+    }
+
     /// Whether the handle's invocation supplies a receiver before its arguments.
     fn takes_receiver(&self) -> bool {
         REF_RECEIVER_KINDS.contains(&self.kind)
@@ -228,7 +286,7 @@ impl Member {
 
     /// Whether the handle is the body method a compiler generated for a lambda site.
     fn is_generated_body(&self) -> bool {
-        self.name.starts_with(BODY_MARKER)
+        self.raw_name.0.starts_with(BODY_MARKER.as_bytes())
     }
 
     /// How the member is reached, which decides the call the presentation writes.
@@ -250,11 +308,6 @@ impl Member {
     /// The member's name.
     pub(crate) fn name(&self) -> &str {
         &self.name
-    }
-
-    /// The implementation member's exact descriptor from the resolved same-run handle.
-    pub(crate) fn descriptor(&self) -> &str {
-        &self.descriptor
     }
 }
 
@@ -389,6 +442,12 @@ pub struct LambdaRecord {
     pub sam_name: String,
     /// The descriptor the site presents: the captured values' types, then the functional interface.
     pub sam_descriptor: String,
+    /// Original site name and descriptor, retained independently of diagnostic text.
+    pub raw_sam_name: JvmBytes,
+    pub raw_sam_descriptor: JvmBytes,
+    /// Original bootstrap method types, when the rule read them.
+    pub raw_sam_method_type: Option<JvmBytes>,
+    pub raw_instantiated_method_type: Option<JvmBytes>,
     /// The SAM method type the factory states, when it states one.
     pub sam_method_type: Option<String>,
     /// The instantiated method type the factory states, when it states one.
@@ -488,8 +547,8 @@ pub(crate) fn plan(
     members: Option<&ClassMembers>,
     captures: &[(Option<u32>, Option<Type>)],
     receiver_nonnull: bool,
-    profile: &RecoveryProfile,
-    typed_target: Option<crate::report::TypedFunctionalTarget>,
+    profile: &SourceTarget,
+    typed_target: Option<crate::report::FunctionalTargetInput>,
     budget: &mut Budget,
     at: u32,
 ) -> Result<Verdict, StopReason> {
@@ -508,7 +567,7 @@ pub(crate) fn plan(
                 format!(
                     "the {RULE} rule presents an `invokedynamic` call site, which is Java {} and later, and this run's profile presents the artifact as Java {}",
                     LAMBDA.required_release().unwrap_or(8),
-                    profile.java_release,
+                    profile.java_release(),
                 ),
             )),
         });
@@ -541,7 +600,11 @@ pub(crate) fn plan(
     };
     evidence.bootstrap = Some(describe(&handle));
     evidence.bootstrap_arguments = entry.arguments.len();
-    if handle.owner != FACTORY_OWNER || !FACTORY_METHODS.contains(&handle.name.as_str()) {
+    if handle.raw_owner.0.as_slice() != FACTORY_OWNER.as_bytes()
+        || !FACTORY_METHODS
+            .iter()
+            .any(|name| handle.raw_name.0.as_slice() == name.as_bytes())
+    {
         return Ok(Verdict {
             evidence,
             outcome: Err(Refusal::shape(
@@ -577,11 +640,9 @@ pub(crate) fn plan(
             });
         }
     };
-    let read_type = |index: u16| -> Option<String> {
+    let read_type = |index: u16| -> Option<JvmBytes> {
         match cp_entry(pool, index).map(|entry| &entry.kind) {
-            Ok(CpEntryKind::MethodType { descriptor, .. }) => {
-                Some(String::from_utf8_lossy(&descriptor.0).into_owned())
-            }
+            Ok(CpEntryKind::MethodType { descriptor, .. }) => Some(descriptor.clone()),
             _ => None,
         }
     };
@@ -598,13 +659,7 @@ pub(crate) fn plan(
             )),
         });
     };
-    evidence.implementation = Some(format!(
-        "{}.{}{} ({})",
-        source_name(&implementation.owner),
-        implementation.name,
-        implementation.descriptor,
-        kind_word(implementation.kind)
-    ));
+    evidence.implementation = Some(implementation.clone());
     if !implementation.is_invocation() {
         return Ok(Verdict {
             evidence,
@@ -629,7 +684,8 @@ pub(crate) fn plan(
             )),
         });
     };
-    let Some((site_params, site_returns)) = parse_method_input(site.descriptor(), budget, at)?
+    let Some((site_params, site_returns)) =
+        parse_method_bytes_input(&site.raw_descriptor().0, budget, at)?
     else {
         return Ok(Verdict {
             evidence,
@@ -642,8 +698,8 @@ pub(crate) fn plan(
             )),
         });
     };
-    let sam_signature = parse_method_input(&sam, budget, at)?;
-    let instantiated_signature = parse_method_input(&instantiated, budget, at)?;
+    let sam_signature = parse_method_bytes_input(&sam.0, budget, at)?;
+    let instantiated_signature = parse_method_bytes_input(&instantiated.0, budget, at)?;
     let (Some((sam_params, sam_return)), Some((instantiated_params, instantiated_return))) =
         (sam_signature, instantiated_signature)
     else {
@@ -652,7 +708,9 @@ pub(crate) fn plan(
             outcome: Err(Refusal::shape(
                 "jre_lambda_descriptor",
                 format!(
-                    "the factory's method types (`{sam}`, `{instantiated}`) are not descriptors this layer reads"
+                    "the factory's method types (`{}`, `{}`) are not descriptors this layer reads",
+                    crate::facts::display_jvm_bytes(&sam),
+                    crate::facts::display_jvm_bytes(&instantiated)
                 ),
             )),
         });
@@ -663,8 +721,10 @@ pub(crate) fn plan(
             outcome: Err(Refusal::shape(
                 "jre_lambda_sam_descriptor",
                 format!(
-                    "the SAM method type `{sam}` takes {} parameter(s) and the instantiated method type `{instantiated}` takes {}: the SAM's own signature is not one signature",
+                    "the SAM method type `{}` takes {} parameter(s) and the instantiated method type `{}` takes {}: the SAM's own signature is not one signature",
+                    crate::facts::display_jvm_bytes(&sam),
                     sam_params.len(),
+                    crate::facts::display_jvm_bytes(&instantiated),
                     instantiated_params.len(),
                 ),
             )),
@@ -698,7 +758,7 @@ pub(crate) fn plan(
     };
     debug_assert!(matches!(interface, Type::Reference(_)));
     let Some((implementation_params, implementation_return)) =
-        parse_method_input(&implementation.descriptor, budget, at)?
+        parse_method_bytes_input(&implementation.raw_descriptor.0, budget, at)?
     else {
         return Ok(Verdict {
             evidence,
@@ -768,12 +828,24 @@ pub(crate) fn plan(
         });
     }
     // A capture runs while the functional value is created, before any SAM argument. The site
-    // descriptor and implementation operand must state the same exact type, and the current frame
-    // must state that same type too. Shape equality alone would silently infer a conversion at the
+    // descriptor and implementation operand must state the same exact type, and the caller must
+    // present that type too. The builder may prove a reference widening with the same bound facts
+    // as its declarations and spell it explicitly; this plan itself infers no conversion. Shape
+    // equality alone would silently infer a conversion at the
     // capture boundary (or move it into a lambda body), neither of which this plan proves.
     let mut expected: Vec<Type> = Vec::with_capacity(given);
     if receiver == 1 {
-        expected.push(Type::Reference(source_name(&implementation.owner)));
+        let Some(owner_type) = implementation.owner_type() else {
+            return Ok(Verdict {
+                evidence,
+                outcome: Err(Refusal::shape(
+                    "jre_lambda_implementation",
+                    "the implementation receiver owner cannot be decoded as a source type"
+                        .to_owned(),
+                )),
+            });
+        };
+        expected.push(owner_type);
     }
     expected.extend(implementation_params.iter().cloned());
     for position in 0..captures.len() {
@@ -812,7 +884,9 @@ pub(crate) fn plan(
                 outcome: Err(Refusal::shape(
                     "jre_lambda_sam_types",
                     format!(
-                        "the erased SAM `{sam}`, instantiated type `{instantiated}` and implementation `{}.{}{}` require a parameter or return conversion outside identity, Object check/upcast, or the matching primitive-wrapper pair",
+                        "the erased SAM `{}`, instantiated type `{}` and implementation `{}.{}{}` require a parameter or return conversion outside identity, Object check/upcast, or the matching primitive-wrapper pair",
+                        crate::facts::display_jvm_bytes(&sam),
+                        crate::facts::display_jvm_bytes(&instantiated),
                         source_name(&implementation.owner),
                         implementation.name,
                         implementation.descriptor,
@@ -848,12 +922,13 @@ pub(crate) fn plan(
         target.use_site == at
             && target.site_cp == site.cp()
             && site
-                .descriptor()
-                .ends_with(&format!("L{};", interface.replace('.', "/")))
-            && handle.owner == FACTORY_OWNER
-            && handle.name == "metafactory"
-            && sam == erased
-            && instantiated == dynamic
+                .raw_descriptor()
+                .0
+                .ends_with(format!("L{};", interface.replace('.', "/")).as_bytes())
+            && handle.raw_owner.0.as_slice() == FACTORY_OWNER.as_bytes()
+            && handle.raw_name.0.as_slice() == b"metafactory"
+            && sam.0.as_slice() == erased.as_bytes()
+            && instantiated.0.as_slice() == dynamic.as_bytes()
             && adaptation.parameters.iter().all(|parameter| {
                 parameter.dynamic_to_implementation == TypeConversion::Identity
                     && matches!(
@@ -897,6 +972,24 @@ pub(crate) fn plan(
     } else {
         LambdaForm::Lambda
     };
+    // A named implementation is written directly as either `::name` or a call in the
+    // adapted lambda. Compiler bodies remain staged for the class-wide inline/rename
+    // proof: their physical names may disappear from the final source entirely.
+    if !implementation.constructs()
+        && !implementation.is_generated_body()
+        && crate::names::source_method_name(&implementation.raw_name).is_none()
+    {
+        return Ok(Verdict {
+            evidence,
+            outcome: Err(Refusal::shape(
+                "jre_lambda_implementation_name",
+                format!(
+                    "the implementation at BCI {at} has raw method name {:?}, which has no faithful Java method spelling",
+                    implementation.raw_name.0
+                ),
+            )),
+        });
+    }
     Ok(Verdict {
         evidence,
         outcome: Ok(Plan {
@@ -929,7 +1022,7 @@ fn prove_array_constructor(
     let Some(members) = members else {
         return Ok(None);
     };
-    if members.owner() != implementation.owner {
+    if members.raw_owner() != &implementation.raw_owner {
         return Ok(None);
     }
 
@@ -937,9 +1030,9 @@ fn prove_array_constructor(
     for member in members.members() {
         poll(budget, Some(at))?;
         charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
-        if member.owner() == members.owner()
-            && member.name() == implementation.name
-            && member.descriptor() == implementation.descriptor
+        if member.raw_owner() == members.raw_owner()
+            && member.raw_name() == &implementation.raw_name
+            && member.raw_descriptor() == &implementation.raw_descriptor
         {
             if selected.is_some() {
                 return Ok(None);
@@ -959,11 +1052,11 @@ fn prove_array_constructor(
     let Some(code) = member.code() else {
         return Ok(None);
     };
-    prove_array_constructor_code(&implementation.descriptor, code, pool, budget, at)
+    prove_array_constructor_code(&implementation.raw_descriptor.0, code, pool, budget, at)
 }
 
 fn prove_array_constructor_code(
-    descriptor: &str,
+    descriptor: &[u8],
     code: &MethodCodeFacts,
     pool: &[CpEntryFacts],
     budget: &mut Budget,
@@ -976,7 +1069,7 @@ fn prove_array_constructor_code(
         u64::try_from(descriptor.len()).unwrap_or(u64::MAX),
         Some(at),
     )?;
-    let Ok(method) = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Method) else {
+    let Ok(method) = descriptor_facts(descriptor, DescriptorKind::Method) else {
         return Ok(None);
     };
     let [length] = method.parameters() else {
@@ -1125,8 +1218,8 @@ fn array_allocation_matches(
 
 type ParsedMethodDescriptor = (Vec<Type>, Option<Type>);
 
-fn parse_method_input(
-    descriptor: &str,
+fn parse_method_bytes_input(
+    descriptor: &[u8],
     budget: &mut Budget,
     at: u32,
 ) -> Result<Option<ParsedMethodDescriptor>, StopReason> {
@@ -1140,7 +1233,7 @@ fn parse_method_input(
             Some(at),
         )?;
     }
-    Ok(parse_method(descriptor))
+    Ok(parse_method_bytes(descriptor))
 }
 
 /// The method handle one pool index names, resolved to its member.
@@ -1164,12 +1257,12 @@ fn handle_of(pool: &[CpEntryFacts], index: u16) -> Option<Member> {
             name,
             descriptor,
             ..
-        }) => Some(Member {
-            kind: *reference_kind,
-            owner: String::from_utf8_lossy(&owner.0).into_owned(),
-            name: String::from_utf8_lossy(&name.0).into_owned(),
-            descriptor: String::from_utf8_lossy(&descriptor.0).into_owned(),
-        }),
+        }) => Some(Member::from_raw(
+            *reference_kind,
+            owner.clone(),
+            name.clone(),
+            descriptor.clone(),
+        )),
         // A field handle names a field, and a handle whose reference does not resolve is not a
         // member this layer may state.
         _ => None,
@@ -1228,10 +1321,8 @@ pub fn array_helper_candidates(ir: &jarde_jvm::method_ir::MethodIr) -> Vec<Array
         {
             continue;
         }
-        let Ok(descriptor_text) = std::str::from_utf8(&descriptor.0) else {
-            continue;
-        };
-        let Some((parameters, Some(Type::Reference(array_type)))) = parse_method(descriptor_text)
+        let Some((parameters, Some(Type::Reference(array_type)))) =
+            parse_method_bytes(&descriptor.0)
         else {
             continue;
         };
@@ -1306,17 +1397,15 @@ pub fn synthetic_lambda_helper_candidates(
         {
             continue;
         }
-        let Ok(descriptor_text) = std::str::from_utf8(&descriptor.0) else {
-            continue;
-        };
         // The implementation descriptor must parse as a method descriptor at all; the companion's
         // own proof reads its parameter list back out of this text when the body is inlined.
-        if parse_method(descriptor_text).is_none() {
+        if parse_method_bytes(&descriptor.0).is_none() {
             continue;
         }
         // The site's descriptor states the captured values' types and returns the functional
         // interface; its parameter count is the capture count the record states.
-        let Some((site_parameters, Some(Type::Reference(_)))) = parse_method(site.descriptor())
+        let Some((site_parameters, Some(Type::Reference(_)))) =
+            parse_method_bytes(&site.raw_descriptor().0)
         else {
             continue;
         };
@@ -1495,7 +1584,9 @@ fn adaptation_plan(
         bill_parameter().map_err(AdaptationFailure::Stop)?;
         let operand = captures + index;
         let implementation_type = if takes_receiver && operand == 0 {
-            Type::Reference(source_name(&implementation.owner))
+            implementation
+                .owner_type()
+                .ok_or(AdaptationFailure::Refusal)?
         } else {
             let parameter_index = operand
                 .checked_sub(usize::from(takes_receiver))
@@ -1522,7 +1613,11 @@ fn adaptation_plan(
     }
 
     let implementation_return = if implementation.kind == REF_NEW_INVOKE_SPECIAL {
-        Some(Type::Reference(source_name(&implementation.owner)))
+        Some(
+            implementation
+                .owner_type()
+                .ok_or(AdaptationFailure::Refusal)?,
+        )
     } else {
         implementation_return
     };
@@ -1619,8 +1714,8 @@ fn source_name(internal: &str) -> String {
 /// the reader ([`DescriptorComponent`]: base type, object name, array dimensions), so nothing here
 /// reads bytes; what this function owns is the *type the text writes* — a primitive's own name, an
 /// array spelled from its element outwards with one `[]` per dimension, and an object type's
-/// internal name spelled with [`source_name`]. A name that is not UTF-8 states no Java type, so it
-/// is refused here instead of being written lossily into a type position.
+/// internal name validated and spelled by [`crate::names::source_class_name`]. A MUTF-8 name with
+/// no faithful Java identifier spelling states no source type, rather than an escaped/lossy type.
 pub fn type_of_component(component: &DescriptorComponent) -> Option<Type> {
     let base = type_of_base(component.base())?;
     if component.dimensions() == 0 {
@@ -1652,13 +1747,7 @@ pub(crate) fn type_of_base(base: &Base) -> Option<Type> {
         Base::Primitive(BaseType::Long) => Type::Long,
         Base::Primitive(BaseType::Float) => Type::Float,
         Base::Primitive(BaseType::Double) => Type::Double,
-        Base::Object(name) => {
-            let name = std::str::from_utf8(&name.0).ok()?;
-            if name.is_empty() {
-                return None;
-            }
-            Type::Reference(source_name(name))
-        }
+        Base::Object(name) => Type::Reference(crate::names::source_class_name(name)?),
     })
 }
 
@@ -1671,8 +1760,14 @@ pub(crate) fn type_of_base(base: &Base) -> Option<Type> {
 /// (the `append` overloads a concatenation calls, the erased signature a bridge forwards, the
 /// declaration of an accessor): one reading of the production, and the reader's own — this function
 /// only turns its facts into the types this layer writes.
+#[cfg(test)]
 pub(crate) fn parse_method(descriptor: &str) -> Option<(Vec<Type>, Option<Type>)> {
-    let facts = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Method).ok()?;
+    parse_method_bytes(&jarde_reader::model::JvmBytes::from_unicode(descriptor).0)
+}
+
+/// Parse class-file descriptor bytes directly; object names remain MUTF-8 until type spelling.
+pub(crate) fn parse_method_bytes(descriptor: &[u8]) -> Option<(Vec<Type>, Option<Type>)> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
     let parameters = facts
         .parameters()
         .iter()
@@ -1702,7 +1797,7 @@ pub(crate) fn parse_type(bytes: &[u8], at: usize) -> Option<(Type, usize)> {
 mod tests {
     use super::*;
     use crate::facts::{ClassMembers, MemberBody};
-    use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+    use jarde_reader::budget::{Budget, CancellationToken, Limits};
     use jarde_reader::classfile::{
         CpEntryFacts, CpEntryKind, InstructionFact, InstructionOperands, LocalOperand,
         MethodCodeFacts,
@@ -1886,12 +1981,12 @@ mod tests {
 
     #[test]
     fn array_constructor_proof_requires_exact_member_and_complete_effect_free_code() {
-        let implementation = Member {
-            kind: REF_INVOKE_STATIC,
-            owner: "test/Target".to_string(),
-            name: "lambda$arrayCtor$0".to_string(),
-            descriptor: "(I)[I".to_string(),
-        };
+        let implementation = Member::new(
+            REF_INVOKE_STATIC,
+            "test/Target",
+            "lambda$arrayCtor$0",
+            "(I)[I",
+        );
         let flags = ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC;
         let pool = [];
         let mut budget = unlimited_budget();
@@ -1910,10 +2005,11 @@ mod tests {
         assert!(matches!(
             prove_array_constructor(&implementation, &pool, Some(&members), &mut bounded, 19),
             Err(StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                 written: 0,
                 limit: 0,
                 at: Some(19),
+                ..
             })
         ));
         assert_eq!(bounded.usage().analysis_steps, 0);
@@ -2085,12 +2181,12 @@ mod tests {
 
     #[test]
     fn boxed_array_constructor_requires_exact_integer_unbox() {
-        let implementation = Member {
-            kind: REF_INVOKE_STATIC,
-            owner: "test/Target".to_string(),
-            name: "lambda$arrayCtor$0".to_string(),
-            descriptor: "(Ljava/lang/Integer;)[I".to_string(),
-        };
+        let implementation = Member::new(
+            REF_INVOKE_STATIC,
+            "test/Target",
+            "lambda$arrayCtor$0",
+            "(Ljava/lang/Integer;)[I",
+        );
         let flags = ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC;
         let members = class_members_for(
             "lambda$arrayCtor$0",
@@ -2210,9 +2306,9 @@ mod tests {
         CpEntryKind::MethodRef {
             class_index: 0,
             name_and_type_index: 0,
-            owner: JvmBytes(owner.as_bytes().to_vec()),
-            name: JvmBytes(name.as_bytes().to_vec()),
-            descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+            owner: JvmBytes::from_unicode(owner),
+            name: JvmBytes::from_unicode(name),
+            descriptor: JvmBytes::from_unicode(descriptor),
         }
     }
 
@@ -2285,7 +2381,7 @@ mod tests {
                 3,
                 CpEntryKind::MethodType {
                     descriptor_index: 0,
-                    descriptor: JvmBytes(sam_descriptor.as_bytes().to_vec()),
+                    descriptor: JvmBytes::from_unicode(sam_descriptor),
                 },
             ),
             cp(
@@ -2307,7 +2403,7 @@ mod tests {
                 6,
                 CpEntryKind::MethodType {
                     descriptor_index: 0,
-                    descriptor: JvmBytes(instantiated_descriptor.as_bytes().to_vec()),
+                    descriptor: JvmBytes::from_unicode(instantiated_descriptor),
                 },
             ),
         ];
@@ -2334,6 +2430,139 @@ mod tests {
             7,
         )
         .expect("default test budget is ample for one lambda site")
+    }
+
+    #[test]
+    fn raw_dynamic_sam_supplementary_method_types_keep_their_reference_type() {
+        let descriptor = "(Lp/𐐀;)Lp/𐐀;";
+        let verdict = plan_for_test(
+            "()Ltest/Function;",
+            descriptor,
+            REF_INVOKE_STATIC,
+            descriptor,
+            descriptor,
+            &[],
+        );
+        assert!(
+            verdict.outcome.is_ok(),
+            "valid supplementary SAM/implementation: {:?}",
+            verdict.outcome.err()
+        );
+    }
+
+    #[test]
+    fn raw_dynamic_sam_surrogate_cannot_match_a_replacement_named_type() {
+        let surrogate = JvmBytes(b"(Lp/\xed\xa0\x81;)Lp/\xed\xa0\x81;".to_vec());
+        let pool = vec![
+            cp(
+                1,
+                CpEntryKind::MethodHandle {
+                    reference_kind: REF_INVOKE_STATIC,
+                    reference_index: 2,
+                },
+            ),
+            cp(2, method_ref(FACTORY_OWNER, "metafactory", "()V")),
+            cp(
+                3,
+                CpEntryKind::MethodType {
+                    descriptor_index: 0,
+                    descriptor: surrogate.clone(),
+                },
+            ),
+            cp(
+                4,
+                CpEntryKind::MethodHandle {
+                    reference_kind: REF_INVOKE_STATIC,
+                    reference_index: 5,
+                },
+            ),
+            cp(5, method_ref("test/Target", "apply", "(Lp/���;)Lp/���;")),
+            cp(
+                6,
+                CpEntryKind::MethodType {
+                    descriptor_index: 0,
+                    descriptor: surrogate,
+                },
+            ),
+        ];
+        let bootstraps = [BootstrapMethodFacts {
+            method_ref: 1,
+            arguments: vec![3, 4, 6],
+        }];
+        let site = DynamicSite::new(7, 0, "apply", "()Ltest/Function;");
+        let verdict = plan(
+            &site,
+            &bootstraps,
+            &pool,
+            None,
+            &[],
+            false,
+            &crate::pass::JAVA_8,
+            None,
+            &mut unlimited_budget(),
+            7,
+        )
+        .expect("test budget");
+        assert!(
+            verdict.outcome.is_err(),
+            "a surrogate descriptor must not select a distinct replacement type"
+        );
+    }
+
+    #[test]
+    fn raw_dynamic_handle_owner_is_not_a_type_from_escaped_text() {
+        let owner = JvmBytes(b"p/\xed\xa0\x81".to_vec());
+        let fake_type = Type::Reference("p.\\uD801".into());
+        let static_member = Member::from_raw(
+            REF_INVOKE_STATIC,
+            owner.clone(),
+            JvmBytes::from_unicode("apply"),
+            JvmBytes::from_unicode("()V"),
+        );
+        assert_eq!(static_member.source_owner(), None);
+        let array_member = Member::from_raw(
+            5,
+            JvmBytes::from_unicode("[Lp/𐐀;"),
+            JvmBytes::from_unicode("clone"),
+            JvmBytes::from_unicode("()Ljava/lang/Object;"),
+        );
+        assert_eq!(array_member.source_owner().as_deref(), Some("p.𐐀[]"));
+        let receiver = Member::from_raw(
+            5,
+            owner.clone(),
+            JvmBytes::from_unicode("apply"),
+            JvmBytes::from_unicode("()V"),
+        );
+        assert!(
+            adaptation_plan_for_test(
+                &[fake_type.clone()],
+                &[fake_type.clone()],
+                (None, None),
+                &[],
+                None,
+                &receiver,
+                0
+            )
+            .is_err()
+        );
+        let constructor = Member::from_raw(
+            REF_NEW_INVOKE_SPECIAL,
+            owner,
+            JvmBytes::from_unicode("<init>"),
+            JvmBytes::from_unicode("()V"),
+        );
+        assert!(
+            adaptation_plan_for_test(
+                &[],
+                &[],
+                (Some(fake_type.clone()), Some(fake_type)),
+                &[],
+                None,
+                &constructor,
+                0
+            )
+            .is_err()
+        );
     }
 
     #[test]
@@ -2436,12 +2665,7 @@ mod tests {
     }
 
     fn static_member(descriptor: &str) -> Member {
-        Member {
-            kind: REF_INVOKE_STATIC,
-            owner: "test/Target".to_string(),
-            name: "accept".to_string(),
-            descriptor: descriptor.to_string(),
-        }
+        Member::new(REF_INVOKE_STATIC, "test/Target", "accept", descriptor)
     }
 
     #[test]
@@ -2472,7 +2696,7 @@ mod tests {
                 3,
                 CpEntryKind::MethodType {
                     descriptor_index: 0,
-                    descriptor: JvmBytes(sam_descriptor.as_bytes().to_vec()),
+                    descriptor: JvmBytes::from_unicode(sam_descriptor),
                 },
             ),
             cp(
@@ -2490,7 +2714,7 @@ mod tests {
                 6,
                 CpEntryKind::MethodType {
                     descriptor_index: 0,
-                    descriptor: JvmBytes(instantiated_descriptor.as_bytes().to_vec()),
+                    descriptor: JvmBytes::from_unicode(instantiated_descriptor),
                 },
             ),
         ];
@@ -2527,7 +2751,9 @@ mod tests {
         assert_eq!(
             stop,
             StopReason::Budget {
-                dimension: CountedBudgetDimension::AnalysisSteps,
+                dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
+                consumed: descriptor_work,
+                requested: 1,
                 written: 0,
                 limit: descriptor_work,
                 at: Some(42),
@@ -3040,17 +3266,9 @@ mod tests {
 
     #[test]
     fn the_generated_body_marker_is_the_only_thing_that_decides_the_lambda_writing() {
-        let body = Member {
-            kind: 6,
-            owner: "Test".to_string(),
-            name: "lambda$method$0".to_string(),
-            descriptor: "(I)V".to_string(),
-        };
+        let body = Member::new(6, "Test", "lambda$method$0", "(I)V");
         assert!(body.is_generated_body());
-        let named = Member {
-            name: "valueOf".to_string(),
-            ..body
-        };
+        let named = Member::new(6, "Test", "valueOf", "(I)V");
         assert!(!named.is_generated_body());
     }
 }

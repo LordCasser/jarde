@@ -17,7 +17,7 @@
 //!
 //! # What it deliberately does not claim, and why
 //!
-//! It does not write `switch (e)` with `case T.CONST:` labels, because the two facts that spelling
+//! It does not write `switch (e)` with `case T.CONST:` labels, because use the two facts that spelling
 //! needs are not in this run:
 //!
 //! * **which enum constants the table's indices stand for** — the enum class's own fields, which are
@@ -32,6 +32,7 @@
 //! states in its record and its diagnostics that the constant mapping is not claimed rather than
 //! inventing labels for it. A read that is *not* this shape is refused and quoted.
 
+use jarde_reader::model::JvmBytes;
 use std::collections::{BTreeMap, BTreeSet};
 
 use jarde_jvm::method_ir::{Definition, SsaTable, ValueId};
@@ -81,6 +82,8 @@ pub struct ClassSourceEnumSwitchCandidate {
     pub selector_receiver_type: Option<Vec<u8>>,
     pub keys: Vec<i64>,
     pub(crate) projection: Option<std::sync::Arc<EnumSwitchProjectionSource>>,
+    #[cfg(any(test, feature = "test-support"))]
+    pub(crate) observation: crate::observation::Token,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -119,8 +122,8 @@ pub struct EnumSwitchMapProof {
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EnumSwitchMapRequest {
-    pub table_name: String,
-    pub enum_owner: String,
+    pub table_name: JvmBytes,
+    pub enum_owner: JvmBytes,
     pub enum_constants: Vec<Vec<u8>>,
     pub switch_keys: Vec<i64>,
 }
@@ -130,10 +133,10 @@ pub struct EnumSwitchMapRequest {
 #[doc(hidden)]
 pub fn enum_values_factory_name(
     initializer: &jarde_jvm::method_ir::MethodIr,
-    enum_owner: &str,
-    values_field: &str,
+    enum_owner: &JvmBytes,
+    values_field: &JvmBytes,
     budget: &mut jarde_reader::budget::Budget,
-) -> Result<Result<String, String>, crate::stop::StopReason> {
+) -> Result<Result<JvmBytes, String>, crate::stop::StopReason> {
     use jarde_reader::budget::CountedBudgetDimension;
 
     let Some(code) = initializer.code() else {
@@ -158,7 +161,7 @@ pub fn enum_values_factory_name(
             Ok(ops.get(instruction.bci))
         })
         .collect::<Result<_, crate::stop::StopReason>>()?;
-    let array_descriptor = format!("[L{enum_owner};");
+    let array_descriptor = JvmBytes([b"[L".as_slice(), enum_owner.0.as_slice(), b";"].concat());
     let [
         Some(Operation::Invoke(call)),
         Some(Operation::Field {
@@ -176,8 +179,8 @@ pub fn enum_values_factory_name(
         ));
     };
     if call.kind() != InvokeKind::Static
-        || call.owner() != enum_owner
-        || call.descriptor() != format!("(){array_descriptor}")
+        || call.raw_owner() != enum_owner
+        || call.raw_descriptor().0 != [b"()".as_slice(), array_descriptor.0.as_slice()].concat()
         || call.is_interface_reference()
         || owner != enum_owner
         || name != values_field
@@ -187,7 +190,7 @@ pub fn enum_values_factory_name(
             "the enum <clinit> does not call its own values-array factory".to_owned(),
         ));
     }
-    Ok(Ok(call.name().to_owned()))
+    Ok(Ok(call.raw_name().clone()))
 }
 
 /// Proves that every declared enum constant is backed by a distinct object with a distinct
@@ -205,9 +208,9 @@ pub fn prove_enum_constant_ordinals(
         &jarde_jvm::method_ir::MethodIr,
         &jarde_jvm::method_ir::MethodIr,
     ),
-    enum_owner: &str,
+    enum_owner: &JvmBytes,
     enum_constants: &[Vec<u8>],
-    values_field: &str,
+    values_field: &JvmBytes,
     budget: &mut jarde_reader::budget::Budget,
 ) -> Result<Result<(), String>, crate::stop::StopReason> {
     use crate::facts::{ConstantValue, FieldAccess};
@@ -224,12 +227,13 @@ pub fn prove_enum_constant_ordinals(
             "the enum public values() has no physical declaration".to_owned()
         ));
     };
-    let expected_values_descriptor = format!("()[L{enum_owner};");
-    if factory_declaration.class_name().0 != enum_owner.as_bytes()
-        || factory_declaration.descriptor().0 != expected_values_descriptor.as_bytes()
-        || values_declaration.class_name().0 != enum_owner.as_bytes()
+    let expected_values_descriptor =
+        JvmBytes([b"()[L".as_slice(), enum_owner.0.as_slice(), b";"].concat());
+    if factory_declaration.class_name().0 != enum_owner.0.as_slice()
+        || factory_declaration.descriptor().0 != expected_values_descriptor.0.as_slice()
+        || values_declaration.class_name().0 != enum_owner.0.as_slice()
         || values_declaration.name().0 != b"values"
-        || values_declaration.descriptor().0 != expected_values_descriptor.as_bytes()
+        || values_declaration.descriptor().0 != expected_values_descriptor.0.as_slice()
     {
         return Ok(Err(
             "the enum values-array bodies have mismatched physical declarations".to_owned(),
@@ -274,8 +278,8 @@ pub fn prove_enum_constant_ordinals(
         }
     }
 
-    let descriptor = format!("L{enum_owner};");
-    let array_descriptor = format!("[L{enum_owner};");
+    let descriptor = JvmBytes([b"L".as_slice(), enum_owner.0.as_slice(), b";"].concat());
+    let array_descriptor = JvmBytes([b"[L".as_slice(), enum_owner.0.as_slice(), b";"].concat());
     let actual: Vec<_> = code
         .instructions
         .iter()
@@ -289,8 +293,8 @@ pub fn prove_enum_constant_ordinals(
     }
     let mut ordinals = BTreeSet::new();
     for (index, constant) in enum_constants.iter().enumerate() {
-        let Ok(name) = std::str::from_utf8(constant) else {
-            return shape("an enum constant field name is not UTF-8");
+        let Some(name) = JvmBytes(constant.clone()).to_unicode() else {
+            return shape("an enum constant field name has no Unicode constructor name");
         };
         let start = index * 6;
         let [
@@ -313,13 +317,13 @@ pub fn prove_enum_constant_ordinals(
             );
         };
         if ty != enum_owner
-            || constructor_name != name
+            || constructor_name != &name
             || call.kind() != crate::facts::InvokeKind::Special
-            || call.owner() != enum_owner
-            || call.name() != "<init>"
-            || call.descriptor() != "(Ljava/lang/String;I)V"
-            || *owner != enum_owner
-            || field_name.as_bytes() != constant
+            || call.raw_owner() != enum_owner
+            || call.raw_name().0 != b"<init>"
+            || call.raw_descriptor().0 != b"(Ljava/lang/String;I)V"
+            || owner != enum_owner
+            || field_name.0.as_slice() != constant
             || field_descriptor != &descriptor
             || *ordinal != i64::try_from(index).unwrap_or(i64::MAX)
             || !ordinals.insert(*ordinal)
@@ -342,10 +346,10 @@ pub fn prove_enum_constant_ordinals(
             },
             Operation::Return,
         ] if call.kind() == crate::facts::InvokeKind::Static
-            && call.owner() == enum_owner
-            && call.descriptor() == format!("()[L{enum_owner};")
-            && call.name().as_bytes() == factory_declaration.name().0.as_slice()
-            && *owner == enum_owner
+            && call.raw_owner() == enum_owner
+            && call.raw_descriptor() == &expected_values_descriptor
+            && call.raw_name() == factory_declaration.name()
+            && owner == enum_owner
             && name == values_field
             && field_descriptor == &array_descriptor
     ) {
@@ -398,9 +402,9 @@ pub fn prove_enum_constant_ordinals(
             Some(Operation::Invoke(call)),
             Some(Operation::Return),
         ] if call.kind() == crate::facts::InvokeKind::Special
-            && call.owner() == "java/lang/Enum"
-            && call.name() == "<init>"
-            && call.descriptor() == "(Ljava/lang/String;I)V"
+            && call.raw_owner().0 == b"java/lang/Enum"
+            && call.raw_name().0 == b"<init>"
+            && call.raw_descriptor().0 == b"(Ljava/lang/String;I)V"
     ) {
         return shape(
             "the enum constructor does not forward its exact name and ordinal to java/lang/Enum",
@@ -454,12 +458,37 @@ pub fn prove_enum_constant_ordinals(
         Ok(ops) => ops,
         Err(reason) => return Ok(Err(reason)),
     };
+    // The presentation element is not a physical key. Check the same-run anewarray CP class.
+    let factory_component = values_factory.code().and_then(|code| {
+        let instruction = code.instructions.get(1)?;
+        if instruction.opcode != 0xbd {
+            return None;
+        }
+        let index = code
+            .operands()
+            .get(1)
+            .and_then(|operand| operand.constant_pool_index)
+            .or(instruction.constant_pool_index)?;
+        match &jarde_reader::classfile::cp_entry(values_factory.constant_pool(), index)
+            .ok()?
+            .kind
+        {
+            jarde_reader::classfile::CpEntryKind::Class { name, .. } => Some(name),
+            _ => None,
+        }
+    });
     if factory_ops.len() != enum_constants.len().saturating_mul(4).saturating_add(3)
         || !matches!(factory_ops.first(), Some(Operation::Push(ConstantValue::Int(length)))
             if *length == i64::try_from(enum_constants.len()).unwrap_or(i64::MAX))
-        || !matches!(factory_ops.get(1), Some(Operation::NewArray {
-            element: crate::ast::Type::Reference(element), dimensions: 1, total_dimensions: 1,
-        }) if element == &enum_owner.replace('/', "."))
+        || !matches!(
+            factory_ops.get(1),
+            Some(Operation::NewArray {
+                element: crate::ast::Type::Reference(_),
+                dimensions: 1,
+                total_dimensions: 1,
+            })
+        )
+        || factory_component != Some(enum_owner)
         || !matches!(factory_ops.last(), Some(Operation::Return))
     {
         return shape(
@@ -478,7 +507,7 @@ pub fn prove_enum_constant_ordinals(
             Operation::ArrayStore { element: None },
         ] if *ordinal == i64::try_from(index).unwrap_or(i64::MAX)
             && owner == enum_owner
-            && name.as_bytes() == constant
+            && name.0.as_slice() == constant
             && field_descriptor == &descriptor)
         {
             return shape(
@@ -502,9 +531,9 @@ pub fn prove_enum_constant_ordinals(
         && name == values_field
         && field_descriptor == &array_descriptor
         && call.kind() == InvokeKind::Virtual
-        && call.owner() == array_descriptor
-        && call.name() == "clone"
-        && call.descriptor() == "()Ljava/lang/Object;"
+        && call.raw_owner() == &array_descriptor
+        && call.raw_name().0 == b"clone"
+        && call.raw_descriptor().0 == b"()Ljava/lang/Object;"
         && !call.is_interface_reference()
         && ty == &array_descriptor)
     {
@@ -525,15 +554,15 @@ pub fn prove_enum_constant_ordinals(
 #[doc(hidden)]
 pub fn prove_enum_switch_map_initializer(
     ir: &jarde_jvm::method_ir::MethodIr,
-    helper_owner: &str,
-    table_name: &str,
-    enum_owner: &str,
+    helper_owner: &[u8],
+    table_name: &[u8],
+    enum_owner: &JvmBytes,
     enum_constants: &[Vec<u8>],
     switch_keys: &[i64],
     budget: &mut jarde_reader::budget::Budget,
 ) -> Result<Result<EnumSwitchMapProof, String>, crate::stop::StopReason> {
     let request = EnumSwitchMapRequest {
-        table_name: table_name.to_owned(),
+        table_name: JvmBytes(table_name.to_owned()),
         enum_owner: enum_owner.to_owned(),
         enum_constants: enum_constants.to_vec(),
         switch_keys: switch_keys.to_vec(),
@@ -552,7 +581,7 @@ pub fn prove_enum_switch_map_initializer(
 #[doc(hidden)]
 pub fn prove_enum_switch_map_initializer_group(
     ir: &jarde_jvm::method_ir::MethodIr,
-    helper_owner: &str,
+    helper_owner: &[u8],
     requests: &[EnumSwitchMapRequest],
     budget: &mut jarde_reader::budget::Budget,
 ) -> Result<Result<Vec<EnumSwitchMapProof>, String>, crate::stop::StopReason> {
@@ -583,12 +612,12 @@ pub fn prove_enum_switch_map_initializer_group(
     }
     let mut request_by_table = BTreeMap::new();
     for request in requests {
-        if request.table_name.is_empty()
-            || request.enum_owner.is_empty()
+        if request.table_name.0.is_empty()
+            || request.enum_owner.0.is_empty()
             || request.enum_constants.is_empty()
             || request.switch_keys.is_empty()
             || request_by_table
-                .insert(request.table_name.as_str(), request)
+                .insert(request.table_name.0.clone(), request)
                 .is_some()
         {
             return Ok(Err(
@@ -611,11 +640,11 @@ pub fn prove_enum_switch_map_initializer_group(
         None,
     )?;
 
-    let mut table_writes: BTreeMap<&str, u32> = BTreeMap::new();
-    let mut table_reads: BTreeMap<&str, Vec<u32>> = BTreeMap::new();
+    let mut table_writes: BTreeMap<Vec<u8>, u32> = BTreeMap::new();
+    let mut table_reads: BTreeMap<Vec<u8>, Vec<u32>> = BTreeMap::new();
     let mut enum_field_reads = Vec::new();
-    let mut values_calls: BTreeMap<&str, Vec<u32>> = BTreeMap::new();
-    let mut ordinal_calls: BTreeMap<&str, Vec<u32>> = BTreeMap::new();
+    let mut values_calls: BTreeMap<&[u8], Vec<u32>> = BTreeMap::new();
+    let mut ordinal_calls: BTreeMap<&[u8], Vec<u32>> = BTreeMap::new();
     let mut arrays = Vec::new();
     let mut lengths = Vec::new();
     let mut stores = Vec::new();
@@ -635,12 +664,12 @@ pub fn prove_enum_switch_map_initializer_group(
                 owner,
                 name,
                 descriptor,
-            } if owner == helper_owner && descriptor == "[I" => {
-                let Some(request) = request_by_table.get(name.as_str()) else {
+            } if owner.0.as_slice() == helper_owner && descriptor.0.as_slice() == b"[I" => {
+                let Some(request) = request_by_table.get(&name.0) else {
                     return shape("the shared helper `<clinit>` writes an unselected int[] table");
                 };
                 if table_writes
-                    .insert(request.table_name.as_str(), instruction.bci)
+                    .insert(request.table_name.0.clone(), instruction.bci)
                     .is_some()
                 {
                     return shape("the shared helper writes a selected table more than once");
@@ -652,12 +681,12 @@ pub fn prove_enum_switch_map_initializer_group(
                 owner,
                 name,
                 descriptor,
-            } if owner == helper_owner && descriptor == "[I" => {
-                if !request_by_table.contains_key(name.as_str()) {
+            } if owner.0.as_slice() == helper_owner && descriptor.0.as_slice() == b"[I" => {
+                if !request_by_table.contains_key(&name.0) {
                     return shape("the shared helper `<clinit>` reads an unselected int[] table");
                 }
                 table_reads
-                    .entry(name.as_str())
+                    .entry(name.0.clone())
                     .or_default()
                     .push(instruction.bci);
             }
@@ -668,46 +697,52 @@ pub fn prove_enum_switch_map_initializer_group(
                 name,
                 descriptor,
             } => {
-                let Some(request) = requests.iter().find(|request| request.enum_owner == *owner)
+                let Some(request) = requests.iter().find(|request| owner == &request.enum_owner)
                 else {
                     return shape("the shared helper `<clinit>` reads an unrelated field");
                 };
-                if descriptor.as_bytes() != enum_descriptor(&request.enum_owner).as_slice()
+                if descriptor.0.as_slice() != enum_descriptor(&request.enum_owner).as_slice()
                     || !request
                         .enum_constants
                         .iter()
-                        .any(|constant| constant == name.as_bytes())
+                        .any(|constant| constant == name.0.as_slice())
                 {
                     return shape("the shared helper `<clinit>` reads an unproved enum field");
                 }
-                enum_field_reads.push((instruction.bci, owner.clone(), name.as_bytes().to_vec()));
+                enum_field_reads.push((
+                    instruction.bci,
+                    owner.0.clone(),
+                    name.0.as_slice().to_vec(),
+                ));
             }
             Operation::Field { .. } => {
                 return shape("the shared helper `<clinit>` writes or reads an unrelated field");
             }
             Operation::Invoke(target)
                 if target.kind() == crate::facts::InvokeKind::Static
-                    && target.name() == "values"
+                    && target.raw_name().0 == b"values"
                     && requests.iter().any(|request| {
-                        target.owner() == request.enum_owner
-                            && target.descriptor() == format!("()[L{};", request.enum_owner)
+                        target.raw_owner() == &request.enum_owner
+                            && target.raw_descriptor().0
+                                == [b"()[L".as_slice(), request.enum_owner.0.as_slice(), b";"]
+                                    .concat()
                     }) =>
             {
                 values_calls
-                    .entry(target.owner())
+                    .entry(target.raw_owner().0.as_slice())
                     .or_default()
                     .push(instruction.bci);
             }
             Operation::Invoke(target)
                 if target.kind() == crate::facts::InvokeKind::Virtual
-                    && target.name() == "ordinal"
-                    && target.descriptor() == "()I"
+                    && target.raw_name().0 == b"ordinal"
+                    && target.raw_descriptor().0 == b"()I"
                     && requests
                         .iter()
-                        .any(|request| target.owner() == request.enum_owner) =>
+                        .any(|request| target.raw_owner() == &request.enum_owner) =>
             {
                 ordinal_calls
-                    .entry(target.owner())
+                    .entry(target.raw_owner().0.as_slice())
                     .or_default()
                     .push(instruction.bci);
             }
@@ -789,7 +824,8 @@ pub fn prove_enum_switch_map_initializer_group(
     let mut mapped_pushes = BTreeSet::new();
     let mut all_handlers = BTreeSet::new();
     for request in requests {
-        let table_name = request.table_name.as_str();
+        let table_name = request.table_name.0.as_slice();
+        let table_label = crate::facts::display_jvm_bytes(&request.table_name);
         let Some(table_write_bci) = table_writes.get(table_name).copied() else {
             return shape("the shared helper omits one selected table assignment");
         };
@@ -845,9 +881,10 @@ pub fn prove_enum_switch_map_initializer_group(
             return shape("a selected values() producer is not an invocation");
         };
         if values_target.kind() != crate::facts::InvokeKind::Static
-            || values_target.owner() != request.enum_owner
-            || values_target.name() != "values"
-            || values_target.descriptor() != format!("()[L{};", request.enum_owner)
+            || values_target.raw_owner() != &request.enum_owner
+            || values_target.raw_name().0 != b"values"
+            || values_target.raw_descriptor().0
+                != [b"()[L".as_slice(), request.enum_owner.0.as_slice(), b";"].concat()
             || !instruction_follows(
                 by_bci.get(&values_bci).copied(),
                 by_bci.get(&length_bci).copied(),
@@ -864,8 +901,8 @@ pub fn prove_enum_switch_map_initializer_group(
         }
         let (Some(table_read_bcis), Some(values_owner_calls), Some(ordinal_owner_calls)) = (
             table_reads.get(table_name),
-            values_calls.get(request.enum_owner.as_str()),
-            ordinal_calls.get(request.enum_owner.as_str()),
+            values_calls.get(request.enum_owner.0.as_slice()),
+            ordinal_calls.get(request.enum_owner.0.as_slice()),
         ) else {
             return shape("a selected table has no complete reads or enum calls");
         };
@@ -915,7 +952,10 @@ pub fn prove_enum_switch_map_initializer_group(
             else {
                 return shape("a shared mapping write does not use a static table field read");
             };
-            if owner != helper_owner || name.as_str() != table_name || descriptor != "[I" {
+            if owner.0.as_slice() != helper_owner
+                || name.0.as_slice() != table_name
+                || descriptor.0.as_slice() != b"[I"
+            {
                 continue;
             }
             let Some((ordinal_bci, Operation::Invoke(target))) =
@@ -924,9 +964,9 @@ pub fn prove_enum_switch_map_initializer_group(
                 return shape("a selected table index is not produced by enum ordinal()");
             };
             if target.kind() != crate::facts::InvokeKind::Virtual
-                || target.owner() != request.enum_owner
-                || target.name() != "ordinal"
-                || target.descriptor() != "()I"
+                || target.raw_owner() != &request.enum_owner
+                || target.raw_name().0 != b"ordinal"
+                || target.raw_descriptor().0 != b"()I"
                 || !ordinal_owner_calls.contains(&ordinal_bci)
             {
                 return shape("a selected table index is not produced by its enum ordinal() call");
@@ -957,15 +997,16 @@ pub fn prove_enum_switch_map_initializer_group(
                 return shape("a selected ordinal receiver is not an enum constant field read");
             };
             if constant_owner != &request.enum_owner
-                || constant_descriptor.as_bytes() != enum_descriptor(&request.enum_owner).as_slice()
+                || constant_descriptor.0.as_slice()
+                    != enum_descriptor(&request.enum_owner).as_slice()
                 || !request
                     .enum_constants
                     .iter()
-                    .any(|candidate| candidate.as_slice() == constant.as_bytes())
+                    .any(|candidate| candidate.as_slice() == constant.0.as_slice())
                 || !enum_field_reads.iter().any(|(bci, owner, name)| {
                     *bci == constant_bci
-                        && owner == constant_owner
-                        && name.as_slice() == constant.as_bytes()
+                        && owner == &constant_owner.0
+                        && name.as_slice() == constant.0.as_slice()
                 })
             {
                 return shape("a selected ordinal receiver is not a declared constant of its enum");
@@ -977,10 +1018,10 @@ pub fn prove_enum_switch_map_initializer_group(
             };
             if !used_pushes.contains(&key_bci)
                 || !seen_keys.insert(i64::from(*key))
-                || !seen_constants.insert(constant.as_bytes().to_vec())
+                || !seen_constants.insert(constant.0.as_slice().to_vec())
             {
                 return shape(&format!(
-                    "selected table `{table_name}` repeats a key, enum constant, or key producer"
+                    "selected table `{table_label}` repeats a key, enum constant, or key producer"
                 ));
             }
             let (
@@ -1170,7 +1211,7 @@ pub fn prove_enum_switch_map_initializer_group(
             table_store_bcis.push(store_bci);
             entries.push(EnumSwitchMapEntry {
                 key: i64::from(*key),
-                constant: constant.as_bytes().to_vec(),
+                constant: constant.0.as_slice().to_vec(),
                 constant_field_bci: constant_bci,
                 ordinal_bci,
                 table_read_bci,
@@ -1188,7 +1229,7 @@ pub fn prove_enum_switch_map_initializer_group(
             .any(|key| !seen_keys.contains(key))
         {
             return shape(&format!(
-                "selected table `{table_name}` does not map every used switch key"
+                "selected table `{table_label}` does not map every used switch key"
             ));
         }
         let mut sorted_keys = request.switch_keys.clone();
@@ -1196,7 +1237,7 @@ pub fn prove_enum_switch_map_initializer_group(
         sorted_keys.dedup();
         if sorted_keys.iter().any(|key| !seen_keys.contains(key)) {
             return shape(&format!(
-                "selected table `{table_name}` omits a switch case key"
+                "selected table `{table_label}` omits a switch case key"
             ));
         }
         let next_group_start = values_calls
@@ -1213,7 +1254,7 @@ pub fn prove_enum_switch_map_initializer_group(
             || table_reads
                 .iter()
                 .filter(|(other, reads)| {
-                    **other != table_name
+                    other.as_slice() != table_name
                         && reads
                             .iter()
                             .any(|read| *read >= values_bci && *read < next_group_start)
@@ -1259,8 +1300,8 @@ pub fn prove_enum_switch_map_initializer_group(
     Ok(Ok(proofs))
 }
 
-fn enum_descriptor(owner: &str) -> Vec<u8> {
-    format!("L{owner};").into_bytes()
+fn enum_descriptor(owner: &JvmBytes) -> Vec<u8> {
+    [b"L".as_slice(), owner.0.as_slice(), b";"].concat()
 }
 
 fn claim_bcis(claimed: &mut BTreeSet<u32>, bcis: &[u32]) -> bool {
@@ -1495,6 +1536,8 @@ impl Plan {
                 selector_receiver_type,
                 keys: keys.iter().map(|(key, _)| *key).collect(),
                 projection: None,
+                #[cfg(any(test, feature = "test-support"))]
+                observation: crate::observation::Token::new(crate::observation::Kind::Candidate),
             });
         }
         Ok(candidates)
@@ -1553,9 +1596,9 @@ fn verify(
                 descriptor,
             },
         )) => {
-            if descriptor != "[I" {
+            if descriptor.0.as_slice() != b"[I" {
                 return Err(shape(format!(
-                    "the array read at BCI {at} reads `{owner}.{name}` of descriptor `{descriptor}`, and a dispatch table is an `int[]`"
+                    "the array read at BCI {at} reads `{owner:?}.{name:?}` of descriptor `{descriptor:?}`, and a dispatch table is an `int[]`"
                 )));
             }
             TableRead {
@@ -1580,7 +1623,7 @@ fn verify(
     // the case index out of. Whether that call is *called* `ordinal` is not part of the shape.
     let index_call = match producer(ssa, index, operations) {
         Some((bci, Operation::Invoke(target))) => {
-            if target.descriptor() != "()I"
+            if target.raw_descriptor().0 != b"()I"
                 || !matches!(target.kind(), InvokeKind::Virtual | InvokeKind::Interface)
             {
                 return Err(shape(format!(
@@ -1590,9 +1633,9 @@ fn verify(
             }
             IndexCall {
                 bci,
-                owner: target.owner().to_string(),
-                name: target.name().to_string(),
-                descriptor: target.descriptor().to_string(),
+                owner: target.raw_owner().clone(),
+                name: target.raw_name().clone(),
+                descriptor: target.raw_descriptor().clone(),
             }
         }
         Some((bci, _)) => {
@@ -1627,11 +1670,11 @@ pub struct TableRead {
     /// The BCI of the `getstatic`.
     pub bci: u32,
     /// The member's owner, in internal form, as the pool states it.
-    pub owner: String,
+    pub owner: JvmBytes,
     /// The member's name — evidence, never the shape: `$SwitchMap$…` is the compiler's convention.
-    pub name: String,
+    pub name: JvmBytes,
     /// The member's descriptor, `[I` for a table this rule presents.
-    pub descriptor: String,
+    pub descriptor: JvmBytes,
 }
 
 /// The call one dispatch-table read is indexed by.
@@ -1640,11 +1683,11 @@ pub struct IndexCall {
     /// The BCI of the call.
     pub bci: u32,
     /// The call's owner, in internal form.
-    pub owner: String,
+    pub owner: JvmBytes,
     /// The call's name — evidence, never the shape.
-    pub name: String,
+    pub name: JvmBytes,
     /// The call's descriptor, `()I` for an index this rule presents.
-    pub descriptor: String,
+    pub descriptor: JvmBytes,
 }
 
 /// What one candidate dispatch-table read was presented as, or why it was not (P3 2.3).

@@ -1,0 +1,82 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-declared-call-binding-r1/classes/flow/BridgeChild.class
+  Last modified 2026-10-27; size 606 bytes
+  MD5 checksum 1ee6526991d7c71a411e00291b55991b
+  Compiled from "CallBox.java"
+class flow.BridgeChild extends flow.BridgeBase<java.lang.String>
+  minor version: 0
+  major version: 52
+  flags: ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#22         // flow/BridgeBase."<init>":()V
+   #2 = Class              #23            // java/lang/String
+   #3 = Methodref          #4.#24         // flow/BridgeChild.echo:(Ljava/lang/String;)Ljava/lang/String;
+   #4 = Class              #25            // flow/BridgeChild
+   #5 = Class              #26            // flow/BridgeBase
+   #6 = Utf8               <init>
+   #7 = Utf8               ()V
+   #8 = Utf8               Code
+   #9 = Utf8               LineNumberTable
+  #10 = Utf8               LocalVariableTable
+  #11 = Utf8               this
+  #12 = Utf8               Lflow/BridgeChild;
+  #13 = Utf8               echo
+  #14 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #15 = Utf8               value
+  #16 = Utf8               Ljava/lang/String;
+  #17 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #18 = Utf8               Signature
+  #19 = Utf8               Lflow/BridgeBase<Ljava/lang/String;>;
+  #20 = Utf8               SourceFile
+  #21 = Utf8               CallBox.java
+  #22 = NameAndType        #6:#7          // "<init>":()V
+  #23 = Utf8               java/lang/String
+  #24 = NameAndType        #13:#14        // echo:(Ljava/lang/String;)Ljava/lang/String;
+  #25 = Utf8               flow/BridgeChild
+  #26 = Utf8               flow/BridgeBase
+{
+  flow.BridgeChild();
+    descriptor: ()V
+    flags:
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method flow/BridgeBase."<init>":()V
+         4: return
+      LineNumberTable:
+        line 25: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lflow/BridgeChild;
+
+  public java.lang.String echo(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: areturn
+      LineNumberTable:
+        line 26: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0  this   Lflow/BridgeChild;
+            0       2     1 value   Ljava/lang/String;
+
+  public java.lang.Object echo(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_BRIDGE, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: checkcast     #2                  // class java/lang/String
+         5: invokevirtual #3                  // Method echo:(Ljava/lang/String;)Ljava/lang/String;
+         8: areturn
+      LineNumberTable:
+        line 25: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       9     0  this   Lflow/BridgeChild;
+}
+Signature: #19                          // Lflow/BridgeBase<Ljava/lang/String;>;
+SourceFile: "CallBox.java"

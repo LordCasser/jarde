@@ -588,6 +588,58 @@ fn direct_override_projection_requires_selected_complete_ordinary_parent() {
         );
         assert!(negative.direct_override_proofs.is_empty());
     }
+
+    for name in ["𐐀", "_"] {
+        let directory = scratch.child(&format!("faithful-{name}"));
+        let base = directory.join("Base.java");
+        let child = directory.join("Child.java");
+        fs::write(
+            &base,
+            format!("package p; public class Base {{ public void {name}() {{}} }}"),
+        )
+        .unwrap();
+        fs::write(
+            &child,
+            format!("package p; public class Child extends Base {{ public void {name}() {{}} }}"),
+        )
+        .unwrap();
+        let compiled = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-encoding", "UTF-8", "-d"])
+            .arg(&directory)
+            .args([&base, &child])
+            .output()
+            .unwrap();
+        assert!(
+            compiled.status.success(),
+            "{}",
+            String::from_utf8_lossy(&compiled.stderr)
+        );
+        let base_bytes = fs::read(directory.join("p/Base.class")).unwrap();
+        let child_bytes = fs::read(directory.join("p/Child.class")).unwrap();
+        let snapshot = open(zip_of(&[
+            (b"p/Base.class", &base_bytes),
+            (b"p/Child.class", &child_bytes),
+        ]));
+        let report = class_source_of(&snapshot, "p/Child", EnvironmentPolicy::PlainJar);
+        assert_eq!(
+            report.direct_override_proofs.len(),
+            1,
+            "{name}: {}",
+            report.text
+        );
+        let proof = &report.direct_override_proofs[0];
+        let raw = JvmBytes::from_unicode(name);
+        assert_eq!(proof.child.name, raw);
+        assert_eq!(proof.parent.name, raw);
+        assert_eq!(proof.child.descriptor.0, b"()V");
+        assert!(
+            report
+                .text
+                .contains(&format!("@Override\n    public void {name}()")),
+            "{}",
+            report.text
+        );
+    }
 }
 
 #[test]
@@ -676,19 +728,28 @@ fn method_parameters_name_body_and_declaration_only_without_lvt() {
             let mut duplicate_name = fs::read(directory.join("em03/Signatures.class")).unwrap();
             let first_name = duplicate_name[start + 1..start + 3].to_vec();
             duplicate_name[start + 5..start + 7].copy_from_slice(&first_name);
-            let fallback = class_source_of(
+            let aliased = class_source_of(
                 &open(duplicate_name),
                 "em03/Signatures",
                 EnvironmentPolicy::SingleClass,
             );
             assert!(
-                fallback
+                aliased
                     .text
-                    .contains("named(java.lang.String arg1, int arg2)"),
+                    .contains("named(java.lang.String paramStr, final int paramStr_2)"),
                 "{}",
-                fallback.text
+                aliased.text
             );
-            assert!(fallback.text.contains("return arg1;"), "{}", fallback.text);
+            assert!(
+                aliased.text.contains("return paramStr;"),
+                "{}",
+                aliased.text
+            );
+
+            let generated = scratch.child("duplicate-parameter-recompiled");
+            let empty = scratch.child("duplicate-parameter-empty-classpath");
+            fs::write(generated.join("Signatures.java"), &aliased.text).unwrap();
+            compile_java_8(&generated, "Signatures.java", &empty);
 
             let mut wrong_count = fs::read(directory.join("em03/Signatures.class")).unwrap();
             wrong_count[start] = 1;
@@ -728,7 +789,7 @@ fn method_parameters_name_body_and_declaration_only_without_lvt() {
 }
 
 #[test]
-fn method_parameters_follow_wide_slots_and_refuse_name_collisions() {
+fn method_parameters_follow_wide_slots_and_resolve_source_name_collisions() {
     let scratch = BridgeProjectionScratch::new();
     for (variant, source, expected, returned) in [
         (
@@ -740,8 +801,8 @@ fn method_parameters_follow_wide_slots_and_refuse_name_collisions() {
         (
             "collision",
             "package em03; public class Wide { public long named(long wide, String arg2) { return wide; } }",
-            "named(long arg1, java.lang.String arg3)",
-            "return arg1;",
+            "named(long wide, java.lang.String arg2_2)",
+            "return wide;",
         ),
     ] {
         let directory = scratch.child(variant);
@@ -762,6 +823,10 @@ fn method_parameters_follow_wide_slots_and_refuse_name_collisions() {
         let report = class_source_of(&snapshot, "em03/Wide", EnvironmentPolicy::SingleClass);
         assert!(report.text.contains(expected), "{variant}: {}", report.text);
         assert!(report.text.contains(returned), "{variant}: {}", report.text);
+        let generated = scratch.child(&format!("wide-{variant}-recompiled"));
+        let empty = scratch.child(&format!("wide-{variant}-empty-classpath"));
+        fs::write(generated.join("Wide.java"), &report.text).unwrap();
+        compile_java_8(&generated, "Wide.java", &empty);
     }
 }
 
@@ -800,6 +865,124 @@ impl Pool {
         u16b(&mut entry, name);
         self.intern(entry)
     }
+}
+
+#[test]
+fn s1_raw_enum_owner_and_package_keep_the_selected_mapping() {
+    for (jar, owner) in [
+        (
+            include_bytes!("fixtures/s1-raw-enum-switch/owner/input.jar").as_slice(),
+            "p/Subject",
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-enum-switch/package/input.jar").as_slice(),
+            "p/𐐀pkg/Subject",
+        ),
+    ] {
+        let snapshot = open(jar.to_vec());
+        let root = class_source_of(&snapshot, owner, EnvironmentPolicy::PlainJar);
+        assert_eq!(root.enum_switch_proofs.len(), 1, "{}", root.text);
+        assert!(
+            root.enum_switch_proofs[0].projected,
+            "{:?}",
+            root.enum_switch_proofs
+        );
+        assert!(root.text.contains("case RED:"), "{}", root.text);
+        assert!(
+            root.text
+                .lines()
+                .filter(|line| !line.trim_start().starts_with("//"))
+                .all(|line| !line.contains("$SwitchMap$")),
+            "{}",
+            root.text
+        );
+        assert!(
+            root.enum_switch_proofs[0]
+                .table_name
+                .0
+                .starts_with(b"$SwitchMap$")
+        );
+    }
+}
+
+#[test]
+fn s1_raw_enum_constant_uses_its_mutf8_source_label() {
+    let snapshot = open(include_bytes!("fixtures/s1-raw-enum-switch/constant/input.jar").to_vec());
+    let root = class_source_of(&snapshot, "p/Subject", EnvironmentPolicy::PlainJar);
+    assert_eq!(root.enum_switch_proofs.len(), 1, "{}", root.text);
+    assert!(
+        root.enum_switch_proofs[0].projected,
+        "{:?}",
+        root.enum_switch_proofs
+    );
+    assert!(root.text.contains("case 𐐀RED:"), "{}", root.text);
+    assert!(!root.text.contains('\u{fffd}'), "{}", root.text);
+    assert_eq!(
+        root.enum_switch_proofs[0].entries[0].constant.as_slice(),
+        b"\xed\xa0\x81\xed\xb0\x80RED"
+    );
+}
+
+fn assert_raw_outer_super_projection(jar: &[u8], owner: &str, parent: &str, name: &str) {
+    let snapshot = open(jar.to_vec());
+    let report = class_source_of(&snapshot, owner, EnvironmentPolicy::PlainJar);
+    let ClassSourceMemberFamily::Prepared {
+        projection: ClassSourceMemberProjection::Projected { derived },
+        ..
+    } = &report.member_family
+    else {
+        panic!(
+            "raw outer-super family was not prepared: {:?}",
+            report.member_family
+        );
+    };
+    assert!(
+        report.text.contains(&format!(".super.{name}(")),
+        "{}",
+        report.text
+    );
+    assert!(
+        derived
+            .iter()
+            .flat_map(|entry| &entry.anchors)
+            .any(|anchor| {
+                matches!(anchor, MemberFamilyPhysicalAnchor::OuterSuperTarget {
+            method, owner, name: target_name, descriptor,
+        } if owner == &JvmBytes::from_unicode(parent)
+            && target_name == &JvmBytes::from_unicode(name)
+            && descriptor.0 == b"(II)I"
+            && method.name == *target_name
+            && method.descriptor == *descriptor)
+            })
+    );
+}
+
+#[test]
+fn s1_raw_outer_super_owner_and_method_keep_the_selected_target() {
+    for (jar, parent, name) in [
+        (
+            include_bytes!("fixtures/s1-raw-outer-super/parent/input.jar").as_slice(),
+            "p/𐐀Base",
+            "combine",
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-outer-super/method/input.jar").as_slice(),
+            "p/EffectsBase",
+            "𐐀combine",
+        ),
+    ] {
+        assert_raw_outer_super_projection(jar, "p/OuterSuperEffects", parent, name);
+    }
+}
+
+#[test]
+fn s1_raw_outer_super_package_uses_the_same_source_and_physical_anchor() {
+    assert_raw_outer_super_projection(
+        include_bytes!("fixtures/s1-raw-outer-super/package/input.jar"),
+        "p/𐐀pkg/OuterSuperEffects",
+        "p/𐐀pkg/EffectsBase",
+        "combine",
+    );
 }
 
 #[test]
@@ -905,6 +1088,7 @@ fn enum_switch_projection_groups_distinct_tables_atomically() {
     let standalone = Engine::new()
         .recover_method(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &MethodAnalysisRequest {
                 environment: request
                     .environment
@@ -995,7 +1179,12 @@ fn enum_switch_projection_withholds_sibling_when_one_shared_table_proof_fails() 
     let failed = report
         .enum_switch_proofs
         .iter()
-        .find(|proof| proof.table_name.contains("Animal"))
+        .find(|proof| {
+            proof
+                .table_name
+                .to_unicode()
+                .is_some_and(|name| name.contains("Animal"))
+        })
         .expect("the corrupted Animal map has a proof record");
     assert!(
         failed
@@ -1007,7 +1196,12 @@ fn enum_switch_projection_withholds_sibling_when_one_shared_table_proof_fails() 
     let sibling = report
         .enum_switch_proofs
         .iter()
-        .find(|proof| proof.table_name.contains("Count"))
+        .find(|proof| {
+            proof
+                .table_name
+                .to_unicode()
+                .is_some_and(|name| name.contains("Count"))
+        })
         .expect("the Count sibling has a proof record");
     assert!(
         sibling
@@ -2544,6 +2738,92 @@ fn nested_anonymous_projection_budget_and_cancellation_never_publish_partial_tex
             assert!(!report.text.contains("new p.Action() {"), "{}", report.text);
         }
         OperationOutcome::Ambiguous(_) => panic!("the exact root class is unambiguous"),
+    }
+}
+
+#[test]
+fn s1_raw_anonymous_outer_capture_keeps_the_physical_class_and_source_qualifier() {
+    let snapshot = open(include_bytes!("fixtures/s1-raw-anonymous/outer-supp/input.jar").to_vec());
+    let root = class_source_of(&snapshot, "p/𐐀Inner", EnvironmentPolicy::PlainJar);
+    assert!(
+        matches!(
+            &root.anonymous_interface_projection,
+            ClassSourceAnonymousInterfaceProjection::Projected { derived } if !derived.is_empty()
+        ),
+        "text={} diagnostics={:?}",
+        root.text,
+        root.diagnostics
+    );
+    assert!(
+        root.text.contains("new java.lang.Runnable() {"),
+        "{}",
+        root.text
+    );
+    assert!(root.text.contains("p.𐐀Inner.this"), "{}", root.text);
+    assert!(!root.text.contains('\u{fffd}'), "{}", root.text);
+}
+
+#[test]
+fn s1_raw_anonymous_interface_name_uses_the_selected_raw_contract() {
+    let snapshot =
+        open(include_bytes!("fixtures/s1-raw-anonymous/interface-supp/input.jar").to_vec());
+    let root = class_source_of(&snapshot, "p/Use", EnvironmentPolicy::PlainJar);
+    assert!(
+        matches!(
+            &root.anonymous_interface_projection,
+            ClassSourceAnonymousInterfaceProjection::Projected { derived } if !derived.is_empty()
+        ),
+        "text={} diagnostics={:?}",
+        root.text,
+        root.diagnostics
+    );
+    assert!(root.text.contains("new p.𐐀Action() {"), "{}", root.text);
+    assert!(!root.text.contains("Use$1"), "{}", root.text);
+}
+
+#[test]
+fn s1_raw_nested_anonymous_classes_and_both_contracts_keep_their_identity() {
+    for (jar, owner, factory, action) in [
+        (
+            include_bytes!("fixtures/s1-raw-anonymous/nested-root/input.jar").as_slice(),
+            "p/𐐀Nested",
+            "p.Factory",
+            "p.Action",
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-anonymous/nested-interface/input.jar").as_slice(),
+            "p/Nested",
+            "p.Factory",
+            "p.𐐀Action",
+        ),
+        (
+            include_bytes!("fixtures/s1-raw-anonymous/nested-factory/input.jar").as_slice(),
+            "p/Nested",
+            "p.𐐀Factory",
+            "p.Action",
+        ),
+    ] {
+        let snapshot = open(jar.to_vec());
+        let root = class_source_of(&snapshot, owner, EnvironmentPolicy::PlainJar);
+        assert!(
+            matches!(
+                &root.anonymous_interface_projection,
+                ClassSourceAnonymousInterfaceProjection::Projected { derived } if !derived.is_empty()
+            ),
+            "{owner}: text={} diagnostics={:?}",
+            root.text,
+            root.diagnostics
+        );
+        assert!(
+            root.text.contains(&format!("new {factory}() {{")),
+            "{}",
+            root.text
+        );
+        assert!(
+            root.text.contains(&format!("new {action}() {{")),
+            "{}",
+            root.text
+        );
     }
 }
 
@@ -4663,6 +4943,7 @@ fn request(
     policy: EnvironmentPolicy,
 ) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class,
         environment: EnvironmentRequest {
             snapshot: snapshot.id().clone(),
@@ -6116,6 +6397,38 @@ fn a_request_that_stops_mid_class_states_the_shortfall() {
         report.coverage.artifact_structural.state,
         CoverageState::Partial
     );
+}
+
+#[test]
+fn raw_cast_bridge_target_and_parameter_keep_mutf8_identity() {
+    let jar = open(include_bytes!("fixtures/s1-raw-casts/supplementary/input.jar").to_vec());
+    let essential = bridge_class_source(
+        &jar,
+        "p/Use",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    let all = bridge_class_source(
+        &jar,
+        "p/Use",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::all(),
+    );
+    assert_eq!(essential.text, all.text);
+    assert_eq!(essential.bridge_proofs, all.bridge_proofs);
+    let [proof] = essential.bridge_proofs.as_slice() else {
+        panic!(
+            "one physical bridge must retain one proof: {:?}",
+            essential.bridge_proofs
+        );
+    };
+    assert!(proof.admitted && proof.projected, "{proof:?}");
+    assert_eq!(
+        proof.target.as_ref().unwrap().descriptor,
+        JvmBytes::from_unicode("(Lp/𐐀Value;)Lp/𐐀Value;")
+    );
+    assert!(!essential.text.contains("java.lang.Object echo("));
+    assert!(essential.text.contains("(p.𐐀Value)"));
 }
 
 #[test]
@@ -8576,8 +8889,8 @@ fn the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges(
         Some("a direct parent or interface needed for the erased method is unresolved")
     );
 
-    // The platform fact states one triple — owner, descriptor, invocation kind. An interface
-    // edge that does not name `java/lang/Comparable` gets no platform answer.
+    // The platform fact is keyed by owner, name, descriptor, and use kind. An interface edge
+    // that does not name `java/lang/Comparable` gets no platform answer.
     let object_class = test_class_index(BR_IMPL, b"java/lang/Object");
     let comparable_class = test_class_index(BR_IMPL, b"java/lang/Comparable");
     let mut other_interface = BR_IMPL.to_vec();
@@ -8608,6 +8921,98 @@ fn the_parameter_cast_admission_walks_the_snapshot_chain_and_respects_its_edges(
         report.bridge_proofs[0].refusal.as_deref(),
         Some("a direct parent or interface needed for the erased method is unresolved")
     );
+
+    // A same-shape method on BR$Impl cannot borrow Comparable's platform answer when its name
+    // differs. Keep the complete family in the snapshot, with no provided Comparable definition.
+    let renamed_impl = patch_bytes_in_place(BR_IMPL, b"compareTo", b"comparetO");
+    let jar = open(zip_of(&[
+        (b"BR.class", BR_CLASS),
+        (b"BR$Node.class", BR_NODE),
+        (b"BR$Box.class", BR_BOX),
+        (b"BR$Base.class", BR_BASE),
+        (b"BR$StrBox.class", BR_STRBOX),
+        (b"BR$Impl.class", &renamed_impl),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BR$Impl",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    let proof = report
+        .bridge_proofs
+        .iter()
+        .find(|proof| proof.member.descriptor.0.as_slice() == b"(Ljava/lang/Object;)I")
+        .expect("the renamed erased method remains a bridge candidate");
+    assert!(!proof.admitted, "the platform exception is name-specific");
+    let physical_bridge = report
+        .methods
+        .iter()
+        .find(|method| {
+            method.item.identity.name.0.as_slice() == b"comparetO"
+                && method.item.identity.descriptor.0.as_slice() == b"(Ljava/lang/Object;)I"
+        })
+        .expect("the renamed bridge remains in the physical table");
+    assert!(matches!(
+        &physical_bridge.outcome,
+        ClassSourceOutcome::Recovered { .. }
+    ));
+
+    // A matching Comparable bridge and an ordinary generic interface bridge coexist. The
+    // special case must admit the former while the existing resolver admits the latter.
+    let scratch = BridgeProjectionScratch::new();
+    let dual_directory = scratch.child("dual-matching-other-bridge");
+    fs::write(
+        dual_directory.join("Dual.java"),
+        "interface Other<T> { int other(T value); }\n\
+         public class Dual implements Comparable<Dual>, Other<Dual> {\n\
+             public int compareTo(Dual rhs) { return 0; }\n\
+             public int other(Dual rhs) { return 7; }\n\
+         }\n",
+    )
+    .expect("write the complete Dual source");
+    compile_bridge_runner(&dual_directory, &["Dual.java"]);
+    let dual_class = fs::read(dual_directory.join("Dual.class")).expect("Dual compiled");
+    let other_class = fs::read(dual_directory.join("Other.class")).expect("Other compiled");
+    let jar = open(zip_of(&[
+        (b"Dual.class", &dual_class),
+        (b"Other.class", &other_class),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "Dual",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(report.bridge_proofs.len(), 2);
+    for (name, target_descriptor) in [
+        (b"compareTo" as &[u8], b"(LDual;)I" as &[u8]),
+        (b"other", b"(LDual;)I"),
+    ] {
+        let proof = report
+            .bridge_proofs
+            .iter()
+            .find(|proof| proof.member.name.0.as_slice() == name)
+            .expect("the expected bridge candidate is present");
+        assert!(
+            proof.admitted,
+            "{}: {:?}",
+            String::from_utf8_lossy(name),
+            proof.refusal
+        );
+        assert!(
+            proof.projected,
+            "{}: {:?}",
+            String::from_utf8_lossy(name),
+            proof.refusal
+        );
+        let target = proof
+            .target
+            .as_ref()
+            .expect("the admitted bridge has a target");
+        assert_eq!(target.name.0.as_slice(), name);
+        assert_eq!(target.descriptor.0.as_slice(), target_descriptor);
+    }
 }
 
 // ==== recover-anonymous-local-decl-site ================================================

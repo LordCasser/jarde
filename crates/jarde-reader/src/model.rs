@@ -19,6 +19,19 @@ pub struct ArchiveNameBytes(pub Vec<u8>);
 #[serde(transparent)]
 pub struct JvmBytes(pub Vec<u8>);
 
+impl JvmBytes {
+    /// Encode Unicode text as class-file Modified UTF-8, without normalizing the name.
+    pub fn from_unicode(text: &str) -> Self {
+        JvmString::from_unicode(text).raw
+    }
+
+    /// Decode only when the bytes are valid MUTF-8 and their UTF-16 value is scalar text.
+    /// A valid unpaired surrogate has no Rust String; its raw bytes remain available.
+    pub fn to_unicode(&self) -> Option<String> {
+        String::from_utf16(&decode_valid_mutf8(&self.0)?).ok()
+    }
+}
+
 /// An owned, lossless JVM Modified UTF-8 value.
 ///
 /// Equality and hashing include the original bytes and decoded UTF-16 code units;
@@ -30,6 +43,41 @@ pub struct JvmString {
 }
 
 impl JvmString {
+    /// Validate one MUTF-8 value, retaining its original bytes and all UTF-16 code units.
+    /// Unpaired surrogates are valid code units here; they are not replacement characters.
+    pub fn from_mutf8(raw: impl Into<Vec<u8>>) -> Option<Self> {
+        let raw = raw.into();
+        let utf16 = decode_valid_mutf8(&raw)?;
+        Some(Self::from_parts(raw, utf16))
+    }
+
+    /// Encode scalar text in MUTF-8: NUL uses C0 80 and supplementary characters use two
+    /// three-byte surrogate encodings. Archive paths keep their own UTF-8/raw representation.
+    pub fn from_unicode(text: &str) -> Self {
+        let utf16: Vec<u16> = text.encode_utf16().collect();
+        let mut raw = Vec::with_capacity(text.len());
+        for &unit in &utf16 {
+            match unit {
+                1..=0x7f => raw.push(unit as u8),
+                0..=0x7ff => {
+                    raw.push(0xc0 | (unit >> 6) as u8);
+                    raw.push(0x80 | (unit & 0x3f) as u8);
+                }
+                _ => {
+                    raw.push(0xe0 | (unit >> 12) as u8);
+                    raw.push(0x80 | ((unit >> 6) & 0x3f) as u8);
+                    raw.push(0x80 | (unit & 0x3f) as u8);
+                }
+            }
+        }
+        Self::from_parts(raw, utf16)
+    }
+
+    /// Scalar text for a source/path boundary; never substitute U+FFFD for a code unit.
+    pub fn to_unicode(&self) -> std::result::Result<String, std::string::FromUtf16Error> {
+        String::from_utf16(&self.utf16)
+    }
+
     pub(crate) fn from_parts(raw: Vec<u8>, utf16: Vec<u16>) -> Self {
         Self {
             raw: JvmBytes(raw),
@@ -136,14 +184,13 @@ impl<'de> Deserialize<'de> for JvmString {
             escaped: String,
         }
         let view = View::deserialize(deserializer)?;
-        let decoded = decode_valid_mutf8(&view.raw.0)
+        let value = Self::from_mutf8(view.raw.0)
             .ok_or_else(|| D::Error::custom("raw JVM string is not valid Modified UTF-8"))?;
-        if decoded != view.utf16 {
+        if value.utf16 != view.utf16 {
             return Err(D::Error::custom(
                 "UTF-16 JVM string value is inconsistent with raw bytes",
             ));
         }
-        let value = Self::from_parts(view.raw.0, decoded);
         if view.escaped != value.escaped() {
             return Err(D::Error::custom(
                 "escaped JVM string display is inconsistent",
@@ -606,6 +653,59 @@ mod tests {
             "escaped": "A"
         });
         assert!(serde_json::from_value::<JvmString>(non_nul_overlong).is_err());
+    }
+
+    #[test]
+    fn unicode_names_round_trip_through_canonical_mutf8_without_using_archive_bytes() {
+        for text in [
+            "ASCII",
+            "变量",
+            "\0",
+            "𐐀",
+            "p/𐐀$成员",
+            "(Lp/𐐀;)Lp/变量;",
+            "\\uD801",
+        ] {
+            let value = JvmString::from_unicode(text);
+            assert_eq!(value.to_unicode().unwrap(), text);
+            assert_eq!(
+                JvmString::from_mutf8(value.raw().0.clone()),
+                Some(value.clone())
+            );
+            assert_eq!(JvmBytes::from_unicode(text), *value.raw());
+            assert_eq!(value.raw().to_unicode().as_deref(), Some(text));
+        }
+        assert_eq!(JvmBytes::from_unicode("\0").0, [0xc0, 0x80]);
+        assert_eq!(
+            JvmBytes::from_unicode("𐐀").0,
+            [0xed, 0xa0, 0x81, 0xed, 0xb0, 0x80]
+        );
+        assert_ne!(JvmBytes::from_unicode("𐐀").0, "𐐀".as_bytes());
+    }
+
+    #[test]
+    fn valid_non_scalar_names_stay_distinct_and_malformed_encodings_are_rejected() {
+        let first = JvmString::from_mutf8([0xed, 0xa0, 0x81]).unwrap();
+        let second = JvmString::from_mutf8([0xed, 0xa0, 0x82]).unwrap();
+        let replacement = JvmString::from_unicode("\u{fffd}");
+        assert_ne!(first, second);
+        assert_ne!(first, replacement);
+        assert_eq!(first.utf16(), [0xd801]);
+        assert!(first.to_unicode().is_err());
+        assert!(first.raw().to_unicode().is_none());
+        assert_ne!(
+            first.escaped(),
+            JvmString::from_unicode("\\uD801").escaped()
+        );
+        for raw in [
+            b"\0".as_slice(),
+            &[0xc1, 0x81],
+            &[0xed, 0xa0],
+            &[0xf0, 0x90, 0x90, 0x80],
+        ] {
+            assert!(JvmString::from_mutf8(raw).is_none());
+            assert!(JvmBytes(raw.to_vec()).to_unicode().is_none());
+        }
     }
 
     #[test]

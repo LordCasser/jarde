@@ -13,6 +13,7 @@ use crate::release_registry::{
 use noak::reader::attributes::{ArrayType, Code, RawInstruction};
 use noak::reader::{Attribute, Class, Method};
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 const ATTRIBUTE_HEADER_LENGTH: usize = 6;
 
@@ -847,60 +848,16 @@ fn error_code(error: &Error) -> String {
     }
 }
 
-/// One Modified-UTF-8 payload as this layer spells JVM strings, without a validated wrapper.
-///
-/// The walk is byte-for-byte the one [`jvm_string_mstr`] performs on noak's own validated value:
-/// every sequence takes the width its first byte states, each sequence becomes one UTF-16 code
-/// unit in order, and a surrogate pair therefore arrives as the two units it was written as. The
-/// difference is only that these bytes come from the raw member walk rather than from a decoder
-/// that already checked them, so a sequence that leaves the payload is a structured error instead
-/// of a panic. The value is a **spelling** of the bytes, not a claim that they are legal
-/// Modified UTF-8; the raw bytes stay the identity.
+/// Validate the raw member walk's string with the same MUTF-8 rules as model decoding.
+/// A damaged member stops its table before that record is published; a valid unpaired UTF-16
+/// surrogate remains lossless and is left for a source consumer to alias or refuse.
 fn jvm_string_from_raw(raw: &[u8]) -> Result<JvmString> {
-    let mut utf16 = Vec::new();
-    let mut offset = 0usize;
-    while offset < raw.len() {
-        let first = raw[offset];
-        let width = if first < 0x80 {
-            1usize
-        } else if first & 0xe0 == 0xc0 {
-            2usize
-        } else {
-            3usize
-        };
-        let unit = match width {
-            1 => u16::from(first),
-            2 => {
-                let second = *raw
-                    .get(offset + 1)
-                    .ok_or_else(class_member_utf8_truncated)?;
-                (u16::from(first & 0x1f) << 6) | u16::from(second & 0x3f)
-            }
-            _ => {
-                let second = *raw
-                    .get(offset + 1)
-                    .ok_or_else(class_member_utf8_truncated)?;
-                let third = *raw
-                    .get(offset + 2)
-                    .ok_or_else(class_member_utf8_truncated)?;
-                (u16::from(first & 0x0f) << 12)
-                    | (u16::from(second & 0x3f) << 6)
-                    | u16::from(third & 0x3f)
-            }
-        };
-        utf16.push(unit);
-        offset = offset
-            .checked_add(width)
-            .ok_or_else(class_member_utf8_truncated)?;
-    }
-    Ok(JvmString::from_parts(raw.to_vec(), utf16))
-}
-
-fn class_member_utf8_truncated() -> Error {
-    Error::invalid_input(
-        "classfile_modified_utf8_truncated",
-        "a Modified UTF-8 sequence ends after the payload that holds it",
-    )
+    JvmString::from_mutf8(raw).ok_or_else(|| {
+        Error::invalid_input(
+            "classfile_modified_utf8_invalid",
+            "the class-file string payload is not valid Modified UTF-8",
+        )
+    })
 }
 
 fn class_member_structure_error(error: Error) -> Error {
@@ -2430,6 +2387,10 @@ pub struct CpEntryFacts {
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ClassFacts {
+    /// Test-support lifetime token; absent from ordinary builds and always equal in fact comparisons.
+    #[cfg(any(test, feature = "test-support"))]
+    #[doc(hidden)]
+    pub __observation: crate::observation::PayloadToken,
     pub major_version: u16,
     pub minor_version: u16,
     pub access_flags: u16,
@@ -2454,6 +2415,37 @@ pub struct InnerClassFacts {
     /// the anonymous-class case and not a missing fact.
     pub inner_name: Option<JvmBytes>,
     pub access_flags: u16,
+}
+
+/// One InnerClasses row with its constant-pool class references resolved in the same read.
+/// Raw names and row order are preserved; this states no source spelling or runtime resolution.
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
+pub struct ResolvedInnerClass {
+    pub class: Vec<u8>,
+    pub outer_class: Option<Vec<u8>>,
+    pub inner_name: Option<JvmBytes>,
+    pub access_flags: u16,
+}
+
+pub fn resolve_inner_classes(
+    pool: &[CpEntryFacts],
+    rows: &[InnerClassFacts],
+    budget: &mut Budget,
+) -> Result<Vec<ResolvedInnerClass>> {
+    let mut resolved = Vec::with_capacity(rows.len());
+    for row in rows {
+        budget.poll()?;
+        resolved.push(ResolvedInnerClass {
+            class: cp_class_name(pool, row.class_index)?.0,
+            outer_class: (row.outer_class_index != 0)
+                .then(|| cp_class_name(pool, row.outer_class_index))
+                .transpose()?
+                .map(|name| name.0),
+            inner_name: row.inner_name.clone(),
+            access_flags: row.access_flags,
+        });
+    }
+    Ok(resolved)
 }
 
 /// One `EnclosingMethod` attribute.
@@ -2710,6 +2702,23 @@ pub fn class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFacts> {
     Ok(facts)
 }
 
+/// Reads structural facts and returns the shared cache payload where one is retained.
+///
+/// Unlike [`class_facts`], this keeps the cache's existing byte-derived key but avoids cloning the
+/// retained `ClassFacts` value on a hit. A hit still hashes bytes to find that key and polls the
+/// request budget first; a complete miss follows the same parser and stores the shared result.
+pub fn class_facts_shared(bytes: &[u8], budget: &mut Budget) -> Result<Arc<ClassFacts>> {
+    let Some(cache) = budget.facts_cache().cloned() else {
+        return read_class_facts(bytes, budget).map(Arc::new);
+    };
+    if let Some(facts) = cache.structure_shared(bytes, budget)? {
+        return Ok(facts);
+    }
+    let facts = Arc::new(read_class_facts(bytes, budget)?);
+    cache.remember_structure_shared(bytes, Arc::clone(&facts));
+    Ok(facts)
+}
+
 /// One class's declaration, constant pool and member records, together with the parser view every
 /// later body read of that class goes through.
 ///
@@ -2838,6 +2847,8 @@ pub(crate) fn read_class_structure<'a>(
 
     Ok(ClassStructure {
         facts: ClassFacts {
+            #[cfg(any(test, feature = "test-support"))]
+            __observation: crate::observation::PayloadToken::class_facts(),
             major_version: class.version().major,
             minor_version: class.version().minor,
             access_flags: class.access_flags().bits(),
@@ -2909,6 +2920,8 @@ pub(crate) fn read_class_member_prefix(
     let constant_pool = resolve_constant_pool(bytes, &layout, budget)?;
     Ok(Some(ClassMemberPrefix {
         facts: ClassFacts {
+            #[cfg(any(test, feature = "test-support"))]
+            __observation: crate::observation::PayloadToken::class_facts(),
             major_version: read_u16(bytes, 6)?,
             minor_version: read_u16(bytes, 4)?,
             access_flags: members.access_flags,
@@ -4078,6 +4091,8 @@ pub struct MethodCodeFacts {
     pub exception_handler_count: u32,
     pub execution: ExecutionReport,
     pub stopped_at: Option<BytecodeStop>,
+    /// Original budget/cancellation failure, retained before later polls can observe cancellation.
+    stop_error: Option<Box<Error>>,
     /// The body's own debug names, read from the `LocalVariableTable` this `Code` attribute may
     /// declare (P3 3.1).
     ///
@@ -4171,6 +4186,11 @@ impl LocalDebugName {
 }
 
 impl MethodCodeFacts {
+    /// Original resource failure of this decode; completed and decode-invalid bodies have none.
+    pub fn stop_error(&self) -> Option<&Error> {
+        self.stop_error.as_deref()
+    }
+
     /// Typed operands of [`Self::instructions`], in lockstep with them.
     ///
     /// `operands()[i]` describes `instructions[i]`; the two lists are decoded together and a
@@ -4236,6 +4256,7 @@ impl MethodCodeFacts {
             exception_handler_count,
             execution,
             stopped_at,
+            stop_error: None,
             debug,
             generic_debug: LocalDebugTypeTable::Unstated,
         }
@@ -5220,6 +5241,7 @@ pub(crate) fn decode_method_code<'a>(
     attribute: &Attribute<'a>,
     budget: &mut Budget,
 ) -> Result<MethodCodeFacts> {
+    crate::observation::body_decode_started();
     let content = attribute.content();
     let content_span = span_for_slice(bytes, content)?;
     if !member_has_code_shell(method, &content_span) {
@@ -5481,6 +5503,7 @@ pub(crate) fn decode_method_code<'a>(
             usage: budget.usage(),
         },
         stopped_at: None,
+        stop_error: None,
         debug,
         generic_debug,
     })
@@ -5615,6 +5638,10 @@ fn stopped_code_facts(
     failure: StopFailure<'_>,
     budget: &Budget,
 ) -> Result<MethodCodeFacts> {
+    let stop_error = match &failure {
+        StopFailure::Budget(error) => Some(Box::new((*error).clone())),
+        StopFailure::Decode(_) => None,
+    };
     let (execution, stable_code) = match failure {
         StopFailure::Budget(error) => match error {
             Error::Cancelled { .. } => (
@@ -5670,6 +5697,7 @@ fn stopped_code_facts(
         )?,
         execution,
         stopped_at: Some(stopped_at),
+        stop_error,
         // The body stopped before the nested attributes were walked: this read states no debug name,
         // which is what "no name" means for a record that did not reach them (P3 3.1).
         debug: LocalDebugTable::Unstated,
@@ -6304,6 +6332,7 @@ fn skip_qualified_module_section(reader: &mut AttributeReader<'_>, budget: &Budg
 mod reader_facts_tests {
     use super::*;
     use crate::budget::{BudgetDimension, CancellationToken, Limits};
+    use crate::facts_cache::{FactsCache, FactsCapacity};
 
     const V52_FIXTURE: &[u8] =
         crate::test_fixtures::fixture!("historical/ecj-4.6.1/v52/HistoricalControlFlow.class");
@@ -6573,6 +6602,43 @@ mod reader_facts_tests {
             facts.methods[2].attributes[0].content_span,
             ByteSpan::new(254, 47)
         );
+    }
+
+    #[test]
+    fn shared_facts_cache_hit_keeps_arc_and_still_polls_cancellation() {
+        let cache = FactsCache::current(FactsCapacity::new(8, 1_000_000));
+        let first =
+            class_facts_shared(V52_FIXTURE, &mut budget().with_facts_cache(cache.clone())).unwrap();
+        let after_miss = cache.report();
+        assert_eq!(
+            (after_miss.consultations, after_miss.misses, after_miss.hits),
+            (1, 1, 0)
+        );
+        assert_eq!(after_miss.stored, 1);
+
+        let second =
+            class_facts_shared(V52_FIXTURE, &mut budget().with_facts_cache(cache.clone())).unwrap();
+        assert!(Arc::ptr_eq(&first, &second));
+        let before_cancel = cache.report();
+        assert_eq!(
+            (
+                before_cancel.consultations,
+                before_cancel.misses,
+                before_cancel.hits
+            ),
+            (2, 1, 1)
+        );
+        assert_eq!(before_cancel.stored, 1);
+
+        let cancellation = CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled = Budget::with_cancellation_token(unlimited_limits(), cancellation)
+            .with_facts_cache(cache.clone());
+        assert!(matches!(
+            class_facts_shared(V52_FIXTURE, &mut cancelled),
+            Err(Error::Cancelled { .. })
+        ));
+        assert_eq!(cache.report(), before_cancel);
     }
 
     #[test]
@@ -12343,7 +12409,20 @@ mod tests {
             // add eight filesystem classes, twenty-two Code bodies, two named-handler rows
             // and sixteen direct targets; full JAR copies are not filesystem class entries.
             // Independent physical Code census agrees; no jsr is introduced.
-            (1367, 5991, 650, 4360, 16),
+            // The S1 raw projection fixtures add two array-owner/helper classes, four
+            // bodies each, with no handlers, branch targets or subroutines.
+            // Three existing S1 fixtures predate this audit: two generic-declaration policy
+            // classes (two Code bodies each) and IntBody (seven). Independent javap counts
+            // and source pins are recorded in architecture-completion-v1/fixture-population-review.json.
+            // 2026-11-07 maintenance batch: re-measured by this walk on the final tree after the
+            // day's rounds: (1382, 6048, 652, 4375, 16). The intermediate uncommitted tuple
+            // (1373, 6013, 650, 4360, 16) sat nine classes under the tree's census: the nine s2a
+            // patrol classes (s2a-reference-constraints, s2a-reference-relations'
+            // selected-parent-edge binary legs, s2a-variable-lifetimes' handler-copies control)
+            // are the tree's newest fixture files and account for them, bringing this walk's
+            // measured +35 Code bodies, +2 handler rows and +15 direct targets; the subroutines
+            // field stands at 16. No fixture file's mtime is later than 2026-10-27.
+            (1382, 6048, 652, 4375, 16),
             "fixture population changed: re-measure these counts"
         );
     }

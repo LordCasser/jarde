@@ -666,6 +666,7 @@ fn library_report(path: &Path, class: ClassRef, policy: EnvironmentPolicy) -> Cl
         .open(ArtifactInput::Path(path.to_path_buf()), &mut budget)
         .expect("the fixture opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class,
         environment: EnvironmentRequest {
             snapshot: snapshot.id().clone(),
@@ -1650,6 +1651,11 @@ fn json_method<'a>(document: &'a Value, name: &str) -> &'a Value {
 
 #[test]
 fn h1_cap_eight_cli_exits_incomplete_before_main_body() {
+    // 2026-11-07: under the S2b demand-driven member order the same cap-8 budget recovers the
+    // whole dependency chain (five members, `contains_statements`) and then refuses `main`'s own
+    // run outright — the `refused` outcome with the class-header execution — instead of the
+    // recovered-but-stopped body the old order produced. The exit stays incomplete before main's
+    // body, and the request's execution stays refused on `ClassHeaders`.
     let output = h1_cap_output("8");
     assert_eq!(status(&output), EXIT_INCOMPLETE, "{}", stderr_text(&output));
     let document = stdout_json(&output);
@@ -1659,18 +1665,30 @@ fn h1_cap_eight_cli_exits_incomplete_before_main_body() {
         "class_headers"
     );
     let main = json_method(&document, "main");
-    assert_eq!(main["outcome"]["kind"], "recovered");
-    assert_eq!(main["outcome"]["report"]["content"], "not_produced");
+    assert_eq!(main["outcome"]["kind"], "refused");
+    assert_eq!(main["outcome"]["execution"]["status"], "partial");
+    assert_eq!(
+        main["outcome"]["execution"]["reason"]["dimension"],
+        "class_headers"
+    );
     assert!(
-        main["outcome"]["report"]["outcome"]
-            .get("stopped")
-            .is_some()
+        document["methods"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|method| method["outcome"]["kind"] == "recovered"
+                && method["outcome"]["report"]["content"] == "contains_statements"),
+        "the chain behind main recovers before the wall"
     );
 }
 
 #[test]
-fn h1_cap_fifteen_cli_exits_incomplete_and_keeps_main_body() {
-    let output = h1_cap_output("15");
+fn h1_cap_sixteen_cli_exits_incomplete_and_keeps_main_body() {
+    // 2026-11-07: renamed from `…_fifteen_…` with the same boundary move the reader suite
+    // records: under the S2b demand-driven member order main's body needs one more header
+    // charge — at cap 15 it is still `not_produced`, at cap 16 it produces `contains_statements`
+    // while the projection keeps exiting incomplete on `ClassHeaders` (cap 17 completes).
+    let output = h1_cap_output("16");
     assert_eq!(status(&output), EXIT_INCOMPLETE, "{}", stderr_text(&output));
     let document = stdout_json(&output);
     assert_eq!(document["execution"]["status"], "partial");
@@ -1794,8 +1812,25 @@ fn dt29_header_cap_one_cli_exits_incomplete_at_accessor_proof() {
 }
 
 #[test]
-fn dt29_header_cap_two_cli_exits_incomplete_at_field_proof() {
-    assert_dt29_parent_cli_header_stop(2);
+fn dt29_header_cap_two_cli_preserves_the_complete_recovery_after_header_reuse() {
+    let capped = dt29_parent_cap_output(2);
+    let wide = dt29_parent_cap_output(4096);
+    assert_eq!(status(&capped), EXIT_COMPLETE, "{}", stderr_text(&capped));
+    assert_eq!(status(&wide), EXIT_COMPLETE, "{}", stderr_text(&wide));
+    let capped = stdout_json(&capped);
+    let wide = stdout_json(&wide);
+    assert_eq!(capped["execution"]["status"], "complete");
+    assert_eq!(capped["text"], wide["text"]);
+    let a = json_method(&capped, "set");
+    let b = json_method(&wide, "set");
+    assert_eq!(
+        a["outcome"]["report"]["text"],
+        b["outcome"]["report"]["text"]
+    );
+    assert_eq!(
+        a["outcome"]["report"]["source_map"],
+        b["outcome"]["report"]["source_map"]
+    );
 }
 
 const EM11_PROOF: &str = "../../tests/fixtures/em11-reference-overload.jar";
@@ -1895,6 +1930,7 @@ fn em11_first_refusal_analysis_steps() -> u64 {
         )
         .unwrap();
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: jarde::ClassNameQuery::internal("em11/InputHierarchyCalls"),
         },

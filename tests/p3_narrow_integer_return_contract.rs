@@ -18,6 +18,7 @@ fn snapshot() -> ArtifactSnapshot {
 
 fn class_request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("NarrowIntegerReturns"),
         },
@@ -86,6 +87,7 @@ fn default_all_and_replay_keep_identical_narrow_return_text() {
         let first = Engine::new()
             .recover_method_with_evidence(
                 slice::from_ref(&snapshot),
+                jarde::SourceTarget::JAVA_8,
                 &request,
                 &RecoveryEvidenceRequest::all(),
                 &mut budget(),
@@ -94,6 +96,7 @@ fn default_all_and_replay_keep_identical_narrow_return_text() {
         let replay = Engine::new()
             .recover_method_with_evidence(
                 slice::from_ref(&snapshot),
+                jarde::SourceTarget::JAVA_8,
                 &request,
                 &RecoveryEvidenceRequest::all(),
                 &mut budget(),
@@ -160,6 +163,7 @@ fn tight_output_budget_and_precancellation_publish_no_partial_cast() {
     let full = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut full_budget,
@@ -178,6 +182,7 @@ fn tight_output_budget_and_precancellation_publish_no_partial_cast() {
     let stopped = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut limited,
@@ -190,7 +195,7 @@ fn tight_output_budget_and_precancellation_publish_no_partial_cast() {
     assert!(matches!(
         stopped.stop(),
         Some(StopReason::Budget {
-            dimension: jarde::budget::CountedBudgetDimension::OutputBytes,
+            dimension: jarde::budget::BudgetDimension::OutputBytes,
             ..
         })
     ));
@@ -202,6 +207,7 @@ fn tight_output_budget_and_precancellation_publish_no_partial_cast() {
     let stopped = engine
         .recover_method_with_evidence(
             slice::from_ref(&snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut cancelled,

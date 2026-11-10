@@ -1,0 +1,141 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/fixtures/s2b-return-consumption-r1/classes/flow/ReturnConsumptionControls.class
+  Last modified 2026-10-27; size 1329 bytes
+  MD5 checksum 7958d94f2bb4567300ebb67563468209
+  Compiled from "ReturnConsumptionControls.java"
+public class flow.ReturnConsumptionControls
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#36         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #37.#38        // flow/Base.baseValue:Ljava/lang/Object;
+   #3 = Class              #39            // java/util/List
+   #4 = Class              #40            // flow/ReturnConsumptionControls
+   #5 = Class              #41            // java/lang/Object
+   #6 = Utf8               <init>
+   #7 = Utf8               ()V
+   #8 = Utf8               Code
+   #9 = Utf8               LineNumberTable
+  #10 = Utf8               LocalVariableTable
+  #11 = Utf8               this
+  #12 = Utf8               Lflow/ReturnConsumptionControls;
+  #13 = Utf8               returnParameter
+  #14 = Utf8               (Ljava/util/List;)Ljava/util/List;
+  #15 = Utf8               input
+  #16 = Utf8               Ljava/util/List;
+  #17 = Utf8               local
+  #18 = Utf8               LocalVariableTypeTable
+  #19 = Utf8               Ljava/util/List<Lidentity/Foo;>;
+  #20 = Utf8               Signature
+  #21 = Utf8               (Ljava/util/List<Lidentity/Foo;>;)Ljava/util/List<Lidentity/Foo;>;
+  #22 = Utf8               echo
+  #23 = Utf8               TT;
+  #24 = Utf8               <T::Ljava/util/List<Lidentity/Foo;>;>(TT;)TT;
+  #25 = Utf8               returnField
+  #26 = Utf8               (Lflow/Base;)Ljava/util/List;
+  #27 = Utf8               Lflow/Base;
+  #28 = Utf8               Lflow/Base<Ljava/util/List<Lidentity/Foo;>;>;
+  #29 = Utf8               (Lflow/Base<Ljava/util/List<Lidentity/Foo;>;>;)Ljava/util/List<Lidentity/Foo;>;
+  #30 = Utf8               unchecked
+  #31 = Utf8               (Ljava/lang/Object;)Ljava/util/List;
+  #32 = Utf8               Ljava/lang/Object;
+  #33 = Utf8               (Ljava/lang/Object;)Ljava/util/List<Lidentity/Foo;>;
+  #34 = Utf8               SourceFile
+  #35 = Utf8               ReturnConsumptionControls.java
+  #36 = NameAndType        #6:#7          // "<init>":()V
+  #37 = Class              #42            // flow/Base
+  #38 = NameAndType        #43:#32        // baseValue:Ljava/lang/Object;
+  #39 = Utf8               java/util/List
+  #40 = Utf8               flow/ReturnConsumptionControls
+  #41 = Utf8               java/lang/Object
+  #42 = Utf8               flow/Base
+  #43 = Utf8               baseValue
+{
+  public flow.ReturnConsumptionControls();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 6: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lflow/ReturnConsumptionControls;
+
+  public static java.util.List<identity.Foo> returnParameter(java.util.List<identity.Foo>);
+    descriptor: (Ljava/util/List;)Ljava/util/List;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: aload_0
+         1: astore_1
+         2: aload_1
+         3: areturn
+      LineNumberTable:
+        line 8: 0
+        line 9: 2
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       4     0 input   Ljava/util/List;
+            2       2     1 local   Ljava/util/List;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       4     0 input   Ljava/util/List<Lidentity/Foo;>;
+            2       2     1 local   Ljava/util/List<Lidentity/Foo;>;
+    Signature: #21                          // (Ljava/util/List<Lidentity/Foo;>;)Ljava/util/List<Lidentity/Foo;>;
+
+  public static <T extends java.util.List<identity.Foo>> T echo(T);
+    descriptor: (Ljava/util/List;)Ljava/util/List;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: areturn
+      LineNumberTable:
+        line 13: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0 input   Ljava/util/List;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0 input   TT;
+    Signature: #24                          // <T::Ljava/util/List<Lidentity/Foo;>;>(TT;)TT;
+
+  public static java.util.List<identity.Foo> returnField(flow.Base<java.util.List<identity.Foo>>);
+    descriptor: (Lflow/Base;)Ljava/util/List;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #2                  // Field flow/Base.baseValue:Ljava/lang/Object;
+         4: checkcast     #3                  // class java/util/List
+         7: areturn
+      LineNumberTable:
+        line 17: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       8     0 input   Lflow/Base;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       8     0 input   Lflow/Base<Ljava/util/List<Lidentity/Foo;>;>;
+    Signature: #29                          // (Lflow/Base<Ljava/util/List<Lidentity/Foo;>;>;)Ljava/util/List<Lidentity/Foo;>;
+
+  public static java.util.List<identity.Foo> unchecked(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/util/List;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: checkcast     #3                  // class java/util/List
+         4: areturn
+      LineNumberTable:
+        line 22: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0 input   Ljava/lang/Object;
+    Signature: #33                          // (Ljava/lang/Object;)Ljava/util/List<Lidentity/Foo;>;
+}
+SourceFile: "ReturnConsumptionControls.java"

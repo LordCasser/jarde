@@ -243,6 +243,7 @@ fn request(
     policy: EnvironmentPolicy,
 ) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class,
         environment: EnvironmentRequest {
             snapshot: snapshot.id().clone(),

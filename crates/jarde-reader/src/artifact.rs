@@ -280,17 +280,47 @@ impl ArtifactSnapshot {
         self.bytes.is_empty()
     }
 
+    /// Reads the standalone class root as a caller-owned result buffer.
+    ///
+    /// This charges `OutputBytes`. Consumers that parse the root as intermediate input should use
+    /// [`Self::root_bytes_for_analysis`] instead.
     pub fn root_bytes(&self, budget: &mut Budget) -> Result<Vec<u8>> {
+        self.root_bytes_with_accounting(budget, MaterializationAccounting::CallerOutput)
+    }
+
+    /// Reads the standalone class root as intermediate input to an analysis.
+    ///
+    /// The root is not returned as the operation's answer, so this follows the same accounting as
+    /// [`Self::read_entry_for_analysis`]: the physical read and logical class bytes are charged,
+    /// while `OutputBytes` is reserved for data this request actually returns.
+    pub fn root_bytes_for_analysis(&self, budget: &mut Budget) -> Result<Vec<u8>> {
+        self.root_bytes_with_accounting(budget, MaterializationAccounting::Intermediate)
+    }
+
+    fn root_bytes_with_accounting(
+        &self,
+        budget: &mut Budget,
+        accounting: MaterializationAccounting,
+    ) -> Result<Vec<u8>> {
         if self.kind != ArtifactKind::StandaloneClass {
             return Err(Error::invalid_input(
                 "not_standalone_class",
                 "root bytes are only available for a standalone CLASS snapshot",
             ));
         }
+        if accounting == MaterializationAccounting::Intermediate {
+            budget.check(CountedBudgetDimension::EntryBytes, self.len())?;
+        }
         budget.check(CountedBudgetDimension::ReadBytes, self.len())?;
-        budget.check(CountedBudgetDimension::OutputBytes, self.len())?;
+        if accounting == MaterializationAccounting::CallerOutput {
+            budget.check(CountedBudgetDimension::OutputBytes, self.len())?;
+        }
         budget.charge(CountedBudgetDimension::ReadBytes, self.len())?;
-        budget.charge(CountedBudgetDimension::OutputBytes, self.len())?;
+        if accounting == MaterializationAccounting::Intermediate {
+            budget.charge(CountedBudgetDimension::EntryBytes, self.len())?;
+        } else {
+            budget.charge(CountedBudgetDimension::OutputBytes, self.len())?;
+        }
         Ok(self.bytes.to_vec())
     }
 
@@ -1195,7 +1225,7 @@ impl ArtifactSnapshot {
             read.backing,
             read.span,
             facts.backing_digest().clone(),
-            Some(ContainerFactsHandle { facts }),
+            Some(ContainerFactsHandle::new(facts)),
         ))
     }
 
@@ -1318,7 +1348,7 @@ impl ArtifactSnapshot {
                         if budget.facts_cache().is_none() {
                             self.hold_container_facts(&facts);
                         }
-                        Some(ContainerFactsHandle { facts })
+                        Some(ContainerFactsHandle::new(facts))
                     }
                     crate::prepared::ContainerHandover::NotNeeded => None,
                 };
@@ -2068,6 +2098,8 @@ const NAME_TABLE_SLOT_WEIGHT: u64 = 48;
 /// to be hashed again when a class read hands the backing out.
 #[derive(Debug)]
 pub(crate) struct ContainerFacts {
+    #[cfg(any(test, feature = "test-support"))]
+    _observation: crate::observation::PayloadToken,
     origin: ContainerOrigin,
     backing: Arc<[u8]>,
     backing_digest: Digest,
@@ -2096,11 +2128,20 @@ pub(crate) struct ContainerFacts {
 /// is currently inside.
 #[derive(Clone, Debug)]
 pub struct ContainerFactsHandle {
+    #[cfg(any(test, feature = "test-support"))]
+    _observation: crate::observation::PayloadToken,
     /// The shared product; `pub(crate)` because only this module builds handles.
     pub(crate) facts: Arc<ContainerFacts>,
 }
 
 impl ContainerFactsHandle {
+    pub(crate) fn new(facts: Arc<ContainerFacts>) -> Self {
+        Self {
+            facts,
+            #[cfg(any(test, feature = "test-support"))]
+            _observation: crate::observation::PayloadToken::container_handle(),
+        }
+    }
     /// The physical origin of the container this product was verified for.
     pub fn origin(&self) -> &ContainerOrigin {
         self.facts.origin()
@@ -2179,6 +2220,8 @@ impl ContainerFacts {
     ) -> Self {
         let weight = container_weight(backing.len() as u64, &parsed.entries, &parsed.names);
         Self {
+            #[cfg(any(test, feature = "test-support"))]
+            _observation: crate::observation::PayloadToken::container_facts(),
             origin,
             backing,
             backing_digest,
@@ -3419,7 +3462,10 @@ struct BudgetedEntryReader<'a, R> {
 impl<R: Read> Read for BudgetedEntryReader<'_, R> {
     fn read(&mut self, buffer: &mut [u8]) -> std::io::Result<usize> {
         self.budget.poll().map_err(budget_io)?;
-        let count = self.reader.read(buffer)?;
+        crate::observation::read_started();
+        let result = self.reader.read(buffer);
+        crate::observation::read_finished(&result);
+        let count = result?;
         let count =
             u64::try_from(count).map_err(|_| std::io::Error::other("chunk length overflow"))?;
         self.budget
@@ -3597,7 +3643,10 @@ impl SnapshotSource for FileSnapshotSource {
     }
 
     fn read_chunk(&mut self, buffer: &mut [u8]) -> std::io::Result<usize> {
-        self.file.read(buffer)
+        crate::observation::file_read_started();
+        let result = self.file.read(buffer);
+        crate::observation::file_read_finished(&result);
+        result
     }
 
     fn after(&mut self) -> std::io::Result<(SourceIdentity, SourceIdentity)> {

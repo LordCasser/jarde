@@ -2,7 +2,7 @@
 
 jarde 是纯 Rust、library-first 的 JVM artifact 分析引擎，提供 CLASS/JAR/WAR 读取、物理身份导航、符号查询、JVM 方法 IR 与 Java 源码恢复。核心库离线运行，CLI 是薄适配层。
 
-项目正在按 JADX 的测试和实现逐项提高 Java 恢复质量。固定清单包含 **71 个特性单元、612 个 Java 测试文件**，目前仍为部分覆盖；阶段归档不代表任意 JVM 方法均可恢复。最新交付、验收证据和下一步统一见 [handoff.md](handoff.md)，特性范围见 [JADX 对标账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)。
+项目正在按 JADX 的测试和实现逐项提高 Java 恢复质量。固定清单包含 **71 个特性单元、612 个 Java 测试文件**，这些数字是清单规模，不是恢复成功数或语义正确率。目前仍为部分覆盖；阶段归档不代表任意 JVM 方法均可恢复。最新交付、验收证据和下一步统一见 [handoff.md](handoff.md)，特性范围见 [JADX 对标账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)。
 
 - [能力与边界](docs/support-matrix.md)：按维度阅读能力，结合主规格与各项验收证据。
 - [OpenSpec 入口](openspec/README.md)：现行规格与实施流程。
@@ -205,6 +205,10 @@ CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo run -p jarde-cli -- --request app-t
 
 公共参数：`--input PATH`、`--scope JSON`（默认 `{"kind":"snapshot_all"}`，可声明 `artifact_tree` 的真实 container 身份）、`--budget DIMENSION=LIMIT`（可重复；五个可覆盖维度 `output_bytes`/`elapsed_millis`/`result_items`/`class_headers`/`method_bodies`，其余保持有界默认，未知维度或 0 是用法错误）、`--format text|json`（默认 `text`）、`--output FILE`。需要身份或文档的参数（`--definition`、`--method`、`--body-method`、`--scope`、`--root`、`--profile`）接受库自己的 JSON 文档，或 `@FILE`。
 
+**源码目标与运行环境**：`recover`、`class-source`、`export` 使用 `--source-target 7|8`（默认 8）；`--release` / `--profile` 声明运行时，不改变源码目标。库恢复入口显式接收 `SourceTarget`，类/批量请求同样携带它；JSON `recover_method` 请求的 `source_target` 使用 `{"java_release":7}` 或 `{"java_release":8}`。恢复报告分别发布 `source_target` 与 `runtime_profile`，产物 binding schema 为 12。binding 的 engine/registry 分别记录恢复/解析合同与实现来源 ID，包版本与 major 上限独立保留；词法/投影配置和实际物理依赖参与匹配，可选 evidence 选择不改变主体。未注册源码目标在输入读取前拒绝。纯查询/IR 不接受源码目标，也不因源码目标 7 禁用 Java 8 字节码分析。这是请求/报告与绑定的直接迁移，无旧 `RecoveryProfile` 别名兼容。
+
+**完整环境身份**：解析/分析/恢复所引用的 `EnvironmentIdentity` 直接保存有序 `domains`、完整 `providers` 声明及 `content` snapshot IDs，替换旧 `domain_loaders` / provider-ID 列表。父 loader 的 roots 顺序、raw prefix、parent/delegation、module/uncertainty 与 provider 内容变化都进入身份；旧证据不能凭相同 IDs 和正文互认。Java 后继 Header 需求使用 defining loader，物理事实缓存继续独立复用。这是报告/绑定的直接迁移，无旧字段兼容层。
+
 **JSON 与文本同源**：`--format json` 写的就是库报告自身的序列化（`OperationOutcome` 连 `outcome` 标签一起），没有 envelope、没有改名、没有 CLI 专有字段，因此可以对同一请求做逐字段对照；`--format text` 是同一份文档的投影，每行都是 `JSON 字段路径 = 值`，可逐项回到 JSON 字段。唯一的正文例外是恢复的 Java 文本：它按 `recovered.recovery.text` 的字段值逐字节写出，所以 `--format text --output A.java` 得到的就是报告里的那段代码。
 
 **诊断与正文分离**：文本模式下正文（或内容字段行）走标准输出/`--output`，`limits`/`usage`/`coverage`/`execution`/`diagnostics` 五个记账平面走标准错误；JSON 模式下它们都是文档里的字段。失败（用法/输入错误、交付失败）不写标准输出，而是把库自己的 `error` + `usage` 文档写到标准错误。`--output` 与标准输出走同一次序列化与同一个 `output_bytes` 检查：收费被拒时**不创建文件**，执行停止时写出的是报告自己的 `partial`/`cancelled` 平面而不是伪装成功的文档。
@@ -267,6 +271,8 @@ jarde 交付的单位是**方法体 + 它的四个平面**（content/quality/rep
 [benchmark 协议](openspec/benchmark-protocol.md)。
 
 ## 规格与验证
+
+当前架构调整已按[D12有限范围验收S1](openspec/changes/restructure-demand-driven-recovery/results/architecture-completion-v1/acceptance.json)，进度23/65，下一步S2a变量合法化，随后S3a求值顺序基线。raw/来源、typed stop、有效成功与旧失败分类、适用30项资源配置均有实际证据；原bulk失败和E1–E7独立债务保留。公开Java断言仍为unbound预览，Engine以私有同次读取提交binding，可选evidence不改变主体。预算停止保留原始维度、consumed/requested及elapsed首因，Code事实经query/callee传播原Error，停止后截断后继Body；恢复/解析合同为50/5。具体语法问题按D13留待架构完成后复核。
 
 | 内容 | 入口 |
 | --- | --- |

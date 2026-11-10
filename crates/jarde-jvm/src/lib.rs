@@ -23,11 +23,16 @@
 //! the P2 driver, and everything below it is reachable from outside only through the entry
 //! points it publishes.
 
+/// Conservative workspace source/build identity; independent of package and format versions.
+pub const IMPLEMENTATION_ID: &str = env!("JARDE_IMPLEMENTATION_ID");
+
 pub mod callee;
 pub mod engine;
 pub mod environment;
 pub mod ir;
 pub mod method_ir;
+#[doc(hidden)]
+pub mod observation;
 pub mod reflection;
 pub mod resolver;
 
@@ -56,4 +61,7 @@ pub use callee::{
 pub use engine::{
     AnalyzedMethod, analyze_method, analyze_method_ir, analyze_method_ir_owning_the_read,
     analyze_prepared_method_ir, declaration_references, reflection_patterns, resolve_symbol,
+    resolve_symbol_from_ir, resolve_symbol_from_prepared,
 };
+
+pub mod semantics;

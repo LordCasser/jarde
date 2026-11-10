@@ -85,6 +85,7 @@ fn class_text(bytes: &[u8], class: &str) -> String {
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
         .expect("the frozen class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -126,6 +127,7 @@ fn member_report(class: &str, bytes: &[u8], method: &str) -> RecoveryReport {
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
         .expect("the frozen class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -443,6 +445,7 @@ fn a_stopped_or_cancelled_run_publishes_no_partial_pop_body() {
         .open(ArtifactInput::bytes(T2.to_vec()), &mut budget())
         .expect("the frozen class opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("T2"),
         },

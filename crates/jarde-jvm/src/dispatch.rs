@@ -391,7 +391,7 @@ pub(crate) fn enumerate_range(
             // A standalone CLASS root has no path-derived name, so its header is read once to
             // learn the name it declares for itself; `class_step` then demands that name, which
             // is what reads the root through the closure and records the definition and reason.
-            let bytes = snapshot.root_bytes(budget)?;
+            let bytes = snapshot.root_bytes_for_analysis(budget)?;
             let facts = jarde_reader::classfile::class_facts(&bytes, budget)?;
             Ok(RangeListing {
                 names: vec![JvmBytes(facts.this_class.raw().0.clone())],

@@ -340,6 +340,7 @@ fn recover(
     Engine::new()
         .recover_method_with_evidence(
             slice::from_ref(&sample.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &sample.request(member),
             evidence,
             &mut budget,

@@ -36,6 +36,7 @@
 //! stated behaviour rather than a per-member verdict this file could compare.
 
 use jarde::*;
+use jarde_java::report::RecoveryInputOrigin;
 use jarde_java::{
     DebugLocal, DeclaringClass, MethodFacts, RecoveryFacts, RecoveryReport, RecoveryRequest,
 };
@@ -607,29 +608,25 @@ fn derived_facts(analysis: &MethodIrAnalysis, method: &PhysicalMethodId) -> Reco
                 String::from_utf8_lossy(&declaration.class_name().0).into_owned(),
                 declaration.class_access_flags(),
             )
-            .with_inner_class_members(
-                declaration
-                    .inner_class_members()
-                    .iter()
-                    .map(|member| String::from_utf8_lossy(&member.0).replace('/', ".")),
-            ),
+            .with_inner_classes(declaration.inner_classes().clone()),
         ),
     )
     .with_debug_locals(debug)
 }
 
-/// One presentation report with the usage of its own run taken out, and the **artifact statement**
-/// beside it.
+/// One presentation report with usage, input origin, and the **artifact statement** taken out.
 ///
 /// The direct route below goes through the facade, which states what the artifact it committed is
 /// *of* (change `add-demand-driven-core-results`, D3'), while this file builds the prepared request
 /// itself and states no subject: the two halves of [`RecoveryReport::artifact`] are the *entry's*
 /// statement about the artifact, and every other field is what the presentation of the same run
 /// produced. The identity half is asserted where it belongs — the case below checks that the direct
-/// entry really publishes one — so this helper keeps the comparison this file is about exact.
+/// entry really publishes one, and each entry's input origin is checked separately — so this helper
+/// compares presentation fields exactly without conflating their source contracts.
 fn recovery_without_usage(report: &RecoveryReport) -> RecoveryReport {
     let mut report = report.clone();
     report.execution = execution_without_usage(&report.execution);
+    report.input_origin = RecoveryInputOrigin::CallerSupplied;
     report.artifact = RecoveryArtifact::default();
     report
 }
@@ -699,7 +696,12 @@ fn the_prepared_payload_prints_the_text_the_direct_run_prints() {
         let sample = Sample::standalone(bytes);
         let request = sample.request(name, descriptor);
         let direct = engine
-            .recover_method(sample.content(), &request, &mut Budget::new(limits()))
+            .recover_method(
+                sample.content(),
+                jarde::SourceTarget::JAVA_8,
+                &request,
+                &mut Budget::new(limits()),
+            )
             .expect("a legal request is answered, not raised");
         assert!(
             direct.callees().is_none(),
@@ -714,7 +716,12 @@ fn the_prepared_payload_prints_the_text_the_direct_run_prints() {
                         .expect("a prepared input is a legal request too");
                 let facts = derived_facts(&analysis, &request.method);
                 let report = jarde_java::recover(
-                    &RecoveryRequest::new(analysis.ir(), &facts, profile.clone()),
+                    &RecoveryRequest::new(
+                        analysis.ir(),
+                        &facts,
+                        jarde::SourceTarget::JAVA_8,
+                        profile.clone(),
+                    ),
                     budget,
                 );
                 (report, facts)
@@ -725,9 +732,27 @@ fn the_prepared_payload_prints_the_text_the_direct_run_prints() {
             "{label}: the prepared payload derives the facts the facade derived from the direct one"
         );
         assert_eq!(
+            prepared_report.input_origin,
+            RecoveryInputOrigin::CallerSupplied,
+            "{label}: the public Java preview reports caller-supplied inputs"
+        );
+        assert_eq!(
+            direct.recovery().input_origin,
+            RecoveryInputOrigin::SelectedReads,
+            "{label}: the Engine reports inputs selected through its read path"
+        );
+        assert!(
+            prepared_report.artifact.binding().is_none(),
+            "{label}: the public Java preview does not bind an artifact"
+        );
+        assert!(
+            direct.recovery().artifact.binding().is_some(),
+            "{label}: the Engine's selected-read result binds its artifact"
+        );
+        assert_eq!(
             recovery_without_usage(&prepared_report),
             recovery_without_usage(direct.recovery()),
-            "{label}: the prepared payload prints the direct report"
+            "{label}: the two routes present exactly the same report fields and text"
         );
         assert!(
             direct.recovery().artifact.binding().is_some(),

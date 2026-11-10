@@ -47,6 +47,7 @@ fn class_source_outcome(
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
         .expect("the checked-in class fixture opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class_name),
         },
@@ -406,6 +407,7 @@ fn default_and_all_evidence_use_the_same_atomic_projection() {
         .open(ArtifactInput::bytes(ORIGINAL.to_vec()), &mut budget())
         .expect("the checked-in class fixture opens");
     let request = ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal("InterfaceInitProbe"),
         },

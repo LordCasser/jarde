@@ -129,6 +129,7 @@ fn recover_with(engine: &Engine, fixture: &Fixture, name: &[u8], release: u16) -
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut budget,
@@ -592,25 +593,24 @@ fn a_second_entry_into_a_monitor_region_is_refused() {
 }
 
 #[test]
-fn a_profile_that_does_not_admit_the_header_refuses_it() {
-    // `try (T n = …)` is Java 7 syntax: a run that presents the artifact as release 6 does not
-    // admit `twr@1`, and the refusal says so instead of writing Java the profile does not have.
+fn a_header_the_runtime_release_predates_is_presented_when_the_source_target_admits_it() {
+    // `try (T n = …)` is Java 7 syntax, and the pass admission is about what the **output** needs
+    // (`Pass::admits` reads the run's source target, not the class's own release): a shape the twr
+    // rule proves from the bytecode itself is presented as try-with-resources under a source target
+    // that admits the syntax, even when the run's runtime profile is release 6. The runtime profile
+    // states the class's own target; it is not a syntax gate — the presentation claims what the
+    // bytecode proves, under the source level the caller asked for.
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);
     let recovered = recover_with(&engine, &fixture, b"one", 6);
     let report = recovered.recovery();
     assert!(report.produced(), "{:?}", report.outcome);
-    assert_eq!(
-        report.representation,
-        Representation::Mixed,
-        "{}",
-        report.text
-    );
-    assert_eq!(report.quality, Quality::Fallback);
+    assert_eq!(report.representation, Representation::Java, "{}", report.text);
+    assert_eq!(report.quality, Quality::Structured);
     assert!(
-        report.fallbacks.contains(&"jre_guard_profile"),
-        "{:?}",
+        !report.fallbacks.contains(&"jre_guard_profile"),
+        "the profile states the class's release, not a syntax gate: {:?}",
         report.fallbacks
     );
-    assert!(!report.text.contains("try ("), "{}", report.text);
+    assert!(report.text.contains("try ("), "{}", report.text);
 }

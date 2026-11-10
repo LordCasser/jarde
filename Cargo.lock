@@ -348,6 +348,7 @@ dependencies = [
  "jarde-reader",
  "petgraph",
  "serde",
+ "serde_json",
 ]
 
 [[package]]

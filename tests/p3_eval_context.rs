@@ -193,6 +193,7 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
     engine
         .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
+            jarde::SourceTarget::JAVA_8,
             &request,
             &RecoveryEvidenceRequest::all(),
             &mut Budget::new(limits()),
@@ -353,53 +354,46 @@ fn a_nested_expression_that_crosses_no_write_is_still_written() {
     }
 }
 
-/// P3-R8, at a local read: the check is taken where the generated text is evaluated, not where the
-/// value was produced.
+/// P3-R8, at a local read: preserve the value loaded before the slot write with a typed snapshot.
 #[test]
-fn a_nested_arithmetic_is_checked_where_its_text_is_evaluated() {
+fn a_nested_arithmetic_uses_a_typed_snapshot_before_the_slot_write() {
     let engine = Engine::new();
     let fixture = fixture(&engine, NESTED);
     let report = recover(&engine, &fixture, b"nestedLocal", b"(I)I");
     let text = &report.text;
 
-    // The write the body really performs is still presented: this is a degraded read, not a body
-    // that was emptied to pass the test below.
+    assert!(
+        text.contains("int saved0 = arg0;"),
+        "the BCI 0 value is saved with its proven int type before the write:\n{text}"
+    );
     assert!(
         text.contains("arg0 = arg0 + 1;"),
         "the increment at BCI 3 is a write this layer writes:\n{text}"
     );
-    // The forbidden statement, and the reason it is forbidden: the outer `iadd` at BCI 7 reads the
-    // value the load at BCI 0 produced, and the `iinc` at BCI 3 wrote slot 0 before BCI 8 evaluates
-    // it. `arg0 + 1 + arg0` after `arg0 = arg0 + 1;` is `7 + 1 + 8`: the original `nestedLocal(7)`
-    // answers 16 and the written method would answer 17.
+    assert!(
+        text.contains("return saved0 + 1 + arg0;"),
+        "the return uses the pre-write snapshot and post-write slot value:\n{text}"
+    );
+    assert_eq!(text.matches("int saved0 = arg0;").count(), 1, "{text}");
+    assert_eq!(text.matches("arg0 = arg0 + 1;").count(), 1, "{text}");
+    let saved = text.find("int saved0 = arg0;").unwrap();
+    let write = text.find("arg0 = arg0 + 1;").unwrap();
+    let returned = text.find("return saved0 + 1 + arg0;").unwrap();
+    assert!(
+        saved < write && write < returned,
+        "effect order changed:\n{text}"
+    );
     assert!(
         !text.contains("return arg0 + 1 + arg0;"),
-        "the load at BCI 0 no longer denotes what slot 0 holds at BCI 8, so the return may not name \
-         the slot there: `nestedLocal(7)` is 16 and `return arg0 + 1 + arg0;` after \
-         `arg0 = arg0 + 1;` is 17:\n{text}"
+        "the old load must not become the post-write slot value:\n{text}"
     );
-    // And the read it refused is not dropped silently: the quote names the consumer's own BCI next
-    // to the load's, which is the whole effect the statement it could not write would have carried.
-    let quoted = quoted_bcis(text);
-    assert!(
-        quoted.contains(&8) && quoted.contains(&0),
-        "the quote states the `ireturn` at BCI 8 and the load at BCI 0 it could not name: \
-         {quoted:?}\n{text}"
-    );
-    assert!(
-        text.contains("BCI 8") && text.contains("BCI 0"),
-        "and the reason states both bytecode indexes in words:\n{text}"
-    );
-    assert!(
-        !report.text_of_bci(0).is_empty(),
-        "the load's own bytecode is an anchor of the quote:\n{text}"
-    );
-    // The answer says of itself that it is not claiming Java for the whole body: part of it is
-    // quoted bytecode, which is what a refused read is. Before the fix this run claimed Java text
-    // with full structure and wrote the other program.
-    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
-    assert_eq!(report.quality, Quality::Fallback, "{report:?}");
-    assert!(report.produced(), "a degraded body is still an answer");
+    assert!(quoted_bcis(text).is_empty(), "{text}");
+    for bci in [0, 1, 2, 3, 6, 7, 8] {
+        assert!(!report.text_of_bci(bci).is_empty(), "BCI {bci}: {text}");
+    }
+    assert_eq!(report.representation, Representation::Java, "{report:?}");
+    assert_eq!(report.quality, Quality::Structured, "{report:?}");
+    assert!(report.produced(), "typed snapshot should be produced");
 }
 
 /// P3-R8, at a call argument: bind the call's value before the following write changes the slot.

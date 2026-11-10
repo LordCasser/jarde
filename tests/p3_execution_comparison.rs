@@ -610,7 +610,7 @@ const NESTED_EVAL: Sample = Sample {
     // be compiled and its result and one `tick` call compared against the original directly.
     measured: &[],
     inputs: None,
-    quotes: &[("nestedLocal", &[8, 0])],
+    quotes: &[],
     baseline: Some(Baseline {
         class: "Baseline",
         source: include_str!("fixtures/p3-nested-eval/Baseline.java"),
@@ -623,7 +623,7 @@ const NESTED_EVAL: Sample = Sample {
         },
         Member {
             name: "nestedLocal",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "nestedPlain",
@@ -634,11 +634,8 @@ const NESTED_EVAL: Sample = Sample {
             expect: Expect::Executed,
         },
     ],
-    point: "P3-R8: `(x + 1) + ++x` remains refused because the load it needs is judged where the \
-            text is evaluated and the slot no longer holds it by then — the quote names the consumer \
-            and the read — while `tick(x) + ++x` binds `tick(x)` before the write and executes as \
-            `int saved0 = tick(arg0); arg0 = arg0 + 1; return saved0 + arg0;`; the original and \
-            recovered controls therefore agree on `nestedCall(3)=7` with one `tick` call, and \
+    point: "P3-R8: both `(x + 1) + ++x` and `tick(x) + ++x` save the pre-write value before the \
+            mutation; complete wrappers compile and the original/generated traces agree, while \
             `(x + 1) + (x + 2)` remains the no-write control",
 };
 
@@ -1814,16 +1811,16 @@ fn is_java_identifier(name: &str) -> bool {
 /// neither of them is the name of the whole slot: the wrapper this comparison builds declares such a
 /// slot the way it declares a slot no record covers.
 fn stated_name(facts: &RecoveryFacts, slot: u16) -> Option<String> {
-    let mut names: Vec<&str> = facts
+    let mut names: Vec<&jarde::JvmBytes> = facts
         .debug_locals()
         .iter()
         .filter(|record| record.slot() == slot)
         .map(|record| record.name())
         .collect();
-    names.sort_unstable();
+    names.sort_unstable_by(|left, right| left.0.cmp(&right.0));
     names.dedup();
     match names[..] {
-        [only] => Some(only.to_owned()),
+        [only] => only.to_unicode(),
         _ => None,
     }
 }
@@ -2702,6 +2699,7 @@ fn run_sample(sample: &Sample, entry: Entry) -> SampleOutcome {
                 asked = engine
                     .recover_method_with_evidence(
                         slice::from_ref(&snapshot),
+                        jarde::SourceTarget::JAVA_8,
                         &request,
                         &RecoveryEvidenceRequest::all(),
                         &mut budget,
@@ -3215,6 +3213,155 @@ fn the_p3_findings_are_replayed_by_compiling_and_executing_the_bodies() {
         .map(|sample| run_sample(sample, Entry::SingleMethod))
         .collect();
     print_outcomes(&outcomes);
+}
+
+#[test]
+#[ignore = "needs a JDK on PATH: compiles the complete NestedEval wrappers and compares isolated execution"]
+fn nested_eval_typed_snapshot_compiles_and_matches_the_original() {
+    let outcome = run_sample(&NESTED_EVAL, Entry::SingleMethod);
+    print_outcomes(std::slice::from_ref(&outcome));
+    assert!(outcome.executed.iter().any(|name| name == "nestedLocal"));
+    assert!(outcome.trace_identical, "{}", outcome.trace);
+    assert_eq!(
+        outcome.baseline.as_deref().map(str::trim_end),
+        Some("nestedLocal(7)=16\nnestedCall(3)=7\ntick calls=1")
+    );
+}
+
+#[test]
+#[ignore = "needs a JDK on PATH: compiles the class_source text verbatim and compares an isolated driver"]
+fn nested_eval_complete_class_source_compiles_and_matches_original() {
+    let mut budget = Budget::new(limits());
+    let snapshot = Engine::new()
+        .open(
+            ArtifactInput::bytes(NESTED_EVAL.bytes.to_vec()),
+            &mut budget,
+        )
+        .expect("NestedEval opens");
+    let request = ClassSourceRequest {
+        source_target: SourceTarget::JAVA_8,
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal("NestedEval"),
+        },
+        environment: EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::SingleClass,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        },
+    };
+    let OperationOutcome::Performed(source) = Engine::new()
+        .class_source_with_evidence(
+            std::slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget,
+        )
+        .expect("complete class-source request")
+    else {
+        panic!("standalone class must select one definition");
+    };
+    for name in ["tick", "nestedLocal", "nestedPlain", "nestedCall"] {
+        let member = source
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == name.as_bytes())
+            .unwrap_or_else(|| panic!("class source retains {name}"));
+        let ClassSourceOutcome::Recovered { report, .. } = &member.outcome else {
+            panic!("{name} did not recover: {:?}", member.outcome);
+        };
+        assert_eq!(
+            report.quality,
+            Quality::Structured,
+            "{name}: {}",
+            report.text
+        );
+        assert!(
+            report.text.find("@bytecode").is_none(),
+            "{name}: {}",
+            report.text
+        );
+    }
+    assert!(!source.text.contains("@bytecode"), "{}", source.text);
+
+    let root = TempDir::new("nested-eval-full-class");
+    let original = root.path().join("original");
+    let generated = root.path().join("generated");
+    let empty_classpath = root.path().join("empty-classpath");
+    fs::create_dir_all(&original).expect("original class directory");
+    fs::create_dir_all(&generated).expect("generated class directory");
+    fs::create_dir_all(&empty_classpath).expect("empty generated classpath");
+    fs::write(original.join("NestedEval.class"), NESTED_EVAL.bytes).expect("pin original class");
+    let baseline = include_str!("fixtures/p3-nested-eval/Baseline.java");
+    fs::write(original.join("Baseline.java"), baseline).expect("write original-side driver");
+    fs::write(generated.join("NestedEval.java"), &source.text)
+        .expect("write class_source text verbatim");
+    fs::write(generated.join("Baseline.java"), baseline).expect("write generated-side driver");
+
+    let compile_original = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-classpath"])
+        .arg(&original)
+        .arg("-d")
+        .arg(&original)
+        .arg(original.join("Baseline.java"))
+        .output()
+        .expect("javac is installed");
+    assert!(
+        compile_original.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile_original.stderr)
+    );
+    let compile_generated = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-classpath"])
+        .arg(&empty_classpath)
+        .arg("-d")
+        .arg(&generated)
+        .arg(generated.join("NestedEval.java"))
+        .arg(generated.join("Baseline.java"))
+        .output()
+        .expect("javac is installed");
+    assert!(
+        compile_generated.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile_generated.stderr)
+    );
+
+    let run = |classpath: &Path| {
+        Command::new("java")
+            .arg("-classpath")
+            .arg(classpath)
+            .arg("Baseline")
+            .output()
+            .expect("java is installed")
+    };
+    let original_run = run(&original);
+    let generated_run = run(&generated);
+    assert!(
+        original_run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&original_run.stderr)
+    );
+    assert!(
+        generated_run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&generated_run.stderr)
+    );
+    assert_eq!(original_run.stdout, generated_run.stdout);
+    assert_eq!(
+        original_run.stdout,
+        b"nestedLocal(7)=16\nnestedCall(3)=7\ntick calls=1\n"
+    );
+    assert_eq!(original_run.stderr, generated_run.stderr);
+    println!(
+        "complete class_source bytes={}, javac original/generated=success, isolated trace={}",
+        source.text.len(),
+        String::from_utf8_lossy(&generated_run.stdout)
+    );
 }
 
 #[test]

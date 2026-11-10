@@ -607,7 +607,7 @@ fn do_while_break2_late_budget_stop_restores_new_return_candidate_state() {
             assert!(matches!(
                 &stop,
                 StopReason::Budget {
-                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    dimension: jarde_reader::budget::BudgetDimension::AnalysisSteps,
                     ..
                 }
             ));

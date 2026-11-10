@@ -263,6 +263,7 @@ fn archive(files: &[(&str, &[u8])]) -> Vec<u8> {
 
 fn request(snapshot: &artifact::ArtifactSnapshot, class: &str) -> ClassSourceRequest {
     ClassSourceRequest {
+        source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
             class: ClassNameQuery::internal(class),
         },
@@ -487,7 +488,12 @@ fn assert_constructor_sites(report: &ClassSourceReport) {
                 "{} new@{head} was not presented: {record:?}",
                 target.name
             );
-            assert_eq!(record.class, class, "{} new@{head} class", target.name);
+            assert_eq!(
+                record.class.0,
+                class.as_bytes(),
+                "{} new@{head} class",
+                target.name
+            );
             assert_eq!(record.dup, Some(dup), "{} new@{head} dup", target.name);
             assert_eq!(
                 record.constructor,
@@ -642,7 +648,7 @@ fn nested_constructor_composition_is_presented_once_and_boundary_controls_remain
                 .collect::<Vec<_>>();
             assert_eq!(matching.len(), 1, "{leg} nested new@{head} record");
             let record = matching[0];
-            assert_eq!(record.class, "java/lang/StringBuilder");
+            assert_eq!(record.class.0, b"java/lang/StringBuilder");
             assert_eq!(record.dup, Some(dup));
             assert_eq!(record.constructor, Some(constructor));
             assert_eq!(record.arguments.as_slice(), &[argument]);
@@ -742,9 +748,12 @@ fn nested_constructor_composition_is_presented_once_and_boundary_controls_remain
             first
                 .news
                 .iter()
-                .map(|record| record.class.as_str())
+                .map(|record| record.class.0.as_slice())
                 .collect::<Vec<_>>(),
-            ["java/lang/StringBuilder", "java/lang/Long"],
+            [
+                b"java/lang/StringBuilder".as_slice(),
+                b"java/lang/Long".as_slice()
+            ],
             "{leg} constructor records retain source order"
         );
         for record in &first.news {
@@ -840,7 +849,7 @@ fn nested_constructor_composition_is_presented_once_and_boundary_controls_remain
                 .collect::<Vec<_>>();
             assert_eq!(matching.len(), 1, "{leg} closed Number new@{head}");
             let record = matching[0];
-            assert_eq!(record.class, class);
+            assert_eq!(record.class.0, class.as_bytes());
             assert_eq!(record.dup, Some(dup));
             assert_eq!(record.constructor, Some(constructor));
             assert_eq!(record.arguments.as_slice(), &[argument]);
