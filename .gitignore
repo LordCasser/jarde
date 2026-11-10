@@ -8,3 +8,11 @@
 /fuzz/target/
 /fuzz/artifacts/
 /fuzz/coverage/
+# OpenSpec run evidence stays local: raw logs, captures, binaries, and generated
+# receipts are not repository content. Human-written Markdown summaries remain tracked.
+/openspec/**/results/**
+!/openspec/**/results/**/
+!/openspec/**/results/**/*.md
+/openspec/**/evidence/**
+!/openspec/**/evidence/**/
+!/openspec/**/evidence/**/*.md
