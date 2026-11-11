@@ -549,6 +549,21 @@ impl Fixture {
         types: Option<&DeclaredGenericTypes>,
         budget: &mut Budget,
     ) -> jarde_java::report::ClassSourceRecovery {
+        self.recover_class_source_with_evidence(
+            ir,
+            types,
+            jarde_java::RecoveryEvidenceRequest::essential(),
+            budget,
+        )
+    }
+
+    fn recover_class_source_with_evidence(
+        &self,
+        ir: &MethodIr,
+        types: Option<&DeclaredGenericTypes>,
+        evidence: jarde_java::RecoveryEvidenceRequest,
+        budget: &mut Budget,
+    ) -> jarde_java::report::ClassSourceRecovery {
         let declaration = ir
             .declaration()
             .expect("fixture MethodIr retains its actual method declaration");
@@ -573,6 +588,7 @@ impl Fixture {
             jarde_java::pass::JAVA_8,
             self.environment.runtime.profile.clone(),
         );
+        let request = request.with_evidence(evidence);
         let request = if let Some(types) = types {
             request.with_declared_types(types)
         } else {
@@ -3013,5 +3029,138 @@ fn owned_field_cycle_field_reads_and_writes_are_bound_to_physical_bcis() {
             )
             .expect("wrong-BCI check completes")
         );
+    }
+}
+
+#[test]
+fn constructor_witness_retention_obeys_whole_recovery_ir_budget() {
+    let mut fixture = Fixture::new();
+    let analysis = fixture.analyze("<init>", "()V");
+    let ir = analysis.ir();
+    let types = fixture.value_types(ir);
+    let declaration = ir.declaration().unwrap();
+    let owner = declaration.class_name().0.as_slice();
+    let invokes: Vec<_> = ir
+        .code()
+        .unwrap()
+        .instructions
+        .iter()
+        .filter(|instruction| instruction.opcode == 0xb7)
+        .collect();
+    assert_eq!(
+        invokes.len(),
+        1,
+        "the actual constructor has one invokespecial"
+    );
+    let super_bci = invokes[0].bci;
+
+    let check_witnesses = |recovered: &jarde_java::report::ClassSourceRecovery| {
+        assert!(recovered.report.produced(), "{}", recovered.report.text);
+        for ast in [
+            recovered
+                .candidates
+                .ast
+                .as_ref()
+                .expect("physical AST retained"),
+            recovered
+                .candidates
+                .declared_ast
+                .as_ref()
+                .expect("declared AST retained"),
+        ] {
+            let consumers = jarde_java::report::class_source_method_body_consumers(
+                ast,
+                &mut Budget::new(limits()),
+            )
+            .expect("consumer inspection completes")
+            .expect("simple constructor has complete body consumers");
+            let init = consumers.init_record.expect("constructor witness retained");
+            assert!(init.presented);
+            assert!(init.declares_raw_class(owner));
+            assert_eq!(init.bci, Some(super_bci));
+            assert_eq!(init.target, Some(jarde_java::ast::ConstructorTarget::Super));
+            assert_eq!(consumers.constructor_calls.len(), 1);
+            assert_eq!(consumers.constructor_calls[0].bci, super_bci);
+        }
+    };
+    for (late_evidence, evidence) in [
+        (false, jarde_java::RecoveryEvidenceRequest::essential()),
+        (true, jarde_java::RecoveryEvidenceRequest::all()),
+    ] {
+        let mut completed_budget = Budget::new(limits());
+        let completed = fixture.recover_class_source_with_evidence(
+            ir,
+            Some(&types),
+            evidence.clone(),
+            &mut completed_budget,
+        );
+        check_witnesses(&completed);
+        let used = completed_budget.usage().ir_items;
+        assert!(used > 0);
+
+        // This is the whole recovery boundary, not the individual witness allocation frontier.
+        let mut exact_limits = limits();
+        exact_limits.ir_items = used;
+        let exact = fixture.recover_class_source_with_evidence(
+            ir,
+            Some(&types),
+            evidence.clone(),
+            &mut Budget::new(exact_limits),
+        );
+        check_witnesses(&exact);
+        assert_eq!(exact.report.text, completed.report.text);
+
+        let mut short_limits = limits();
+        short_limits.ir_items = used - 1;
+        let stopped = fixture.recover_class_source_with_evidence(
+            ir,
+            Some(&types),
+            evidence.clone(),
+            &mut Budget::new(short_limits),
+        );
+        if late_evidence {
+            // Optional evidence is materialized after text commit. Its resource stop keeps
+            // that text but cannot publish reusable physical/declared AST candidates.
+            assert!(matches!(
+                stopped.report.outcome,
+                jarde_java::RecoveryOutcome::Produced
+            ));
+            assert_eq!(stopped.report.text, completed.report.text);
+            assert!(matches!(
+                stopped.report.execution,
+                jarde_reader::model::ExecutionReport::Partial {
+                    reason: jarde_reader::model::TerminationReason::BudgetExceeded {
+                        dimension: jarde_reader::budget::BudgetDimension::IrItems,
+                    },
+                    ..
+                }
+            ));
+        } else {
+            assert!(matches!(
+                stopped.report.outcome,
+                jarde_java::RecoveryOutcome::Stopped(jarde_java::StopReason::Budget {
+                    dimension: jarde_reader::budget::BudgetDimension::IrItems,
+                    ..
+                })
+            ));
+            assert!(stopped.report.text.is_empty());
+        }
+        assert!(stopped.candidates.ast.is_none());
+        assert!(stopped.candidates.declared_ast.is_none());
+
+        let token = CancellationToken::new();
+        token.cancel();
+        let cancelled = fixture.recover_class_source_with_evidence(
+            ir,
+            Some(&types),
+            evidence,
+            &mut Budget::with_cancellation_token(limits(), token),
+        );
+        assert!(matches!(
+            cancelled.report.outcome,
+            jarde_java::RecoveryOutcome::Stopped(jarde_java::StopReason::Cancelled { .. })
+        ));
+        assert!(cancelled.candidates.ast.is_none());
+        assert!(cancelled.candidates.declared_ast.is_none());
     }
 }

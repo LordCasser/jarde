@@ -16059,7 +16059,9 @@ fn recover_inner(
         } else {
             None
         };
-        let generic_call_init = if ast_retention != ClassSourceAstRetention::Required
+        // Declared-header consumers need the same physical constructor witness as their
+        // retained invocation AST, independently of optional presentation evidence.
+        let generic_call_init = if retain_complete_invocation_ast
             && request.facts.method().raw_name().0 == b"<init>"
             && let Some(prologue) = prologues.prologue()
         {
@@ -16072,6 +16074,13 @@ fn recover_inner(
                 crate::stop::charge(
                     budget,
                     jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(record_cost).unwrap_or(u64::MAX),
+                    Some(prologue.bci),
+                )?;
+                // The retained witness owns its class and declaration strings.
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
                     u64::try_from(record_cost).unwrap_or(u64::MAX),
                     Some(prologue.bci),
                 )
@@ -16198,6 +16207,23 @@ fn recover_inner(
             .saturating_add(source.projection.instruction_bcis.len() as u64)
             .saturating_add(source.projection.instruction_opcodes.len() as u64)
             .saturating_add(source.projection.call_targets.len() as u64)
+            .saturating_add(
+                source
+                    .projection
+                    .generic_call_init
+                    .as_ref()
+                    .map_or(0, |record| {
+                        1u64.saturating_add(
+                            record.class.as_ref().map_or(0, |value| value.len() as u64),
+                        )
+                        .saturating_add(
+                            record
+                                .declared
+                                .as_ref()
+                                .map_or(0, |value| value.len() as u64),
+                        )
+                    }),
+            )
             .saturating_add(types.types.len() as u64)
             .saturating_add(types.values.iter().flatten().map(Vec::len).sum::<usize>() as u64)
             .saturating_add(

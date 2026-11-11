@@ -92,3 +92,40 @@ Engine execution and no fallback methods, writes both complete `report.text`
 values unchanged, and invokes the generator's isolated original/recovered Driver
 comparison. Temporary source/class directories are removed after the test, and
 successful recovered validation evidence is printed to the test log.
+
+## Complete-family runtime regression
+
+A separate gate recovers `Parent`, `Mid`, `CustomChild`, and `PlatformChild`
+through the public Engine and compiles all four unchanged complete outputs in one
+invocation. The recovered classpath starts empty: no original application or
+support class is copied into it. The fixed Driver is then compiled and run only
+against this recovered family. This is additional development coverage using the
+same frozen inputs, not an independent holdout.
+
+```sh
+S2B_CORRETTO8_HOME=/path/to/amazon-corretto-8.432.06.1-linux-x64 \
+  cargo test --locked --test s2b_engine_declared_methods \
+  engine_inherited_generics_complete_family_matches_original_runtime \
+  -- --ignored --exact --nocapture
+```
+
+The corresponding standalone generator option is explicit:
+
+```sh
+python3 tests/fixtures/s2b-inherited-generics/generate.py \
+  --jdk /path/to/amazon-corretto-8.432.06.1-linux-x64 \
+  --output /path/to/new-s2b-family-build \
+  --recovered-sources /path/to/four-unchanged-engine-sources \
+  --recover-support-classes
+```
+
+`--recover-support-classes` requires `--recovered-sources`. Without the new flag,
+the existing two-target gate and generator behavior remain unchanged. The family
+receipt explicitly records the four recovered source names and an empty original
+support-class list.
+
+The normal `engine_constructor_only_mid_closes_declared_header_and_prologue_atomically`
+test uses both essential and all evidence. It requires the constructor-only
+`Mid<X>` header and physical super-constructor call to commit together, preserves
+the call's actual source-map BCI, checks missing `Parent` and missing `List`
+refusals, and checks output-budget rollback. No fixture bytes are regenerated.

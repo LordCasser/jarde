@@ -1,3 +1,13 @@
+# 2026-11-10 S2b 构造器 witness 与完整生成族
+
+构造器-only Mid 的失败已实际复现：类 Signature 尚待继承证明，但没有成员 Signature，使用扫描未被请求；Required AST 又遗漏已有构造器 witness。现按待证明类 Signature 请求原有完整使用 census，并让已有完整 invocation AST 的消费者保留同次物理构造器 witness。未放宽 direct-parent、依赖缺失或 constructor consumer 证明。首次保存和随后 declared AST 克隆的 witness 字符串均在分配前计 IrItems，原 work/cancellation 检查保留。恢复语义 71→72，schema14/解析6 不变。
+
+新增公共 Engine 控制覆盖 essential/all、实际 invokespecial BCI、缺 Parent/List、相邻 OutputBytes 拒绝/准入切点，并逐次核对 header、constructor text、retained emission 全有或全无。完整族运行门将 Parent、Mid、CustomChild、PlatformChild 四个 Engine 输出原样一起编译，classpath 起初为空，不复制原支持类；Driver 另行只对恢复族编译/执行，与独立原件一致。既有两目标门保持，固定源/类字节不变；本族是开发回归，不是独立 holdout。
+
+实际通过：Java 库621/621、四个 Java S2b 套件50/50、Engine6/6（普通运行2 ignored）、显式完整类 JVM 门2/2、根库299/299、六个邻接泛型套件57/57、rustfmt、OpenSpec1.11.0 strict391/391。新真实构造器控制验证物理/declared AST witness、精确总 IrItems/N−1与预取消。all evidence 在文本提交后停止时，严格保留同一文本并报告 IrItems Partial，同时撤除可复用 AST；essential 的前提交停止无文本。新测试曾错误要求两种停止都无产物，已凭实际诊断和既有 evidence 合同纠正，未改生产停止行为。类似地，essential 不请求公共 SourceMap，但两种模式的 typed emission 均必须保留 BCI；预算相邻点不冒称全局首个切点。
+
+两个最终原生批次使用相同源码摘要、Rust1.99.1/Temurin25.0.4+7、默认栈与单任务，最大 target822,921,875字节，均退出0并清理。严格 Clippy 的17项既有错误尚待独立等价维护；全 workspace两种features/双seed、其他显式JDK门和资源/holdout尚未总验收。架构清单保持33/65，S0原始观测产品/收据缺口不由这些开发控制替代。
+
 # 2026-11-10 S2b 声明投影逐字重放
 
 修复已投影泛型声明的 Signature 标记使后续 declared cohort 误拒绝原物理 body 的问题。Java 层按已有声明投影事实重放完整 member 文本，逐字核对声明、注解、标记、envelope 与 body；不先用忽略标记的旧比较器放行。已有 body 投影仍保持原所有权。根门面只转交事实；重放按既有暂存合同计 AnalysisSteps/OutputBytes，停止先于事务提交，不增影子状态。恢复语义 70→71，schema14/解析6 不变。

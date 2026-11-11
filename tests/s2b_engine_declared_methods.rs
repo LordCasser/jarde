@@ -1083,3 +1083,499 @@ fn engine_inherited_generics_complete_classes_match_original_runtime() {
             .expect("generator records recovered full-class runtime evidence")
     );
 }
+
+#[test]
+fn engine_constructor_only_mid_closes_declared_header_and_prologue_atomically() {
+    const MID: &[u8] = include_bytes!("fixtures/s2b-inherited-generics/classes/Mid.class");
+    const PARENT: &[u8] = include_bytes!("fixtures/s2b-inherited-generics/classes/Parent.class");
+    const MARKER: &str = "declared source types and physical consumers committed together";
+    let engine = Engine::new();
+    let mut open_budget = task_budget(&[]).unwrap();
+    let app = engine
+        .open(
+            ArtifactInput::bytes(jar(&[(b"Mid.class", MID), (b"Parent.class", PARENT)])),
+            &mut open_budget,
+        )
+        .unwrap();
+    let platform = engine
+        .open(
+            ArtifactInput::bytes(jar(PLATFORM_CLASSES)),
+            &mut open_budget,
+        )
+        .unwrap();
+    let request = class_request(&app, &platform, "Mid");
+    let super_bci = one_field_instruction_bci(&engine, MID, b"<init>", b"()V", 0xb7);
+    let without_parent = engine
+        .open(
+            ArtifactInput::bytes(jar(&[(b"Mid.class", MID)])),
+            &mut open_budget,
+        )
+        .unwrap();
+    let without_list = engine
+        .open(
+            ArtifactInput::bytes(jar(&PLATFORM_CLASSES
+                .iter()
+                .copied()
+                .filter(|(name, _)| *name != b"java/util/List.class")
+                .collect::<Vec<_>>())),
+            &mut open_budget,
+        )
+        .unwrap();
+    let mut first_text = None;
+    for (source_map_requested, evidence) in [
+        (false, RecoveryEvidenceRequest::essential()),
+        (true, RecoveryEvidenceRequest::all()),
+    ] {
+        let OperationOutcome::Performed(report) = engine
+            .class_source_with_evidence(
+                &[app.clone(), platform.clone()],
+                &request,
+                &evidence,
+                &mut task_budget(&[]).unwrap(),
+            )
+            .unwrap()
+        else {
+            panic!("constructor-only Mid resolves uniquely");
+        };
+        assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+        let declaration = report.declaration.as_ref().unwrap();
+        assert!(
+            declaration.generic_refusal.is_none(),
+            "{:?}",
+            declaration.generic_refusal
+        );
+        assert!(
+            declaration
+                .declaration
+                .contains("extends Parent<java.util.List<X>>"),
+            "{}",
+            declaration.declaration
+        );
+        assert!(declaration.declaration.contains("class Mid<X"));
+        assert_eq!(
+            report.methods.len(),
+            1,
+            "the frozen Mid has only its constructor"
+        );
+        let constructor = &report.methods[0];
+        assert_eq!(constructor.item.name.raw().0, b"<init>");
+        let ClassSourceOutcome::Recovered {
+            report: body,
+            analysis,
+        } = &constructor.outcome
+        else {
+            panic!("Mid's physical constructor is recovered");
+        };
+        assert!(matches!(
+            analysis.execution,
+            ExecutionReport::Complete { .. }
+        ));
+        assert!(matches!(body.execution, ExecutionReport::Complete { .. }));
+        assert_eq!(body.quality, Quality::Structured);
+        assert!(body.fallbacks.is_empty());
+        if source_map_requested {
+            assert!(!body.source_map.of_bci(super_bci).is_empty());
+        } else {
+            assert!(
+                body.source_map.is_empty(),
+                "essential evidence omits the public SourceMap"
+            );
+        }
+        let projected = report
+            .projection_inputs
+            .member_texts
+            .iter()
+            .find(|member| member.member == constructor.item.index)
+            .expect("the constructor joins the declared-header transaction");
+        let emission = projected
+            .emission
+            .as_ref()
+            .expect("the constructor remains re-emittable");
+        assert!(!emission.body.is_empty());
+        assert!(
+            emission
+                .segments
+                .iter()
+                .any(|segment| segment.bcis.contains(&super_bci))
+        );
+        assert!(projected.text.contains("super();"));
+        assert_eq!(report.text.matches(MARKER).count(), 1);
+        if let Some(first) = &first_text {
+            assert_eq!(
+                &report.text, first,
+                "optional evidence does not change source admission"
+            );
+        } else {
+            first_text = Some(report.text.clone());
+        }
+
+        // Find the cohort's observed OutputBytes admission boundary, rather than assuming
+        // the final request total is the cohort commit. Later work may stop after both parts
+        // have committed, and must preserve that complete prefix.
+        let final_output = report.usage.output_bytes;
+        let probe_cut = |limit: u64| -> (bool, bool) {
+            let mut limits = task_budget(&[]).unwrap().limits().clone();
+            limits.output_bytes = limit;
+            let outcome = engine.class_source_with_evidence(
+                &[app.clone(), platform.clone()],
+                &request,
+                &evidence,
+                &mut Budget::new(limits),
+            );
+            let probe = match outcome {
+                Ok(OperationOutcome::Performed(probe)) => probe,
+                Err(Error::BudgetExceeded {
+                    dimension: BudgetDimension::OutputBytes,
+                    ..
+                }) => {
+                    return (false, false);
+                }
+                Ok(OperationOutcome::Incomplete(candidates)) => {
+                    assert!(matches!(
+                        candidates.execution,
+                        ExecutionReport::Partial {
+                            reason: TerminationReason::BudgetExceeded {
+                                dimension: BudgetDimension::OutputBytes
+                            },
+                            ..
+                        } | ExecutionReport::Failed {
+                            reason: TerminationReason::BudgetExceeded {
+                                dimension: BudgetDimension::OutputBytes
+                            },
+                            ..
+                        }
+                    ));
+                    return (false, false);
+                }
+                other => panic!("unexpected Mid outcome at OutputBytes={limit}: {other:?}"),
+            };
+            let complete = matches!(probe.execution, ExecutionReport::Complete { .. });
+            assert!(
+                complete
+                    || matches!(
+                        probe.execution,
+                        ExecutionReport::Partial {
+                            reason: TerminationReason::BudgetExceeded {
+                                dimension: BudgetDimension::OutputBytes
+                            },
+                            ..
+                        } | ExecutionReport::Failed {
+                            reason: TerminationReason::BudgetExceeded {
+                                dimension: BudgetDimension::OutputBytes
+                            },
+                            ..
+                        }
+                    )
+            );
+            let header_committed = probe
+                .declaration
+                .as_ref()
+                .is_some_and(|declaration| declaration.declaration.contains("extends Parent<"));
+            let constructor = probe
+                .methods
+                .iter()
+                .find(|method| method.item.name.raw().0 == b"<init>");
+            let constructor_committed =
+                constructor.is_some_and(|method| method.text.contains(MARKER));
+            let projected = probe
+                .projection_inputs
+                .member_texts
+                .iter()
+                .find(|member| member.text.contains(MARKER));
+            assert_eq!(
+                header_committed, constructor_committed,
+                "header/prologue split at OutputBytes={limit}"
+            );
+            assert_eq!(
+                header_committed,
+                projected.is_some(),
+                "header/emission split at OutputBytes={limit}"
+            );
+            assert_eq!(
+                header_committed,
+                probe.text.contains("extends Parent<java.util.List<X>>")
+            );
+            assert_eq!(
+                probe.text.matches(MARKER).count(),
+                usize::from(header_committed)
+            );
+            if header_committed {
+                let declaration = probe.declaration.as_ref().unwrap();
+                assert!(declaration.generic_refusal.is_none());
+                assert!(declaration.declaration.contains("class Mid<X"));
+                let constructor = constructor.unwrap();
+                let projected = projected.unwrap();
+                assert_eq!(projected.member, constructor.item.index);
+                assert_eq!(projected.text, constructor.text);
+                let emission = projected
+                    .emission
+                    .as_ref()
+                    .expect("committed prologue retains its emission");
+                assert!(!emission.body.is_empty());
+                assert!(
+                    emission
+                        .segments
+                        .iter()
+                        .any(|segment| segment.bcis.contains(&super_bci))
+                );
+                assert!(projected.text.contains("super();"));
+            }
+            (header_committed, complete)
+        };
+        assert_eq!(
+            probe_cut(final_output),
+            (true, true),
+            "the observed full budget completes"
+        );
+        assert_eq!(
+            probe_cut(0),
+            (false, false),
+            "zero output cannot publish the cohort"
+        );
+        let mut before = 0;
+        let mut admitted = final_output;
+        while admitted - before > 1 {
+            let limit = before + (admitted - before) / 2;
+            if probe_cut(limit).0 {
+                admitted = limit;
+            } else {
+                before = limit;
+            }
+        }
+        assert_eq!(admitted, before + 1);
+        assert_eq!(
+            probe_cut(before),
+            (false, false),
+            "the adjacent pre-commit cut publishes neither part"
+        );
+        assert!(
+            probe_cut(admitted).0,
+            "the adjacent admitted cut publishes both parts"
+        );
+        let (_, complete) = probe_cut(final_output.checked_sub(1).unwrap());
+        assert!(
+            !complete,
+            "N-1 stops, but may retain a previously committed whole cohort"
+        );
+
+        for (missing, app, platform) in [
+            ("Parent", &without_parent, &platform),
+            ("List", &app, &without_list),
+        ] {
+            let request = class_request(app, platform, "Mid");
+            let OperationOutcome::Performed(incomplete) = engine
+                .class_source_with_evidence(
+                    &[app.clone(), platform.clone()],
+                    &request,
+                    &evidence,
+                    &mut task_budget(&[]).unwrap(),
+                )
+                .unwrap()
+            else {
+                panic!("Mid resolves without the {missing} dependency");
+            };
+            assert!(matches!(
+                incomplete.execution,
+                ExecutionReport::Complete { .. }
+            ));
+            let declaration = incomplete.declaration.as_ref().unwrap();
+            assert!(declaration.generic_refusal.is_some(), "missing {missing}");
+            assert!(
+                declaration.declaration.contains("class Mid extends Parent"),
+                "missing {missing}: {}",
+                declaration.declaration
+            );
+            assert!(!declaration.declaration.contains("Parent<"));
+            assert_eq!(
+                incomplete.text.matches(MARKER).count(),
+                0,
+                "missing {missing}"
+            );
+            assert!(
+                incomplete
+                    .projection_inputs
+                    .member_texts
+                    .iter()
+                    .all(|member| !member.text.contains(MARKER))
+            );
+        }
+    }
+}
+
+#[test]
+#[ignore = "requires python3 and S2B_CORRETTO8_HOME pointing to the pinned Corretto 8.432.06.1 JDK"]
+fn engine_inherited_generics_complete_family_matches_original_runtime() {
+    use std::fs;
+    use std::path::{Path, PathBuf};
+    use std::process::Command;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    let jdk = std::env::var_os("S2B_CORRETTO8_HOME").expect(
+        "set S2B_CORRETTO8_HOME to the Corretto 8 JDK pinned in the fixture toolchain.json",
+    );
+    let repository = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let fixture = repository.join("tests/fixtures/s2b-inherited-generics");
+    struct Scratch(PathBuf);
+    impl Drop for Scratch {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("system clock is after the epoch")
+        .as_nanos();
+    let scratch = Scratch(std::env::temp_dir().join(format!(
+        "jarde-s2b-inherited-family-runtime-{}-{nonce}",
+        std::process::id()
+    )));
+    fs::create_dir(&scratch.0).expect("create isolated runtime workspace");
+    let recovered = scratch.0.join("recovered-sources");
+    fs::create_dir(&recovered).expect("create recovered source directory");
+
+    let engine = Engine::new();
+    let mut open_budget = task_budget(&[]).unwrap();
+    let app = engine
+        .open(
+            ArtifactInput::bytes(jar(&[
+                (
+                    b"PlatformChild.class",
+                    include_bytes!("fixtures/s2b-inherited-generics/classes/PlatformChild.class"),
+                ),
+                (
+                    b"CustomChild.class",
+                    include_bytes!("fixtures/s2b-inherited-generics/classes/CustomChild.class"),
+                ),
+                (
+                    b"Mid.class",
+                    include_bytes!("fixtures/s2b-inherited-generics/classes/Mid.class"),
+                ),
+                (
+                    b"Parent.class",
+                    include_bytes!("fixtures/s2b-inherited-generics/classes/Parent.class"),
+                ),
+            ])),
+            &mut open_budget,
+        )
+        .expect("frozen targets and original support classes open");
+    let platform = engine
+        .open(
+            ArtifactInput::bytes(jar(PLATFORM_CLASSES)),
+            &mut open_budget,
+        )
+        .expect("the same 13 frozen platform headers open");
+    for class in ["Parent", "Mid", "CustomChild", "PlatformChild"] {
+        let request = class_request(&app, &platform, class);
+        let OperationOutcome::Performed(report) = engine
+            .class_source(
+                &[app.clone(), platform.clone()],
+                &request,
+                &mut task_budget(&[]).unwrap(),
+            )
+            .expect("public Engine class-source request succeeds")
+        else {
+            panic!("{class} resolves uniquely");
+        };
+        assert!(
+            matches!(report.execution, ExecutionReport::Complete { .. }),
+            "{class}: {:?}",
+            report.execution
+        );
+        let declaration = report.declaration.as_ref().unwrap();
+        assert!(
+            declaration.generic_refusal.is_none(),
+            "{class}: {:?}",
+            declaration.generic_refusal
+        );
+        let required = match class {
+            "Parent" => "class Parent<T",
+            "Mid" => "extends Parent<java.util.List<X>>",
+            "CustomChild" => "extends Mid<java.lang.String>",
+            "PlatformChild" => "extends java.util.ArrayList<java.lang.String>",
+            _ => unreachable!(),
+        };
+        assert!(
+            declaration.declaration.contains(required),
+            "{class}: {}",
+            declaration.declaration
+        );
+        if class == "Parent" {
+            let field = report
+                .fields
+                .iter()
+                .find(|field| field.item.name.raw().0 == b"field")
+                .unwrap();
+            assert!(field.generic_signature_projected);
+            assert_eq!(field.declaration.as_deref(), Some("public T field"));
+            for (name, required) in [("get", " T get("), ("set", "void set(T ")] {
+                let method = report
+                    .methods
+                    .iter()
+                    .find(|method| method.item.name.raw().0 == name.as_bytes())
+                    .unwrap();
+                assert!(
+                    method.declaration.as_ref().unwrap().contains(required),
+                    "Parent.{name}: {:?}",
+                    method.declaration
+                );
+            }
+        }
+        assert!(!report.text.contains("@bytecode"), "{}", report.text);
+        for method in &report.methods {
+            let ClassSourceOutcome::Recovered {
+                report: body,
+                analysis,
+            } = &method.outcome
+            else {
+                panic!(
+                    "{class} contains an unrecovered method: {:?}",
+                    method.outcome
+                );
+            };
+            assert!(matches!(
+                analysis.execution,
+                ExecutionReport::Complete { .. }
+            ));
+            assert!(matches!(body.execution, ExecutionReport::Complete { .. }));
+            assert_eq!(body.quality, Quality::Structured, "{}", body.text);
+            assert!(
+                body.fallbacks.is_empty(),
+                "{}: {:?}",
+                body.text,
+                body.fallbacks
+            );
+        }
+        fs::write(recovered.join(format!("{class}.java")), &report.text)
+            .expect("write the complete Engine report.text unchanged");
+    }
+
+    // Compile all four complete Engine outputs together on an initially empty classpath.
+    // No original Parent/Mid or target classes are copied into the recovered class set.
+    // Driver is then compiled and executed against that recovered family alone.
+    let result = Command::new("python3")
+        .arg(fixture.join("generate.py"))
+        .arg("--jdk")
+        .arg(jdk)
+        .arg("--repo")
+        .arg(repository)
+        .arg("--output")
+        .arg(scratch.0.join("validation"))
+        .arg("--recover-support-classes")
+        .arg("--recovered-sources")
+        .arg(&recovered)
+        .output()
+        .expect("python3 runs the pinned fixture validation generator");
+    assert!(
+        result.status.success(),
+        "full-class runtime validation failed: {}\nstdout:\n{}\nstderr:\n{}",
+        result.status,
+        String::from_utf8_lossy(&result.stdout),
+        String::from_utf8_lossy(&result.stderr)
+    );
+    println!("{}", String::from_utf8_lossy(&result.stdout));
+    println!(
+        "S2B_RECOVERED_FAMILY_RUNTIME={}",
+        fs::read_to_string(scratch.0.join("validation/recovered-validation.json"))
+            .expect("generator records recovered full-class runtime evidence")
+    );
+}

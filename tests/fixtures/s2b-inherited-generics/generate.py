@@ -31,7 +31,10 @@ def main():
     parser.add_argument("--output", type=Path, required=True, help="New, nonexistent output directory")
     parser.add_argument("--repo", type=Path, default=HERE.parents[2], help="Repository containing the frozen platform headers")
     parser.add_argument("--recovered-sources", type=Path, help="Optional directory containing Engine-emitted CustomChild.java and PlatformChild.java")
+    parser.add_argument("--recover-support-classes", action="store_true", help="With --recovered-sources, compile recovered Parent/Mid too; use no original support classes")
     args = parser.parse_args()
+    if args.recover_support_classes and not args.recovered_sources:
+        parser.error("--recover-support-classes requires --recovered-sources")
     jdk = args.jdk.resolve()
     output = args.output.resolve()
     repo = args.repo.resolve()
@@ -114,15 +117,18 @@ def main():
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     if args.recovered_sources:
         recovered_sources = args.recovered_sources.resolve()
-        selected = [recovered_sources / (name + ".java") for name in ("CustomChild", "PlatformChild")]
+        selected_names = ("Parent", "Mid", "CustomChild", "PlatformChild") if args.recover_support_classes else ("CustomChild", "PlatformChild")
+        selected = [recovered_sources / (name + ".java") for name in selected_names]
         for path in selected:
             if not path.is_file():
                 raise SystemExit("Missing complete recovered class source: %s" % path)
         recovered = output / "recovered-classes"
         recovered.mkdir()
-        for name in ("Parent", "Mid"):
-            shutil.copyfile(classes / (name + ".class"), recovered / (name + ".class"))
-        # Neither the original target classes nor original Driver are on this compile/runtime classpath.
+        if not args.recover_support_classes:
+            for name in ("Parent", "Mid"):
+                shutil.copyfile(classes / (name + ".class"), recovered / (name + ".class"))
+        # Original targets/Driver are never on this classpath. Complete-family mode starts
+        # with no classes at all and compiles every supplied family source in this invocation.
         run([str(jdk / "bin/javac"), *FLAGS, "-sourcepath", "", "-classpath", str(recovered), "-d", str(recovered), *map(str, selected)])
         run([str(jdk / "bin/javac"), *FLAGS, "-sourcepath", "", "-classpath", str(recovered), "-d", str(recovered), str(HERE / "src/Driver.java")])
         recovered_runtime = execute(recovered)
@@ -133,11 +139,19 @@ def main():
             "runtime": recovered_runtime,
             "stdout_matches_new_original_baseline": recovered_runtime["stdout"] == original_runtime["stdout"],
         }
+        if args.recover_support_classes:
+            recovered_manifest["provenance"] = "All four complete Engine-emitted family classes compiled together without source edits on an initially empty classpath; no original support classes copied. Driver separately compiled against that recovered family."
+            recovered_manifest["mode"] = "complete_family"
+            recovered_manifest["recovered_classes"] = list(selected_names)
+            recovered_manifest["original_support_classes"] = []
         (output / "recovered-validation.json").write_text(json.dumps(recovered_manifest, indent=2) + "\n")
     (output / "commands.json").write_text(json.dumps(commands, indent=2) + "\n")
     print("Verified new baseline: five Java 8 classes, two byte-identical builds, isolated Driver passed.")
     if args.recovered_sources:
-        print("Verified complete recovered target classes: isolated Driver matched the new baseline.")
+        if args.recover_support_classes:
+            print("Verified complete recovered family: isolated Driver matched the new baseline without original support classes.")
+        else:
+            print("Verified complete recovered target classes: isolated Driver matched the new baseline.")
 
 
 if __name__ == "__main__":

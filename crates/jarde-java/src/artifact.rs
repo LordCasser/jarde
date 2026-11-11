@@ -88,7 +88,10 @@ pub const ARTIFACT_SCHEMA: u16 = 14;
 ///
 /// 70 → 71: a declared generic cohort may retain an already proved declaration-only overlay
 /// when exact Java member replay proves its physical body and metadata were not rewritten.
-pub const RECOVERY_SEMANTICS: u16 = 71;
+///
+/// 71 → 72: pending declared class headers collect the complete physical use census, and
+/// Required AST retention keeps constructor witnesses needed by declared-header consumers.
+pub const RECOVERY_SEMANTICS: u16 = 72;
 
 /// Actual Java and optional facade implementations participating in this recovery.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]

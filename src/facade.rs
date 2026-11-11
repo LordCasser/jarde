@@ -7610,8 +7610,11 @@ impl Engine {
                                 // methods (for example, an independently generic empty sink).
                                 // Keep the broader scan conditional on that demand so ordinary
                                 // classes retain the existing census cost.
+                                // A pending class Signature also needs every constructor/use
+                                // accounted for, even when no member has its own Signature.
                                 capture_member_uses: same_class_census_needed
-                                    || generic_call_asts_needed,
+                                    || generic_call_asts_needed
+                                    || (class_signature_present && class_scope.is_none()),
                                 capture_member_use_bootstrap: member_use_scans.is_empty(),
                                 retain_generic_call_asts: generic_call_asts_needed,
                                 static_member_target: static_target.as_ref(),
