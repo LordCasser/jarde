@@ -1,8 +1,11 @@
 use super::*;
 use crate::artifact::{ArtifactInput, ArtifactSnapshot, root_origin};
-use crate::budget::Limits;
-use crate::classfile::{class_facts, inspect_header};
+use crate::budget::{CancellationToken, Limits};
+use crate::classfile::{class_facts, class_facts_shared, inspect_header};
 use crate::model::{PhysicalClassLocation, PhysicalDefinitionId, PhysicalVariant};
+
+const V52_FIXTURE: &[u8] =
+    crate::test_fixtures::fixture!("historical/ecj-4.6.1/v52/HistoricalControlFlow.class");
 
 fn budget() -> Budget {
     Budget::new(Limits {
@@ -95,6 +98,64 @@ impl Products {
             self.bytes.len() as u64
         }
     }
+}
+
+#[test]
+fn shared_facts_cache_hit_keeps_arc_and_still_polls_cancellation() {
+    fn unlimited_limits() -> Limits {
+        Limits {
+            input_bytes: u64::MAX,
+            archive_entries: u64::MAX,
+            entry_bytes: u64::MAX,
+            read_bytes: u64::MAX,
+            class_bytes: u64::MAX,
+            attribute_bytes: u64::MAX,
+            code_bytes: u64::MAX,
+            result_items: u64::MAX,
+            output_bytes: u64::MAX,
+            nested_depth: u64::MAX,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        }
+    }
+
+    fn budget() -> Budget {
+        Budget::new(unlimited_limits())
+    }
+
+    let cache = FactsCache::current(FactsCapacity::new(8, 1_000_000));
+    let first =
+        class_facts_shared(V52_FIXTURE, &mut budget().with_facts_cache(cache.clone())).unwrap();
+    let after_miss = cache.report();
+    assert_eq!(
+        (after_miss.consultations, after_miss.misses, after_miss.hits),
+        (1, 1, 0)
+    );
+    assert_eq!(after_miss.stored, 1);
+
+    let second =
+        class_facts_shared(V52_FIXTURE, &mut budget().with_facts_cache(cache.clone())).unwrap();
+    assert!(Arc::ptr_eq(&first, &second));
+    let before_cancel = cache.report();
+    assert_eq!(
+        (
+            before_cancel.consultations,
+            before_cancel.misses,
+            before_cancel.hits
+        ),
+        (2, 1, 1)
+    );
+    assert_eq!(before_cancel.stored, 1);
+
+    let cancellation = CancellationToken::new();
+    cancellation.cancel();
+    let mut cancelled = Budget::with_cancellation_token(unlimited_limits(), cancellation)
+        .with_facts_cache(cache.clone());
+    assert!(matches!(
+        class_facts_shared(V52_FIXTURE, &mut cancelled),
+        Err(Error::Cancelled { .. })
+    ));
+    assert_eq!(cache.report(), before_cancel);
 }
 
 #[test]

@@ -1,3 +1,13 @@
+# 2026-11-11 已发布恢复提交与缓存测试归属
+
+五个已完成增量已按原顺序发布到 main，并从远端重新取回核对每个 Git tree 与恢复备份完全一致：4ffe9949→7e333cb1（永久测试输入）、f3a62c20→e992f680（CHECKCAST）、9f790f53→94f51251（声明重放）、d957d07b→15ce230f（构造器 witness）、ad25873f→5caef948（Clippy）。发布连接重新创建了提交元数据，故 SHA 变化；实现字节没有变化。
+
+将已有 `shared_facts_cache_hit_keeps_arc_and_still_polls_cancellation` 单测从 classfile 内联模块移到既有 `facts_capacity_tests.rs`，测试体和原 Limits helper 逐 token 比较一致。P5 原已允许这个精确 `#[cfg(test)]` 子模块构造缓存；名称 census 同步记录其现在出现的缓存 API 名称。生产构造规则、精确模块声明及近似路径反例均不变，不新增生产例外。首次迁移触发遗漏的名称 census 断言，失败保留后按真实测试归属修正，没有改名隐藏命中。
+
+定向实际通过：迁移后的原单测 1/1（183 filtered）、原 P5 所有权门 1/1（19 filtered）、reader 全目标/all-features Clippy（沿用既有 CI lint 参数）、全 workspace rustfmt。前后源码摘要、默认栈、单任务、1 GiB target/5 GiB 空闲守卫及最终清理均核对；两批最大 target 分别 512,611,649 与 447,917,848 字节。后续只澄清 P5 扫描范围注释并补此交接，运行代码未再改。恢复语义仍72/schema14/解析6。
+
+全 workspace 验收仍未完成：上一次 workspace/all-features 分目标全量流在 334/432 目标后随环境中断，两 seed 当时各记录 3674 passed / 31 failed / 62 ignored；这不是完整通过收据。主架构33/65与原S0资源证据缺口保持，继续逐机制修复并在里程碑重新执行全量门。
+
 # 2026-11-10 严格 Clippy 闭环
 
 以实际当前 stable Rust/Clippy1.99.1 运行完整 workspace/all-targets/all-features 和既有 CI 的全部 -A/-D 配置，逐层修复33项原有错误，严格门现通过；仅用 --keep-going 汇总错误，未削弱检查。19项生产写法与14项测试写法保持行为/断言等价，例外表、固定输入、恢复72/schema14/解析6均不变。

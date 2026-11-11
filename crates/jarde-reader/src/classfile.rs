@@ -6332,7 +6332,6 @@ fn skip_qualified_module_section(reader: &mut AttributeReader<'_>, budget: &Budg
 mod reader_facts_tests {
     use super::*;
     use crate::budget::{BudgetDimension, CancellationToken, Limits};
-    use crate::facts_cache::{FactsCache, FactsCapacity};
 
     const V52_FIXTURE: &[u8] =
         crate::test_fixtures::fixture!("historical/ecj-4.6.1/v52/HistoricalControlFlow.class");
@@ -6602,43 +6601,6 @@ mod reader_facts_tests {
             facts.methods[2].attributes[0].content_span,
             ByteSpan::new(254, 47)
         );
-    }
-
-    #[test]
-    fn shared_facts_cache_hit_keeps_arc_and_still_polls_cancellation() {
-        let cache = FactsCache::current(FactsCapacity::new(8, 1_000_000));
-        let first =
-            class_facts_shared(V52_FIXTURE, &mut budget().with_facts_cache(cache.clone())).unwrap();
-        let after_miss = cache.report();
-        assert_eq!(
-            (after_miss.consultations, after_miss.misses, after_miss.hits),
-            (1, 1, 0)
-        );
-        assert_eq!(after_miss.stored, 1);
-
-        let second =
-            class_facts_shared(V52_FIXTURE, &mut budget().with_facts_cache(cache.clone())).unwrap();
-        assert!(Arc::ptr_eq(&first, &second));
-        let before_cancel = cache.report();
-        assert_eq!(
-            (
-                before_cancel.consultations,
-                before_cancel.misses,
-                before_cancel.hits
-            ),
-            (2, 1, 1)
-        );
-        assert_eq!(before_cancel.stored, 1);
-
-        let cancellation = CancellationToken::new();
-        cancellation.cancel();
-        let mut cancelled = Budget::with_cancellation_token(unlimited_limits(), cancellation)
-            .with_facts_cache(cache.clone());
-        assert!(matches!(
-            class_facts_shared(V52_FIXTURE, &mut cancelled),
-            Err(Error::Cancelled { .. })
-        ));
-        assert_eq!(cache.report(), before_cancel);
     }
 
     #[test]

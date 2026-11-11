@@ -2100,8 +2100,10 @@ struct EngineSource {
 /// The guards below check *absences* — no cache in a default path, no index, and no machinery outside
 /// the one module an explicit bulk operation owns — and no run can show that something does not exist,
 /// so they read the source. The scope is the engine the decisions are about: `crates/*/src` and the
-/// facade's `src/`. Test code, fixtures, fuzz targets and anything reached through a dependency are
-/// outside it; so is a cache hidden in a local variable.
+/// facade's `src/`. The walk includes inline tests and test-only child modules under those roots.
+/// The exact `#[cfg(test)]` capacity-test child (`CAPACITY_TESTS`) has its own checked exemption.
+/// Integration-test directories, fixtures, fuzz targets and dependencies are outside this walk;
+/// a cache hidden in a local variable is outside the needles this guard recognizes.
 fn engine_sources() -> Vec<EngineSource> {
     let root = repository_root();
     let crates = root.join("crates");
@@ -2319,7 +2321,9 @@ fn may_retain(path: &str) -> bool {
     path == BULK_ADAPTER
 }
 
-// This exact child module is compiled only for reader unit tests.
+// This exact child module is compiled only for reader unit tests. The naming census includes it
+// because it exercises cache capacity and hits; this exact path remains the only test construction
+// exemption.
 const CAPACITY_TESTS: &str = "crates/jarde-reader/src/facts_capacity_tests.rs";
 
 fn may_construct_capacity_test(path: &str) -> bool {
@@ -3325,10 +3329,11 @@ fn a_cancelled_direct_run_is_never_published_as_complete() {
 ///   schedule, and an ordinary entry that started a batch of its own would have to put a spawn site
 ///   outside that module to do it. The sibling claim — *who* calls it — is
 ///   [`no_ordinary_entry_reaches_the_bulk_module_or_recover_all`], which a file-level scan cannot make;
-/// * the cache is declared in **one** module, and the only other engine files that name it are the
-///   crate root that declares the module, the budget that carries a handle and the one adapter that
-///   attaches a bounded store to its own operation ([`BULK_ADAPTER`]) — so a second cache cannot
-///   appear quietly;
+/// * the cache is declared in **one** module; the production files that name it are the crate root
+///   that declares the module, the budget that carries a handle and the one adapter that attaches a
+///   bounded store to its own operation ([`BULK_ADAPTER`]). The naming census also includes the exact
+///   `#[cfg(test)]` capacity-test child (`CAPACITY_TESTS`), which exercises cache capacity and hits —
+///   it does not create another production path;
 /// * **nothing in the engine constructs one but that adapter** ([`CACHE_CONSTRUCTIONS`]), which is
 ///   what disabled-by-default means as a structural fact, and [`Budget::new`] — the constructor every
 ///   existing entry point already uses — carries none. Task 5.4 narrowed this claim rather than
@@ -3433,15 +3438,18 @@ fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
             "crates/jarde-reader/src/artifact.rs",
             "crates/jarde-reader/src/budget.rs",
             "crates/jarde-reader/src/classfile.rs",
+            CAPACITY_TESTS,
             "crates/jarde-reader/src/lib.rs",
             "src/lib.rs",
         ],
-        "the cache is named in {naming:?}, which is not the budget that carries a handle, the read \
-         entries that consult it (the class-file facts and the directed container access), the \
-         module declaration, the facade's re-export and the one adapter that attaches a store \
-         ([`BULK_ADAPTER`]): a file outside that set has grown a second path into the cache. (The \
-         module that declares it names no module path, which is why it is not in this list: the \
-         declaration is checked above.)"
+        "the cache is named in {naming:?}: the production paths are the budget that carries a handle, \
+         the read entries that consult it (the class-file facts and the directed container access), \
+         the module declaration, the facade's re-export and the one adapter that attaches a store \
+         ([`BULK_ADAPTER`]); the only test-only path is the exact `#[cfg(test)]` capacity-test child \
+         (`{CAPACITY_TESTS}`), which exercises cache capacity and hits. The declaring module names no \
+         module path, which is why it is not in this list: its declaration is checked above. A file \
+         outside these production paths and this exact test-only path has grown another path into the \
+         cache."
     );
 
     let parent = sources
