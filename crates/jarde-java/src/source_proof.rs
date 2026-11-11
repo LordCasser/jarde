@@ -3315,7 +3315,7 @@ pub fn prove_ordinary_enum_group<'c, 'm>(
             owner,
             parameters,
             field_headers,
-            |index| field_declared(index),
+            &field_declared,
             budget,
         )? {
             Ok((tail, _super_call_bci)) => {
@@ -7389,9 +7389,9 @@ fn append_local_reference_relations<H: RecoveryHeaders>(
         };
         if let Some(shape) = shape {
             let leaf = shape.source_type.trim_end_matches("[]").to_owned();
-            if !raw.contains_key(&leaf) {
+            if let std::collections::btree_map::Entry::Vacant(entry) = raw.entry(leaf) {
                 budget.charge(CountedBudgetDimension::IrItems, 1)?;
-                raw.insert(leaf, shape.leaf_class);
+                entry.insert(shape.leaf_class);
             }
         }
         Ok(())
@@ -7595,7 +7595,7 @@ pub fn interface_reaches(
         if &owner == target {
             return Ok(Some(true));
         }
-        if !visited.insert(owner.clone()) {
+        if !visited.insert(owner) {
             continue;
         }
         let Some(parents) = graph.get(&owner) else {
@@ -7644,7 +7644,7 @@ pub fn unique_source_default(
     while let Some(owner) = pending.pop() {
         budget.poll()?;
         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        if !closure.insert(owner.clone()) {
+        if !closure.insert(owner) {
             continue;
         }
         let Some(parents) = graph.get(&owner) else {
@@ -10962,7 +10962,7 @@ pub fn prove_enum_body_candidate_shape(
                 enum_owner,
                 &shared_source_parameters,
                 fields,
-                |index| source_field_declared(index),
+                &source_field_declared,
                 budget,
             )? {
                 Ok(proved) => proved,
@@ -12370,7 +12370,7 @@ pub fn scan_static_fold_body_references<'a, T, S>(
                         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
                         if segment.start() > start
                             || segment.end() < end
-                            || segment.origin().primary().method() != Some(&*method_identity)
+                            || segment.origin().primary().method() != Some(method_identity)
                         {
                             continue;
                         }
@@ -12412,7 +12412,7 @@ pub fn static_fold_declaration_descriptor_names(
 pub fn append_static_fold_declaration_edits<R: Clone>(
     declaration: &str,
     pool_dotted: &str,
-    simple: &String,
+    simple: &str,
     relation: &R,
     names_target: bool,
     declaration_edits: &mut Vec<(usize, usize, String, R)>,
@@ -12426,7 +12426,7 @@ pub fn append_static_fold_declaration_edits<R: Clone>(
     declaration_edits.extend(
         spans
             .into_iter()
-            .map(|(start, end)| (start, end, simple.clone(), relation.clone())),
+            .map(|(start, end)| (start, end, simple.to_owned(), relation.clone())),
     );
     Ok(())
 }
@@ -15818,9 +15818,11 @@ pub fn matches_current_text(
     };
     // This exact marker belongs to the physical run's own fallback, not to a prior body
     // rewrite. Include it in the comparison; every byte of the body is still checked.
-    let own_marker = has_only_explanation_marker(physical_recovery, markers, name, descriptor)
-        .then_some(markers)
-        .unwrap_or(&[]);
+    let own_marker = if has_only_explanation_marker(physical_recovery, markers, name, descriptor) {
+        markers
+    } else {
+        &[]
+    };
     let expected: Vec<&str> = own_marker
         .iter()
         .map(String::as_str)
@@ -16302,7 +16304,7 @@ pub fn stage_class_source_assert_statements<'a, F: 'a, M: 'a>(
         let mut writes = Vec::new();
         for record in field_uses
             .iter()
-            .filter(|record| record.member.as_ref() == Some(&*method_facts(method).1))
+            .filter(|record| record.member.as_ref() == Some(method_facts(method).1))
         {
             if record.owner != JvmBytes::from_unicode(&internal)
                 || record.name != JvmBytes::from_unicode(field_name)

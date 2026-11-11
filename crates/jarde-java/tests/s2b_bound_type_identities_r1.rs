@@ -641,7 +641,7 @@ fn child_mid_node(
         .expect("Child has its real class Signature")
         .0
         .clone();
-    let node = bind_declared_type(
+    bind_declared_type(
         types,
         &SignatureType::Class(signature.superclass),
         &child.loader,
@@ -651,8 +651,7 @@ fn child_mid_node(
     )
     .expect("selected headers resolve the Child superclass")
     .found()
-    .expect("Child superclass is known");
-    node
+    .expect("Child superclass is known")
 }
 
 #[test]

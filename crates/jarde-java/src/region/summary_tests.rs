@@ -660,7 +660,7 @@ fn a41_nested_break_arms_and_the_in_range_return_keep_their_targets() {
                     .edges()
                     .iter()
                     .filter(|edge| edge.from() == &in_range.block)
-                    .map(|edge| edge.kind().clone())
+                    .map(|edge| edge.kind())
                     .collect();
                 assert_eq!(
                     leaving.len(),
@@ -1011,8 +1011,8 @@ fn a41_continue_ladder_keeps_its_targets_in_both_layouts() {
                             then_arm,
                             else_arm,
                             ..
-                        } if matches!(run_single_block(std::slice::from_ref(then_arm.as_ref())), Some(_))
-                            != matches!(run_single_block(std::slice::from_ref(else_arm.as_ref())), Some(_))
+                        } if run_single_block(std::slice::from_ref(then_arm.as_ref())).is_some()
+                            != run_single_block(std::slice::from_ref(else_arm.as_ref())).is_some()
                     )
                 });
                 let ladder_join = ladder_if.and_then(|region| match region {

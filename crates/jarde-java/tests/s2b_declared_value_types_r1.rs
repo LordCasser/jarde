@@ -1137,16 +1137,16 @@ fn assert_list_foo(types: &DeclaredGenericTypes, node: usize) {
     assert_eq!(list.definition, header(LIST_BYTES, BOOT_LOADER).definition);
     assert_eq!(arguments.len(), 1);
     let DeclaredGenericType::Reference {
-        declaration: foo,
+        declaration: foo_type,
         arguments,
     } = &types.types[arguments[0]]
     else {
         panic!("List argument is the selected Foo type")
     };
     assert!(arguments.is_empty());
-    assert_eq!(foo.loader, LoaderId(CHILD_LOADER.to_owned()));
+    assert_eq!(foo_type.loader, LoaderId(CHILD_LOADER.to_owned()));
     assert_eq!(
-        foo.definition,
+        foo_type.definition,
         header(CHILD_FOO_BYTES, CHILD_LOADER).definition
     );
 }

@@ -1,3 +1,9 @@
+# 2026-11-10 严格 Clippy 闭环
+
+以实际当前 stable Rust/Clippy1.99.1 运行完整 workspace/all-targets/all-features 和既有 CI 的全部 -A/-D 配置，逐层修复33项原有错误，严格门现通过；仅用 --keep-going 汇总错误，未削弱检查。19项生产写法与14项测试写法保持行为/断言等价，例外表、固定输入、恢复72/schema14/解析6均不变。
+
+同一源码通过受影响的688个原生测试：feature-enabled根层6项、p3_scope12项、shared prepared callee4项、Java库621项、S2b两套件45项。最大target869,353,187字节，默认栈、单任务、源码前后摘要一致，已清理。先前失败的三轮lint原流保留；更早1.88工具链结果不替代本次stable门。下一步按精确目标清单运行默认/all-features各双seed全量回归，重新归类实际失败，再推进剩余顺序/绑定机制。架构33/65及原始S0资源证据缺口不变。
+
 # 2026-11-10 S2b 构造器 witness 与完整生成族
 
 构造器-only Mid 的失败已实际复现：类 Signature 尚待继承证明，但没有成员 Signature，使用扫描未被请求；Required AST 又遗漏已有构造器 witness。现按待证明类 Signature 请求原有完整使用 census，并让已有完整 invocation AST 的消费者保留同次物理构造器 witness。未放宽 direct-parent、依赖缺失或 constructor consumer 证明。首次保存和随后 declared AST 克隆的 witness 字符串均在分配前计 IrItems，原 work/cancellation 检查保留。恢复语义 71→72，schema14/解析6 不变。

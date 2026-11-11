@@ -7584,7 +7584,7 @@ impl Walker<'_> {
             else_arm: Box::new(sequence_region(else_run)),
             join: join.clone(),
         }];
-        return Ok((run, join));
+        Ok((run, join))
     }
 
     /// One nested-monitor verdict, in a frame of its own (see [`Self::two_way_region`]).
@@ -7622,7 +7622,7 @@ impl Walker<'_> {
             at: current.bci(),
             message: "the nested synchronized body has no complete bounded structure".into(),
         };
-        return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+        Ok(gap(prefix, plan.owned().to_vec(), reason, None))
     }
 
     /// One multi-exit monitor verdict, in a frame of its own (see [`Self::two_way_region`]).
@@ -7640,7 +7640,7 @@ impl Walker<'_> {
                 self.visited.insert(node);
             }
         }
-        return Ok(one(
+        Ok(one(
             Region::Guard {
                 prefix,
                 plan,
@@ -7648,7 +7648,7 @@ impl Walker<'_> {
                 finally_body: None,
             },
             None,
-        ));
+        ))
     }
 
     /// One structured finally verdict, in a frame of its own (see [`Self::two_way_region`]).
@@ -7721,7 +7721,7 @@ impl Walker<'_> {
             at: current.bci(),
             message: "the proved finally body has no complete bounded structure".into(),
         };
-        return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+        Ok(gap(prefix, plan.owned().to_vec(), reason, None))
     }
 
     /// One named `try` the exception table states with a catch-typed row, in a frame of its
@@ -7802,7 +7802,7 @@ impl Walker<'_> {
             }
             return Ok((run, next));
         }
-        return Ok((run, join));
+        Ok((run, join))
     }
 
     /// One shared catch-all finally / resource-guard candidate, in a frame of its own (see
@@ -7884,7 +7884,7 @@ impl Walker<'_> {
             message: "the shared catch-all finally has no complete bounded try and catch bodies"
                 .into(),
         };
-        return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+        Ok(gap(prefix, plan.owned().to_vec(), reason, None))
     }
     /// A nested boolean diamond may finish at its own `ireturn` after the enclosing guard's
     /// early-return join. Admit only that single, closed return block: both producer arms must be

@@ -307,8 +307,10 @@ pub fn declared_class_types<H: RecoveryHeaders>(
         (&erased, &[][..])
     };
 
-    let mut types = DeclaredGenericTypes::default();
-    types.declaration = Some(actual_class.clone());
+    let mut types = DeclaredGenericTypes {
+        declaration: Some(actual_class.clone()),
+        ..DeclaredGenericTypes::default()
+    };
     let variables = match bind_declared_parameters(
         &mut types,
         &selected,

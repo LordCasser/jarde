@@ -248,7 +248,7 @@ impl ArtifactBinding {
             highest_registered_major: HIGHEST_REGISTERED_MAJOR,
             configuration,
             dependencies: subject.dependencies.clone(),
-            source_target: source_target.clone(),
+            source_target: *source_target,
             rules: registered_rules(),
             text_digest: digest_of(text),
             text_bytes: u64::try_from(text.len()).unwrap_or(u64::MAX),

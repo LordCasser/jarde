@@ -90,3 +90,9 @@ Pay down these warnings with focused changes in their owning modules. Start with
 single-site fixes; review `too_many_arguments`, `type_complexity`, and `large_enum_variant` against
 the intended API and proof-state design before changing those shapes. This baseline is a CI bridge,
 not a conclusion that every warning should be fixed mechanically.
+
+## 2026-11-10 严格门修复
+
+Rust/Clippy1.99.1 的完整 workspace/all-targets/all-features 严格检查已通过。分层实际暴露并修复33项未被既有例外表覆盖的问题：19项生产代码等价写法、14项测试写法。没有新增 allow、删断言、改 fixture 身份或更改恢复语义版本。既有例外表和上方322项历史清单保持原记录，不声称重新清点了被允许的警告。
+
+同一代码另通过受影响的688个原生测试：feature-enabled 根层选定6项、p3_scope12项、shared prepared callee4项、Java库621项、两个S2b套件45项；默认栈、源码冻结、target清理。全量双seed执行属于后续独立回归门，不由Clippy或本组选定测试替代。

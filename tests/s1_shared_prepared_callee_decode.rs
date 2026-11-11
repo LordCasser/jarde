@@ -441,12 +441,9 @@ fn live_prepared_callee_facts_are_shared_only_when_complete_and_keep_polling() {
         damaged.with_prepared(&mut budget, |prepared, budget| {
             let ordinal = prepared.locate_method(b"value", b"()I")[0];
             for _ in 0..2 {
-                match prepared.shared_method_code(ordinal, budget) {
-                    Ok(facts) => {
-                        assert!(facts.stopped_at.is_some());
-                        assert!(!matches!(facts.execution, ExecutionReport::Complete { .. }));
-                    }
-                    Err(_) => {}
+                if let Ok(facts) = prepared.shared_method_code(ordinal, budget) {
+                    assert!(facts.stopped_at.is_some());
+                    assert!(!matches!(facts.execution, ExecutionReport::Complete { .. }));
                 }
             }
             assert_eq!(budget.usage().method_bodies, 2);

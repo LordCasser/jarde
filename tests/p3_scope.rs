@@ -202,12 +202,12 @@ fn recover_with_budget(
         },
         stages: AnalysisStage::ALL.to_vec(),
     };
-    Ok(engine.recover_method(
+    engine.recover_method(
         slice::from_ref(&fixture.snapshot),
         jarde::SourceTarget::JAVA_8,
         &request,
         budget,
-    )?)
+    )
 }
 
 #[test]

@@ -10327,7 +10327,7 @@ impl Engine {
             )
         };
         let text_context = class_source::ClassSourceTextContext {
-            source_target: source_target,
+            source_target,
             initializer_field_order: initializer_field_order.as_deref(),
             declared_methods: read.facts.method_count,
             member_table: read.facts.stopped_at.as_ref(),
@@ -33481,7 +33481,6 @@ fn recovery_from_with_class_candidates(
                     jarde_java::report::ClassSourceAstRetention::Required
                 },
                 prove_empty_constructor: prove_anonymous_constructor,
-                ..Default::default()
             },
             Some(&mut publication_gate),
         );
@@ -37881,7 +37880,7 @@ mod common_instance_array_initializer_tests {
             .methods
             .iter()
             .filter(|method| method.item.identity.name.0 == b"<init>")
-            .last()
+            .next_back()
             .unwrap()
             .item
             .index];
@@ -40881,10 +40880,7 @@ mod demand_result_tests {
         let mut cancelled =
             Budget::with_cancellation_token(budget().limits().clone(), token.clone());
         token.cancel();
-        assert!(matches!(
-            demand(&snapshot, &request, b"Holder", &mut cancelled),
-            Err(_)
-        ));
+        assert!(demand(&snapshot, &request, b"Holder", &mut cancelled).is_err());
     }
 
     #[test]
@@ -41574,7 +41570,6 @@ mod demand_result_tests {
             headers.selected_from(&parent.loader, b"Holder", &mut cancelled),
             Err(DependencyProofFailure::Error(Error::Cancelled { .. }))
         ));
-        drop(headers);
         // Bridge admission has its own header memo and prepared-facts shortcut. Exercise
         // that consumer too: equal physical bytes do not make two defining loaders equal.
         let (binding, own_read) = demand(&snapshot, &request, b"Holder", &mut budget())
@@ -43857,7 +43852,7 @@ mod capture_stop_consumer_tests {
         let raw = o.raw.as_ref();
         let diag = raw
             .map(|r| r["diagnostics"].as_array().unwrap())
-            .map_or(false, |ds| {
+            .is_some_and(|ds| {
                 ds.iter().all(|d| {
                     report
                         .diagnostics
