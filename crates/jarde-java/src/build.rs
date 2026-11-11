@@ -38,6 +38,7 @@
 //! instruction nothing reads would be an effect silently dropped.
 
 mod loop_transfer;
+mod nested_parameter_snapshot;
 pub(crate) use loop_transfer::project_dead_loop_transfer_handler;
 
 use jarde_reader::model::JvmBytes;
@@ -27405,27 +27406,27 @@ impl<'a> Builder<'a> {
             if let Some(Operation::Load { slot }) = self.operations.get(producer)
                 && !self.copy_inputs.contains(&value)
             {
+                let slot = *slot;
                 let Some(reader) = self.terminal_consumer(value, 0, None)? else {
                     continue;
                 };
-                // The save is read only where this value's own use renders it. A reader past an
-                // interior expression hop makes the chain dead: the statement that would read
-                // the saved name is the hop's own, and where that hop's other operands fail the
-                // run's answer is the baseline per-instruction quote — a saved declaration the
-                // text never reads states less, not more (the held-use negative pins this).
+                // Preserve the direct-use path. An indirect load needs a closed proof of the
+                // whole terminal tree and every parameter Store it depends on; a path alone
+                // would publish a dead saved declaration when a sibling operand refuses.
                 let chain_alive = self
                     .ssa
                     .value(value)
                     .uses()
                     .iter()
                     .any(|use_| use_.bci() == Some(reader));
-                if !chain_alive {
-                    continue;
-                }
-                let Some(old) = local_read(instruction, *slot) else {
-                    continue;
-                };
-                if self.slot_name_denotes_the_same_value(*slot, old, reader) {
+                if chain_alive {
+                    let Some(old) = local_read(instruction, slot) else {
+                        continue;
+                    };
+                    if self.slot_name_denotes_the_same_value(slot, old, reader) {
+                        continue;
+                    }
+                } else if !self.nested_parameter_snapshot(value, producer, reader)? {
                     continue;
                 }
             }
@@ -39277,6 +39278,7 @@ mod tests {
     mod field_test_copy_tests;
     mod loop3_constructor_store_tests;
     mod loop5_catch_binding_tests;
+    mod nested_parameter_snapshot_tests;
     mod reference_constraints_tests;
     use crate::names::{AliasReason, SlotEvidence};
 

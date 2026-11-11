@@ -91,7 +91,12 @@ pub const ARTIFACT_SCHEMA: u16 = 14;
 ///
 /// 71 → 72: pending declared class headers collect the complete physical use census, and
 /// Required AST retention keeps constructor witnesses needed by declared-header consumers.
-pub const RECOVERY_SEMANTICS: u16 = 72;
+///
+/// 72 → 73: a same-block nested Int/Long parameter load can be saved before an intervening
+/// write when a closed proof covers the terminal arithmetic tree and every required parameter
+/// Store at its own evaluation point. This widens recovery admission; binding schema 14 and
+/// resolution semantics 6 are unchanged.
+pub const RECOVERY_SEMANTICS: u16 = 73;
 
 /// Actual Java and optional facade implementations participating in this recovery.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
