@@ -7489,10 +7489,11 @@ fn append_local_reference_relations<H: RecoveryHeaders>(
         }
     }
     // A checkcast states the pair itself: the operand's proved types against the cast's own
-    // target. The cast's runtime check is the original compiler's castability proof (JLS 5.5),
-    // and the recovered source keeps the cast, so the pair's relation — read from the operand
-    // class's own super chain and interfaces — is what lets the cast render without the
-    // `(Object)` stair that only uncompilable pairs need.
+    // target. Collect both directions: narrowing is proved by the target's selected parent
+    // edge, not by inventing an operand-to-target widening. The existing consumer keeps the
+    // runtime cast and accepts a positive relation in either direction. Missing, ambiguous or
+    // incompatible headers remain non-proofs. Both requests use the same identity and budget
+    // discipline as every other local reference relation.
     let ssa_by_bci: BTreeMap<u32, &_> = ssa
         .blocks()
         .iter()
@@ -7531,6 +7532,7 @@ fn append_local_reference_relations<H: RecoveryHeaders>(
                     continue;
                 }
                 insert(instruction.bci, source, &target_shape.source_type, budget)?;
+                insert(instruction.bci, &target_shape.source_type, source, budget)?;
             }
         }
     }

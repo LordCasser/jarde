@@ -159,6 +159,8 @@ fn compile(dir: &Path, sources: &[&str]) {
 
 fn run(dir: &Path, main_class: &str) -> String {
     let output = Command::new("java")
+        // CWN's frozen Date.toString length assumes the UTC abbreviation, not the host zone.
+        .arg("-Duser.timezone=UTC")
         .arg("-Xverify:all")
         .arg("-cp")
         .arg(dir)

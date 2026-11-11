@@ -81,7 +81,11 @@ pub const ARTIFACT_SCHEMA: u16 = 14;
 /// identical byte for byte — `openspec/changes/restructure-demand-driven-recovery/results/
 /// s4-region-summary-v1/cross-domain-regression-r1/appendix-expansion-gate.md`. The binding's own
 /// schema is unchanged; this is a difference of proof semantics, not of encoding.
-pub const RECOVERY_SEMANTICS: u16 = 69;
+///
+/// 69 → 70: CHECKCAST relation collection also asks for the target-to-operand relation.
+/// A selected narrowing edge can now omit an unnecessary Object bridge. This changes source
+/// recovery semantics, not artifact encoding or resolution semantics.
+pub const RECOVERY_SEMANTICS: u16 = 70;
 
 /// Actual Java and optional facade implementations participating in this recovery.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]

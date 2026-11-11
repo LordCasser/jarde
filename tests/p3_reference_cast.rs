@@ -216,8 +216,11 @@ fn nested_casts_keep_the_intermediate_runtime_check() {
     let nested = text_of(&report, "nested");
     let body_start = nested.find("return ").expect("nested has a return");
     let body = &nested[body_start..];
+    // This snapshot supplies no Number/Runnable headers. Missing relations keep the conservative
+    // Object bridge; it removes neither runtime check. The full-class JVM comparison below
+    // covers null, Number-only, Runnable-only and Both values, with both original cast origins.
     assert!(
-        body.contains("return (java.lang.Number) (java.lang.Runnable) arg0;"),
+        body.contains("return (java.lang.Number) (java.lang.Object) (java.lang.Runnable) arg0;"),
         "the nested source spelling preserves inner Runnable evaluation before outer Number check: {body}"
     );
     assert!(
@@ -270,7 +273,7 @@ fn nested_instanceof_consumer_retains_invocation_and_both_cast_bcis() {
     );
     assert!(
         text.contains(
-            "return (java.lang.Object) (java.lang.Number) (java.lang.Runnable) source() instanceof java.lang.Comparable;"
+            "return (java.lang.Object) (java.lang.Number) (java.lang.Object) (java.lang.Runnable) source() instanceof java.lang.Comparable;"
         ),
         "the producer, both runtime casts and instanceof remain in evaluation order:\n{text}"
     );
@@ -357,6 +360,8 @@ public final class ReferenceCastRunner {
         print("stringArrayNull", new Call() { public Object run() { return ReferenceCastProbe.stringArray(null); } });
         print("nestedBoth", new Call() { public Object run() { return ReferenceCastProbe.nested(new Both()).intValue(); } });
         print("nestedInteger", new Call() { public Object run() { return ReferenceCastProbe.nested(Integer.valueOf(1)); } });
+        print("nestedRunnableOnly", new Call() { public Object run() { return ReferenceCastProbe.nested(new Runnable() { public void run() {} }); } });
+        print("nestedObject", new Call() { public Object run() { return ReferenceCastProbe.nested(new Object()); } });
         print("nestedNull", new Call() { public Object run() { return ReferenceCastProbe.nested(null); } });
     }
 }
@@ -364,6 +369,14 @@ public final class ReferenceCastRunner {
 
 fn javac(dir: &Path, files: &[&str]) {
     let output = Command::new("javac")
+        .env_remove("JAVA_TOOL_OPTIONS")
+        .env_remove("_JAVA_OPTIONS")
+        .env_remove("JDK_JAVA_OPTIONS")
+        .env_remove("CLASSPATH")
+        .arg("-cp")
+        .arg(dir)
+        .arg("-sourcepath")
+        .arg("")
         .arg("--release")
         .arg("8")
         .arg("-g:none")
@@ -382,6 +395,10 @@ fn javac(dir: &Path, files: &[&str]) {
 
 fn run_runner(dir: &Path) -> String {
     let output = Command::new("java")
+        .env_remove("JAVA_TOOL_OPTIONS")
+        .env_remove("_JAVA_OPTIONS")
+        .env_remove("JDK_JAVA_OPTIONS")
+        .env_remove("CLASSPATH")
         .arg("-Xverify:all")
         .arg("-cp")
         .arg(dir)
@@ -436,6 +453,8 @@ fn recovered_reference_casts_match_original_runtime() {
         "stringArrayNull=null",
         "nestedBoth=9",
         "nestedInteger=java.lang.ClassCastException",
+        "nestedRunnableOnly=java.lang.ClassCastException",
+        "nestedObject=java.lang.ClassCastException",
         "nestedNull=null",
     ] {
         assert!(

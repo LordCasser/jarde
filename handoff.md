@@ -1,3 +1,11 @@
+# 2026-11-10 CHECKCAST 双向物理继承证明
+
+CHECKCAST 收集器现在通过原有按身份去重/计费路径同时请求操作数→目标及目标→操作数关系；目标的真实父边可证明缩窄，缺失目标仍保守保留 Object 桥，运行时 cast 不删除。恢复语义 69→70，schema14/解析6 不变。
+
+新增真实 MethodIr 测试和公共 Engine 测试覆盖普通/注解接口改名、宽 aload 导致 BCI1→4、缺失 Header、精确 AnalysisSteps 超限与取消。四组完整未编辑生成类与原始字节码隔离重编译/执行，null、身份和 CCE 均一致。原 nested-cast 两个 spelling pin 经关闭新 reverse 请求的真实反事实运行仍失败；完整类运行门通过后，改为严格钉住缺失 Number/Runnable Header 时的 Object 桥，保留两次 cast、调用次数和所有 BCI 映射，并增加 Runnable-only/Object 反例。没有把真实回归改成通过。
+
+分批实际通过：Java 库 621/621；原 cast 5/5、collection 5/5、snapshot hierarchy 6/6、platform implementer 7/7、generic cast 1/1、array invocation 7/7；新增内部证明与 Engine 各1/1，两个显式 JDK 门各1/1。collection 原件运行首次因主机时区使 Date 字符串长度34而非28失败，现只固定 Java 时区 UTC，原 expected=28 未改。所有批次默认栈、单任务，源码冻结且 target 退出后清理；历史失败收据保留。S2b 声明标记/cohort 问题仍单独修复，架构资源缺口与33/65状态不变。
+
 # 2026-11-10 测试输入恢复：全目标编译恢复，功能与架构验收继续
 
 恢复 821 个实际测试依赖到 `tests/fixtures/recovered-inputs`（1,151,819 字节），逐项与历史 `8ea98e2e11d64f02092ac200d2b596511dcf5e40` 的 Git blob、长度和 SHA-256 比对一致。EX 原始 1,632 字节和原 SHA 不变。Rust 编译期引用、运行期回放输入及两个 EX comparison 默认路径改用永久测试目录；修正 `generic_source_proof` 的模块别名。另应用 rustfmt，不声称格式改动是语义修复。

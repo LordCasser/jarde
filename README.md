@@ -291,3 +291,5 @@ OpenSpec 静态验证：
 ```sh
 openspec validate --all --strict --no-interactive
 ```
+
+当前恢复/解析语义版本为 **70/6**，artifact schema 保持 **14**。CHECKCAST 收集双向关系，目标到操作数的已选 Header 继承边可以证明缩窄；缺失关系不授权转换。
