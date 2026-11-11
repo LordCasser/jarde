@@ -1,3 +1,11 @@
+# 2026-11-11 fuzz 独立锁文件恢复
+
+CI run 42953382914 的 supply-chain 和 fuzz-smoke 均在 fuzz workspace 的 `--locked` 校验失败；根 workspace 的锁文件/依赖审查已通过。fuzz 的独立锁文件遗漏根 crate 的 blake3，以及 Java crate 的 blake3/serde_json 依赖边。由 Cargo 补入这些边与 serde_json 所需的 itoa、memchr、serde_json、zmij 四项记录；全部既有 registry package 的版本、checksum、依赖记录逐项不变，根 Cargo.lock 和所有测试断言不变，不删除 `--locked`。
+
+先原样重现锁文件报错并核对失败未改锁，再确认修复后的离线 `cargo metadata --locked` 成功。实际使用 CI 固定 nightly-2026-07-20 跑 fuzz corpus：21 passed / 0 failed，doc-tests 0；固定 cargo-deny 0.20.2 的原 fuzz workspace 命令通过 advisories/bans/licenses/sources 四门。默认栈（未设置 RUST_MIN_STACK）、单编译/测试线程、源码前后摘要一致，target 峰值357,336,933字节，最终清理完成。
+
+这只关闭锁文件阻塞，不声称 libFuzzer smoke 或整个 CI 通过。相同 run 的 stable job 在第一轮 workspace test 时 runner 磁盘耗尽，属于另一个待修复门；格式、Clippy、MSRV 已通过。主架构33/65与原资源证据缺口不变。
+
 # 2026-11-11 已发布恢复提交与缓存测试归属
 
 五个已完成增量已按原顺序发布到 main，并从远端重新取回核对每个 Git tree 与恢复备份完全一致：4ffe9949→7e333cb1（永久测试输入）、f3a62c20→e992f680（CHECKCAST）、9f790f53→94f51251（声明重放）、d957d07b→15ce230f（构造器 witness）、ad25873f→5caef948（Clippy）。发布连接重新创建了提交元数据，故 SHA 变化；实现字节没有变化。
