@@ -1,3 +1,11 @@
+# 2026-11-11 workspace CI 构建产物有界回收
+
+CI run 42953382914 的 stable runner 在第一轮 workspace test 因磁盘耗尽退出，不能把残留的 in_progress step 或缺失日志当测试通过。Cargo 原命令会先链接所有432目标再开始执行；现以 metadata 分428组，保持每组 workspace/all-features/locked，五库同组，其余按 kind/name 分组，每组执行原两固定 seed 后只回收 Cargo 实际报告的测试可执行文件及同 inode 硬链接。依赖缓存保留，不按文件名前缀猜测删除；测试失败仍使 CI 失败，缺摘要、abort、编译或资源错误立即失败。finally 清理独立 target，默认栈不变。
+
+固定 nightly-2026-07-20 的实际 unit-graph 核对428/428组与原命令完整依赖图等价，union 精确432 roots/552 units；这是 nightly 图证据，不冒称 stable 图。stable1.99.1 实际执行五库、CLI bin、example、owner_candidates 共8目标双seed，每seed1,385 passed，所有16条测试产物的目标、features与暴露的profile字段均吻合。21项Python控制通过，覆盖should-panic、普通失败、abort/缺摘要、嵌套输出、精确产物集、磁盘护栏、源码变化、inode清理和SIGTERM清理；独立审查未发现阻塞。
+
+本地target采样峰值519,494,025字节、最低空闲58,631,708,672字节，源码未变、私有target最终不存在。1GiB/5GiB每秒采样不是瞬时峰值保证。stable job 的 dev/test debuginfo 统一为0，断言/overflow checks不变；后续显式JDK门保持原命令，但其累计磁盘峰值尚未测量。完整432目标矩阵和历史行为失败仍待重跑处理，不宣告全CI或架构完成；语义72/schema14/解析6保持。
+
 # 2026-11-11 fuzz 独立锁文件恢复
 
 CI run 42953382914 的 supply-chain 和 fuzz-smoke 均在 fuzz workspace 的 `--locked` 校验失败；根 workspace 的锁文件/依赖审查已通过。fuzz 的独立锁文件遗漏根 crate 的 blake3，以及 Java crate 的 blake3/serde_json 依赖边。由 Cargo 补入这些边与 serde_json 所需的 itoa、memchr、serde_json、zmij 四项记录；全部既有 registry package 的版本、checksum、依赖记录逐项不变，根 Cargo.lock 和所有测试断言不变，不删除 `--locked`。

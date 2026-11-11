@@ -17,6 +17,11 @@ jobs:
   stable:
     name: stable / test and specification
     runs-on: ubuntu-24.04
+    env:
+      # Debuginfo is the only profile change. Keep test assertions and overflow
+      # checks; apply the same disk saving to Clippy and the later ignored gates.
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - uses: actions/checkout@v7.0.1
 
@@ -75,15 +80,13 @@ jobs:
           -A clippy::needless_lifetimes
           -D warnings
 
-      - name: Run workspace tests with two fixed independent seeds (pass 1)
-        env:
-          PROPTEST_RNG_SEED: "5350648285461741569"
-        run: cargo test --workspace --all-targets --all-features --locked
+      - name: Test bounded workspace runner
+        run: python3 -m unittest discover -s .github/scripts -p 'test_bounded_workspace_tests.py' -v
 
-      - name: Run workspace tests with two fixed independent seeds (pass 2)
-        env:
-          PROPTEST_RNG_SEED: "5350648285461741570"
-        run: cargo test --workspace --all-targets --all-features --locked
+      - name: Run workspace tests with two fixed independent seeds
+        # Cargo otherwise links every selected test before running the first.
+        # Keep workspace feature unification, but reclaim each completed batch.
+        run: python3 .github/scripts/bounded_workspace_tests.py
 
       - name: Run ignored JDK 25 instruction-boundary oracle
         run: cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection
