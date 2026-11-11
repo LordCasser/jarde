@@ -12,31 +12,31 @@ use std::time::{SystemTime, UNIX_EPOCH};
 const FIXTURE: &[u8] =
     include_bytes!("fixtures/p3-postfix-lvalue-values/v8/PostfixLvalueValues.class");
 const FIELD_EXTRA_CONSUMER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/field-extra-consumer/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/field-extra-consumer/BoundaryProbe.class"
 );
 const ARRAY_EXTRA_CONSUMER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/array-extra-consumer/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/array-extra-consumer/BoundaryProbe.class"
 );
 const FIELD_DIFFERENT_MEMBER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/field-different-member/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/field-different-member/BoundaryProbe.class"
 );
 const FIELD_DIFFERENT_OWNER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/field-different-owner/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/field-different-owner/BoundaryProbe.class"
 );
 const ARRAY_DIFFERENT_INDEX: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/array-different-index/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/array-different-index/BoundaryProbe.class"
 );
 const ARRAY_DIFFERENT_ARRAY: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/array-different-array/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/array-different-array/BoundaryProbe.class"
 );
 const FIELD_GAP_EFFECT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/field-gap-effect/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/field-gap-effect/BoundaryProbe.class"
 );
 const ARRAY_GAP_EFFECT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/array-gap-effect/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/array-gap-effect/BoundaryProbe.class"
 );
 const CONTROL_ASSIGNMENT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/control-assignment/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/postfix-lvalue/boundaries/cases/control-assignment/BoundaryProbe.class"
 );
 const RUNNER: &str = r#"
 public final class PostfixLvalueValuesRunner {

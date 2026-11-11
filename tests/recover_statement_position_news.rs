@@ -47,25 +47,25 @@ const STORE: u16 = 0;
 /// The patrol's frozen composite: `main` builds `B5`, `B5(7)` and `Sub` in three statement
 /// positions whose constructor side effects are `println`s.
 const PATROL_B5: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/B5.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/B5.class"
 );
 const PATROL_B5_SUB: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/B5$Sub.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/B5$Sub.class"
 );
 /// The patrol's four-shape discriminator.
 const PATROL_B6: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/B6.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/B6.class"
 );
 /// The composite's own answer, which the recovered text must print.
 const PATROL_ORIG_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/orig.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/statement-new-patrol/fixture/orig.out"
 );
 
 /// The frozen counterexample of `refuse-unconsumed-construction-invokes`: `new Target; dup;
 /// Side.effect()V; iconst_1; Target.<init>(I)V; areturn`. Its refusal is the interleaved branch's,
 /// and it stays verbatim.
 const VOID_BETWEEN: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-25/ordinary-new-void-effect/VoidBetween.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/ordinary-new-void-effect/VoidBetween.class"
 );
 
 /// This change's statement-position twin of that counterexample (assembled; see the fixture README).

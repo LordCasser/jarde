@@ -996,7 +996,7 @@ fn the_json_mode_is_the_librarys_own_document() {
 #[test]
 fn member_family_json_keeps_derived_ranges_and_two_physical_definitions() {
     let fixture = repository_fixture(
-        "../../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar",
+        "../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar",
     );
     let mut texts = Vec::new();
     for evidence in [None, Some("all")] {
@@ -1619,7 +1619,7 @@ fn every_category_of_the_vocabulary_is_a_selection_this_entry_answers() {
 
 // The frozen H1 proof-stop evidence is also exercised through the process boundary. The JAR is
 // included from the repository evidence tree by the test target; it is never copied or rewritten.
-const H1_PROOF: &str = "../../openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar";
+const H1_PROOF: &str = "../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar";
 
 fn h1_cap_output(cap: &str) -> Output {
     let fixture = repository_fixture(H1_PROOF);
@@ -1708,7 +1708,7 @@ fn h1_cap_sixteen_cli_exits_incomplete_and_keeps_main_body() {
 }
 
 // The original DT-29 bytes exercise both direct-parent proof consumers through JSON/exit status.
-const DT29_PARENT_PROOF: &str = "../../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/input.jar";
+const DT29_PARENT_PROOF: &str = "../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/input.jar";
 
 fn dt29_parent_cap_output(cap: u64) -> Output {
     let fixture = repository_fixture(DT29_PARENT_PROOF);

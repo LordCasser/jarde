@@ -22,25 +22,25 @@ use jarde_reader::view::{
 };
 
 const W1: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/fixture/W1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/fixture/W1.class"
 );
 const W3: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/fixture/W3.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/fixture/W3.class"
 );
 const W4: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/fixture/W4.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/fixture/W4.class"
 );
 const V1: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V1.class"
 );
 const V2: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V2.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V2.class"
 );
 const V3: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V3.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V3.class"
 );
 const X2: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
 );
 
 fn limits() -> Limits {

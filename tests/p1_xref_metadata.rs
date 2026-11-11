@@ -2484,25 +2484,25 @@ fn generic_signatures_follow_their_own_grammar() {
 #[test]
 fn frozen_method_signature_boundaries_remain_queryable() {
     const BASE: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericMethodProbe.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericMethodProbe.class"
     );
     const THROWS: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericThrowsProbe.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericThrowsProbe.class"
     );
     const OBJECT: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/object-bound.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/object-bound.class"
     );
     const UNBOUND: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/unbound-variable.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/unbound-variable.class"
     );
     const CLASS_VARIABLE: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/class-variable.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/class-variable.class"
     );
     const COMPLEX: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/complex-method.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/complex-method.class"
     );
     const INCOMPATIBLE_BODY: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/incompatible-body.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/incompatible-body.class"
     );
 
     for (label, bytes, number_references) in [

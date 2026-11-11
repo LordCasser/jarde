@@ -23,10 +23,10 @@ use jarde_reader::view::{
 const FIXTURE: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoin.class");
 const CATCH_LOOP_TEST3: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/TestTryCatchFinally3$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/TestTryCatchFinally3$TestCls.class"
 );
 const MULTI_RETURN_LOOP_TEST5: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/TestTryCatchFinally5$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/TestTryCatchFinally5$TestCls.class"
 );
 const MULTI_RETURN_LOOP_TEST5_NEIGHBORS: [(&str, &[u8]); 6] = [
     (
@@ -139,99 +139,99 @@ fn multi_return_loop_test5_valid_neighbors_refuse_and_stops_discard_partial_outp
     assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
 }
 const CATCH_VALUE_TEST7: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/baseline/debug/physical-class/TestTryCatchFinally7$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test7-audit/baseline/debug/physical-class/TestTryCatchFinally7$TestCls.class"
 );
 const CATCH_VALUE_TEST7_NODEBUG: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/baseline/nodebug/physical-class/TestTryCatchFinally7$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test7-audit/baseline/nodebug/physical-class/TestTryCatchFinally7$TestCls.class"
 );
 const CATCH_VALUE_TEST7_NEIGHBORS: [(&str, &[u8]); 7] = [
     (
         "wrong-field",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/wrong-field.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/wrong-field.class"
         ),
     ),
     (
         "wrong-receiver",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/wrong-receiver.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/wrong-receiver.class"
         ),
     ),
     (
         "wrong-increment",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/wrong-increment.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/wrong-increment.class"
         ),
     ),
     (
         "rewritten-return",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/rewritten-return.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/rewritten-return.class"
         ),
     ),
     (
         "rewritten-throwable",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/rewritten-throwable.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/rewritten-throwable.class"
         ),
     ),
     (
         "self-row-covers-cleanup",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/self-row-covers-cleanup.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/self-row-covers-cleanup.class"
         ),
     ),
     (
         "extra-protected-entry",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/extra-protected-entry.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/extra-protected-entry.class"
         ),
     ),
 ];
 const NULLABLE_RESOURCE_TEST9: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/TestTryCatchFinally9$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/TestTryCatchFinally9$TestCls.class"
 );
 const NULLABLE_RESOURCE_TEST9_NEIGHBORS: [(&str, &[u8]); 7] = [
     (
         "different-null-test",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/different-null-test.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/different-null-test.class"
         ),
     ),
     (
         "different-receiver",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/different-receiver.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/different-receiver.class"
         ),
     ),
     (
         "different-target",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/different-target.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/different-target.class"
         ),
     ),
     (
         "saved-return-rewritten",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/saved-return-rewritten.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/saved-return-rewritten.class"
         ),
     ),
     (
         "throwable-rewritten",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/throwable-rewritten.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/throwable-rewritten.class"
         ),
     ),
     (
         "self-row-covers-close",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/self-row-covers-close.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/self-row-covers-close.class"
         ),
     ),
     (
         "extra-normal-exit",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/extra-normal-exit.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/extra-normal-exit.class"
         ),
     ),
 ];
@@ -239,180 +239,180 @@ const CATCH_LOOP_TEST3_NEIGHBORS: [(&str, &[u8]); 7] = [
     (
         "wrong-receiver",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/wrong-receiver.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/wrong-receiver.class"
         ),
     ),
     (
         "wrong-target",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/wrong-target.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/wrong-target.class"
         ),
     ),
     (
         "self-row-covers-cleanup",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/self-row-covers-cleanup.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/self-row-covers-cleanup.class"
         ),
     ),
     (
         "throwable-rewritten",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/throwable-rewritten.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/throwable-rewritten.class"
         ),
     ),
     (
         "extra-protected-entry",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/extra-protected-entry.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/extra-protected-entry.class"
         ),
     ),
     (
         "extra-catch-coverage",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/extra-catch-coverage.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/extra-catch-coverage.class"
         ),
     ),
     (
         "unknown-body-invoke",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/unknown-body-invoke.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/unknown-body-invoke.class"
         ),
     ),
 ];
 const EMPTY_CATCH_TEST16: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/Test16.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/Test16.class"
 );
 const EMPTY_CATCH_TEST16_NEIGHBORS: [&[u8]; 5] = [
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/different-target.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/different-target.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/cleanup-covered.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/cleanup-covered.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/rows-swapped.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/rows-swapped.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/throwable-rewritten.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/throwable-rewritten.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/external-cleanup-entry.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/external-cleanup-entry.class"
     ),
 ];
 const TWO_CATCH_TEST17: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/Test17.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/Test17.class"
 );
 const HANDLER_LOOP_TEST11: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/TestTryCatchFinally11$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/TestTryCatchFinally11$TestCls.class"
 );
 const HANDLER_LOOP_TEST11_NEIGHBORS: [(&str, &[u8], &str); 7] = [
     (
         "handler-second-entry",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/handler-second-entry.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/handler-second-entry.class"
         ),
         "FinallyLoop",
     ),
     (
         "different-list",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/different-list.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/different-list.class"
         ),
         "FinallyLoopList",
     ),
     (
         "different-target",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/different-target.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/different-target.class"
         ),
         "FinallyLoop",
     ),
     (
         "different-loop-test",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/different-loop-test.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/different-loop-test.class"
         ),
         "FinallyLoop",
     ),
     (
         "cleanup-self-protected",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/cleanup-self-protected.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/cleanup-self-protected.class"
         ),
         "FinallyLoop",
     ),
     (
         "throwable-rewritten",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/throwable-rewritten.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/throwable-rewritten.class"
         ),
         "FinallyLoop",
     ),
     (
         "extra-normal-exit",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/extra-normal-exit.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/extra-normal-exit.class"
         ),
         "FinallyLoop",
     ),
 ];
 const TWO_CATCH_TEST17_NEIGHBORS: [&[u8]; 7] = [
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/different-target.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/different-target.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/cleanup-covered.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/cleanup-covered.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/cleanup-self-protected.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/cleanup-self-protected.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/rows-swapped.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/rows-swapped.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/saved-return-rewritten.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/saved-return-rewritten.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/throwable-rewritten.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/throwable-rewritten.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/external-cleanup-entry.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/external-cleanup-entry.class"
     ),
 ];
 const NESTED_TEST_CLS: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
 );
 const SEGMENTED_TEST13_FIXED: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/TestTryCatchFinally13$TestCls.fixed.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/TestTryCatchFinally13$TestCls.fixed.class"
 );
 const SEGMENTED_TEST13_ACCEPTANCE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/acceptance/TestTryCatchFinally13$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/acceptance/TestTryCatchFinally13$TestCls.class"
 );
 const CONCAT_SAVED: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-concat-saved-finally/v8/FinallyOnce.class");
 const CONDITIONAL_TEST14: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/TestTryCatchFinally14$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/TestTryCatchFinally14$TestCls.class"
 );
 const CONDITIONAL_TEST14_MINIMAL: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-conditional-finally/Test14-minimal.class");
 const CONDITIONAL_TEST14_NEGATIVES: [&[u8]; 9] = [
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-field.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-field.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-call.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-call.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-predicate.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-predicate.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-self-protected.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-self-protected.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-external-entry.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-external-entry.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-throwable.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-throwable.class"
     ),
     include_bytes!("../../../tests/fixtures/p3-conditional-finally/Test14-slot0.class"),
     include_bytes!("../../../tests/fixtures/p3-conditional-finally/Test14-second-field.class"),
@@ -427,88 +427,88 @@ const CONCAT_SAVED_NEGATIVES: [&[u8]; 3] = [
 ];
 const SEGMENTED_TEST13_NEGATIVES: [&[u8]; 5] = [
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/cleanup-target.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/cleanup-target.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/branch-bypass.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/branch-bypass.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/range-expanded.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/range-expanded.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/rethrow-changed.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/rethrow-changed.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/acceptance/external-entry.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/acceptance/external-entry.class"
     ),
 ];
 const NESTED_OTHER_CONSTANT: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3MatchingOtherConstant.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3MatchingOtherConstant.class"
 );
 const NESTED_TEST3_NEGATIVES: [&[u8]; 5] = [
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3DifferentConstant.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3DifferentConstant.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3DifferentField.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3DifferentField.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3DifferentTarget.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3DifferentTarget.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3StoredResult.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3StoredResult.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3WidenedRow.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3WidenedRow.class"
     ),
 ];
 const NESTED_TEST12_NEGATIVES: [(&str, &[u8]); 8] = [
     (
         "test1",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1DifferentConstant.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1DifferentConstant.class"
         ),
     ),
     (
         "test1",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1WidenedRow.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1WidenedRow.class"
         ),
     ),
     (
         "test1",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1BypassCleanup.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1BypassCleanup.class"
         ),
     ),
     (
         "test1",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1ChangedRethrow.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1ChangedRethrow.class"
         ),
     ),
     (
         "test2",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2DifferentConstant.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2DifferentConstant.class"
         ),
     ),
     (
         "test2",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2WidenedRow.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2WidenedRow.class"
         ),
     ),
     (
         "test2",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2BypassCleanup.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2BypassCleanup.class"
         ),
     ),
     (
         "test2",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2ChangedRethrow.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2ChangedRethrow.class"
         ),
     ),
 ];

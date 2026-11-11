@@ -167,10 +167,10 @@ def main() -> int:
     parser.add_argument('--jdk-manifest-sha256', default=DEFAULT_JDK_MANIFEST_SHA256)
     parser.add_argument('--branch-source', type=Path, default=ROOT / 'tests/fixtures/recover-branch-throw-return-finally/BranchThrowFinally.java')
     parser.add_argument('--driver-source', type=Path, default=ROOT / 'tests/fixtures/recover-branch-throw-return-finally/BranchThrowFinallyDriver.java')
-    parser.add_argument('--ex-source', type=Path, default=ROOT / 'openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.java')
+    parser.add_argument('--ex-source', type=Path, default=ROOT / 'tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.java')
     parser.add_argument('--javac8-class', type=Path, default=ROOT / 'tests/fixtures/recover-branch-throw-return-finally/v8-javac8/BranchThrowFinally.class')
     parser.add_argument('--javac23-class', type=Path, default=ROOT / 'tests/fixtures/recover-branch-throw-return-finally/v8/BranchThrowFinally.class')
-    parser.add_argument('--ex-class', type=Path, default=ROOT / 'openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class')
+    parser.add_argument('--ex-class', type=Path, default=ROOT / 'tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class')
     parser.add_argument('--expect', choices=('recovered', 'observed'), required=True,
                         help='recovered requires branch generated sources to compile and match; observed preserves baseline failures without requiring success')
     args = parser.parse_args()

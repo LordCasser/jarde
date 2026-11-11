@@ -380,16 +380,16 @@ fn a_letter_name_is_spelled_and_a_punctuation_name_keeps_its_alias() {
 #[test]
 fn the_ascii_presentations_match_the_frozen_proved_loop_projections() {
     let f1: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F1.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F1.class"
     );
     let sb: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-05/charsequence-arg-widening-patrol/fixture/SB.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/charsequence-arg-widening-patrol/fixture/SB.class"
     );
     let rg: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-05/recursive-generic-patrol/fixture/RG.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/recursive-generic-patrol/fixture/RG.class"
     );
     let package_info: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/package-info-patrol/fixture/pi.jar"
     );
     for (label, bytes, class, frozen) in [
         (

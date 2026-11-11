@@ -27,7 +27,7 @@ const DO2_NO_DEBUG: &[u8] = include_bytes!(
     "../../../../tests/fixtures/recover-proved-post-test-loop-return-leaves/original/no-debug/classes/jadx/tests/integration/loops/TestDoWhileBreak2$TestCls.class"
 );
 const RESOURCE_GUARD: &[u8] = include_bytes!(
-    "../../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
+    "../../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
 );
 const RETRY_DEBUG: &[u8] = include_bytes!(
     "../../../../tests/fixtures/recover-branching-named-catch-retry-loops/original/debug/TestBreakInLoop2$TestCls.class"
@@ -67,9 +67,9 @@ fn find_region<'a>(region: &'a Region, keep: &impl Fn(&Region) -> bool) -> Optio
         return Some(region);
     }
     match region {
-        Region::Sequence { regions } | Region::Loop { body: regions, .. } => regions
-            .iter()
-            .find_map(|child| find_region(child, keep)),
+        Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
+            regions.iter().find_map(|child| find_region(child, keep))
+        }
         Region::If {
             then_arm, else_arm, ..
         }
@@ -111,12 +111,83 @@ fn find_region<'a>(region: &'a Region, keep: &impl Fn(&Region) -> bool) -> Optio
 #[test]
 fn summary_reconciles_the_named_catch_boundaries_and_retry_transfers() {
     for bytes in [RETRY_DEBUG, RETRY_NO_DEBUG] {
-        with_frozen_method_ir(bytes, b"test", b"(Ljava/util/List;)V", |canonical, view, ssa, operations, code, recovered| {
+        with_frozen_method_ir(
+            bytes,
+            b"test",
+            b"(Ljava/util/List;)V",
+            |canonical, view, ssa, operations, code, recovered| {
+                let _ = (view, code);
+                assert!(recovered.fallbacks().is_empty());
+                let mut budget = ample();
+                let mismatches =
+                    reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
+                        .expect("the reconciliation completes within an ample budget");
+                assert!(
+                    mismatches.is_empty(),
+                    "the derived view matches the graph and the walk: {mismatches:?}"
+                );
+
+                let tree = Region::Sequence {
+                    regions: recovered.regions.clone(),
+                };
+                let try_region = find_region(&tree, &|region| matches!(region, Region::Try { .. }))
+                    .expect("the retry loop's body is the recovered try/catch");
+                let summary = RegionSummary::derive(try_region, ssa, operations, &mut budget)
+                    .expect("the try candidate derives within an ample budget");
+                // The clause, in exception-table order: one named catch whose handler entry and
+                // parameter the table states.
+                assert_eq!(summary.exceptions.len(), 1);
+                let boundary = &summary.exceptions[0];
+                assert_eq!(boundary.handler.bci(), 9);
+                assert_eq!(boundary.parameter, 2);
+                assert_eq!(boundary.types, crate::guard::CatchTypes::Named(vec![13]));
+                // The protected range is the candidate's own ownership: the row's exception edges
+                // leave blocks the try owns.
+                let row = canonical
+                    .handler_rows()
+                    .iter()
+                    .find(|row| row.handler() == Some(&boundary.handler))
+                    .expect("the canonical row binds the clause handler");
+                assert!(
+                    row.protected()
+                        .iter()
+                        .all(|block| summary.owned.contains(block)),
+                    "the row protects only owned blocks"
+                );
+                // The subtree's transfers: the try's normal exit is one break, the catch's else arm
+                // continues the retry loop.
+                let breaks: BTreeSet<u32> = summary
+                    .transfers
+                    .iter()
+                    .filter(|transfer| matches!(transfer.kind, RegionTransferKind::Break { .. }))
+                    .map(|transfer| transfer.source_bci)
+                    .collect();
+                assert_eq!(breaks, BTreeSet::from([6]));
+                let continues: BTreeSet<u32> = summary
+                    .transfers
+                    .iter()
+                    .filter(|transfer| matches!(transfer.kind, RegionTransferKind::Continue { .. }))
+                    .map(|transfer| transfer.source_bci)
+                    .collect();
+                assert_eq!(continues, BTreeSet::from([31]));
+            },
+        );
+    }
+}
+
+#[test]
+fn summary_reconciles_the_switch_arms_boundary() {
+    with_frozen_method_ir(
+        SN,
+        b"retInSwitchNoTail",
+        b"([I)I",
+        |canonical, view, ssa, operations, code, recovered| {
             let _ = (view, code);
             assert!(recovered.fallbacks().is_empty());
             let mut budget = ample();
-            let mismatches = reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
-                .expect("the reconciliation completes within an ample budget");
+            let mismatches =
+                reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
+                    .expect("the reconciliation completes within an ample budget");
             assert!(
                 mismatches.is_empty(),
                 "the derived view matches the graph and the walk: {mismatches:?}"
@@ -125,248 +196,217 @@ fn summary_reconciles_the_named_catch_boundaries_and_retry_transfers() {
             let tree = Region::Sequence {
                 regions: recovered.regions.clone(),
             };
-            let try_region = find_region(&tree, &|region| matches!(region, Region::Try { .. }))
-                .expect("the retry loop's body is the recovered try/catch");
-            let summary = RegionSummary::derive(try_region, ssa, operations, &mut budget)
-                .expect("the try candidate derives within an ample budget");
-            // The clause, in exception-table order: one named catch whose handler entry and
-            // parameter the table states.
-            assert_eq!(summary.exceptions.len(), 1);
-            let boundary = &summary.exceptions[0];
-            assert_eq!(boundary.handler.bci(), 9);
-            assert_eq!(boundary.parameter, 2);
+            let switch_region =
+                find_region(&tree, &|region| matches!(region, Region::Switch { .. }))
+                    .expect("the loop body recovers the dispatch as a Switch");
+            let Region::Switch { branch, groups, .. } = switch_region else {
+                unreachable!("found by the match above")
+            };
+            let summary = RegionSummary::derive(switch_region, ssa, operations, &mut budget)
+                .expect("the switch candidate derives within an ample budget");
+            // The dispatch is the statement's entry; both arms leave it without a shared join.
             assert_eq!(
-                boundary.types,
-                crate::guard::CatchTypes::Named(vec![13])
+                summary.entry.as_ref().map(CanonicalBlockId::bci),
+                Some(branch.bci())
             );
-            // The protected range is the candidate's own ownership: the row's exception edges
-            // leave blocks the try owns.
-            let row = canonical
-                .handler_rows()
-                .iter()
-                .find(|row| row.handler() == Some(&boundary.handler))
-                .expect("the canonical row binds the clause handler");
-            assert!(
-                row.protected()
-                    .iter()
-                    .all(|block| summary.owned.contains(block)),
-                "the row protects only owned blocks"
-            );
-            // The subtree's transfers: the try's normal exit is one break, the catch's else arm
-            // continues the retry loop.
-            let breaks: BTreeSet<u32> = summary
-                .transfers
-                .iter()
-                .filter(|transfer| matches!(transfer.kind, RegionTransferKind::Break { .. }))
-                .map(|transfer| transfer.source_bci)
-                .collect();
-            assert_eq!(breaks, BTreeSet::from([6]));
+            assert_eq!(branch.bci(), 16);
+            assert_eq!(summary.exits, Vec::new());
+            assert_eq!(groups.len(), 2);
+            // The arm's nonlocal completion is the loop's continue, collected with its destination.
             let continues: BTreeSet<u32> = summary
                 .transfers
                 .iter()
                 .filter(|transfer| matches!(transfer.kind, RegionTransferKind::Continue { .. }))
                 .map(|transfer| transfer.source_bci)
                 .collect();
-            assert_eq!(continues, BTreeSet::from([31]));
-        });
-    }
-}
-
-#[test]
-fn summary_reconciles_the_switch_arms_boundary() {
-    with_frozen_method_ir(SN, b"retInSwitchNoTail", b"([I)I", |canonical, view, ssa, operations, code, recovered| {
-        let _ = (view, code);
-        assert!(recovered.fallbacks().is_empty());
-        let mut budget = ample();
-        let mismatches = reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
-            .expect("the reconciliation completes within an ample budget");
-        assert!(
-            mismatches.is_empty(),
-            "the derived view matches the graph and the walk: {mismatches:?}"
-        );
-
-        let tree = Region::Sequence {
-            regions: recovered.regions.clone(),
-        };
-        let switch_region = find_region(&tree, &|region| matches!(region, Region::Switch { .. }))
-            .expect("the loop body recovers the dispatch as a Switch");
-        let Region::Switch {
-            branch, groups, ..
-        } = switch_region
-        else {
-            unreachable!("found by the match above")
-        };
-        let summary = RegionSummary::derive(switch_region, ssa, operations, &mut budget)
-            .expect("the switch candidate derives within an ample budget");
-        // The dispatch is the statement's entry; both arms leave it without a shared join.
-        assert_eq!(summary.entry.as_ref().map(CanonicalBlockId::bci), Some(branch.bci()));
-        assert_eq!(branch.bci(), 16);
-        assert_eq!(summary.exits, Vec::new());
-        assert_eq!(groups.len(), 2);
-        // The arm's nonlocal completion is the loop's continue, collected with its destination.
-        let continues: BTreeSet<u32> = summary
-            .transfers
-            .iter()
-            .filter(|transfer| matches!(transfer.kind, RegionTransferKind::Continue { .. }))
-            .map(|transfer| transfer.source_bci)
-            .collect();
-        assert_eq!(continues, BTreeSet::from([57]));
-        // The loop's own boundary is the one stated exit of the method's structure.
-        let loop_region = find_region(&tree, &|region| matches!(region, Region::Loop { .. }))
-            .expect("the dispatch lies in one recovered loop");
-        let loop_summary = RegionSummary::derive(loop_region, ssa, operations, &mut budget)
-            .expect("the loop candidate derives within an ample budget");
-        assert_eq!(
-            loop_summary
-                .exits
-                .iter()
-                .map(CanonicalBlockId::bci)
-                .collect::<Vec<_>>(),
-            vec![60]
-        );
-    });
+            assert_eq!(continues, BTreeSet::from([57]));
+            // The loop's own boundary is the one stated exit of the method's structure.
+            let loop_region = find_region(&tree, &|region| matches!(region, Region::Loop { .. }))
+                .expect("the dispatch lies in one recovered loop");
+            let loop_summary = RegionSummary::derive(loop_region, ssa, operations, &mut budget)
+                .expect("the loop candidate derives within an ample budget");
+            assert_eq!(
+                loop_summary
+                    .exits
+                    .iter()
+                    .map(CanonicalBlockId::bci)
+                    .collect::<Vec<_>>(),
+                vec![60]
+            );
+        },
+    );
 }
 
 #[test]
 fn summary_reconciles_the_loop_break_body_recovery() {
     for bytes in [LOOP4_DEBUG, LOOP4_NO_DEBUG] {
-        with_frozen_method_ir(bytes, b"test", b"(C)D", |canonical, view, ssa, operations, code, recovered| {
-            let _ = (view, code);
-            assert!(recovered.fallbacks().is_empty());
-            let mut budget = ample();
-            let mismatches = reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
-                .expect("the reconciliation completes within an ample budget");
-            assert!(
-                mismatches.is_empty(),
-                "the derived view matches the graph and the walk: {mismatches:?}"
-            );
+        with_frozen_method_ir(
+            bytes,
+            b"test",
+            b"(C)D",
+            |canonical, view, ssa, operations, code, recovered| {
+                let _ = (view, code);
+                assert!(recovered.fallbacks().is_empty());
+                let mut budget = ample();
+                let mismatches =
+                    reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
+                        .expect("the reconciliation completes within an ample budget");
+                assert!(
+                    mismatches.is_empty(),
+                    "the derived view matches the graph and the walk: {mismatches:?}"
+                );
 
-            let tree = Region::Sequence {
-                regions: recovered.regions.clone(),
-            };
-            let loop_region = find_region(&tree, &|region| {
-                matches!(region, Region::Loop { header, .. } if header.bci() == 5)
-            })
-            .expect("header 5 is recovered as the real loop");
-            let summary = RegionSummary::derive(loop_region, ssa, operations, &mut budget)
-                .expect("the loop candidate derives within an ample budget");
-            assert_eq!(
-                summary.entry.as_ref().map(CanonicalBlockId::bci),
-                Some(5),
-                "the loop is entered at its header"
-            );
-            assert_eq!(
-                summary
-                    .exits
+                let tree = Region::Sequence {
+                    regions: recovered.regions.clone(),
+                };
+                let loop_region = find_region(
+                    &tree,
+                    &|region| matches!(region, Region::Loop { header, .. } if header.bci() == 5),
+                )
+                .expect("header 5 is recovered as the real loop");
+                let summary = RegionSummary::derive(loop_region, ssa, operations, &mut budget)
+                    .expect("the loop candidate derives within an ample budget");
+                assert_eq!(
+                    summary.entry.as_ref().map(CanonicalBlockId::bci),
+                    Some(5),
+                    "the loop is entered at its header"
+                );
+                assert_eq!(
+                    summary
+                        .exits
+                        .iter()
+                        .map(CanonicalBlockId::bci)
+                        .collect::<Vec<_>>(),
+                    vec![42],
+                    "the stated normal exit is the loop's proved exit"
+                );
+                let breaks: BTreeSet<u32> = summary
+                    .transfers
                     .iter()
-                    .map(CanonicalBlockId::bci)
-                    .collect::<Vec<_>>(),
-                vec![42],
-                "the stated normal exit is the loop's proved exit"
-            );
-            let breaks: BTreeSet<u32> = summary
-                .transfers
-                .iter()
-                .filter(|transfer| matches!(transfer.kind, RegionTransferKind::Break { .. }))
-                .map(|transfer| transfer.source_bci)
-                .collect();
-            assert_eq!(breaks, BTreeSet::from([26, 33]));
-            let owned: BTreeSet<u32> = summary.owned.iter().map(CanonicalBlockId::bci).collect();
-            for bci in [5, 11, 17, 23, 29, 36] {
-                assert!(owned.contains(&bci), "the loop owns physical block {bci}");
-            }
-        });
+                    .filter(|transfer| matches!(transfer.kind, RegionTransferKind::Break { .. }))
+                    .map(|transfer| transfer.source_bci)
+                    .collect();
+                assert_eq!(breaks, BTreeSet::from([26, 33]));
+                let owned: BTreeSet<u32> =
+                    summary.owned.iter().map(CanonicalBlockId::bci).collect();
+                for bci in [5, 11, 17, 23, 29, 36] {
+                    assert!(owned.contains(&bci), "the loop owns physical block {bci}");
+                }
+            },
+        );
     }
 }
 
 #[test]
 fn summary_reconciles_the_do_while_body_ownership() {
     for bytes in [DO2_DEBUG, DO2_NO_DEBUG] {
-        with_frozen_method_ir(bytes, b"test", b"()Ljava/lang/Object;", |canonical, view, ssa, operations, code, recovered| {
-            let _ = (view, code);
-            assert!(recovered.fallbacks().is_empty());
-            let mut budget = ample();
-            let mismatches = reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
-                .expect("the reconciliation completes within an ample budget");
-            assert!(
-                mismatches.is_empty(),
-                "the derived view matches the graph and the walk: {mismatches:?}"
-            );
+        with_frozen_method_ir(
+            bytes,
+            b"test",
+            b"()Ljava/lang/Object;",
+            |canonical, view, ssa, operations, code, recovered| {
+                let _ = (view, code);
+                assert!(recovered.fallbacks().is_empty());
+                let mut budget = ample();
+                let mismatches =
+                    reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
+                        .expect("the reconciliation completes within an ample budget");
+                assert!(
+                    mismatches.is_empty(),
+                    "the derived view matches the graph and the walk: {mismatches:?}"
+                );
 
-            let tree = Region::Sequence {
-                regions: recovered.regions.clone(),
-            };
-            let loop_region = find_region(&tree, &|region| {
-                matches!(region, Region::Loop { form: LoopForm::DoWhile, .. })
-            })
-            .expect("the do-while is recovered as a Loop");
-            let summary = RegionSummary::derive(loop_region, ssa, operations, &mut budget)
-                .expect("the do-while candidate derives within an ample budget");
-            // A do-while's body owns its header: `Region::blocks` folds the alias, so the set
-            // names the header exactly once and the entry is still where control enters.
-            let owned: Vec<u32> = summary.owned.iter().map(CanonicalBlockId::bci).collect();
-            let unique: BTreeSet<u32> = owned.iter().copied().collect();
-            assert_eq!(owned.len(), unique.len(), "no duplicated physical owner");
-            assert!(unique.contains(&0), "the do-while header at bci 0 is owned");
-            assert_eq!(summary.entry.as_ref().map(CanonicalBlockId::bci), Some(0));
-            // The terminal return the loop proved stays a terminal of the candidate.
-            let returns: BTreeSet<u32> = summary
-                .terminals
-                .iter()
-                .filter(|terminal| terminal.kind == RegionTerminalKind::Return)
-                .map(|terminal| terminal.block.bci())
-                .collect();
-            assert!(returns.contains(&17), "the in-body return leaf 17 is a terminal: {returns:?}");
-        });
+                let tree = Region::Sequence {
+                    regions: recovered.regions.clone(),
+                };
+                let loop_region = find_region(&tree, &|region| {
+                    matches!(
+                        region,
+                        Region::Loop {
+                            form: LoopForm::DoWhile,
+                            ..
+                        }
+                    )
+                })
+                .expect("the do-while is recovered as a Loop");
+                let summary = RegionSummary::derive(loop_region, ssa, operations, &mut budget)
+                    .expect("the do-while candidate derives within an ample budget");
+                // A do-while's body owns its header: `Region::blocks` folds the alias, so the set
+                // names the header exactly once and the entry is still where control enters.
+                let owned: Vec<u32> = summary.owned.iter().map(CanonicalBlockId::bci).collect();
+                let unique: BTreeSet<u32> = owned.iter().copied().collect();
+                assert_eq!(owned.len(), unique.len(), "no duplicated physical owner");
+                assert!(unique.contains(&0), "the do-while header at bci 0 is owned");
+                assert_eq!(summary.entry.as_ref().map(CanonicalBlockId::bci), Some(0));
+                // The terminal return the loop proved stays a terminal of the candidate.
+                let returns: BTreeSet<u32> = summary
+                    .terminals
+                    .iter()
+                    .filter(|terminal| terminal.kind == RegionTerminalKind::Return)
+                    .map(|terminal| terminal.block.bci())
+                    .collect();
+                assert!(
+                    returns.contains(&17),
+                    "the in-body return leaf 17 is a terminal: {returns:?}"
+                );
+            },
+        );
     }
 }
 
 #[test]
 fn summary_reconciles_the_guard_statement_boundary() {
-    with_frozen_method_ir(RESOURCE_GUARD, b"two", b"()Ljava/lang/String;", |canonical, view, ssa, operations, code, recovered| {
-        let _ = (view, code);
-        let guard = recovered
-            .regions
-            .iter()
-            .find(|region| matches!(region, Region::Guard { .. }))
-            .unwrap_or_else(|| panic!("the real TWR method is recognized as a Guard"));
-        let Region::Guard { prefix, plan, .. } = guard else {
-            unreachable!("found by the match above")
-        };
-        let summary = RegionSummary::derive(guard, ssa, operations, &mut ample())
-            .expect("the guard candidate derives within an ample budget");
-        // The statement owns every block: the prefix the walk already claimed plus the plan's.
-        let mut expected: Vec<CanonicalBlockId> = prefix.clone();
-        expected.extend(plan.owned().iter().cloned());
-        assert_eq!(summary.owned, expected, "owned is the plan's own claim, in method order");
-        // The closes the header reconstructs are the statement's own implicit effects.
-        assert!(
-            !summary.effects.elided_cleanup_bcis.is_empty(),
-            "a resources statement elides its physical cleanup"
-        );
-        // The boundary: the whole-construct catch the plan presents, when its table states one.
-        assert_eq!(
-            summary.exceptions.len(),
-            usize::from(plan.enclosing().is_some()),
-            "only an enclosing clause binds a boundary"
-        );
-        if let Some(enclosing) = plan.enclosing() {
-            let boundary = &summary.exceptions[0];
-            assert_eq!(&boundary.handler, enclosing.handler());
-            assert_eq!(boundary.parameter, enclosing.parameter());
-        }
+    with_frozen_method_ir(
+        RESOURCE_GUARD,
+        b"two",
+        b"()Ljava/lang/String;",
+        |canonical, view, ssa, operations, code, recovered| {
+            let _ = (view, code);
+            let guard = recovered
+                .regions
+                .iter()
+                .find(|region| matches!(region, Region::Guard { .. }))
+                .unwrap_or_else(|| panic!("the real TWR method is recognized as a Guard"));
+            let Region::Guard { prefix, plan, .. } = guard else {
+                unreachable!("found by the match above")
+            };
+            let summary = RegionSummary::derive(guard, ssa, operations, &mut ample())
+                .expect("the guard candidate derives within an ample budget");
+            // The statement owns every block: the prefix the walk already claimed plus the plan's.
+            let mut expected: Vec<CanonicalBlockId> = prefix.clone();
+            expected.extend(plan.owned().iter().cloned());
+            assert_eq!(
+                summary.owned, expected,
+                "owned is the plan's own claim, in method order"
+            );
+            // The closes the header reconstructs are the statement's own implicit effects.
+            assert!(
+                !summary.effects.elided_cleanup_bcis.is_empty(),
+                "a resources statement elides its physical cleanup"
+            );
+            // The boundary: the whole-construct catch the plan presents, when its table states one.
+            assert_eq!(
+                summary.exceptions.len(),
+                usize::from(plan.enclosing().is_some()),
+                "only an enclosing clause binds a boundary"
+            );
+            if let Some(enclosing) = plan.enclosing() {
+                let boundary = &summary.exceptions[0];
+                assert_eq!(&boundary.handler, enclosing.handler());
+                assert_eq!(boundary.parameter, enclosing.parameter());
+            }
 
-        let mut budget = ample();
-        let mismatches = reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
-            .expect("the reconciliation completes within an ample budget");
-        assert!(
-            mismatches.is_empty(),
-            "the derived view matches the graph and the walk: {mismatches:?}"
-        );
-    });
+            let mut budget = ample();
+            let mismatches =
+                reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
+                    .expect("the reconciliation completes within an ample budget");
+            assert!(
+                mismatches.is_empty(),
+                "the derived view matches the graph and the walk: {mismatches:?}"
+            );
+        },
+    );
 }
-
-
 
 /// The `try`/`catch` retry loop: a `while (true)` body whose normal exit is one break, whose retry
 /// arm is one continue, and whose post-`try` tail is a second break — all of the same loop.
@@ -391,7 +431,11 @@ fn subtree_transfers(region: &Region, out: &mut Vec<(u32, u32, bool)>) {
     if let Some(transfer) = region.transfer_leaf() {
         out.push((
             transfer.source_bci,
-            transfer.kind.loop_header().map(CanonicalBlockId::bci).unwrap_or(0),
+            transfer
+                .kind
+                .loop_header()
+                .map(CanonicalBlockId::bci)
+                .unwrap_or(0),
             transfer.kind.is_continue(),
         ));
     }
@@ -472,9 +516,8 @@ fn a41_nested_break_and_continue_keep_their_target_across_the_metadata_layout() 
                     .iter()
                     .find(|region| matches!(region, Region::Loop { .. }))
                     .expect("the retry body is recovered as the method's loop");
-                let summary =
-                    RegionSummary::derive(loop_region, ssa, operations, &mut budget)
-                        .expect("the loop candidate derives within an ample budget");
+                let summary = RegionSummary::derive(loop_region, ssa, operations, &mut budget)
+                    .expect("the loop candidate derives within an ample budget");
                 let loop_bci = summary
                     .entry
                     .as_ref()
@@ -501,12 +544,20 @@ fn a41_nested_break_and_continue_keep_their_target_across_the_metadata_layout() 
                 transfers.sort_unstable();
                 assert_eq!(
                     transfers,
-                    vec![(28, loop_bci, false), (45, loop_bci, true), (79, loop_bci, false)],
+                    vec![
+                        (28, loop_bci, false),
+                        (45, loop_bci, true),
+                        (79, loop_bci, false)
+                    ],
                     "break, continue and the tail break all keep their proved target"
                 );
                 // The loop states one normal exit: the block the two breaks reach.
                 let exits: Vec<u32> = summary.exits.iter().map(CanonicalBlockId::bci).collect();
-                assert_eq!(exits, vec![82], "the loop's stated exit is the break destination");
+                assert_eq!(
+                    exits,
+                    vec![82],
+                    "the loop's stated exit is the break destination"
+                );
                 // The clause binds the table's handler and parameter.
                 assert_eq!(summary.exceptions.len(), 1);
                 assert_eq!(summary.exceptions[0].handler.bci(), 31);
@@ -526,7 +577,10 @@ fn a41_nested_break_and_continue_keep_their_target_across_the_metadata_layout() 
             },
         );
     }
-    assert_eq!(readings[0], readings[1], "the layout change moves no composition fact");
+    assert_eq!(
+        readings[0], readings[1],
+        "the layout change moves no composition fact"
+    );
 }
 
 /// A4.1 — nested `break` arms and the `return` inside a protected range keep their targets and
@@ -560,9 +614,8 @@ fn a41_nested_break_arms_and_the_in_range_return_keep_their_targets() {
                     .regions
                     .first()
                     .expect("the method recovers one region");
-                let summary =
-                    RegionSummary::derive(region, ssa, operations, &mut budget)
-                        .expect("the candidate derives within an ample budget");
+                let summary = RegionSummary::derive(region, ssa, operations, &mut budget)
+                    .expect("the candidate derives within an ample budget");
 
                 // Three break arms, each naming the loop they leave — the two nested `if` arms and
                 // the arm that ends the loop after the second comparison.
@@ -573,7 +626,11 @@ fn a41_nested_break_arms_and_the_in_range_return_keep_their_targets() {
                     .map(|transfer| transfer.source_bci)
                     .collect();
                 breaks.sort_unstable();
-                assert_eq!(breaks, vec![64, 78, 85], "each nested break keeps its own source");
+                assert_eq!(
+                    breaks,
+                    vec![64, 78, 85],
+                    "each nested break keeps its own source"
+                );
                 let loop_headers: BTreeSet<u32> = summary
                     .transfers
                     .iter()
@@ -605,7 +662,11 @@ fn a41_nested_break_arms_and_the_in_range_return_keep_their_targets() {
                     .filter(|edge| edge.from() == &in_range.block)
                     .map(|edge| edge.kind().clone())
                     .collect();
-                assert_eq!(leaving.len(), 1, "one edge leaves the in-range return block");
+                assert_eq!(
+                    leaving.len(),
+                    1,
+                    "one edge leaves the in-range return block"
+                );
                 assert!(
                     matches!(leaving[0], CanonicalEdgeKind::Exception { .. }),
                     "and it is the protected range's exception edge, not a continuation"
@@ -620,12 +681,11 @@ fn a41_nested_break_arms_and_the_in_range_return_keep_their_targets() {
             },
         );
     }
-    assert_eq!(readings[0], readings[1], "the layout change moves no composition fact");
+    assert_eq!(
+        readings[0], readings[1],
+        "the layout change moves no composition fact"
+    );
 }
-
-
-
-
 
 /// Family 1 — a loop used as a branch arm: the two javac8 layouts of the same source.
 const ARM_LOOP_DEBUG: &[u8] = include_bytes!(
@@ -670,8 +730,7 @@ fn first_region<'a>(region: &'a Region, keep: &impl Fn(&Region) -> bool) -> Opti
         | Region::CompoundIf {
             then_arm, else_arm, ..
         } => {
-            found = first_region(then_arm, keep)
-                .or_else(|| first_region(else_arm, keep));
+            found = first_region(then_arm, keep).or_else(|| first_region(else_arm, keep));
         }
         Region::ShortCircuitValue { tail, .. } => {
             for child in tail {
@@ -734,7 +793,10 @@ fn a41_loop_arm_exit_is_the_enclosing_join_in_both_layouts() {
                 let mismatches =
                     reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
                         .expect("the reconciliation completes within an ample budget");
-                assert!(mismatches.is_empty(), "the composition facts match: {mismatches:?}");
+                assert!(
+                    mismatches.is_empty(),
+                    "the composition facts match: {mismatches:?}"
+                );
 
                 let tree = Region::Sequence {
                     regions: recovered.regions.clone(),
@@ -770,7 +832,8 @@ fn a41_loop_arm_exit_is_the_enclosing_join_in_both_layouts() {
                 else {
                     unreachable!("found by the predicate above")
                 };
-                let loop_in_then = first_region(then_arm, &|inner| inner.loop_exit().is_some()).is_some();
+                let loop_in_then =
+                    first_region(then_arm, &|inner| inner.loop_exit().is_some()).is_some();
                 let (arm_loop, sibling) = if loop_in_then {
                     (
                         first_region(then_arm, &|inner| inner.loop_exit().is_some()),
@@ -796,7 +859,10 @@ fn a41_loop_arm_exit_is_the_enclosing_join_in_both_layouts() {
             },
         );
     }
-    assert_eq!(readings[0], readings[1], "the layout change moves no exit-vs-join fact");
+    assert_eq!(
+        readings[0], readings[1],
+        "the layout change moves no exit-vs-join fact"
+    );
     assert_eq!(
         readings[0],
         (Some(99), 99),
@@ -824,15 +890,17 @@ fn a41_switch_join_stays_the_switch_destination_in_both_compilers() {
                 let mismatches =
                     reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
                         .expect("the reconciliation completes within an ample budget");
-                assert!(mismatches.is_empty(), "the composition facts match: {mismatches:?}");
+                assert!(
+                    mismatches.is_empty(),
+                    "the composition facts match: {mismatches:?}"
+                );
 
                 let tree = Region::Sequence {
                     regions: recovered.regions.clone(),
                 };
-                let loop_region = first_region(&tree, &|region| {
-                    matches!(region, Region::Loop { .. })
-                })
-                .expect("the method is one loop over the array");
+                let loop_region =
+                    first_region(&tree, &|region| matches!(region, Region::Loop { .. }))
+                        .expect("the method is one loop over the array");
                 let Region::Loop { exit, body, .. } = loop_region else {
                     unreachable!("found by the predicate above")
                 };
@@ -863,15 +931,19 @@ fn a41_switch_join_stays_the_switch_destination_in_both_compilers() {
                     Some(switch_join),
                     "the loop body resumes at the switch's own join"
                 );
-                readings.push((
-                    switch_join.bci(),
-                    exit.as_ref().map(CanonicalBlockId::bci),
-                ));
+                readings.push((switch_join.bci(), exit.as_ref().map(CanonicalBlockId::bci)));
             },
         );
     }
-    assert_eq!(readings[0], readings[1], "the compiler target moves no switch-join fact");
-    assert_eq!(readings[0], (52, Some(61)), "join 52 stays inside the loop that exits at 61");
+    assert_eq!(
+        readings[0], readings[1],
+        "the compiler target moves no switch-join fact"
+    );
+    assert_eq!(
+        readings[0],
+        (52, Some(61)),
+        "join 52 stays inside the loop that exits at 61"
+    );
 }
 
 /// A4.1 — the continue ladder keeps the continue's and the break's loop across layouts.
@@ -895,15 +967,17 @@ fn a41_continue_ladder_keeps_its_targets_in_both_layouts() {
                 let mismatches =
                     reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
                         .expect("the reconciliation completes within an ample budget");
-                assert!(mismatches.is_empty(), "the composition facts match: {mismatches:?}");
+                assert!(
+                    mismatches.is_empty(),
+                    "the composition facts match: {mismatches:?}"
+                );
 
                 let tree = Region::Sequence {
                     regions: recovered.regions.clone(),
                 };
-                let loop_region = first_region(&tree, &|region| {
-                    matches!(region, Region::Loop { .. })
-                })
-                .expect("the method is one loop");
+                let loop_region =
+                    first_region(&tree, &|region| matches!(region, Region::Loop { .. }))
+                        .expect("the method is one loop");
                 let loop_bci = loop_region
                     .loop_exit()
                     .is_some()
@@ -949,7 +1023,10 @@ fn a41_continue_ladder_keeps_its_targets_in_both_layouts() {
             },
         );
     }
-    assert_eq!(readings[0], readings[1], "the layout change moves no ladder fact");
+    assert_eq!(
+        readings[0], readings[1],
+        "the layout change moves no ladder fact"
+    );
 }
 
 /// A4.2 family 1 — a named `catch` **inside** a loop body: the loop owns the iteration, the `try`
@@ -1006,7 +1083,10 @@ fn a42_both_named_catch_families_keep_their_handler_order_and_throw_site_ownersh
                 let mismatches =
                     reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
                         .expect("the reconciliation completes within an ample budget");
-                assert!(mismatches.is_empty(), "the view matches the graph: {mismatches:?}");
+                assert!(
+                    mismatches.is_empty(),
+                    "the view matches the graph: {mismatches:?}"
+                );
 
                 let try_region = find_try(recovered);
                 let summary = RegionSummary::derive(try_region, ssa, operations, &mut budget)
@@ -1087,9 +1167,9 @@ fn a42_both_named_catch_families_keep_their_handler_order_and_throw_site_ownersh
                 let loop_region = recovered
                     .regions
                     .iter()
-                    .find_map(|region| first_region(region, &|inner| {
-                        matches!(inner, Region::Loop { .. })
-                    }))
+                    .find_map(|region| {
+                        first_region(region, &|inner| matches!(inner, Region::Loop { .. }))
+                    })
                     .expect("the method is one loop");
                 let loop_exit: u32 = loop_region
                     .loop_exit()
@@ -1129,7 +1209,10 @@ fn a42_both_named_catch_families_keep_their_handler_order_and_throw_site_ownersh
             let mismatches =
                 reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
                     .expect("the reconciliation completes within an ample budget");
-            assert!(mismatches.is_empty(), "the view matches the graph: {mismatches:?}");
+            assert!(
+                mismatches.is_empty(),
+                "the view matches the graph: {mismatches:?}"
+            );
 
             let try_region = find_try(recovered);
             let summary = RegionSummary::derive(try_region, ssa, operations, &mut budget)
@@ -1141,8 +1224,9 @@ fn a42_both_named_catch_families_keep_their_handler_order_and_throw_site_ownersh
 
             // The protected range owns the loop: the loop's header and body are this candidate's
             // blocks, and the loop's own exit is the range end the row states.
-            let loop_region = first_region(try_region, &|region| matches!(region, Region::Loop { .. }))
-                .expect("the try's protected range holds the loop");
+            let loop_region =
+                first_region(try_region, &|region| matches!(region, Region::Loop { .. }))
+                    .expect("the try's protected range holds the loop");
             let Region::Loop { header, exit, .. } = loop_region else {
                 unreachable!("found by the predicate above")
             };
@@ -1204,7 +1288,10 @@ fn a42_clause_order_is_the_exception_table_order_and_reordering_is_refused() {
             let mismatches =
                 reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
                     .expect("the reconciliation completes within an ample budget");
-            assert!(mismatches.is_empty(), "the view matches the graph: {mismatches:?}");
+            assert!(
+                mismatches.is_empty(),
+                "the view matches the graph: {mismatches:?}"
+            );
 
             let try_region = find_try(recovered);
             let clauses = try_region.exception_clauses();
@@ -1414,7 +1501,7 @@ fn a42_the_closed_named_catch_check_refuses_foreign_entry_overlap_exit_and_dupli
 /// The `finally`-copy shape the S4 regression was found on: a loop with two returns, cleanup in a
 /// guard. This is the exact method whose presentation broke and was repaired.
 const MULTI_RETURN_FINALLY: &[u8] = include_bytes!(
-    "../../../../openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/TestTryCatchFinally5$TestCls.class"
+    "../../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/TestTryCatchFinally5$TestCls.class"
 );
 const MULTI_RETURN_FINALLY_DESCRIPTOR: &[u8] = b"(Ljadx/tests/integration/trycatch/TestTryCatchFinally5$TestCls$A;Ljadx/tests/integration/trycatch/TestTryCatchFinally5$TestCls$B;)Ljava/util/List;";
 
@@ -1462,11 +1549,8 @@ fn a43_the_multi_return_finally_keeps_every_exit_and_its_one_cleanup_guard() {
             // The production-derived view, one entry per top-level candidate. Their owned sets are
             // disjoint, so summing their terminals counts every exit exactly once — which is the
             // property being checked: no exit the source wrote is dropped, and none is invented.
-            let mut terminals: Vec<(u32, RegionTerminalKind)> = recovered
-                .summaries
-                .iter()
-                .flat_map(terminals_of)
-                .collect();
+            let mut terminals: Vec<(u32, RegionTerminalKind)> =
+                recovered.summaries.iter().flat_map(terminals_of).collect();
             terminals.sort_by_key(|(bci, kind)| (*bci, matches!(kind, RegionTerminalKind::Throw)));
             assert_eq!(
                 terminals,
@@ -1498,7 +1582,11 @@ fn a43_the_monitor_statement_pairs_one_enter_with_one_exit_and_invents_no_clause
         b"locked",
         b"()I",
         |canonical, _view, ssa, operations, _code, recovered| {
-            assert!(recovered.fallbacks().is_empty(), "{:?}", recovered.fallbacks());
+            assert!(
+                recovered.fallbacks().is_empty(),
+                "{:?}",
+                recovered.fallbacks()
+            );
             let mut budget = ample();
             let mismatches =
                 reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
@@ -1551,7 +1639,10 @@ fn a43_the_monitor_statement_pairs_one_enter_with_one_exit_and_invents_no_clause
                 .expect("the guard candidate derives within an ample budget");
             assert_eq!(
                 terminals_of(&summary),
-                vec![(0, RegionTerminalKind::Return), (11, RegionTerminalKind::Throw)],
+                vec![
+                    (0, RegionTerminalKind::Return),
+                    (11, RegionTerminalKind::Throw)
+                ],
                 "the return inside the braces and the handler's rethrow both stay recorded"
             );
         },
@@ -1565,7 +1656,11 @@ fn a43_the_direct_twr_clause_elides_its_cleanup_and_owns_every_elided_instructio
         b"two",
         b"()Ljava/lang/String;",
         |canonical, _view, ssa, operations, _code, recovered| {
-            assert!(recovered.fallbacks().is_empty(), "{:?}", recovered.fallbacks());
+            assert!(
+                recovered.fallbacks().is_empty(),
+                "{:?}",
+                recovered.fallbacks()
+            );
             let mut budget = ample();
             let mismatches =
                 reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
@@ -1631,7 +1726,11 @@ fn a43_the_shared_join_finally_keeps_its_boundary_and_reads_one_clause() {
         b"test",
         b"(Ljava/lang/Object;)Z",
         |canonical, _view, ssa, operations, _code, recovered| {
-            assert!(recovered.fallbacks().is_empty(), "{:?}", recovered.fallbacks());
+            assert!(
+                recovered.fallbacks().is_empty(),
+                "{:?}",
+                recovered.fallbacks()
+            );
             let mut budget = ample();
             let mismatches =
                 reconcile_method_summaries(recovered, canonical, ssa, operations, &mut budget)
@@ -1639,7 +1738,11 @@ fn a43_the_shared_join_finally_keeps_its_boundary_and_reads_one_clause() {
             assert!(mismatches.is_empty(), "{mismatches:?}");
 
             // Two candidates: the statement, then the run that follows it at its stated exit.
-            assert_eq!(recovered.summaries.len(), 2, "the shape walks out as two candidates");
+            assert_eq!(
+                recovered.summaries.len(),
+                2,
+                "the shape walks out as two candidates"
+            );
             let statement = &recovered.summaries[0];
             let tail = &recovered.summaries[1];
             assert_eq!(
@@ -1657,13 +1760,19 @@ fn a43_the_shared_join_finally_keeps_its_boundary_and_reads_one_clause() {
             // the guard would lose it. This pins that the two readings stay connected.
             assert!(
                 find_region(
-                    &Region::Sequence { regions: recovered.regions.clone() },
+                    &Region::Sequence {
+                        regions: recovered.regions.clone()
+                    },
                     &|region| matches!(region, Region::Try { .. })
                 )
                 .is_some_and(|try_region| !try_region.exception_clauses().is_empty()),
                 "the protected body's clause is stated by the try that binds it"
             );
-            assert_eq!(statement.exceptions.len(), 1, "one clause reaches the boundary");
+            assert_eq!(
+                statement.exceptions.len(),
+                1,
+                "one clause reaches the boundary"
+            );
             assert_eq!(statement.exceptions[0].handler.bci(), 18);
             assert_eq!(statement.exceptions[0].parameter, 2);
 

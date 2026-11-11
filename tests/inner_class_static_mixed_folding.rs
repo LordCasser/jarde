@@ -241,19 +241,19 @@ fn n1_jar() -> Vec<u8> {
         (
             b"N1.class",
             include_bytes!(
-                "../openspec/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1.class"
             ),
         ),
         (
             b"N1$Inner.class",
             include_bytes!(
-                "../openspec/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1$Inner.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1$Inner.class"
             ),
         ),
         (
             b"N1$Stat.class",
             include_bytes!(
-                "../openspec/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1$Stat.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1$Stat.class"
             ),
         ),
     ])

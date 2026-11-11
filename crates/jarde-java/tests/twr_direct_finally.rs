@@ -24,25 +24,25 @@ use jarde_reader::view::{
 
 /// The patrol's frozen P3 and P1: the void-body and compound-body anchors the slice states.
 const P3: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/fixture/P3.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/twr-clause-patrol/fixture/P3.class"
 );
 const P1: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/fixture/P1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/twr-clause-patrol/fixture/P1.class"
 );
 /// The frozen direct-finally variants (`t[c]f` base, multi-level outer clause, a body that
 /// returns through the clause) and the two registered refusals (a `finally` that itself returns,
 /// the three-clause form).
 const PD: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/direct/fixture/PD.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/twr-clause-patrol/direct/fixture/PD.class"
 );
 /// The frozen negatives, both verifier-valid single-field patches of PD's own table (see the
 /// evidence directory): the normal copy's `ldc` repointed so the two copies disagree, and the
 /// multi-resource self-protection row widened over the exceptional copy the handler runs.
 const PD_BROKEN: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/direct/fixture/PDBroken.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/twr-clause-patrol/direct/fixture/PDBroken.class"
 );
 const PD_OVERLAP: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/direct/fixture/PDOv.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/twr-clause-patrol/direct/fixture/PDOv.class"
 );
 /// The committed pure-domain control: the plain one-resource TWR and the plain straight `finally`
 /// whose texts this slice must not move.
@@ -50,7 +50,7 @@ const GUARDED: &[u8] = include_bytes!("../../../tests/fixtures/p3-handlers/v8/Gu
 /// The inner-form control: the TWR-inside-finally shape stays the inner certificate's, and the
 /// direct clause never claims its row (the anchors are disjoint: table tail vs body).
 const TF: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/TF.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/TF.class"
 );
 
 fn limits() -> Limits {

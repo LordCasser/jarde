@@ -106,7 +106,7 @@ fn fixture(leg: &str, class: &str) -> Vec<u8> {
 /// baseline and the zero-regression comparison) and the accepted post-change rendering.
 fn evidence(directory: &str, name: &str) -> String {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("openspec/evidence/java-syntax-2026-10-05/recover-lambda-primitive-array-capture")
+        .join("tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/recover-lambda-primitive-array-capture")
         .join(directory)
         .join(name);
     let text =
@@ -117,7 +117,7 @@ fn evidence(directory: &str, name: &str) -> String {
 /// The probe source the frozen classes were compiled from, as the patrol recorded it.
 fn probe_source(name: &str) -> String {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("openspec/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes")
+        .join("tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/dual-javac-sweep/probes")
         .join(name);
     let text = std::fs::read(&path).unwrap_or_else(|error| panic!("probe {name} reads: {error}"));
     String::from_utf8(text).expect("the probe source is utf-8")

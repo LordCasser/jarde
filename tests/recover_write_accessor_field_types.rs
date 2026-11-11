@@ -99,7 +99,7 @@ fn fixture(name: &str) -> Vec<u8> {
 /// rendering.
 fn evidence(name: &str) -> String {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("openspec/evidence/java-syntax-2026-10-05/recover-write-accessor-field-types")
+        .join("tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/recover-write-accessor-field-types")
         .join(name);
     let text =
         std::fs::read(&path).unwrap_or_else(|error| panic!("evidence {name} reads: {error}"));
@@ -406,7 +406,7 @@ fn the_boolean_precedent_renders_byte_identical_to_its_frozen_record() {
 
 fn evidence_bytes(name: &str) -> Vec<u8> {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("openspec/evidence/java-syntax-2026-10-05/recover-write-accessor-field-types")
+        .join("tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/recover-write-accessor-field-types")
         .join(name);
     std::fs::read(&path).unwrap_or_else(|error| panic!("evidence {name} reads: {error}"))
 }
@@ -422,7 +422,7 @@ fn the_instance_long_assignment_sister_renders_byte_identical() {
     // touched; its consumer-side descriptor gate moved from the `false`-arm constant to the
     // parameter, so the root's ruling made byte-level equality an acceptance condition.
     let bytes = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-27/em07-long-assignment/input/Assignment.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/em07-long-assignment/input/Assignment.class"
     );
     let report = source_of_standalone(bytes, "em07/Assignment");
     assert_eq!(

@@ -25,7 +25,7 @@ const JAVAC_8: &[u8] = include_bytes!(
     "../../../tests/fixtures/recover-return-through-nested-finally-cleanup/v8-javac8/NestedFinally.class"
 );
 const SEALED_EX: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
 );
 
 fn limits(analysis_steps: u64) -> Limits {

@@ -30,12 +30,12 @@ const MARKER: &[u8] = include_bytes!("fixtures/p3-annotation-default/v8/Marker.c
 /// The enum the sample's `e` value names, written by the same command (README: 725 bytes, SHA-256).
 const KIND: &[u8] = include_bytes!("fixtures/p3-annotation-default/v8/Kind.class");
 const FLOAT_DEFAULTS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/annotation-float-defaults/classes-original/FloatDefaults.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/annotation-float-defaults/classes-original/FloatDefaults.class"
 );
 
 /// Java 8 nested-annotation default fixture, retained with the audit's complete runner.
 const NESTED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/annotation-default-boundaries/header-minimal/nested/classes-original/Nested.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/annotation-default-boundaries/header-minimal/nested/classes-original/Nested.class"
 );
 
 fn budget() -> Budget {

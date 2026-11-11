@@ -30,14 +30,14 @@ const NEGATIVES: &[u8] =
 const EXTRA_ENTRY: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-loop-gateway/LoopGatewayExtraEntry.class");
 const NO_PREFIX: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class",
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class",
 );
 const NO_PREFIX_BCIS: [u32; 11] = [0, 1, 2, 3, 6, 7, 8, 11, 14, 17, 18];
 const ITERATOR_PREFIX: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
 );
 const IF_JOIN_CF07: &[u8] = include_bytes!(
-    "../../../openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class",
+    "../../../tests/fixtures/recovered-inputs/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class",
 );
 
 fn limits() -> Limits {

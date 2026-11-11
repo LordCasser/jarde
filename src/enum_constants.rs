@@ -598,7 +598,7 @@ mod tests {
     use std::sync::atomic::{AtomicU64, Ordering};
 
     const STAGE: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/classes-original/Stage.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/classes-original/Stage.class"
     );
     const FROZEN_EMPTY_ENUM: &[u8] =
         include_bytes!("../tests/fixtures/proved-java-structure/enum-arity/v8/probe/Empty.class");
@@ -607,33 +607,34 @@ mod tests {
     const FROZEN_FOUR_ENUM: &[u8] =
         include_bytes!("../tests/fixtures/proved-java-structure/enum-arity/v8/probe/Four.class");
     const MEASURE: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/input/source-baseline/Measure.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/input/source-baseline/Measure.class"
     );
     const MEASURE_SOURCE: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/Measure.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/Measure.java"
     );
     const MEASURE_RUNNER: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/MeasureRunner.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/MeasureRunner.java"
     );
     const MEASURE_JADX_SOURCE: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/jadx/sources/defpackage/Measure.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/jadx/sources/defpackage/Measure.java"
     );
     const MEASURE_JADX_RUNNER: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/jadx/sources/defpackage/MeasureRunner.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/jadx/sources/defpackage/MeasureRunner.java"
     );
-    const CUSTOM_INIT_SOURCE: &str =
-        include_str!("../openspec/evidence/java-syntax-2026-09-27/dt14-enum-init/CustomInit.java");
+    const CUSTOM_INIT_SOURCE: &str = include_str!(
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt14-enum-init/CustomInit.java"
+    );
     const CUSTOM_INIT_RUNNER: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-27/dt14-enum-init/CustomInitRunner.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt14-enum-init/CustomInitRunner.java"
     );
     const OP_SOURCE: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Op.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Op.java"
     );
     const MIXED_SOURCE: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Mixed.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Mixed.java"
     );
     const PLAIN_SOURCE: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Plain.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Plain.java"
     );
     const DELEGATING_ENUM_SOURCE: &str = r#"
 public enum DelegatingEnum {
@@ -901,7 +902,7 @@ final class ConstructorEffects {
     #[test]
     fn string_varargs_arrays_are_proved_and_projected_atomically() {
         const SOURCE: &str = include_str!(
-            "../openspec/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
         );
         let bytes = compile_java_class("StringVarargs", SOURCE, false);
         let report = enum_report(&bytes, "StringVarargs", &mut test_budget());
@@ -1055,7 +1056,7 @@ final class ConstructorEffects {
     #[test]
     fn string_varargs_signature_mismatch_refuses_without_partial_projection() {
         const SOURCE: &str = include_str!(
-            "../openspec/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
         );
         let mut bytes = compile_java_class("StringVarargs", SOURCE, false);
         replace_constant_pool_utf8(
@@ -1080,7 +1081,7 @@ final class ConstructorEffects {
     #[test]
     fn missing_string_varargs_constructor_code_refuses_the_group() {
         const SOURCE: &str = include_str!(
-            "../openspec/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
         );
         let mut bytes = compile_java_class("StringVarargs", SOURCE, false);
         remove_method_attribute(
@@ -1105,7 +1106,7 @@ final class ConstructorEffects {
     #[test]
     fn repeated_string_array_index_write_is_jvm_verifiable_and_refused() {
         const SOURCE: &str = include_str!(
-            "../openspec/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
         );
         let mut bytes = compile_java_class("StringVarargs", SOURCE, false);
         let candidates: Vec<_> = bytes
@@ -1135,7 +1136,7 @@ final class ConstructorEffects {
     #[test]
     fn string_varargs_low_budget_and_cancellation_keep_the_group_unpublished() {
         const SOURCE: &str = include_str!(
-            "../openspec/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
         );
         let bytes = compile_java_class("StringVarargs", SOURCE, false);
 
@@ -3611,13 +3612,13 @@ public final class PackageArgsRunner {
     #[test]
     fn projected_delegating_enum_compiles_and_preserves_verified_constructor_behavior() {
         const ORIGINAL: &str = include_str!(
-            "../openspec/evidence/java-syntax-2026-09-25/enum-constructor-delegation/source/DelegatingEnum.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-constructor-delegation/source/DelegatingEnum.java"
         );
         const EFFECTS: &str = include_str!(
-            "../openspec/evidence/java-syntax-2026-09-25/enum-constructor-delegation/source/ConstructorEffects.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-constructor-delegation/source/ConstructorEffects.java"
         );
         const RUNNER: &str = include_str!(
-            "../openspec/evidence/java-syntax-2026-09-25/enum-constructor-delegation/source/EnumRunner.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-constructor-delegation/source/EnumRunner.java"
         );
         const EXPECTED: &str = "values=ZERO:0,ONE:1\neffects=2:0,1\ndeclared-constructors=2,3\n";
 
@@ -4164,25 +4165,25 @@ public final class PackageArgsRunner {
             (
                 "values-order",
                 include_bytes!(
-                    "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/patched-values-order/Measure.class"
+                    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/patched-values-order/Measure.class"
                 ),
             ),
             (
                 "valueof-null-argument",
                 include_bytes!(
-                    "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/patched-valueof-null-argument/Measure.class"
+                    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/patched-valueof-null-argument/Measure.class"
                 ),
             ),
             (
                 "constructor-shape",
                 include_bytes!(
-                    "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/input/constructor-shape/Measure.class"
+                    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/input/constructor-shape/Measure.class"
                 ),
             ),
             (
                 "prefix-effect",
                 include_bytes!(
-                    "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/input/prefix-effect/Measure.class"
+                    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/input/prefix-effect/Measure.class"
                 ),
             ),
         ];
@@ -5145,7 +5146,7 @@ public final class PackageArgsRunner {
         let source = directory.join("E.java");
         fs::write(
             &source,
-            include_str!("../openspec/evidence/java-syntax-2026-09-25/enum-values-access/E.java"),
+            include_str!("../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-values-access/E.java"),
         )
         .expect("the E source fixture is written");
         let output = Command::new("javac")
@@ -5229,22 +5230,22 @@ public final class PackageArgsRunner {
     }
 
     const N0_PATROL_CLASS: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N0.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N0.class"
     );
     const N0_PATROL_TEXT: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N0.jarde.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N0.jarde.java"
     );
     const N3_PATROL_SOURCE: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N3.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N3.java"
     );
     const N1_PATROL_SOURCE: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N1.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N1.java"
     );
     const N3_PATROL_RUN: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/n3.out"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/n3.out"
     );
     const N1_PATROL_RUN: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/n1.out"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/n1.out"
     );
 
     fn compile_java_sources_to_directory(

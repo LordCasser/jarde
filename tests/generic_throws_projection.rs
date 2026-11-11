@@ -28,13 +28,13 @@ public class GenericThrowsCaller {
 }
 "#;
 const METHOD_BODY_LOCAL_THROWS: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/body-method-local-generic-throws/fixture/MethodBodyThrows.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/body-method-local-generic-throws/fixture/MethodBodyThrows.java"
 );
 const METHOD_BODY_LOCAL_CALLER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/body-method-local-generic-throws/fixture/MethodBodyThrowsCaller.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/body-method-local-generic-throws/fixture/MethodBodyThrowsCaller.java"
 );
 const METHOD_BODY_LOCAL_REFLECT: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/body-method-local-generic-throws/fixture/MethodBodyThrowsReflect.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/body-method-local-generic-throws/fixture/MethodBodyThrowsReflect.java"
 );
 
 fn temp_dir(label: &str) -> std::path::PathBuf {

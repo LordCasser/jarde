@@ -1,0 +1,1 @@
+public class CatchCallMarker<T> { public T value; public CatchCallMarker(T x, boolean fail) { try { value=maybe(x,fail); } catch (RuntimeException ex) { value=null; } } private T maybe(T x, boolean fail) { if (fail) throw new RuntimeException(); return x; } }

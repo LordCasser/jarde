@@ -8,11 +8,12 @@
 use jarde::*;
 use std::slice;
 
-const GRID: &[u8] =
-    include_bytes!("../openspec/evidence/java-syntax-2026-09-24/loop-transfers/Grid.class");
+const GRID: &[u8] = include_bytes!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/loop-transfers/Grid.class"
+);
 const OUTER_CONTINUE: &[u8] = include_bytes!("fixtures/p3-loop-transfers/v8/OuterContinue.class");
 const OBJECT_ARRAY: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/enhanced-for/object-array-body-if-red/ObjectArrayForeach.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enhanced-for/object-array-body-if-red/ObjectArrayForeach.class"
 );
 const SWITCH_LOOP: &[u8] = include_bytes!("fixtures/p3-loop-transfers/v8/SwitchLoopTransfer.class");
 

@@ -49,41 +49,41 @@ use jarde_reader::view::{
 
 /// The slice's frozen family, as the evidence directory holds it.
 const M1: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M1.class"
 );
 const M2: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M2.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M2.class"
 );
 const M3: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M3.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M3.class"
 );
 const M5: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M5.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M5.class"
 );
 const N1: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/N1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/N1.class"
 );
 const N2B: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/N2b.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/N2b.class"
 );
 const P1_FIELD_WRITE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P1FieldWrite.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P1FieldWrite.class"
 );
 const P2_GETSTATIC_READ: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P2GetstaticRead.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P2GetstaticRead.class"
 );
 const P3_STORE_PREFIX: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P3StorePrefix.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P3StorePrefix.class"
 );
 const P4_LATE_SPLIT: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P4LateSplit.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P4LateSplit.class"
 );
 const P5_TWO_RESOURCES: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
 );
 /// The registered debt this slice closes: the whole class, not one method of it.
 const FINALLY_ONCE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-27/cf16-finally/original/FinallyOnce.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf16-finally/original/FinallyOnce.class"
 );
 
 fn limits() -> Limits {

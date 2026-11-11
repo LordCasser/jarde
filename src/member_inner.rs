@@ -1570,20 +1570,20 @@ mod tests {
     use std::io::{Cursor, Read, Write};
 
     const INNER: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter$Inner.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter$Inner.class"
     );
     const OWNER: &str = "nested/SimpleOuter$Inner";
     const DESCRIPTOR: &str = "(Lnested/SimpleOuter;I)V";
     const GENERIC_JAR: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/non-generic-outer-generic-member/original-outer-g-none.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/non-generic-outer-generic-member/original-outer-g-none.jar"
     );
     const GENERIC_OWNER: &str = "minimal/Outer$Inner";
     const GENERIC_DESCRIPTOR: &str = "(Lminimal/Outer;Ljava/lang/Object;)V";
     const FAMILY_JAR: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar"
     );
     const OUTER_SUPER_JAR: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar"
     );
 
     fn archive_class_bytes(archive_bytes: &[u8], path: &[u8]) -> Vec<u8> {
@@ -1607,19 +1607,19 @@ mod tests {
             (
                 b"EffectsBase.class",
                 include_bytes!(
-                    "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"
+                    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"
                 ),
             ),
             (
                 b"OuterSuperEffects.class",
                 include_bytes!(
-                    "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
+                    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
                 ),
             ),
             (
                 b"OuterSuperEffects$Member.class",
                 include_bytes!(
-                    "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
+                    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
                 ),
             ),
         ];
@@ -1971,9 +1971,9 @@ mod tests {
         let root = report_for("OuterSuperEffects", &mut budget);
         let child = report_for("OuterSuperEffects$Member", &mut budget);
         let parent = report_for("EffectsBase", &mut budget);
-        let outer_facts = class_member_facts(include_bytes!("../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"), &mut budget).unwrap();
-        let parent_facts = class_member_facts(include_bytes!("../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"), &mut budget).unwrap();
-        let child_facts = class_member_facts(include_bytes!("../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"), &mut budget).unwrap();
+        let outer_facts = class_member_facts(include_bytes!("../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"), &mut budget).unwrap();
+        let parent_facts = class_member_facts(include_bytes!("../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"), &mut budget).unwrap();
+        let child_facts = class_member_facts(include_bytes!("../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"), &mut budget).unwrap();
         let bridge_id = root
             .methods
             .iter()

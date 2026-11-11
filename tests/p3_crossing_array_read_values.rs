@@ -38,31 +38,31 @@ use std::slice;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 const F1: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F1.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F1.class"
 );
 /// Historical F1 presentation; only the two exact proved loop-header projections may differ.
 const F1_VERBATIM: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/results/F1.jarde.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/results/F1.jarde.java"
 );
 const F2: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F2.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F2.class"
 );
 const VALUES: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/fixture/Cf10Values.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/fixture/Cf10Values.class"
 );
 const REFUSED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/fixture/Cf10Refused.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/fixture/Cf10Refused.class"
 );
 /// The pre-change recovery of the refused class, captured at the baseline commit.
 const REFUSED_BASELINE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/results/Cf10Refused.before.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/results/Cf10Refused.before.java"
 );
 const NESTED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/fixture/Cf10Nested.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/fixture/Cf10Nested.class"
 );
 /// The pre-change recovery of the nested-try boundary class, captured at the baseline commit.
 const NESTED_BASELINE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/results/Cf10Nested.before.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/results/Cf10Nested.before.java"
 );
 
 fn budget() -> Budget {

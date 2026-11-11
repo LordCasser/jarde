@@ -20,7 +20,7 @@ use jarde_reader::view::{
 };
 
 const FIXED: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf3.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf3.class"
 );
 
 const METHOD_DESCRIPTOR: &[u8] = b"()[B";
@@ -31,31 +31,31 @@ const METHOD_DESCRIPTOR: &[u8] = b"()[B";
 /// exception-table row.
 const NEGATIVES: [&[u8]; 9] = [
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3GapExtra/Tf3GapExtra.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3GapExtra/Tf3GapExtra.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3LeadField/Tf3LeadField.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3LeadField/Tf3LeadField.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3TargetMismatch/Tf3TargetMismatch.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3TargetMismatch/Tf3TargetMismatch.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3ArgOtherSlot/Tf3ArgOtherSlot.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3ArgOtherSlot/Tf3ArgOtherSlot.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3ReturnIdentity/Tf3ReturnIdentity.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3ReturnIdentity/Tf3ReturnIdentity.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3SelfRowWidened/Tf3SelfRowWidened.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3SelfRowWidened/Tf3SelfRowWidened.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3CondNonNullRewrite/Tf3CondNonNullRewrite.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3CondNonNullRewrite/Tf3CondNonNullRewrite.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3CondIfneRewrite/Tf3CondIfneRewrite.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3CondIfneRewrite/Tf3CondIfneRewrite.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3RethrowIdentity/Tf3RethrowIdentity.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3RethrowIdentity/Tf3RethrowIdentity.class"
     ),
 ];
 

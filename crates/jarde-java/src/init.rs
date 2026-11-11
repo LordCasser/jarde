@@ -3367,22 +3367,22 @@ mod tests {
     };
 
     const POSITIVE: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/UseInner.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/UseInner.class"
     );
     const WRONG_IDENTITY: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-identity.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-identity.class"
     );
     const WRONG_IDENTITY_CHECKED: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-identity-checked.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-identity-checked.class"
     );
     const LATE_CHECK: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/late-check.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/late-check.class"
     );
     const NESTED_EFFECTS: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/negative-controls/NegativeUse.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/negative-controls/NegativeUse.class"
     );
     const CONCAT_CONSTRUCTOR: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-26/exception-constructor-concat/original-classes/Probe.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/exception-constructor-concat/original-classes/Probe.class"
     );
     const INLINE_CHAR_ARRAY: &[u8] =
         include_bytes!("../../../tests/fixtures/em27-inline-string/em27/Probe.class");
@@ -3399,13 +3399,13 @@ mod tests {
         "../../../tests/fixtures/constructor-direct-array-arguments/same-owner/javac23/SameOwnerArrayArguments.class"
     );
     const VARARGS_CTOR_W3: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/fixture/W3.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/fixture/W3.class"
     );
     const VARARGS_V1: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V1.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V1.class"
     );
     const VARARGS_V2: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V2.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V2.class"
     );
     const SEQUENTIAL_LOOPS2_CONDITIONAL_CTOR: &[u8] = include_bytes!(
         "../../../tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.class"
@@ -3414,13 +3414,13 @@ mod tests {
         "../../../tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.class"
     );
     const NESTED_PROBE: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
     );
     const NESTED_VARIANTS: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X3.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X3.class"
     );
     const NESTED_NEGATIVES: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class"
     );
     /// This change's own depth fixture (`tests/fixtures/recover-io-resource-finally/NestedDepth.java`,
     /// javac 23.0.1 `--release 8 -g:none`): `threeLayer` is the wrapped-stream chain's own depth and
@@ -3428,10 +3428,10 @@ mod tests {
     const NESTED_DEPTH: &[u8] =
         include_bytes!("../../../tests/fixtures/recover-io-resource-finally/v8/NestedDepth.class");
     const FUNCTIONAL_CONSTRUCTORS_JAVAC8: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8-javac8/FunctionalConstructors.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8-javac8/FunctionalConstructors.class"
     );
     const FUNCTIONAL_CONSTRUCTORS_JAVAC23: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8/FunctionalConstructors.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8/FunctionalConstructors.class"
     );
     const PRIMITIVE_CONVERSION_CONTROLS_JAVAC8: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-constructor-primitive-conversion-arguments-v1/javac8/classes/ConstructorPrimitiveConversionControls.class"
@@ -3809,7 +3809,7 @@ mod tests {
     /// holds (`List<String> out = new ArrayList<>(); … forEach(out::add)`). The plan's three-way
     /// capture check refuses that site, so its own check stays quoted with it.
     const BOUND_RECEIVER_WIDENED: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-10-04/realistic-class-combination-patrol/fixture/C1.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/realistic-class-combination-patrol/fixture/C1.class"
     );
 
     #[test]

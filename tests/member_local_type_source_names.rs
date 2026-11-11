@@ -7,13 +7,13 @@ use std::io::{Cursor, Write};
 use std::slice;
 
 const OUTER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
 );
 const MEMBER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
 );
 const BASE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"
 );
 
 fn budget() -> Budget {

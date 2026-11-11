@@ -15,20 +15,20 @@ use std::time::{SystemTime, UNIX_EPOCH};
 const ORIGINAL: &[u8] =
     include_bytes!("fixtures/p3-interface-field-initializers/v8/InterfaceInitProbe.class");
 const REORDERED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/field-table-reordered/InterfaceInitProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/field-table-reordered/InterfaceInitProbe.class"
 );
 const FORWARD_READ: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/ForwardProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/ForwardProbe.class"
 );
 const EFFECTS_SOURCE: &str =
     include_str!("fixtures/p3-interface-field-initializers/InitEffects.java");
 const RUNNER_SOURCE: &str =
     include_str!("fixtures/p3-interface-field-initializers/InitRunner.java");
 const BOUNDARY_EFFECTS_SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/original-source/BoundaryEffects.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/original-source/BoundaryEffects.java"
 );
 const BOUNDARY_RUNNER_SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/original-source/BoundaryRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/original-source/BoundaryRunner.java"
 );
 const EXPECTED_TRACE: &str = "ABT|A1|B2|4|7\n";
 const EXPECTED_FORWARD_TRACE: &str = "L|0|9\n";

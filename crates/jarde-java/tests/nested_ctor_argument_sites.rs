@@ -21,22 +21,22 @@ use jarde_reader::view::{
 };
 
 const X1: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X1.class"
 );
 const X2: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
 );
 const X3: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X3.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X3.class"
 );
 const X4: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class"
 );
 const FUNCTIONAL_CONSTRUCTORS_JAVAC8: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8-javac8/FunctionalConstructors.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8-javac8/FunctionalConstructors.class"
 );
 const FUNCTIONAL_CONSTRUCTORS_JAVAC23: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8/FunctionalConstructors.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-08/lambda-constructor-arguments/v8/FunctionalConstructors.class"
 );
 
 fn limits() -> Limits {

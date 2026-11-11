@@ -1,0 +1,122 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/multicatch-finally-return/PlainMultiCatch.class
+  Last modified 2026年9月25日; size 737 bytes
+  SHA-256 checksum ac46b05865c086ccb03eea8e1e1890c3bdff1e45771a71c7acc0579c833b8eef
+public final class PlainMultiCatch
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #48                         // PlainMultiCatch
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // java/lang/IllegalArgumentException
+   #8 = Utf8               java/lang/IllegalArgumentException
+   #9 = String             #10            // a
+  #10 = Utf8               a
+  #11 = Methodref          #7.#12         // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+  #12 = NameAndType        #5:#13         // "<init>":(Ljava/lang/String;)V
+  #13 = Utf8               (Ljava/lang/String;)V
+  #14 = Class              #15            // java/lang/IllegalStateException
+  #15 = Utf8               java/lang/IllegalStateException
+  #16 = String             #17            // s
+  #17 = Utf8               s
+  #18 = Methodref          #14.#12        // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #19 = String             #20            // ok
+  #20 = Utf8               ok
+  #21 = Class              #22            // java/lang/StringBuilder
+  #22 = Utf8               java/lang/StringBuilder
+  #23 = Methodref          #21.#3         // java/lang/StringBuilder."<init>":()V
+  #24 = Methodref          #2.#25         // java/lang/Object.getClass:()Ljava/lang/Class;
+  #25 = NameAndType        #26:#27        // getClass:()Ljava/lang/Class;
+  #26 = Utf8               getClass
+  #27 = Utf8               ()Ljava/lang/Class;
+  #28 = Methodref          #29.#30        // java/lang/Class.getSimpleName:()Ljava/lang/String;
+  #29 = Class              #31            // java/lang/Class
+  #30 = NameAndType        #32:#33        // getSimpleName:()Ljava/lang/String;
+  #31 = Utf8               java/lang/Class
+  #32 = Utf8               getSimpleName
+  #33 = Utf8               ()Ljava/lang/String;
+  #34 = Methodref          #21.#35        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #35 = NameAndType        #36:#37        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #36 = Utf8               append
+  #37 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #38 = String             #39            // :
+  #39 = Utf8               :
+  #40 = Methodref          #41.#42        // java/lang/RuntimeException.getMessage:()Ljava/lang/String;
+  #41 = Class              #43            // java/lang/RuntimeException
+  #42 = NameAndType        #44:#33        // getMessage:()Ljava/lang/String;
+  #43 = Utf8               java/lang/RuntimeException
+  #44 = Utf8               getMessage
+  #45 = Methodref          #21.#46        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #46 = NameAndType        #47:#33        // toString:()Ljava/lang/String;
+  #47 = Utf8               toString
+  #48 = Class              #49            // PlainMultiCatch
+  #49 = Utf8               PlainMultiCatch
+  #50 = Utf8               Code
+  #51 = Utf8               choose
+  #52 = Utf8               (I)Ljava/lang/String;
+  #53 = Utf8               StackMapTable
+{
+  public PlainMultiCatch();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static java.lang.String choose(int);
+    descriptor: (I)Ljava/lang/String;
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: iload_0
+         1: iconst_1
+         2: if_icmpne     15
+         5: new           #7                  // class java/lang/IllegalArgumentException
+         8: dup
+         9: ldc           #9                  // String a
+        11: invokespecial #11                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+        14: athrow
+        15: iload_0
+        16: iconst_2
+        17: if_icmpne     30
+        20: new           #14                 // class java/lang/IllegalStateException
+        23: dup
+        24: ldc           #16                 // String s
+        26: invokespecial #18                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        29: athrow
+        30: ldc           #19                 // String ok
+        32: areturn
+        33: astore_1
+        34: new           #21                 // class java/lang/StringBuilder
+        37: dup
+        38: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+        41: aload_1
+        42: invokevirtual #24                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        45: invokevirtual #28                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+        48: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        51: ldc           #38                 // String :
+        53: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        56: aload_1
+        57: invokevirtual #40                 // Method java/lang/RuntimeException.getMessage:()Ljava/lang/String;
+        60: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        63: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        66: areturn
+      Exception table:
+         from    to  target type
+             0    32    33   Class java/lang/IllegalArgumentException
+             0    32    33   Class java/lang/IllegalStateException
+      StackMapTable: number_of_entries = 3
+        frame_type = 15 /* same */
+        frame_type = 14 /* same */
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/RuntimeException ]
+}

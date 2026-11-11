@@ -23,25 +23,25 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const C2: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C2.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C2.class"
 );
 const C2W: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/original/C2W.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/original/C2W.class"
 );
 const C2WN: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/original/C2WN.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/original/C2WN.class"
 );
 const C2WN_MY_FAILURE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/original/C2WN$MyFailure.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/original/C2WN$MyFailure.class"
 );
 const C2WN_MY_ERROR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/original/C2WN$MyError.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/original/C2WN$MyError.class"
 );
 const C2W_RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/C2WRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/C2WRunner.java"
 );
 const C2WN_RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/C2WNRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/wrap/C2WNRunner.java"
 );
 
 /// The one run of the original `C2.main` under `java -Xverify:all` — also the recorded JADX

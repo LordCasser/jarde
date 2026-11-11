@@ -8,19 +8,19 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const PLAIN: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-25/multicatch-finally-return/PlainMultiCatch.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/multicatch-finally-return/PlainMultiCatch.class"
 );
 const PLAIN_RUNNER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-25/multicatch-finally-return/PlainRunner.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/multicatch-finally-return/PlainRunner.class"
 );
 const PLAIN_OUTPUT: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/multicatch-finally-return/plain-original-run.txt"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/multicatch-finally-return/plain-original-run.txt"
 );
 const PLAIN_JAVAP: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/multicatch-finally-return/plain-javap.txt"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/multicatch-finally-return/plain-javap.txt"
 );
 const COMBINED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-25/multicatch-finally-return/MultiCatchProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/multicatch-finally-return/MultiCatchProbe.class"
 );
 const POSTFIX: &[u8] =
     include_bytes!("fixtures/p3-typed-catch-boundary-return/v8/BoundaryPostfixProbe.class");

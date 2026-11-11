@@ -11,7 +11,7 @@ use jarde_reader::model::{ExecutionReport, TerminationReason};
 use std::slice;
 
 const FIXTURE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class"
 );
 const OUTER_ASSIGNMENT_FIXTURE: &[u8] =
     include_bytes!("fixtures/p3-iterator-assignment/CF11OuterAssignmentTarget.class");

@@ -28,28 +28,28 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const L1: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L1.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L1.class"
 );
 const L2: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L2.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L2.class"
 );
 const L3: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L3.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L3.class"
 );
 const L3_BASELINE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L3.jarde.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L3.jarde.java"
 );
 const L1_BASELINE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L1.jarde.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L1.jarde.java"
 );
 const T1: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/tail-coverage/original/T1.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/labeled-loop-patrol/tail-coverage/original/T1.class"
 );
 const T2: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/tail-coverage/original/T2.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/labeled-loop-patrol/tail-coverage/original/T2.class"
 );
 const T3: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/tail-coverage/original/T3.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/labeled-loop-patrol/tail-coverage/original/T3.class"
 );
 
 /// The run of the original frozen classes' `main` — the text every recovered leg printed.

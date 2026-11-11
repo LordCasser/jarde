@@ -235,7 +235,12 @@ impl RegionSummary {
         let mut terminals = Vec::new();
         for block in &owned {
             poll(budget, Some(block.bci()))?;
-            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(block.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(block.bci()),
+            )?;
             let names = ssa
                 .block(block)
                 .expect("an owned block is live and has SSA names");
@@ -321,9 +326,7 @@ pub(crate) fn summaries_of(
 /// The normal continuation targets the candidate's own variant states.
 fn stated_exits(region: &Region) -> Vec<CanonicalBlockId> {
     match region {
-        Region::If { join, .. } | Region::CompoundIf { join, .. } => {
-            join.iter().cloned().collect()
-        }
+        Region::If { join, .. } | Region::CompoundIf { join, .. } => join.iter().cloned().collect(),
         Region::SharedTailEarlyReturn { join, .. } => vec![join.clone()],
         Region::Switch { join, .. } | Region::StringSwitch { join, .. } => {
             join.iter().cloned().collect()
@@ -572,9 +575,7 @@ fn reconcile_exits(
                 continue;
             }
             if summary.owned.contains(exit) {
-                mismatches.push(RegionSummaryMismatch::ExitOwnedByCandidate {
-                    exit: exit.clone(),
-                });
+                mismatches.push(RegionSummaryMismatch::ExitOwnedByCandidate { exit: exit.clone() });
             }
             let reached = canonical.edges().iter().any(|edge| {
                 edge.kind() == CanonicalEdgeKind::Normal
@@ -613,11 +614,7 @@ fn reconcile_transfers(
                 .iter()
                 .filter(|block| block_holds(canonical, block, transfer.source_bci))
                 .collect();
-            let Some(source) = sources
-                .first()
-                .copied()
-                .filter(|_| sources.len() == 1)
-            else {
+            let Some(source) = sources.first().copied().filter(|_| sources.len() == 1) else {
                 mismatches.push(RegionSummaryMismatch::TransferSourceUnresolved {
                     source_bci: transfer.source_bci,
                 });
@@ -626,9 +623,7 @@ fn reconcile_transfers(
             let successors: Vec<&CanonicalBlockId> = canonical
                 .edges()
                 .iter()
-                .filter(|edge| {
-                    edge.kind() == CanonicalEdgeKind::Normal && edge.from() == source
-                })
+                .filter(|edge| edge.kind() == CanonicalEdgeKind::Normal && edge.from() == source)
                 .map(|edge| edge.to())
                 .collect();
             if successors.is_empty() {
@@ -638,10 +633,9 @@ fn reconcile_transfers(
                 continue;
             }
             let named_loop = |header: &CanonicalBlockId| {
-                loops
-                    .iter()
-                    .copied()
-                    .find(|region| matches!(region, Region::Loop { header: own, .. } if own == header))
+                loops.iter().copied().find(
+                    |region| matches!(region, Region::Loop { header: own, .. } if own == header),
+                )
             };
             match &transfer.kind {
                 RegionTransferKind::SwitchBreak { join, .. } => {
@@ -923,14 +917,15 @@ fn reconcile_boundary_edges(
                         .find(|phi| phi.block() == edge.to() && phi.value() == *value)
                 });
             match merge {
-                Some(phi) if phi.inputs().iter().any(|input| match input {
-                    PhiInput::Value(operand) => {
-                        resolved(ssa, *operand) == resolved(ssa, *out_value)
-                    }
-                    // The edge hands the merge's own value back, which this disagreement
-                    // branch cannot be: the arrival would already name it.
-                    PhiInput::Itself => false,
-                }) => {}
+                Some(phi)
+                    if phi.inputs().iter().any(|input| match input {
+                        PhiInput::Value(operand) => {
+                            resolved(ssa, *operand) == resolved(ssa, *out_value)
+                        }
+                        // The edge hands the merge's own value back, which this disagreement
+                        // branch cannot be: the arrival would already name it.
+                        PhiInput::Itself => false,
+                    }) => {}
                 Some(_) => mismatches.push(RegionSummaryMismatch::MergeOperandMissing {
                     to: edge.to().clone(),
                     slot: *slot,

@@ -11,28 +11,28 @@ use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 const SAMPLE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr.class"
 );
 const WRONG_MAIN_END: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/patched-negative/MultiResourceTwr.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/multi-resource-twr/patched-negative/MultiResourceTwr.class"
 );
 const EFFECTFUL_HEADER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/effectful-header-negative/MultiResourceTwr.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/multi-resource-twr/effectful-header-negative/MultiResourceTwr.class"
 );
 const CONSTRUCTOR_IDENTITY_MISMATCH: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/constructor-identity-negative/MultiResourceTwr.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/multi-resource-twr/constructor-identity-negative/MultiResourceTwr.class"
 );
 const ORIGINAL_PROBE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr$Probe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr$Probe.class"
 );
 const ORIGINAL_BODY_FAILURE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr$BodyFailure.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr$BodyFailure.class"
 );
 const ORIGINAL_CLOSE_FAILURE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr$CloseFailure.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr$CloseFailure.class"
 );
 const ORIGINAL_RUNTIME: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/runtime.txt"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/runtime.txt"
 );
 
 static NEXT_SCRATCH: AtomicU64 = AtomicU64::new(0);

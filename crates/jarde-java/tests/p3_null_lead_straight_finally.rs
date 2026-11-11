@@ -20,7 +20,7 @@ use jarde_reader::view::{
 };
 
 const FIXED: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf2.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf2.class"
 );
 
 /// Verifier-valid neighbors the certificate must refuse. Each one breaks exactly one link of
@@ -28,31 +28,31 @@ const FIXED: &[u8] = include_bytes!(
 /// (`negatives/patch-tf2.py`) that rewrite one copy, one completion, or one row.
 const NEGATIVES: [&[u8]; 9] = [
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2LeadField/Tf2LeadField.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2LeadField/Tf2LeadField.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2LeadExtra/Tf2LeadExtra.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2LeadExtra/Tf2LeadExtra.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2SlotMismatch/Tf2SlotMismatch.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2SlotMismatch/Tf2SlotMismatch.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2ArgOtherSlot/Tf2ArgOtherSlot.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2ArgOtherSlot/Tf2ArgOtherSlot.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2CleanupExtra/Tf2CleanupExtra.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2CleanupExtra/Tf2CleanupExtra.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2TargetMismatch/Tf2TargetMismatch.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2TargetMismatch/Tf2TargetMismatch.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2ReturnIdentity/Tf2ReturnIdentity.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2ReturnIdentity/Tf2ReturnIdentity.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2RethrowIdentity/Tf2RethrowIdentity.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2RethrowIdentity/Tf2RethrowIdentity.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2SelfRowWidened/Tf2SelfRowWidened.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2SelfRowWidened/Tf2SelfRowWidened.class"
     ),
 ];
 

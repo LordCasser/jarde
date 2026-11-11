@@ -268,10 +268,10 @@ def main() -> int:
     parser.add_argument('--nested-source', type=Path, default=ROOT / 'tests/fixtures/recover-return-through-nested-finally-cleanup/source/NestedFinally.java')
     parser.add_argument('--driver-source', type=Path, default=ROOT / 'tests/fixtures/recover-return-through-nested-finally-cleanup/source/NestedFinallyDriver.java')
     parser.add_argument('--ex-driver-source', type=Path, default=Path(__file__).resolve().parent / 'EXNestedFinallyDriver.java')
-    parser.add_argument('--ex-source', type=Path, default=ROOT / 'openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.java')
+    parser.add_argument('--ex-source', type=Path, default=ROOT / 'tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.java')
     parser.add_argument('--javac8-class', type=Path, default=ROOT / 'tests/fixtures/recover-return-through-nested-finally-cleanup/v8-javac8/NestedFinally.class')
     parser.add_argument('--javac23-class', type=Path, default=ROOT / 'tests/fixtures/recover-return-through-nested-finally-cleanup/v8/NestedFinally.class')
-    parser.add_argument('--ex-class', type=Path, default=ROOT / 'openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class')
+    parser.add_argument('--ex-class', type=Path, default=ROOT / 'tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class')
     parser.add_argument('--expect', choices=('recovered', 'observed'), required=True,
                         help='recovered requires nestedFin generated sources to compile and match; observed preserves baseline failures without requiring success')
     args = parser.parse_args()

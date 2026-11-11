@@ -4,10 +4,11 @@ use jarde::*;
 use std::slice;
 
 const SLICE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/shift-root-core-slice/original/ShiftSlice.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/shift-root-core-slice/original/ShiftSlice.class"
 );
-const WIDTH: &[u8] =
-    include_bytes!("../openspec/evidence/java-syntax-2026-09-24/shift-width-cast/ShiftWidth.class");
+const WIDTH: &[u8] = include_bytes!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/shift-width-cast/ShiftWidth.class"
+);
 
 fn source(bytes: &[u8], class: &str) -> ClassSourceReport {
     let mut budget = task_budget(&[]).expect("bounded task budget");

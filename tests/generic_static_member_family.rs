@@ -2,10 +2,11 @@ use jarde::*;
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
 use std::io::{Cursor, Write};
 
-const ROOT: &[u8] =
-    include_bytes!("../openspec/evidence/java-syntax-2026-09-28/em01-generic-member/Generic.class");
+const ROOT: &[u8] = include_bytes!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/em01-generic-member/Generic.class"
+);
 const CHILD: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-28/em01-generic-member/Generic$A.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/em01-generic-member/Generic$A.class"
 );
 
 fn jar(root: &[u8], child: &[u8]) -> Vec<u8> {

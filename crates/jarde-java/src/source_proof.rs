@@ -6461,8 +6461,7 @@ pub fn prove_direct_parent_field_writes<H: RecoveryHeaders>(
     budget: &mut Budget,
 ) -> std::result::Result<Vec<jarde_java::report::SuperclassFieldWriteInput>, H::Error> {
     use jarde_reader::classfile::cp_entry;
-    let (Some(code), Some(declaration), Some(ssa)) = (ir.code(), ir.declaration(), ir.ssa())
-    else {
+    let (Some(code), Some(declaration), Some(ssa)) = (ir.code(), ir.declaration(), ir.ssa()) else {
         return Ok(Vec::new());
     };
     let site_index = SsaSiteIndex::build(ssa, budget)?;
@@ -6549,8 +6548,7 @@ pub fn prove_direct_parent_accessor_calls<H: RecoveryHeaders>(
     budget: &mut Budget,
 ) -> std::result::Result<Vec<jarde_java::report::ReferenceOverloadCallInput>, H::Error> {
     use jarde_reader::classfile::cp_entry;
-    let (Some(code), Some(declaration), Some(ssa)) = (ir.code(), ir.declaration(), ir.ssa())
-    else {
+    let (Some(code), Some(declaration), Some(ssa)) = (ir.code(), ir.declaration(), ir.ssa()) else {
         return Ok(Vec::new());
     };
     let site_index = SsaSiteIndex::build(ssa, budget)?;
@@ -6706,16 +6704,18 @@ pub(crate) fn named_stack_receiver<'a>(
             jarde_jvm::method_ir::Slot::Local(_) => None,
         })
         .min_by_key(|(depth, _)| *depth);
-    Ok(first.and_then(|(_, value)| match index.ssa.value(value).ty() {
-        jarde_jvm::method_ir::Value::Ref(jarde_jvm::method_ir::RefType::Named { name, .. }) => {
-            Some(
+    Ok(
+        first.and_then(|(_, value)| match index.ssa.value(value).ty() {
+            jarde_jvm::method_ir::Value::Ref(jarde_jvm::method_ir::RefType::Named {
+                name, ..
+            }) => Some(
                 name.strip_prefix(b"L")
                     .and_then(|name| name.strip_suffix(b";"))
                     .unwrap_or(name),
-            )
-        }
-        _ => None,
-    }))
+            ),
+            _ => None,
+        }),
+    )
 }
 
 /// The cast is confined to one selected, direct B -> A edge. A missing or ambiguous
@@ -7254,7 +7254,10 @@ pub fn prove_reference_relations<H: RecoveryHeaders>(
                 instruction.bci,
                 instruction.opcode,
                 String::from_utf8_lossy(descriptor),
-                sites.iter().map(|(o, t)| (*o, String::from_utf8_lossy(t).to_string())).collect::<Vec<_>>()
+                sites
+                    .iter()
+                    .map(|(o, t)| (*o, String::from_utf8_lossy(t).to_string()))
+                    .collect::<Vec<_>>()
             );
         }
         // The operands this call consumes, bottom first: the one site this BCI holds records one
@@ -12292,14 +12295,14 @@ pub fn scan_static_fold_body_references<'a, T, S>(
             body_text.len() as u64,
         )?;
         let (pool_name, dotted_name) = target_names(target);
-        let mut spans: Vec<(usize, usize, bool)> =
-            match java_code_name_spans(body_text, pool_name) {
-                Some(spans) => spans
-                    .into_iter()
-                    .map(|(start, end)| (start, end, false))
-                    .collect(),
-                None => return Ok(Err("static fold source artifact is malformed".to_owned())),
-            };
+        let mut spans: Vec<(usize, usize, bool)> = match java_code_name_spans(body_text, pool_name)
+        {
+            Some(spans) => spans
+                .into_iter()
+                .map(|(start, end)| (start, end, false))
+                .collect(),
+            None => return Ok(Err("static fold source artifact is malformed".to_owned())),
+        };
         if dotted_name != pool_name {
             let dotted_spans = match java_code_name_spans(body_text, dotted_name) {
                 Some(spans) => spans,

@@ -51,12 +51,12 @@ const STORE: u16 = 0;
 
 /// The operator-remainder patrol's frozen `OP2` (`javac --release 8`, default debug info).
 const OP2_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-05/operator-remainder-patrol/fixture/op2.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/operator-remainder-patrol/fixture/op2.jar"
 );
 /// The same class's source, frozen beside the jar. The replay reads its `main` body from here —
 /// never from a transcription — and asserts that the body it reads is the one the line measures.
 const OP2_SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-10-05/operator-remainder-patrol/fixture/OP2.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/operator-remainder-patrol/fixture/OP2.java"
 );
 /// The driver the replay substitutes for the refused-body marker: `OP2`'s own `main` body, verbatim.
 const OP2_DRIVER: &str = r#"System.out.println(""+shl(3)+"/"+shr(-8)+"/"+ushr(-8)+"/"+lshl(2L)+"/"+nanf()+"/"+pinf()+"/"+ninf()+"/"+(pzero()==0.0f)+"/"+condAssign(0)+"/"+condAssignOld(0));"#;

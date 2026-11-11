@@ -4,7 +4,7 @@ use jarde::*;
 use std::slice;
 
 const CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraBoundary.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraBoundary.class"
 );
 
 fn opened() -> (ArtifactSnapshot, ClassSourceRequest) {

@@ -4,7 +4,7 @@ use jarde::*;
 use std::slice;
 
 const STRUCTURED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraBoundary.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraBoundary.class"
 );
 const EXTRA_ENTRY: &[u8] = include_bytes!(
     "fixtures/p3-conditional-values/short-circuit-transfer-gateway-controls/ChainExtraBoundary.class"

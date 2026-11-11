@@ -4,13 +4,13 @@ use jarde_reader::classfile::{
 };
 
 const VISIBLE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
 );
 const INVISIBLE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/legal/BoundaryTagged.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/legal/BoundaryTagged.class"
 );
 const COUNT_MISMATCH: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/patched/parameter-count-mismatch/BoundaryTagged.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/patched/parameter-count-mismatch/BoundaryTagged.class"
 );
 
 fn limits() -> Limits {

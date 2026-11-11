@@ -7,19 +7,19 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const STANDALONE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/field-generic-signatures/fixture/StandaloneFieldBoundary.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/field-generic-signatures/fixture/StandaloneFieldBoundary.java"
 );
 const RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/field-generic-signatures/fixture/StandaloneFieldRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/field-generic-signatures/fixture/StandaloneFieldRunner.java"
 );
 const REFLECTION: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/field-generic-signatures/fixture/StandaloneFieldReflectionRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/field-generic-signatures/fixture/StandaloneFieldReflectionRunner.java"
 );
 const CONFLICT: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/field-generic-signatures/fixture/FieldSignatureConflict.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/field-generic-signatures/fixture/FieldSignatureConflict.java"
 );
 const CONFLICT_RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/field-generic-signatures/fixture/FieldSignatureConflictRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/field-generic-signatures/fixture/FieldSignatureConflictRunner.java"
 );
 const TYPE_USE_FIELD: &str = "package fieldsig;\nimport java.lang.annotation.*;\nimport java.util.List;\n@Target(ElementType.TYPE_USE) @Retention(RetentionPolicy.RUNTIME) @interface FieldType {}\npublic final class TypeUseField { public List<@FieldType String> values; }\n";
 
@@ -253,7 +253,7 @@ fn field_signature_refusals_keep_descriptor_for_mismatch_unbound_and_body_use() 
     let mismatch = temp.path().join("mismatch.class");
     let result = Command::new("python3")
         .args([
-            concat!(env!("CARGO_MANIFEST_DIR"), "/openspec/evidence/java-syntax-2026-09-24/field-generic-signatures/mutate_field_signature.py"),
+            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/field-generic-signatures/mutate_field_signature.py"),
             classes.join("fieldsig/StandaloneFieldBoundary.class").to_str().unwrap(),
             mismatch.to_str().unwrap(),
             "names",
@@ -292,7 +292,7 @@ fn field_signature_refusals_keep_descriptor_for_mismatch_unbound_and_body_use() 
     let unbound = temp.path().join("unbound.class");
     let result = Command::new("python3")
         .args([
-            concat!(env!("CARGO_MANIFEST_DIR"), "/openspec/evidence/java-syntax-2026-09-24/field-generic-signatures/mutate_field_signature.py"),
+            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/field-generic-signatures/mutate_field_signature.py"),
             classes.join("fieldsig/StandaloneFieldBoundary.class").to_str().unwrap(),
             unbound.to_str().unwrap(),
             "current",
@@ -336,7 +336,7 @@ fn field_signature_refusals_keep_descriptor_for_mismatch_unbound_and_body_use() 
     let conflict_mutated = temp.path().join("FieldSignatureConflict.class");
     let result = Command::new("python3")
         .args([
-            concat!(env!("CARGO_MANIFEST_DIR"), "/openspec/evidence/java-syntax-2026-09-24/field-generic-signatures/mutate_field_signature.py"),
+            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/field-generic-signatures/mutate_field_signature.py"),
             conflict_original.to_str().unwrap(),
             conflict_mutated.to_str().unwrap(),
             "items",

@@ -32,7 +32,7 @@ const NESTED_NEGATIVES: &[u8] = include_bytes!(
     "../../../tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectfulNegatives.class"
 );
 const TWO_LEVEL: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/two-level-if-baseline/baseline/classes/cf08twolvl/TwoLevelIf.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf08-endless-loops/two-level-if-baseline/baseline/classes/cf08twolvl/TwoLevelIf.class"
 );
 const TWO_LEVEL_NEGATIVES: &[u8] = include_bytes!(
     "../../../tests/fixtures/cf08-two-level-effectful/cf08twolvl/TwoLevelIfNegatives.class"

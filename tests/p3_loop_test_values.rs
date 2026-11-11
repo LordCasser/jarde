@@ -15,7 +15,7 @@ use jarde::*;
 use std::slice;
 
 const ITERABLE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/enhanced-for/string-iterable/StringIterableForeach.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enhanced-for/string-iterable/StringIterableForeach.class"
 );
 const LOOP_VALUES: &[u8] = include_bytes!("fixtures/p3-loop-test-values/v8/LoopTestValues.class");
 

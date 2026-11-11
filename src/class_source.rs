@@ -7619,7 +7619,7 @@ mod tests {
     }
 
     const MEMBER_ANNOTATION_TARGET: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
     );
 
     #[test]

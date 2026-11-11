@@ -51,8 +51,9 @@ use std::slice;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 /// The patrol's frozen anchor: javac 23.0.1, `--release 8`, with line numbers.
-const JAR: &[u8] =
-    include_bytes!("../openspec/evidence/java-syntax-2026-10-08/multi-lock-patrol/fixture/ml.jar");
+const JAR: &[u8] = include_bytes!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-08/multi-lock-patrol/fixture/ml.jar"
+);
 /// The same source on this fixture's own legs (see the fixture's `README.md`).
 const ML_V8: &[u8] = include_bytes!("fixtures/recover-nested-lock-finally-bodies/v8/ML.class");
 const ML_V8_JAVAC8: &[u8] =

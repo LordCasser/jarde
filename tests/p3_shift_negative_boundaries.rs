@@ -10,10 +10,10 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const SLICE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/shift-root-core-slice/original/ShiftSlice.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/shift-root-core-slice/original/ShiftSlice.class"
 );
 const LOCAL_SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/shift-negative-boundaries/ShiftLocalBoundary.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/shift-negative-boundaries/ShiftLocalBoundary.java"
 );
 
 fn budget() -> Budget {

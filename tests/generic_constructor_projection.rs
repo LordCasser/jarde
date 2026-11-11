@@ -7,16 +7,16 @@ use std::{
 };
 
 const CLASS: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/generic-constructor-signatures/fixture/GenericConstructor.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-constructor-signatures/fixture/GenericConstructor.java"
 );
 const CALLER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/generic-constructor-signatures/fixture/GenericConstructorCaller.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-constructor-signatures/fixture/GenericConstructorCaller.java"
 );
 const REFLECT: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/generic-constructor-signatures/fixture/GenericConstructorReflect.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-constructor-signatures/fixture/GenericConstructorReflect.java"
 );
 const TYPE_CHECK: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/generic-constructor-signatures/fixture/GenericConstructorTypeCheck.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-constructor-signatures/fixture/GenericConstructorTypeCheck.java"
 );
 
 struct Scratch(PathBuf);

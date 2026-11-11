@@ -24,13 +24,13 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const G1: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/collection-widening-patrol/fixture/G1.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/collection-widening-patrol/fixture/G1.class"
 );
 const CWV: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWV.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWV.class"
 );
 const CWN: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWN.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWN.class"
 );
 
 /// The one run of the original `G1.main` under `java -Xverify:all` (`fixture/orig.out`).
@@ -380,21 +380,21 @@ fn table_out_presentations_keep_the_refusal_and_the_original_runtime() {
         (
             "CWN$MyList.class",
             include_bytes!(
-                "../openspec/evidence/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWN$MyList.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWN$MyList.class"
             )
             .as_slice(),
         ),
         (
             "CWN$MySubList.class",
             include_bytes!(
-                "../openspec/evidence/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWN$MySubList.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWN$MySubList.class"
             )
             .as_slice(),
         ),
         (
             "CWN$Kind.class",
             include_bytes!(
-                "../openspec/evidence/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWN$Kind.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/collection-widening-patrol/widen/original/CWN$Kind.class"
             )
             .as_slice(),
         ),

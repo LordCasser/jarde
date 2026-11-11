@@ -8,28 +8,28 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const RAW_DEBUG: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.debug.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.debug.class"
 );
 const RAW_NODEBUG: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.nodebug.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.nodebug.class"
 );
 const GENERIC_DEBUG: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/jadx-iterable-for-claim/IterableForEach.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/iterable-raw-projection/jadx-iterable-for-claim/IterableForEach.class"
 );
 const GENERIC_NODEBUG: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/jadx-iterable-for-claim/debug-control/IterableForEach.nodebug.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/iterable-raw-projection/jadx-iterable-for-claim/debug-control/IterableForEach.nodebug.class"
 );
 const CURSOR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/NamedIteratorCursor.nodebug.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/NamedIteratorCursor.nodebug.class"
 );
 const PROTECTED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/CatchNextScope.nodebug.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/CatchNextScope.nodebug.class"
 );
 const RAW_RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/runners/RawIterableIteratorRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/runners/RawIterableIteratorRunner.java"
 );
 const GENERIC_RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/jadx-iterable-for-claim/IterableForEachRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/iterable-raw-projection/jadx-iterable-for-claim/IterableForEachRunner.java"
 );
 const BOUNDARY: &str = include_str!("fixtures/p3-iterable-foreach/IterableBoundary.java");
 const BOUNDARY_RUNNER: &str =

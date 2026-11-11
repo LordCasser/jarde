@@ -19,10 +19,10 @@ use jarde_reader::view::{
 };
 
 const INSTANCEOF_MERGE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-25/instanceof-boolean-merge/InstanceOfMerge.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/instanceof-boolean-merge/InstanceOfMerge.class"
 );
 const BOOLEAN_MERGE_CONTROLS: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-25/instanceof-boolean-merge/BooleanMergeControls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/instanceof-boolean-merge/BooleanMergeControls.class"
 );
 
 fn limits() -> Limits {

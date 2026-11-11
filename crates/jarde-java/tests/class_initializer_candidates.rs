@@ -27,34 +27,34 @@ const FORWARD_READ: &[u8] = include_bytes!(
     "../../../tests/fixtures/p3-interface-field-initializers/v8/negative/forward-read/ForwardProbe.class"
 );
 const CONSTANT_PHASE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/constant-phase-boundary/PhaseProbe.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/constant-phase-boundary/PhaseProbe.class"
 );
 const EXCEPTION_EDGE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/exception-handler/ExceptionProbe.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/exception-handler/ExceptionProbe.class"
 );
 const ENUM_HELPER_NORMAL: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/original/EnumSwitchSubject$1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/original/EnumSwitchSubject$1.class"
 );
 const ENUM_HELPER_SWAPPED: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/patched-map/EnumSwitchSubject$1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/patched-map/EnumSwitchSubject$1.class"
 );
 const ENUM_HELPER_MULTI_WRITE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/multi-write/classes/EnumSwitchSubject$1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/multi-write/classes/EnumSwitchSubject$1.class"
 );
 const ENUM_HELPER_DUPLICATE_KEY: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/duplicate-key/classes/EnumSwitchSubject$1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/duplicate-key/classes/EnumSwitchSubject$1.class"
 );
 const ENUM_HUE_NORMAL: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/original/Hue.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/original/Hue.class"
 );
 const ENUM_HUE_ALIASED: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/aliased-enum/classes/Hue.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/aliased-enum/classes/Hue.class"
 );
 const ENUM_HUE_FACTORY_NULL_ELEMENT: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/factory-null-element-Hue.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/factory-null-element-Hue.class"
 );
 const ENUM_HUE_VALUES_RETURNS_NULL: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/values-returns-null-Hue.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/values-returns-null-Hue.class"
 );
 
 struct Fixture {

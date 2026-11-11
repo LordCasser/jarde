@@ -293,7 +293,9 @@ fn a_quote_a_stripped_body_cannot_compile_through_keeps_its_partial_presentation
     // and stripping the quotes leaves a method `javac` rejects for a missing return statement,
     // so there is no silently-different compilation to refuse.
     let report = recover_class_method(
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-26/Patrol2.class"),
+        include_bytes!(
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/Patrol2.class"
+        ),
         "Patrol2",
         "multiCatch",
         "(I)I",

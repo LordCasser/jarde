@@ -6,7 +6,7 @@ use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 const FIXTURE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar"
 );
 static NEXT_TEMP_DIR: AtomicU64 = AtomicU64::new(0);
 

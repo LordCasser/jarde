@@ -33,16 +33,16 @@ use std::slice;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 const W1: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/fixture/W1.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/fixture/W1.class"
 );
 const W2: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/fixture/W2.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/fixture/W2.class"
 );
 const W2_BASELINE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/arm-loop-exits/results/W2.baseline.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/arm-loop-exits/results/W2.baseline.java"
 );
 const VARIANTS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/arm-loop-exits/fixture/Cf13Exits.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/arm-loop-exits/fixture/Cf13Exits.class"
 );
 const ADJACENT: &[u8] = include_bytes!("fixtures/p3-switch-loop-exits/v8/SwitchLoopAdjacent.class");
 const BOUNDARIES: &[u8] =

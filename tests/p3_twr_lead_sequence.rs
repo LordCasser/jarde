@@ -12,15 +12,15 @@ use jarde::*;
 use std::slice;
 
 const REAL_JAVAC8: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/fixture/real-javac8-TR/TR.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/fixture/real-javac8-TR/TR.class"
 );
 const JAVAC23: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/fixture/javac23-TR/TR.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/fixture/javac23-TR/TR.class"
 );
 /// The pre-change presentation of the javac 23 leg, frozen before this slice was written
 /// (`class-source --format text`, content and bookkeeping planes in one document).
 const JAVAC23_RENDERED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/results/TR-javac23-rendered.txt"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/results/TR-javac23-rendered.txt"
 );
 
 fn limits() -> Limits {

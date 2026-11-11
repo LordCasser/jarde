@@ -15,7 +15,7 @@ use std::{
 };
 
 const DRIVER_SOURCE: &str = include_str!(
-    "../openspec/changes/recover-class-scope-constructor-parameters/evidence/ConstructorDriver.java"
+    "../tests/fixtures/recovered-inputs/changes/recover-class-scope-constructor-parameters/evidence/ConstructorDriver.java"
 );
 macro_rules! frozen {
     ($class:literal, $jdk:literal, $debug:literal) => {
@@ -26,7 +26,7 @@ macro_rules! frozen {
             bytes: include_bytes!(concat!(
                 env!("CARGO_MANIFEST_DIR"),
                 "/",
-                "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/",
+                "tests/fixtures/recovered-inputs/changes/recover-class-scope-constructor-parameters/evidence/frozen/",
                 $jdk,
                 "/",
                 $debug,
@@ -40,7 +40,7 @@ macro_rules! frozen {
             original_output: include_str!(concat!(
                 env!("CARGO_MANIFEST_DIR"),
                 "/",
-                "openspec/changes/recover-class-scope-constructor-parameters/evidence/frozen/",
+                "tests/fixtures/recovered-inputs/changes/recover-class-scope-constructor-parameters/evidence/frozen/",
                 $jdk,
                 "/",
                 $debug,

@@ -2,9 +2,9 @@
 //! This module performs no artifact read, definition selection or class transaction.
 #![allow(clippy::too_many_arguments)]
 
-use self as class_source;
 use crate as jarde_java;
 use crate::declaration::method_descriptor;
+use crate::generic_source_proof as class_source;
 use crate::report::{GenericReturnCandidate, GenericReturnValue, TypedFunctionalKind};
 use crate::source_proof::{
     enum_projection_stop_error, generic_call_reference_type_from_descriptor,

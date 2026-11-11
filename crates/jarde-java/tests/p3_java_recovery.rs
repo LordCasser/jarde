@@ -57,13 +57,13 @@ const HISTORICAL_V45: &[u8] =
     include_bytes!("../../../tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class");
 
 const BOUND_REFERENCE_NO_CHECK: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-08/bound-reference-creation-timing/NoCheck.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-08/bound-reference-creation-timing/NoCheck.class"
 );
 const BOUND_REFERENCE_NO_STAND: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-08/bound-reference-creation-timing/NoStand.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-08/bound-reference-creation-timing/NoStand.class"
 );
 const BOUND_REFERENCE_PROVEN_POSITIVES: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-08/bound-reference-creation-timing/positive/KnownBound.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-08/bound-reference-creation-timing/positive/KnownBound.class"
 );
 const BOUND_REFERENCE_ALLOCATION_TAIL: &[u8] =
     include_bytes!("../../../tests/fixtures/recover-proved-nonnull-bound-receivers/v8/OP.class");
@@ -376,7 +376,7 @@ fn describe(payload: &Payload) -> String {
 fn cf18_fixed_methods_preserve_rows_dispatch_and_presented_origins() {
     for (class, expected_rows, throw_sites, anchors, catch_bci, result) in [
         (
-            include_bytes!("../../../openspec/evidence/java-syntax-2026-09-27/cf18-handler-region-triage/HandlerLoopProbe.class").as_slice(),
+            include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf18-handler-region-triage/HandlerLoopProbe.class").as_slice(),
             vec![(0, 9, 16, 19), (1, 9, 29, 38), (2, 32, 35, 38)],
             vec![(11, vec![0, 1]), (20, vec![1]), (26, vec![1])],
             vec![9, 11, 19, 32, 38, 51],
@@ -384,7 +384,7 @@ fn cf18_fixed_methods_preserve_rows_dispatch_and_presented_origins() {
             "local0 = local0 + work(local1)",
         ),
         (
-            include_bytes!("../../../openspec/evidence/java-syntax-2026-09-27/cf18-exception-regions/baseline/ExceptionRegionsAudit.original.class").as_slice(),
+            include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf18-exception-regions/baseline/ExceptionRegionsAudit.original.class").as_slice(),
             vec![(0, 28, 35, 38), (1, 13, 25, 72), (2, 28, 52, 72), (3, 55, 69, 72)],
             vec![(17, vec![1]), (22, vec![1]), (30, vec![0, 2]), (39, vec![2]), (45, vec![2])],
             vec![13, 17, 28, 30, 38, 52, 55, 58, 63, 66, 72, 85],
@@ -474,7 +474,7 @@ fn cf18_fixed_methods_preserve_rows_dispatch_and_presented_origins() {
 #[test]
 fn cf16_named_catch_owns_complete_switch_and_range_end_transfer() {
     let class = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/TestTryCatchFinally12$TestCls.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-switch-catch/TestTryCatchFinally12$TestCls.class"
     );
     let payload = analyze(class, b"runTest", b"(II)Ljava/lang/String;");
     let ir = payload.analysis.ir();
@@ -600,9 +600,9 @@ fn cf16_named_catch_owns_complete_switch_and_range_end_transfer() {
 #[test]
 fn cf16_partial_case_ranges_and_real_resource_keep_their_boundaries() {
     for class in [
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/PartialSwitchCatch1.class").as_slice(),
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/PartialSwitchCatch2.class").as_slice(),
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/PartialSwitchCatch3.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/PartialSwitchCatch1.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/PartialSwitchCatch2.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/PartialSwitchCatch3.class").as_slice(),
     ] {
         let payload = analyze(class, b"runTest", b"(II)Ljava/lang/String;");
         let report = recover_body(
@@ -614,7 +614,7 @@ fn cf16_partial_case_ranges_and_real_resource_keep_their_boundaries() {
         assert_eq!(report.text.matches("catch (java.lang.IllegalArgumentException").count(), 1);
     }
     let resource = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/TwrSwitchCatch.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/TwrSwitchCatch.class"
     );
     let payload = analyze(resource, b"runTest", b"(II)Ljava/lang/String;");
     let report = recover_body(
@@ -632,7 +632,7 @@ fn cf16_partial_case_ranges_and_real_resource_keep_their_boundaries() {
 #[test]
 fn cf16_stopped_runs_do_not_publish_a_partial_try() {
     let class = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/TestTryCatchFinally12$TestCls.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-switch-catch/TestTryCatchFinally12$TestCls.class"
     );
     let payload = analyze(class, b"runTest", b"(II)Ljava/lang/String;");
     let facts = facts_of(class, b"runTest", 3, vec![]);
@@ -664,14 +664,14 @@ fn cf16_stopped_runs_do_not_publish_a_partial_try() {
 #[test]
 fn cf18_verifier_valid_near_misses_refuse_the_whole_method() {
     for class in [
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/wrong-type/ExceptionRegionsAudit.class").as_slice(),
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/wrong-order/ExceptionRegionsAudit.class").as_slice(),
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/missing-protection/ExceptionRegionsAudit.class").as_slice(),
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/extra-throw-site/ExceptionRegionsAudit.class").as_slice(),
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/other-loop-point/ExceptionRegionsAudit.class").as_slice(),
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/ordinary-handler-entry/ExceptionRegionsAudit.class").as_slice(),
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/handler-index-write/ExceptionRegionsAudit.class").as_slice(),
-        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/crossing-range/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/wrong-type/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/wrong-order/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/missing-protection/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/extra-throw-site/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/other-loop-point/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/ordinary-handler-entry/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/handler-index-write/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/crossing-range/ExceptionRegionsAudit.class").as_slice(),
     ] {
         let payload = analyze(class, b"run", b"()I");
         let report = recover_body(&payload, &facts_of(class, b"run", 0, vec![]), &mut Budget::new(limits()));
@@ -683,7 +683,7 @@ fn cf18_verifier_valid_near_misses_refuse_the_whole_method() {
 #[test]
 fn cf18_budget_and_cancellation_never_publish_partial_source() {
     let class = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-27/cf18-exception-regions/baseline/ExceptionRegionsAudit.original.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf18-exception-regions/baseline/ExceptionRegionsAudit.original.class"
     );
     let payload = analyze(class, b"run", b"()I");
     let facts = facts_of(class, b"run", 0, vec![]);
@@ -711,8 +711,8 @@ fn cf18_budget_and_cancellation_never_publish_partial_source() {
 #[ignore = "CF-18 evidence dump"]
 fn cf18_same_run_facts() {
     for (name, class) in [
-        ("HandlerLoopProbe", include_bytes!("../../../openspec/evidence/java-syntax-2026-09-27/cf18-handler-region-triage/HandlerLoopProbe.class").as_slice()),
-        ("ExceptionRegionsAudit", include_bytes!("../../../openspec/evidence/java-syntax-2026-09-27/cf18-exception-regions/baseline/ExceptionRegionsAudit.original.class").as_slice()),
+        ("HandlerLoopProbe", include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf18-handler-region-triage/HandlerLoopProbe.class").as_slice()),
+        ("ExceptionRegionsAudit", include_bytes!("../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf18-exception-regions/baseline/ExceptionRegionsAudit.original.class").as_slice()),
     ] {
         let payload = analyze(class, b"run", b"()I");
         let ir = payload.analysis.ir();

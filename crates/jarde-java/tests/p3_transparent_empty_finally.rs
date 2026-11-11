@@ -21,25 +21,25 @@ use jarde_reader::view::{
 };
 
 const ORIGINAL: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-testemptyfinally/original/TestEmptyFinally$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-testemptyfinally/original/TestEmptyFinally$TestCls.class"
 );
 const NEIGHBORS: [(&str, &[u8]); 3] = [
     (
         "changed-throwable",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-testemptyfinally/neighbors/changed-throwable.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-testemptyfinally/neighbors/changed-throwable.class"
         ),
     ),
     (
         "rows-swapped",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-testemptyfinally/neighbors/rows-swapped.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-testemptyfinally/neighbors/rows-swapped.class"
         ),
     ),
     (
         "handler-normal-exit",
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-testemptyfinally/neighbors/handler-normal-exit.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-testemptyfinally/neighbors/handler-normal-exit.class"
         ),
     ),
 ];

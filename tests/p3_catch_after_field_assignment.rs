@@ -3,7 +3,7 @@ use jarde::*;
 use std::slice;
 
 const SAMPLE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/catch-after-field-store/CatchAfterFieldAssignment.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/catch-after-field-store/CatchAfterFieldAssignment.class"
 );
 
 fn budget() -> Budget {

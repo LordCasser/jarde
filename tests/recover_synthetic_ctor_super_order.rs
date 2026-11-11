@@ -27,22 +27,22 @@ use std::time::{SystemTime, UNIX_EPOCH};
 const STORE: u16 = 0;
 
 const C1: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1.class"
 );
 const C1_1: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1$1.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1$1.class"
 );
 const C1_2: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1$2.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1$2.class"
 );
 const C1_OP: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1$Op.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C1$Op.class"
 );
 const C2: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C2.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C2.class"
 );
 const C2_INNER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C2$Inner.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/capture-ctor-order-patrol/fixture/C2$Inner.class"
 );
 
 /// The output baselines, stated by the patrol for this file's run to match (`orig.out`, plus the

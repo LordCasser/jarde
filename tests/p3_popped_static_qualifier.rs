@@ -8,10 +8,10 @@ use std::slice;
 const FIXTURE: &[u8] =
     include_bytes!("fixtures/p3-popped-static-qualifier/v8/StaticQualifierProbe.class");
 const OWNER_MISMATCH_FIXTURE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/static-field-qualifier/non-invoke-owner/NonInvokeQualifierProbe.owner-other.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/static-field-qualifier/non-invoke-owner/NonInvokeQualifierProbe.owner-other.class"
 );
 const INTERFACE_FIXTURE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/static-field-qualifier/boundary/InterfaceBoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/static-field-qualifier/boundary/InterfaceBoundaryProbe.class"
 );
 
 fn budget() -> Budget {

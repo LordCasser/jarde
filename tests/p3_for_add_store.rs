@@ -8,10 +8,10 @@ use jarde::*;
 use std::slice;
 
 const SIMPLE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/for-add-store-latch/simple/frozen/ForAddStoreSimple.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/for-add-store-latch/simple/frozen/ForAddStoreSimple.class"
 );
 const LABELED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/for-add-store-latch/frozen/ForAddStoreLatch.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/for-add-store-latch/frozen/ForAddStoreLatch.class"
 );
 const BOUNDARIES: &[u8] =
     include_bytes!("fixtures/p3-for-add-store/v8/ForAddStoreBoundaries.class");

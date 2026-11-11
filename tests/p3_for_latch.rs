@@ -8,13 +8,13 @@ use std::slice;
 const CLASS: &[u8] = include_bytes!("fixtures/p3-for-latch/v8/ForBoundaries.class");
 const CF07: &[u8] = include_bytes!("fixtures/p3-loop-terminal/LoopCases.class");
 const DIRECT_CALL_INIT: &[u8] = include_bytes!(
-    "../openspec/changes/recover-proved-computed-for-initializers/results/controls-baseline-root-v1/direct-return-actual/javac8/classes/ComputedForDirectReturn.class"
+    "../tests/fixtures/recovered-inputs/changes/recover-proved-computed-for-initializers/results/controls-baseline-root-v1/direct-return-actual/javac8/classes/ComputedForDirectReturn.class"
 );
 const SHARED_STACK_INPUT: &[u8] = include_bytes!(
-    "../openspec/changes/recover-proved-computed-for-initializers/results/shared-stack-input-root-v1/javac8/original/classes/SharedStoreInput.class"
+    "../tests/fixtures/recovered-inputs/changes/recover-proved-computed-for-initializers/results/shared-stack-input-root-v1/javac8/original/classes/SharedStoreInput.class"
 );
 const COMPUTED_FOR_CONTROLS: &[u8] = include_bytes!(
-    "../openspec/changes/recover-proved-computed-for-initializers/results/controls-baseline-root-v1/actual-controls/javac8/original/ComputedForControls.class"
+    "../tests/fixtures/recovered-inputs/changes/recover-proved-computed-for-initializers/results/controls-baseline-root-v1/actual-controls/javac8/original/ComputedForControls.class"
 );
 const CONDITION_EFFECTS: &[u8] =
     include_bytes!("fixtures/java8/cf11-for-condition/ForConditionEffects.class");
@@ -404,10 +404,10 @@ fn direct_call_initializer_is_written_once_in_the_for_header() {
 // Baseline control for a computed preheader initializer separated from its store by `g()`.
 // These include the accepted original/pending class files directly, avoiding duplicate fixtures.
 const CALL_ORDER_ORIGINAL: &[u8] = include_bytes!(
-    "../openspec/changes/recover-proved-computed-for-initializers/results/no-handler-call-order-baseline-root-v1/actual-v2/jdk8/original/ComputedForEffectControl.class",
+    "../tests/fixtures/recovered-inputs/changes/recover-proved-computed-for-initializers/results/no-handler-call-order-baseline-root-v1/actual-v2/jdk8/original/ComputedForEffectControl.class",
 );
 const CALL_ORDER_PENDING: &[u8] = include_bytes!(
-    "../openspec/changes/recover-proved-computed-for-initializers/results/no-handler-call-order-baseline-root-v1/actual-v2/jdk8/pending/ComputedForEffectControl.class",
+    "../tests/fixtures/recovered-inputs/changes/recover-proved-computed-for-initializers/results/no-handler-call-order-baseline-root-v1/actual-v2/jdk8/pending/ComputedForEffectControl.class",
 );
 
 fn call_order_find(report: &ClassSourceReport) -> &ClassSourceMethod {

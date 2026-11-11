@@ -605,7 +605,12 @@ fn a_header_the_runtime_release_predates_is_presented_when_the_source_target_adm
     let recovered = recover_with(&engine, &fixture, b"one", 6);
     let report = recovered.recovery();
     assert!(report.produced(), "{:?}", report.outcome);
-    assert_eq!(report.representation, Representation::Java, "{}", report.text);
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}",
+        report.text
+    );
     assert_eq!(report.quality, Quality::Structured);
     assert!(
         !report.fallbacks.contains(&"jre_guard_profile"),

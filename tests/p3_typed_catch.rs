@@ -364,7 +364,9 @@ fn a_catch_type_of_zero_becomes_neither_a_catch_nor_a_finally() {
 /// `--release 8 -g:none`, class bytes SHA-256
 /// `4438f33df86d0359bf65531e47b137f9528bb1029a095c5280cef97c287b294f`, committed beside the
 /// three-way analysis in `openspec/evidence/java-syntax-2026-09-26/`.
-const PATROL2: &[u8] = include_bytes!("../openspec/evidence/java-syntax-2026-09-26/Patrol2.class");
+const PATROL2: &[u8] = include_bytes!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/Patrol2.class"
+);
 
 #[test]
 fn a_multi_catch_handler_that_proves_no_statement_keeps_its_header_and_quotes_its_body() {

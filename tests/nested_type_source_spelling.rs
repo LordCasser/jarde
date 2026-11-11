@@ -35,50 +35,50 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const V1_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture/fam.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture/fam.jar"
 );
 const V1_CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture/V1.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture/V1.class"
 );
 const V1_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture/orig.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture/orig.out"
 );
 
 const OTHER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN1/Other.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN1/Other.class"
 );
 const OTHER_INNER: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN1/Other$Inner.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN1/Other$Inner.class"
 );
 const VN1_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN1/vn1.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN1/vn1.jar"
 );
 const VN1_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN1/VN1.orig.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN1/VN1.orig.out"
 );
 
 const VN2_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN2/vn2.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN2/vn2.jar"
 );
 
 const VN3_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN3/vn3.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN3/vn3.jar"
 );
 
 const VN4_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/vn4.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/vn4.jar"
 );
 const VN4_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/VN4.orig.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/VN4.orig.out"
 );
 const OTHER_BOX: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/Other$Box.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/Other$Box.class"
 );
 const OTHER_MARK: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/Other$Mark.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/Other$Mark.class"
 );
 const OTHER_TAGGED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/Other$Tagged.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-name-spelling-patrol/fixture-variants/VN4/Other$Tagged.class"
 );
 
 fn budget() -> Budget {

@@ -8,16 +8,16 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-25/mixed-short-circuit-array/MixedArrayValue.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/mixed-short-circuit-array/MixedArrayValue.class"
 );
 const SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/mixed-short-circuit-array/MixedArrayValue.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/mixed-short-circuit-array/MixedArrayValue.java"
 );
 const RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/mixed-short-circuit-array/Runner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/mixed-short-circuit-array/Runner.java"
 );
 const EXPECTED: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/mixed-short-circuit-array/original-run.txt"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/mixed-short-circuit-array/original-run.txt"
 );
 const CONTROLS: &str = include_str!(
     "fixtures/p3-conditional-values/mixed-short-circuit-array/MixedArrayControls.java"

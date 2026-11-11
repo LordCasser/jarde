@@ -732,7 +732,7 @@ fn class_source_projects_array_constructor_atomically_with_same_named_helper() {
 #[test]
 fn raw_function_array_constructor_keeps_its_physical_helper_and_lambda_site() {
     let snapshot = open(include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class"
     ));
     let recovered = class_source(&snapshot, "BoxedSamProbe", &RecoveryEvidenceRequest::all());
     let method = recovered

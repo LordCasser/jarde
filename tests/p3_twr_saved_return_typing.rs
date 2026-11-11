@@ -23,10 +23,10 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const T2: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/fixture/T2.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/fixture/T2.class"
 );
 const WTYPING: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/saved-return-typing/original/Wtyping.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/saved-return-typing/original/Wtyping.class"
 );
 
 /// The run of the original frozen `T2.main` — the text the recovered class prints too (the

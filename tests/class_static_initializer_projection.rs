@@ -7,7 +7,7 @@ use std::process::Command;
 use std::slice;
 
 const FIELD_ORDER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-27/em06-field-init/input/em06/FieldOrder.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/em06-field-init/input/em06/FieldOrder.java"
 );
 const NEGATIVES: &str = r#"
 class Missing { static String a; static String b = next(); static String next() { return "b"; } }

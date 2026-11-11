@@ -1,3 +1,13 @@
+# 2026-11-10 测试输入恢复：全目标编译恢复，功能与架构验收继续
+
+恢复 821 个实际测试依赖到 `tests/fixtures/recovered-inputs`（1,151,819 字节），逐项与历史 `8ea98e2e11d64f02092ac200d2b596511dcf5e40` 的 Git blob、长度和 SHA-256 比对一致。EX 原始 1,632 字节和原 SHA 不变。Rust 编译期引用、运行期回放输入及两个 EX comparison 默认路径改用永久测试目录；修正 `generic_source_proof` 的模块别名。另应用 rustfmt，不声称格式改动是语义修复。
+
+三个从未跟踪、现不可取得的 S2b dev-v3 JAR 没有冒充原样恢复。新增 `s2b-inherited-generics` 明确固定新的 Corretto 8 源码/编译器/类字节基线，两次独立生成一致，原件 Driver 两次隔离执行通过；原有五测试及断言全部保留。新增显式 JDK 完整类运行门仍待实际执行。
+
+本环境实际通过：默认及 all-features 的 `cargo check --workspace --all-targets`；Reader 184/184、根库 297/297、Java 库 621/621、EX 2/2；N8 的 member_family_identity 20/20、nested_type_source_spelling 6/6；指纹再生 1/1、校验 5/5（1 ignored）。指纹新增 833 项，既有 2,847 项零删除/零改字节。独立原始 Code 计数与 Reader 实测一致：1,898 classes / 8,352 bodies / 1,661 handlers / 6,725 branch targets / 18 jsr。全部使用默认 Rust 栈、单 Cargo job、单测试线程；最终库验证源码前后摘要一致，target 峰值 837,587,101 字节，未触守卫，退出后清理。
+
+**仍红，不宣告全部完成**：S2b 原测试本次为 4 passed / 1 failed；CustomChild 的已投影 `echo` 声明标记使后续类级事务把原 body 误认为被改写，整个继承泛型 cohort 未提交，正按独立机制修复。全 workspace 行为套件、完整重编译门与 CI 尚未重新全部验收。主架构清单仍 33/65，不因恢复编译改勾。S0/S1/S3a 原资源收据与机器/输入固定证据仍缺失；已找到两个真实包的原 SHA，holdout 源文件尚在但不据此复用旧验收。旧本地未发布提交随先前环境丢失，本次以重新验证的新提交为准。
+
 # 2026-11-10 证据清理、历史重写与仓库收敛
 
 本轮按用户要求清理不适合进入 GitHub 的运行证据，并把本地与远端收敛到同一主线。清理完成时的 main 为 `9573be9e`；本提交只追加交接记录。

@@ -49,8 +49,9 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /// The patrol's frozen anchor: javac 23.0.1, `--release 8`, with line numbers.
-const JAR: &[u8] =
-    include_bytes!("../openspec/evidence/java-syntax-2026-10-05/io-wrapping-patrol/fixture/io.jar");
+const JAR: &[u8] = include_bytes!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/io-wrapping-patrol/fixture/io.jar"
+);
 /// The same source on this fixture's own legs (see the fixture's `README.md`).
 const IO_V8: &[u8] = include_bytes!("fixtures/recover-io-resource-finally/v8/IO.class");
 const IO_V8_JAVAC8: &[u8] =

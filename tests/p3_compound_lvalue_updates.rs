@@ -8,10 +8,10 @@ use std::slice;
 const STORE: u16 = 0;
 
 const NESTED_MULTIPLY_ROOT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2.class"
 );
 const NESTED_MULTIPLY_CHILD: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2$A.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2$A.class"
 );
 const BOUNDARY_PROBE: &[u8] =
     include_bytes!("fixtures/p3-compound-lvalue-updates/boundaries/v8/CompoundBoundaryProbe.class");

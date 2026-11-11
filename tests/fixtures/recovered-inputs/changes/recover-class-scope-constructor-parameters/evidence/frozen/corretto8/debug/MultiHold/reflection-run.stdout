@@ -1,0 +1,11 @@
+REFLECT|ctor[0].formalCount=2;typeVariableCount=0
+REFLECT|ctor[0].param[0]=T;binder=class
+REFLECT|ctor[0].param[1]=U;binder=class
+REFLECT|classTypeVariableCount=2
+REFLECT|classVar[0]=T;bounds=java.lang.Object
+REFLECT|classVar[1]=U;bounds=java.lang.CharSequence
+REFLECT|field[first]=T;binder=class
+BEHAVIOR|field[first]=arg0
+REFLECT|field[second]=U;binder=class
+BEHAVIOR|field[second]=arg1
+BEHAVIOR|constructed=MultiHold

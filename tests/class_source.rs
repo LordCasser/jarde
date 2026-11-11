@@ -38,7 +38,7 @@ const BRIDGE_API: &[u8] =
 const BRIDGE_PROBE: &[u8] =
     include_bytes!("fixtures/p3-bridge-projection/positive/v8/BridgeProbe.class");
 const BRIDGE_API_SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-23/bridge-source-projection/positive/BridgeApi.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-23/bridge-source-projection/positive/BridgeApi.java"
 );
 const BRIDGE_RUNNER_SOURCE: &str =
     include_str!("fixtures/p3-bridge-projection/positive/BridgeRunner.java");
@@ -122,55 +122,55 @@ const MIXED_RETENTION_TARGET: &[u8] =
 const MEMBER_PLACEMENT_TARGET: &[u8] =
     include_bytes!("fixtures/class-annotation-uses/v8/MemberPlacementTarget.class");
 const MEMBER_ANNOTATION_TARGET: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
 );
 const MEMBER_BOUNDARY_TARGET: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/legal/BoundaryTagged.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/legal/BoundaryTagged.class"
 );
 const MEMBER_BOUNDARY_DUPLICATE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/patched/duplicate-same-position/BoundaryTagged.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/patched/duplicate-same-position/BoundaryTagged.class"
 );
 const MEMBER_BOUNDARY_COUNT_MISMATCH: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/patched/parameter-count-mismatch/BoundaryTagged.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/patched/parameter-count-mismatch/BoundaryTagged.class"
 );
 const TYPE_USE_TARGET: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/original/TypeUseSubject.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/type-use-annotations/generated/original/TypeUseSubject.class"
 );
 const PRIMITIVE_TYPE_USE_TARGET: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/primitive-boundaries/build/patched/ScalarCases.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/type-use-annotations/primitive-boundaries/build/patched/ScalarCases.class"
 );
 const INVISIBLE_TYPE_USE_TARGET: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/invisible/HiddenTypeUse.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/type-use-annotations/generated/invisible/HiddenTypeUse.class"
 );
 const POSITIONED_TYPE_USE_TARGET: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/positioned/PositionedTypeUse.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/type-use-annotations/generated/positioned/PositionedTypeUse.class"
 );
 const DUAL_TARGET_TYPE_USE_TARGET: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/placement-boundaries/generated/classes/PlacementSubject.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/type-use-annotations/placement-boundaries/generated/classes/PlacementSubject.class"
 );
 const UNSUPPORTED_TYPE_USE_TARGET: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/unsupported/UnsupportedTypeUse.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/type-use-annotations/generated/unsupported/UnsupportedTypeUse.class"
 );
 const ENUM_SWITCH_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/enum-switch.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/enum-switch.jar"
 );
 const ENUM_SWITCH_SWAPPED_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/enum-switch-swapped.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/enum-switch-swapped.jar"
 );
 const ENUM_SWITCH_ALIASED_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/aliased-enum/aliased-enum.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/aliased-enum/aliased-enum.jar"
 );
 const ENUM_SWITCH_FACTORY_NULL_ELEMENT_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/factory-null-element.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/factory-null-element.jar"
 );
 const ENUM_SWITCH_VALUES_RETURNS_NULL_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/values-returns-null.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/values-returns-null.jar"
 );
 const DT31_GROUPED_ENUM_SWITCH_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-27/dt31-grouped-enum-switch-impl/grouped-input.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt31-grouped-enum-switch-impl/grouped-input.jar"
 );
 const DT31_GROUPED_ENUM_SWITCH_NEGATIVE_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-27/dt31-grouped-enum-switch-impl/negative-input.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt31-grouped-enum-switch-impl/negative-input.jar"
 );
 const ANONYMOUS_INTERFACE_ROOT: &[u8] = include_bytes!(
     "fixtures/proved-java-structure/anonymous-interface-basic/AnonymousInterfaceBasic.class"
@@ -224,19 +224,19 @@ const ANONYMOUS_SUPER_CROSS_BASE: &[u8] =
 const ANONYMOUS_SUPER_CROSS_OTHER: &[u8] =
     include_bytes!("fixtures/proved-java-structure/anonymous-cross-class-use/Other.class");
 const DT08_CAPTURE_SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-27/dt08-local-capture/input/p/Capture.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt08-local-capture/input/p/Capture.java"
 );
 const DT08_RUNNER_SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-27/dt08-local-capture/input/p/Runner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt08-local-capture/input/p/Runner.java"
 );
 const EM03_SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-27/em03-method-signatures/input/em03/Signatures.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/em03-method-signatures/input/em03/Signatures.java"
 );
 const SAME_PACKAGE_PARENT_FIELD_SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/fixtures/SamePackageParentFamily.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/fixtures/SamePackageParentFamily.java"
 );
 const TYPED_FUNCTIONAL_REFS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-28/dt27-typed-functional/TypedRefs.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/dt27-typed-functional/TypedRefs.class"
 );
 
 #[test]
@@ -2396,25 +2396,25 @@ fn dt07_nested_anonymous_snapshot(
         (
             "Action.java",
             include_str!(
-                "../openspec/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Action.java"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Action.java"
             ),
         ),
         (
             "Factory.java",
             include_str!(
-                "../openspec/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Factory.java"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Factory.java"
             ),
         ),
         (
             "Nested.java",
             nested_override.unwrap_or(include_str!(
-                "../openspec/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Nested.java"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Nested.java"
             )),
         ),
         (
             "Runner.java",
             include_str!(
-                "../openspec/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Runner.java"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Runner.java"
             ),
         ),
     ] {

@@ -432,7 +432,7 @@ pub(crate) fn is_gateway_break_pair(
         return false;
     };
     matches!(owner, Region::Straight { blocks } if blocks == std::slice::from_ref(gateway))
-        && transfer
-            .transfer_leaf()
-            .is_some_and(|transfer| transfer.kind.is_break() && transfer.kind.loop_header() == Some(parent))
+        && transfer.transfer_leaf().is_some_and(|transfer| {
+            transfer.kind.is_break() && transfer.kind.loop_header() == Some(parent)
+        })
 }

@@ -1,10 +1,10 @@
 use jarde::*;
 
 const METHOD: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericMethodProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericMethodProbe.class"
 );
 const THROWS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericThrowsProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericThrowsProbe.class"
 );
 
 fn request(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceRequest {

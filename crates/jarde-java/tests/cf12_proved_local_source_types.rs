@@ -22,10 +22,10 @@ use jarde_reader::view::{
 };
 
 const CHAR_CLASS: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/original/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/original/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class"
 );
 const NULL_CLASS: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/original/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/original/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class"
 );
 
 fn limits() -> Limits {
@@ -424,10 +424,10 @@ use jarde_java::{RecoveryContent, RecoveryOutcome};
 use jarde_jvm::ir::Quality;
 
 const TYPED_BOUNDARY_DEBUG: &[u8] = include_bytes!(
-    "../../../openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/classes/LocalSourceTypesBoundaries.class"
+    "../../../tests/fixtures/recovered-inputs/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/classes/LocalSourceTypesBoundaries.class"
 );
 const TYPED_BOUNDARY_NODEBUG: &[u8] = include_bytes!(
-    "../../../openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/classes/LocalSourceTypesBoundaries.class"
+    "../../../tests/fixtures/recovered-inputs/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/classes/LocalSourceTypesBoundaries.class"
 );
 const TYPED_BOUNDARY_OWNER: &str = "LocalSourceTypesBoundaries";
 
@@ -717,9 +717,9 @@ fn typed_boundary_reused_slot_splits_into_independent_source_variables_in_defaul
         // The earlier `int` write is read by the `Integer.toString` call and the later `String`
         // writes only ever reach the string destination — the ranges really are disjoint.
         assert!(
-            default
-                .text
-                .contains(&format!("{number_name} = java.lang.Integer.toString({int_name});")),
+            default.text.contains(&format!(
+                "{number_name} = java.lang.Integer.toString({int_name});"
+            )),
             "{}",
             default.text
         );
@@ -731,9 +731,9 @@ fn typed_boundary_reused_slot_splits_into_independent_source_variables_in_defaul
             default.text
         );
         assert!(
-            default
-                .text
-                .contains(&format!("{string_name} = new java.lang.String(\"other-string\");")),
+            default.text.contains(&format!(
+                "{string_name} = new java.lang.String(\"other-string\");"
+            )),
             "{}",
             default.text
         );

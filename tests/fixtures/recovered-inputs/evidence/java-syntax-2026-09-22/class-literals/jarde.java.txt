@@ -1,0 +1,92 @@
+// jarde: presentation of `ClassLiteralProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ClassLiteralProbe extends java.lang.Object {
+    static int calls;
+
+    public ClassLiteralProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `ClassLiteralProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.lang.Class touch(java.lang.Class arg0) {
+        // @method touch(Ljava/lang/Class;)Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        ClassLiteralProbe.calls = ClassLiteralProbe.calls + 1;
+        return arg0;
+    }
+
+    public static java.lang.Class reference() {
+        // jarde: not recovered: the recovery run for `reference()Ljava/lang/Class;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method reference()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static java.lang.Class array() {
+        // jarde: not recovered: the recovery run for `array()Ljava/lang/Class;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method array()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static java.lang.Class primitiveArray() {
+        // jarde: not recovered: the recovery run for `primitiveArray()Ljava/lang/Class;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method primitiveArray()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static java.lang.Class self() {
+        // jarde: not recovered: the recovery run for `self()Ljava/lang/Class;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method self()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static java.lang.Class primitive() {
+        // @method primitive()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.lang.Integer.TYPE;
+    }
+
+    public static java.lang.Class voidType() {
+        // @method voidType()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.lang.Void.TYPE;
+    }
+
+    public static java.lang.Class argument() {
+        // jarde: not recovered: the recovery run for `argument()Ljava/lang/Class;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method argument()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the dependency chain from BCI 2 to final consumer 5 is not bounded
+        // @bytecode 5 2
+        // the value at BCI 5 was produced by a saved declaration this run could not commit
+    }
+}

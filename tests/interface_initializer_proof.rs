@@ -7,22 +7,22 @@ use std::slice;
 const POSITIVE: &[u8] =
     include_bytes!("fixtures/p3-interface-field-initializers/v8/InterfaceInitProbe.class");
 const EXTRA_EFFECT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/boundaries/extra-effect/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/boundaries/extra-effect/BoundaryProbe.class"
 );
 const DUPLICATE_AND_MISSING: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/boundaries/duplicate-write/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/boundaries/duplicate-write/BoundaryProbe.class"
 );
 const BRANCH: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/boundaries/branch/BoundaryProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/boundaries/branch/BoundaryProbe.class"
 );
 const FORWARD_READ: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/ForwardProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/ForwardProbe.class"
 );
 const EXCEPTION_EDGE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/exception-handler/ExceptionProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/exception-handler/ExceptionProbe.class"
 );
 const CONSTANT_PHASE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/constant-phase-boundary/PhaseProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/constant-phase-boundary/PhaseProbe.class"
 );
 
 fn budget() -> Budget {

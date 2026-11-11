@@ -13,7 +13,7 @@ use std::process::Command;
 use std::slice;
 
 const Y1_CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-03/lambda-inline-patrol/fixture/Y1.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/lambda-inline-patrol/fixture/Y1.class"
 );
 
 fn budget() -> Budget {

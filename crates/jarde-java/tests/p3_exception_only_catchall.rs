@@ -21,7 +21,7 @@ use jarde_reader::view::{
 };
 
 const ORIGINAL: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-27/cf16-finally/original/FinallyOnce.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf16-finally/original/FinallyOnce.class"
 );
 const ACCEPTANCE: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-exception-only-catchall/v8/FinallyOnce.class");

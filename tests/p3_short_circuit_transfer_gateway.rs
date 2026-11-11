@@ -8,16 +8,16 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraBoundary.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraBoundary.class"
 );
 const SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraBoundary.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraBoundary.java"
 );
 const RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraRunner.java"
 );
 const EXPECTED: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/runner-output.txt"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/runner-output.txt"
 );
 const MULTI_ENTRY: &[u8] = include_bytes!(
     "fixtures/p3-conditional-values/short-circuit-transfer-gateway-controls/ChainExtraBoundary.class"
@@ -144,7 +144,7 @@ fn independent_effect_in_transfer_slot_is_not_a_gateway() {
     fs::write(scratch.0.join("ChainExtraBoundary.class"), &changed).expect("changed class");
     fs::write(
         scratch.0.join("ChainExtraRunner.class"),
-        include_bytes!("../openspec/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraRunner.class"),
+        include_bytes!("../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraRunner.class"),
     )
     .expect("runner class");
     let run = Command::new("java")
@@ -188,7 +188,7 @@ fn backward_second_entry_to_gateway_is_refused() {
     fs::write(scratch.0.join("ChainExtraBoundary.class"), MULTI_ENTRY).expect("changed class");
     fs::write(
         scratch.0.join("ChainExtraRunner.class"),
-        include_bytes!("../openspec/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraRunner.class"),
+        include_bytes!("../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraRunner.class"),
     )
     .expect("runner class");
     let run = Command::new("java")
@@ -234,7 +234,7 @@ fn protected_gateway_with_exception_edge_is_refused() {
     .expect("changed class");
     fs::write(
         scratch.0.join("ChainExtraRunner.class"),
-        include_bytes!("../openspec/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraRunner.class"),
+        include_bytes!("../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraRunner.class"),
     )
     .expect("runner class");
     let run = Command::new("java")

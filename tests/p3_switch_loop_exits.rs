@@ -8,11 +8,11 @@ use jarde::*;
 use std::slice;
 
 const CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/switch-loop-exits/SwitchLoopExits.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/switch-loop-exits/SwitchLoopExits.class"
 );
 const ADJACENT: &[u8] = include_bytes!("fixtures/p3-switch-loop-exits/v8/SwitchLoopAdjacent.class");
 const LOCAL_CONTINUE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-27/cf13-switch-exits/original/cf13/SwitchLoopExits.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf13-switch-exits/original/cf13/SwitchLoopExits.class"
 );
 const LOCAL_BOUNDARIES: &[u8] =
     include_bytes!("fixtures/p3-switch-loop-exits/v8/SwitchLoopLocalBoundaries.class");

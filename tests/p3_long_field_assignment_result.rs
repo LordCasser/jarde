@@ -4,7 +4,7 @@ use jarde::*;
 use std::slice;
 
 const ASSIGNMENT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-27/em07-long-assignment/input/Assignment.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/em07-long-assignment/input/Assignment.class"
 );
 
 fn limits() -> Limits {

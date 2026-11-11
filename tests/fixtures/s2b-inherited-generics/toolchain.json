@@ -1,0 +1,25 @@
+{
+  "distribution": "Amazon Corretto",
+  "version": "8.432.06.1",
+  "javac_version": "javac 1.8.0_432",
+  "archive_url": "https://corretto.aws/downloads/resources/8.432.06.1/amazon-corretto-8.432.06.1-linux-x64.tar.gz",
+  "archive_sha256": "eaecf5827e11fd60c3ff0a2294b4451974ebec9fcf3d62da9c0e19ada5178247",
+  "files": {
+    "bin/javac": {
+      "bytes": 8976,
+      "sha256": "62a17a323688ea523b21128cac785bd038f7da29809ffae4863324faf7ac918a"
+    },
+    "lib/tools.jar": {
+      "bytes": 18351514,
+      "sha256": "bc4d31ef99ad696ad0da5134d4083c7ef842b417755c2ec9bf3b66e8d62a5f92"
+    },
+    "bin/java": {
+      "bytes": 8848,
+      "sha256": "6cbe06f5fa80e7bff88d7444871d964069573fc491622651d55e32e5fa33f6ce"
+    },
+    "jre/lib/rt.jar": {
+      "bytes": 65663023,
+      "sha256": "4594bf0c078992da0b35e7f143e628bd8101d32b14db3535a0db312c33d9f3f9"
+    }
+  }
+}

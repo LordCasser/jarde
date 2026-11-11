@@ -611,44 +611,155 @@ fn declared_source_type_spelling_respects_lexical_type_variable_scope() {
 
 #[test]
 fn engine_inherited_class_headers_and_field_consumers_commit_together() {
-    const PLATFORM: &[u8] = include_bytes!(
-        "../openspec/changes/restructure-demand-driven-recovery/results/s2b-declared-generics-v1/dev-v3-inputs/headers/java8-header-signature-closure.jar"
-    );
+    // Explicit new Corretto 8 baseline, not a byte reconstruction of the deleted dev-v3 jars.
+    let platform_bytes = jar(PLATFORM_CLASSES);
+    let platform_child = jar(&[(
+        b"PlatformChild.class",
+        include_bytes!("fixtures/s2b-inherited-generics/classes/PlatformChild.class"),
+    )]);
+    let custom_child = jar(&[
+        (
+            b"CustomChild.class",
+            include_bytes!("fixtures/s2b-inherited-generics/classes/CustomChild.class"),
+        ),
+        (
+            b"Mid.class",
+            include_bytes!("fixtures/s2b-inherited-generics/classes/Mid.class"),
+        ),
+        (
+            b"Parent.class",
+            include_bytes!("fixtures/s2b-inherited-generics/classes/Parent.class"),
+        ),
+    ]);
     for (class, bytes, parent) in [
-        ("PlatformChild", include_bytes!("../openspec/changes/restructure-demand-driven-recovery/results/s2b-declared-generics-v1/dev-v3-inputs/inputs/platform-javac8-debug/target.jar").as_slice(), "java.util.ArrayList<java.lang.String>"),
-        ("CustomChild", include_bytes!("../openspec/changes/restructure-demand-driven-recovery/results/s2b-declared-generics-v1/dev-v3-inputs/inputs/custom-javac8-debug/target.jar").as_slice(), "Mid<java.lang.String>"),
+        (
+            "PlatformChild",
+            platform_child,
+            "java.util.ArrayList<java.lang.String>",
+        ),
+        ("CustomChild", custom_child, "Mid<java.lang.String>"),
     ] {
         let engine = Engine::new();
         let mut budget = task_budget(&[]).unwrap();
-        let app = engine.open(ArtifactInput::bytes(bytes.to_vec()), &mut budget).unwrap();
-        let boot = engine.open(ArtifactInput::bytes(PLATFORM.to_vec()), &mut budget).unwrap();
+        let app = engine
+            .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
+            .unwrap();
+        let boot = engine
+            .open(ArtifactInput::bytes(platform_bytes.clone()), &mut budget)
+            .unwrap();
         let boot_snapshot = boot.id().clone();
         let request = class_request(&app, &boot, class);
-        let OperationOutcome::Performed(report) = engine.class_source(&[app, boot], &request, &mut budget).unwrap() else { panic!("the development class resolves"); };
-        println!("INHERITED_CLASS_BEGIN={class}\n{}\nINHERITED_CLASS_END", report.text);
-        println!("INHERITED_REPORT={}", serde_json::to_string(&report).unwrap());
-        assert!(matches!(report.execution, ExecutionReport::Complete { .. }), "{class}: {:?}", report.execution);
+        let OperationOutcome::Performed(report) = engine
+            .class_source(&[app, boot], &request, &mut budget)
+            .unwrap()
+        else {
+            panic!("the development class resolves");
+        };
+        println!(
+            "INHERITED_CLASS_BEGIN={class}\n{}\nINHERITED_CLASS_END",
+            report.text
+        );
+        println!(
+            "INHERITED_REPORT={}",
+            serde_json::to_string(&report).unwrap()
+        );
+        assert!(
+            matches!(report.execution, ExecutionReport::Complete { .. }),
+            "{class}: {:?}",
+            report.execution
+        );
         let declaration = report.declaration.as_ref().unwrap();
-        assert!(declaration.declaration.contains(parent), "{class}: {}", declaration.declaration);
+        assert!(
+            declaration.declaration.contains(parent),
+            "{class}: {}",
+            declaration.declaration
+        );
         assert!(declaration.generic_refusal.is_none());
-        for name in if class == "PlatformChild" { ["inheritedRead", "returnInherited"] } else { ["getInherited", "readInheritedField"] } {
-            let method = report.methods.iter().find(|method| method.item.name.raw().0 == name.as_bytes()).unwrap();
-            let ClassSourceOutcome::Recovered { report: body, .. } = &method.outcome else { panic!("a complete method report is retained"); };
-            let binding = body.artifact.binding().expect("the actual selected-read report is bound");
-            assert!(binding.dependencies().iter().any(|dependency| dependency.loader.0 == "boot"
-                && dependency.definition.location.entry().is_some_and(|entry|
-                    entry.origin.snapshot == boot_snapshot && entry.raw_name.0 == b"java/lang/String.class")),
-                "{class}.{name}: a Header reused across methods still binds its actual defining loader/definition");
-        }
-        assert!(report.projection_inputs.member_texts.iter().all(|member| member.emission.as_ref().is_some_and(|emission| !emission.body.is_empty() && !emission.segments.is_empty())));
-        if class == "PlatformChild" {
-            let names = report.fields.iter().find(|field| field.item.name.raw().0 == b"names").unwrap();
-            assert!(names.generic_signature_projected);
-            assert!(names.declaration.as_ref().unwrap().contains("java.util.List<java.lang.String>"));
-            assert!(report.methods.iter().find(|method| method.item.name.raw().0 == b"listRead").unwrap().declaration.as_ref().unwrap().contains("java.util.List<java.lang.String>"));
+        for name in if class == "PlatformChild" {
+            ["inheritedRead", "returnInherited"]
         } else {
-            assert!(report.methods.iter().find(|method| method.item.name.raw().0 == b"getInherited").unwrap().declaration.as_ref().unwrap().contains("java.util.List<java.lang.String>"));
-            assert!(report.methods.iter().find(|method| method.item.name.raw().0 == b"echo").unwrap().declaration.as_ref().unwrap().contains("java.util.List<java.lang.String>"));
+            ["getInherited", "readInheritedField"]
+        } {
+            let method = report
+                .methods
+                .iter()
+                .find(|method| method.item.name.raw().0 == name.as_bytes())
+                .unwrap();
+            let ClassSourceOutcome::Recovered { report: body, .. } = &method.outcome else {
+                panic!("a complete method report is retained");
+            };
+            let binding = body
+                .artifact
+                .binding()
+                .expect("the actual selected-read report is bound");
+            assert!(
+                binding
+                    .dependencies()
+                    .iter()
+                    .any(|dependency| dependency.loader.0 == "boot"
+                        && dependency
+                            .definition
+                            .location
+                            .entry()
+                            .is_some_and(|entry| entry.origin.snapshot == boot_snapshot
+                                && entry.raw_name.0 == b"java/lang/String.class")),
+                "{class}.{name}: a Header reused across methods still binds its actual defining loader/definition"
+            );
+        }
+        assert!(report.projection_inputs.member_texts.iter().all(|member| {
+            member
+                .emission
+                .as_ref()
+                .is_some_and(|emission| !emission.body.is_empty() && !emission.segments.is_empty())
+        }));
+        if class == "PlatformChild" {
+            let names = report
+                .fields
+                .iter()
+                .find(|field| field.item.name.raw().0 == b"names")
+                .unwrap();
+            assert!(names.generic_signature_projected);
+            assert!(
+                names
+                    .declaration
+                    .as_ref()
+                    .unwrap()
+                    .contains("java.util.List<java.lang.String>")
+            );
+            assert!(
+                report
+                    .methods
+                    .iter()
+                    .find(|method| method.item.name.raw().0 == b"listRead")
+                    .unwrap()
+                    .declaration
+                    .as_ref()
+                    .unwrap()
+                    .contains("java.util.List<java.lang.String>")
+            );
+        } else {
+            assert!(
+                report
+                    .methods
+                    .iter()
+                    .find(|method| method.item.name.raw().0 == b"getInherited")
+                    .unwrap()
+                    .declaration
+                    .as_ref()
+                    .unwrap()
+                    .contains("java.util.List<java.lang.String>")
+            );
+            assert!(
+                report
+                    .methods
+                    .iter()
+                    .find(|method| method.item.name.raw().0 == b"echo")
+                    .unwrap()
+                    .declaration
+                    .as_ref()
+                    .unwrap()
+                    .contains("java.util.List<java.lang.String>")
+            );
         }
     }
 }
@@ -832,5 +943,143 @@ fn engine_commits_an_owned_generic_field_with_its_call_producer_and_read_consume
         incomplete.text.matches(MARKER).count(),
         0,
         "the absent Foo definition prevents staged writer/read consumer admission"
+    );
+}
+
+#[test]
+#[ignore = "requires python3 and S2B_CORRETTO8_HOME pointing to the pinned Corretto 8.432.06.1 JDK"]
+fn engine_inherited_generics_complete_classes_match_original_runtime() {
+    use std::fs;
+    use std::path::{Path, PathBuf};
+    use std::process::Command;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    let jdk = std::env::var_os("S2B_CORRETTO8_HOME").expect(
+        "set S2B_CORRETTO8_HOME to the Corretto 8 JDK pinned in the fixture toolchain.json",
+    );
+    let repository = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let fixture = repository.join("tests/fixtures/s2b-inherited-generics");
+    struct Scratch(PathBuf);
+    impl Drop for Scratch {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("system clock is after the epoch")
+        .as_nanos();
+    let scratch = Scratch(std::env::temp_dir().join(format!(
+        "jarde-s2b-inherited-runtime-{}-{nonce}",
+        std::process::id()
+    )));
+    fs::create_dir(&scratch.0).expect("create isolated runtime workspace");
+    let recovered = scratch.0.join("recovered-sources");
+    fs::create_dir(&recovered).expect("create recovered source directory");
+
+    let engine = Engine::new();
+    let mut open_budget = task_budget(&[]).unwrap();
+    let app = engine
+        .open(
+            ArtifactInput::bytes(jar(&[
+                (
+                    b"PlatformChild.class",
+                    include_bytes!("fixtures/s2b-inherited-generics/classes/PlatformChild.class"),
+                ),
+                (
+                    b"CustomChild.class",
+                    include_bytes!("fixtures/s2b-inherited-generics/classes/CustomChild.class"),
+                ),
+                (
+                    b"Mid.class",
+                    include_bytes!("fixtures/s2b-inherited-generics/classes/Mid.class"),
+                ),
+                (
+                    b"Parent.class",
+                    include_bytes!("fixtures/s2b-inherited-generics/classes/Parent.class"),
+                ),
+            ])),
+            &mut open_budget,
+        )
+        .expect("frozen targets and original support classes open");
+    let platform = engine
+        .open(
+            ArtifactInput::bytes(jar(PLATFORM_CLASSES)),
+            &mut open_budget,
+        )
+        .expect("the same 13 frozen platform headers open");
+    for class in ["CustomChild", "PlatformChild"] {
+        let request = class_request(&app, &platform, class);
+        let OperationOutcome::Performed(report) = engine
+            .class_source(
+                &[app.clone(), platform.clone()],
+                &request,
+                &mut task_budget(&[]).unwrap(),
+            )
+            .expect("public Engine class-source request succeeds")
+        else {
+            panic!("{class} resolves uniquely");
+        };
+        assert!(
+            matches!(report.execution, ExecutionReport::Complete { .. }),
+            "{class}: {:?}",
+            report.execution
+        );
+        assert!(!report.text.contains("@bytecode"), "{}", report.text);
+        for method in &report.methods {
+            let ClassSourceOutcome::Recovered {
+                report: body,
+                analysis,
+            } = &method.outcome
+            else {
+                panic!(
+                    "{class} contains an unrecovered method: {:?}",
+                    method.outcome
+                );
+            };
+            assert!(matches!(
+                analysis.execution,
+                ExecutionReport::Complete { .. }
+            ));
+            assert!(matches!(body.execution, ExecutionReport::Complete { .. }));
+            assert_eq!(body.quality, Quality::Structured, "{}", body.text);
+            assert!(
+                body.fallbacks.is_empty(),
+                "{}: {:?}",
+                body.text,
+                body.fallbacks
+            );
+        }
+        fs::write(recovered.join(format!("{class}.java")), &report.text)
+            .expect("write the complete Engine report.text unchanged");
+    }
+
+    // The generator checks the compiler pins, builds/runs the original baseline, then compiles
+    // both unchanged recovered targets with only Parent/Mid support. It separately compiles
+    // Driver against that recovered class set and executes without original target fallback.
+    let result = Command::new("python3")
+        .arg(fixture.join("generate.py"))
+        .arg("--jdk")
+        .arg(jdk)
+        .arg("--repo")
+        .arg(repository)
+        .arg("--output")
+        .arg(scratch.0.join("validation"))
+        .arg("--recovered-sources")
+        .arg(&recovered)
+        .output()
+        .expect("python3 runs the pinned fixture validation generator");
+    assert!(
+        result.status.success(),
+        "full-class runtime validation failed: {}\nstdout:\n{}\nstderr:\n{}",
+        result.status,
+        String::from_utf8_lossy(&result.stdout),
+        String::from_utf8_lossy(&result.stderr)
+    );
+    println!("{}", String::from_utf8_lossy(&result.stdout));
+    println!(
+        "S2B_RECOVERED_RUNTIME={}",
+        fs::read_to_string(scratch.0.join("validation/recovered-validation.json"))
+            .expect("generator records recovered full-class runtime evidence")
     );
 }

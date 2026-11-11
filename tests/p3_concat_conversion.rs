@@ -846,7 +846,8 @@ fn a_deep_chain_under_a_short_output_bound_stops_without_an_artifact() {
     // positive and below the bound (asserted above), no artifact and no segment table are
     // produced (asserted below), and the run does not abort.
     assert_eq!(
-        at as usize, 7 + 4 * DEEP_APPENDS,
+        at as usize,
+        7 + 4 * DEEP_APPENDS,
         "the stop names the chain's final `toString` node: BCI {at}"
     );
     assert_eq!(report.content, RecoveryContent::NotProduced);

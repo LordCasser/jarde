@@ -727,7 +727,8 @@ pub(crate) fn reference_assignable(
     if stated {
         return true;
     }
-    structurally_assignable(source, target) || (java_release == 8 && canonical_platform_rows(source, target))
+    structurally_assignable(source, target)
+        || (java_release == 8 && canonical_platform_rows(source, target))
 }
 
 /// The initializer element's own contract: the closed structural facts, then the proved
@@ -2659,10 +2660,22 @@ mod relation_ordering_tests {
             "java.util.List",
             "java.util.Collection",
         )];
-        assert!(reference_assignable(8, "java.util.List", "java.util.Collection", 17, &proved));
+        assert!(reference_assignable(
+            8,
+            "java.util.List",
+            "java.util.Collection",
+            17,
+            &proved
+        ));
         // A site no relation states keeps the canonical floor: the walk outcome names BCI 17,
         // this query is BCI 21.
-        assert!(reference_assignable(8, "java.util.List", "java.util.Collection", 21, &missing));
+        assert!(reference_assignable(
+            8,
+            "java.util.List",
+            "java.util.Collection",
+            21,
+            &missing
+        ));
     }
 
     /// The canonical rows are release-8 receipts (`widening-row-sources`, the javap
@@ -2671,9 +2684,27 @@ mod relation_ordering_tests {
     /// structural facts and the proved walk alone.
     #[test]
     fn the_canonical_floor_answers_release_8_only() {
-        assert!(reference_assignable(8, "java.util.List", "java.util.Collection", 3, &[]));
-        assert!(!reference_assignable(23, "java.util.List", "java.util.Collection", 3, &[]));
+        assert!(reference_assignable(
+            8,
+            "java.util.List",
+            "java.util.Collection",
+            3,
+            &[]
+        ));
+        assert!(!reference_assignable(
+            23,
+            "java.util.List",
+            "java.util.Collection",
+            3,
+            &[]
+        ));
         // The structural head is release-independent.
-        assert!(reference_assignable(23, "java.util.List", "java.util.List", 3, &[]));
+        assert!(reference_assignable(
+            23,
+            "java.util.List",
+            "java.util.List",
+            3,
+            &[]
+        ));
     }
 }

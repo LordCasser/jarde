@@ -151,7 +151,7 @@ fn frozen_identity_shapes_and_raw_control_project_together() {
     let report = compile_source(
         "OrdinaryParameterizedSignatures",
         include_str!(
-            "../openspec/evidence/java-syntax-2026-09-24/ordinary-parameterized-signatures/OrdinaryParameterizedSignatures.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/ordinary-parameterized-signatures/OrdinaryParameterizedSignatures.java"
         ),
     );
     for declaration in [
@@ -181,7 +181,7 @@ fn evidence_selection_preserves_source_and_independent_method_reports() {
     let bytes = compiled_bytes(
         name,
         include_str!(
-            "../openspec/evidence/java-syntax-2026-09-24/ordinary-parameterized-signatures/OrdinaryParameterizedSignatures.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/ordinary-parameterized-signatures/OrdinaryParameterizedSignatures.java"
         ),
     );
     let engine = Engine::new();
@@ -687,7 +687,7 @@ fn same_class_overload_caller_proves_the_target_projection() {
     let report = compile_source(
         "Boundaries",
         include_str!(
-            "../openspec/evidence/java-syntax-2026-09-24/ordinary-parameterized-signatures/Boundaries.java"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/ordinary-parameterized-signatures/Boundaries.java"
         ),
     );
     let target = report

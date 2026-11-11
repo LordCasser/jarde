@@ -8,30 +8,30 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const INTS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/enhanced-for/int-array/IntArrayForeach.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enhanced-for/int-array/IntArrayForeach.class"
 );
 const OBJECTS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/enhanced-for/object-array-body-if-red/ObjectArrayForeach.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enhanced-for/object-array-body-if-red/ObjectArrayForeach.class"
 );
 const REFUSALS: &[u8] =
     include_bytes!("fixtures/p3-enhanced-for-array/v8/ArrayForeachRefusal.class");
 const TRANSFERS: &[u8] =
     include_bytes!("fixtures/p3-enhanced-for-array/v8/ArrayForeachTransfers.class");
 const INT_RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-22/enhanced-for/IntArrayForeachRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enhanced-for/IntArrayForeachRunner.java"
 );
 const OBJECT_RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-22/enhanced-for/ObjectArrayForeachRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enhanced-for/ObjectArrayForeachRunner.java"
 );
 const REFUSAL_RUNNER: &str =
     include_str!("fixtures/p3-enhanced-for-array/ArrayForeachRefusalRunner.java");
 const TRANSFER_RUNNER: &str =
     include_str!("fixtures/p3-enhanced-for-array/ArrayForeachTransfersRunner.java");
 const REUSE_SOURCE: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/foreach-cache-declarations/ReuseAfterForEach.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/foreach-cache-declarations/ReuseAfterForEach.java"
 );
 const REUSE_RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/foreach-cache-declarations/ReuseAfterForEachRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/foreach-cache-declarations/ReuseAfterForEachRunner.java"
 );
 
 fn source(bytes: &[u8], class: &str, evidence: RecoveryEvidenceRequest) -> ClassSourceReport {

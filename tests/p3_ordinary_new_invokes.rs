@@ -11,7 +11,7 @@ use jarde_reader::model::{
 use std::slice;
 
 const VOID_BETWEEN: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-25/ordinary-new-void-effect/VoidBetween.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/ordinary-new-void-effect/VoidBetween.class"
 );
 const CALL_ARGUMENTS: &[u8] = include_bytes!("fixtures/p3-two-exit-return/CountingRunner.class");
 

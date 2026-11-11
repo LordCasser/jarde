@@ -24738,16 +24738,16 @@ mod outer_super_bridge_closure_tests {
     use std::io::{Cursor, Write};
 
     const FIXTURE: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar"
     );
     const EFFECTS_BASE: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"
     );
     const EFFECTS_OUTER: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
     );
     const EFFECTS_MEMBER: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
     );
 
     fn effects_jar() -> Vec<u8> {
@@ -26102,28 +26102,28 @@ mod member_inner_target_tests {
     use std::io::{Cursor, Write};
 
     const FULL_JAR: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/full-target.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/full-target.jar"
     );
     const MISSING_JAR: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/missing-target.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/missing-target.jar"
     );
     const WRONG_RELATION_JAR: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-relation.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-relation.jar"
     );
     const WRONG_OUTER_RELATION_JAR: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-outer-relation.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-outer-relation.jar"
     );
     const OUTER: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter.class"
     );
     const INNER: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter$Inner.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter$Inner.class"
     );
     const CALLER: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/UseInner.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/UseInner.class"
     );
     const RUNNER: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/InnerRunner.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/InnerRunner.class"
     );
     const MATRIX_OUTER: &[u8] = include_bytes!(
         "../tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer.class"
@@ -27186,24 +27186,25 @@ mod enum_constant_body_relation_tests {
     static NEXT_FIXTURE_ID: AtomicU64 = AtomicU64::new(0);
 
     const OP: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Op.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Op.java"
     );
     const MIXED: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Mixed.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Mixed.java"
     );
     const PLAIN: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Plain.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Plain.java"
     );
-    const STAGE: &str =
-        include_str!("../openspec/evidence/java-syntax-2026-09-22/enum-declaration/Stage.java");
+    const STAGE: &str = include_str!(
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/Stage.java"
+    );
     const MEASURE: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/Measure.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/Measure.java"
     );
     const DOUBLE_OPERATIONS: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/TestEnums2a/DoubleOperations.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/TestEnums2a/DoubleOperations.java"
     );
     const IOPS: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/TestEnums2a/IOps.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/TestEnums2a/IOps.java"
     );
     const UNRELATED: &str = "package demo; public class Other { public static Object make() { return new Object() {}; } }";
 
@@ -27589,16 +27590,16 @@ mod enum_constant_body_relation_tests {
     }
 
     const NESTED_IFACE_ENUM: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2.java"
     );
     const USER_DOLLAR_ENUM: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Weird$Name.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Weird$Name.java"
     );
     const TWO_LEVEL_ENUM: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/TwoLevel.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/TwoLevel.java"
     );
     const DUAL_SHAPE_ENUM: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Holder3.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Holder3.java"
     );
 
     /// The mixed shape the patrol froze as `fam.jar`: two int-argument constant bodies plus one
@@ -27938,7 +27939,7 @@ public class Holder {
     #[test]
     fn frozen_nested_matrix_jars_flip_exactly_the_nested_cells() {
         let nested_jar = include_bytes!(
-            "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/nested-iface-abs.jar"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/nested-iface-abs.jar"
         )
         .to_vec();
         let nested = report_from_jar_bytes(nested_jar.clone(), "p/Holder2$OpAbs");
@@ -27971,7 +27972,7 @@ public class Holder {
         assert!(toplevel.text.contains("ADD {"), "{}", toplevel.text);
 
         let op_jar = include_bytes!(
-            "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/toplevel-op.jar"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/toplevel-op.jar"
         )
         .to_vec();
         let op = report_from_jar_bytes(op_jar, "demo/Op");
@@ -29009,7 +29010,7 @@ public class Probe {
                 );
                 assert_eq!(original, expected);
                 let jadx_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(format!(
-                    "openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/outputs/{mode}/jadx-source/demo/{name}.java"
+                    "tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/enum-constant-specific-body/outputs/{mode}/jadx-source/demo/{name}.java"
                 ));
                 let jadx_source = fs::read_to_string(jadx_path).unwrap();
                 let jadx = run_enum_source(
@@ -35830,10 +35831,10 @@ mod direct_generic_superclass_tests {
     use std::io::{Cursor, Write};
 
     const CHILD: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Child.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Child.class"
     );
     const PARENT: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Parent.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Parent.class"
     );
 
     fn limits() -> Limits {
@@ -36031,7 +36032,7 @@ mod integer_constant_name_tests {
 
     static NEXT: AtomicU64 = AtomicU64::new(0);
     const FIXED: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-27/cf12-integer-switch/baseline/IntegerSwitchAudit.original.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf12-integer-switch/baseline/IntegerSwitchAudit.original.class"
     );
 
     fn source(bytes: &[u8], name: &str, budget: &mut Budget) -> ClassSourceReport {
@@ -36490,10 +36491,10 @@ mod integer_constant_name_tests {
     }
 
     const REFUSED_ROOT: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class"
     );
     const REFUSED_CHILD: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class"
     );
 
     #[test]
@@ -37275,22 +37276,22 @@ mod common_instance_array_initializer_tests {
     use std::io::{Cursor, Write};
 
     const COMMON: &[u8] = include_bytes!(
-        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/CommonDirectSuperByteArray.class"
+        "../tests/fixtures/recovered-inputs/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/CommonDirectSuperByteArray.class"
     );
     const DIFFERENT: &[u8] = include_bytes!(
-        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/DifferentRhsByteArray.class"
+        "../tests/fixtures/recovered-inputs/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/DifferentRhsByteArray.class"
     );
     const DELEGATING: &[u8] = include_bytes!(
-        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ThisDelegatingByteArray.class"
+        "../tests/fixtures/recovered-inputs/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ThisDelegatingByteArray.class"
     );
     const REVERSED: &[u8] = include_bytes!(
-        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ReverseFieldOrderByteArray.class"
+        "../tests/fixtures/recovered-inputs/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ReverseFieldOrderByteArray.class"
     );
     const SINGLETON: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class"
     );
     const NO_CLINIT: &[u8] = include_bytes!(
-        "../openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/cases/javac8-original/classes/CommonNoClinitArrayInit.class"
+        "../tests/fixtures/recovered-inputs/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/cases/javac8-original/classes/CommonNoClinitArrayInit.class"
     );
 
     fn limits() -> Limits {
@@ -38344,7 +38345,7 @@ mod class_source_proof_inflight_tests {
     }
 
     const H1_JAR: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar"
     );
 
     fn open_h1() -> (ArtifactSnapshot, ClassSourceRequest) {
@@ -38764,10 +38765,10 @@ mod class_source_proof_inflight_tests {
     }
 
     const DIRECT_PARENT_JAR: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/input.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/input.jar"
     );
     const EXTERNAL_PARENT_SOURCE_JAR: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/combined-input.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/combined-input.jar"
     );
 
     fn open_direct_parent(external_source: bool) -> (ArtifactSnapshot, ClassSourceRequest) {
@@ -40267,7 +40268,7 @@ mod demand_result_tests {
     #[test]
     fn every_family_boundary_stops_before_starting_a_later_body_or_projection() {
         const JAR: &[u8] = include_bytes!(
-            "../openspec/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/fam.jar"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/fam.jar"
         );
         let snapshot = Engine::new()
             .open(ArtifactInput::bytes(JAR.to_vec()), &mut budget())
@@ -40349,7 +40350,7 @@ mod demand_result_tests {
     #[test]
     fn pool_spelled_structural_rerun_stops_before_the_next_candidate_body() {
         const RF_JAR: &[u8] = include_bytes!(
-            "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/fixture/rf.jar"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/fixture/rf.jar"
         );
 
         fn rf_fixture() -> (
@@ -41711,7 +41712,7 @@ mod static_initializer_source_policy_tests {
     use super::*;
 
     const BYTES: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/ForwardProbe.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/ForwardProbe.class"
     );
 
     fn sample() -> (
@@ -41917,7 +41918,7 @@ mod assert_group_source_policy_tests {
     use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
     use std::io::{Cursor, Write};
     const A1: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-03/assert-stmt-patrol/fixture/A1.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/assert-stmt-patrol/fixture/A1.class"
     );
 
     use jarde_reader::ledger::{
@@ -42456,7 +42457,7 @@ pub(crate) mod enum_switch_group_source_policy_tests {
     use std::cell::RefCell;
     use std::sync::Arc;
     const GROUP: &[u8] = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-27/dt31-grouped-enum-switch-impl/grouped-input.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt31-grouped-enum-switch-impl/grouped-input.jar"
     );
     thread_local! {
         static CONTROL: RefCell<Option<(&'static str,u64)>> = const { RefCell::new(None) };
@@ -43740,7 +43741,7 @@ mod capture_stop_consumer_tests {
         "nested"=>(include_bytes!("../tests/fixtures/s1-raw-anonymous/nested-root/input.jar").to_vec(),"p/𐐀Nested","p/𐐀Nested$1$1"),
         "super-capture"|"super-partition"=>(zip_of(&[(b"AnonymousSuperDispatch.class",include_bytes!("../tests/fixtures/proved-java-structure/anonymous-super-dispatch/AnonymousSuperDispatch.class")),(b"AnonymousSuperDispatch$1.class",include_bytes!("../tests/fixtures/proved-java-structure/anonymous-super-dispatch/AnonymousSuperDispatch$1.class")),(b"Base.class",include_bytes!("../tests/fixtures/proved-java-structure/anonymous-super-dispatch/Base.class"))]),"AnonymousSuperDispatch","AnonymousSuperDispatch$1"),
         "double-capture"|"double-partition"=>(zip_of(&[(b"DB.class",include_bytes!("../tests/fixtures/proved-java-structure/double-brace-capture/v8/DB.class")),(b"DB$1.class",include_bytes!("../tests/fixtures/proved-java-structure/double-brace-capture/v8/DB$1.class")),(b"DB$2.class",include_bytes!("../tests/fixtures/proved-java-structure/double-brace-capture/v8/DB$2.class"))]),"DB","DB$2"),
-        "member"=>(include_bytes!("../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar").to_vec(),"NamedMemberFamilyStage1","NamedMemberFamilyStage1$Member"),
+        "member"=>(include_bytes!("../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar").to_vec(),"NamedMemberFamilyStage1","NamedMemberFamilyStage1$Member"),
         "instance"=>(include_bytes!("../tests/fixtures/s1-raw-projections/bridge/input.jar").to_vec(),"N1","N1$Inner"),_=>unreachable!(),}
     }
     const CASES: [&str; 8] = [
@@ -44062,19 +44063,19 @@ mod instance_capture_lifetime_tests {
             (
                 b"N1.class",
                 include_bytes!(
-                    "../openspec/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1.class"
+                    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1.class"
                 ),
             ),
             (
                 b"N1$Inner.class",
                 include_bytes!(
-                    "../openspec/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1$Inner.class"
+                    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1$Inner.class"
                 ),
             ),
             (
                 b"N1$Stat.class",
                 include_bytes!(
-                    "../openspec/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1$Stat.class"
+                    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/inner-class-folding-patrol/fixture/N1$Stat.class"
                 ),
             ),
         ])

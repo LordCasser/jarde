@@ -3755,13 +3755,10 @@ fn legalize_reference_locals(
                     types.len() as u64 + 1,
                     Some(access.bci),
                 )?;
-                if types
-                    .iter()
-                    .all(|source| {
-                        assignable(source, &candidate, access.bci)
-                            || missing_relations(source, &candidate)
-                    })
-                {
+                if types.iter().all(|source| {
+                    assignable(source, &candidate, access.bci)
+                        || missing_relations(source, &candidate)
+                }) {
                     retained.insert(candidate);
                 }
             }
@@ -3810,13 +3807,10 @@ fn legalize_reference_locals(
                         targets.len() as u64 + 1,
                         Some(access.bci),
                     )?;
-                    if targets
-                        .iter()
-                        .all(|target| {
-                            assignable(&candidate, target, access.bci)
-                                || missing_relations(&candidate, target)
-                        })
-                    {
+                    if targets.iter().all(|target| {
+                        assignable(&candidate, target, access.bci)
+                            || missing_relations(&candidate, target)
+                    }) {
                         retained.insert(candidate);
                     }
                 }
@@ -3885,8 +3879,12 @@ fn legalize_reference_locals(
                     }
                 }
             }
-            if source_domain.is_empty() { target_kept = target_domain.clone(); }
-            if target_domain.is_empty() { source_kept = source_domain.clone(); }
+            if source_domain.is_empty() {
+                target_kept = target_domain.clone();
+            }
+            if target_domain.is_empty() {
+                source_kept = source_domain.clone();
+            }
             for (variable, old, kept) in [
                 (source, source_domain, source_kept),
                 (target, target_domain, target_kept),
@@ -3917,11 +3915,17 @@ fn legalize_reference_locals(
                     continue;
                 }
                 poll(budget, Some(access.bci))?;
-                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(access.bci))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(access.bci),
+                )?;
                 let value = access.stored.or(access.written).unwrap();
-                proved &= constraints.bounds.types_of(value).is_some_and(|mut types| {
-                    types.all(|ty| assignable(ty, candidate, access.bci))
-                });
+                proved &= constraints
+                    .bounds
+                    .types_of(value)
+                    .is_some_and(|mut types| types.all(|ty| assignable(ty, candidate, access.bci)));
             }
             feasible.insert(candidate, proved);
         }
@@ -27427,7 +27431,9 @@ impl<'a> Builder<'a> {
             }
             if self.copy_inputs.contains(&value) {
                 if std::env::var("JARDE_TRACE_BINDINGS").is_ok() {
-                    eprintln!("TRACE copy-input candidate value={value:?} producer={producer} anchor={anchor}");
+                    eprintln!(
+                        "TRACE copy-input candidate value={value:?} producer={producer} anchor={anchor}"
+                    );
                 }
                 if let Some(readers) = self.copy_readers(value, anchor)? {
                     // A load-produced copy whose slot still holds the value at every reader
@@ -27437,14 +27443,12 @@ impl<'a> Builder<'a> {
                     // declarations for slots nothing overwrote). A load this run cannot state a
                     // read for is skipped outright, as the non-copy load branch above skips it.
                     let renders_in_place = match self.operations.get(producer) {
-                        Some(Operation::Load { slot }) => {
-                            match local_read(instruction, *slot) {
-                                Some(old) => readers.iter().all(|reader| {
-                                    self.slot_name_denotes_the_same_value(*slot, old, *reader)
-                                }),
-                                None => true,
-                            }
-                        }
+                        Some(Operation::Load { slot }) => match local_read(instruction, *slot) {
+                            Some(old) => readers.iter().all(|reader| {
+                                self.slot_name_denotes_the_same_value(*slot, old, *reader)
+                            }),
+                            None => true,
+                        },
                         _ => false,
                     };
                     if !renders_in_place {
@@ -27617,7 +27621,9 @@ impl<'a> Builder<'a> {
         let candidates = retained.into_iter();
         for (index, (value, producer, anchor)) in candidates.enumerate() {
             if std::env::var("JARDE_TRACE_BINDINGS").is_ok() {
-                eprintln!("TRACE retained candidate index={index} value={value:?} producer={producer} anchor={anchor}");
+                eprintln!(
+                    "TRACE retained candidate index={index} value={value:?} producer={producer} anchor={anchor}"
+                );
             }
             poll(self.budget, Some(anchor))?;
             charge(
@@ -31224,7 +31230,8 @@ impl<'a> Builder<'a> {
             return Err(format!(
                 "the shift at BCI {bci} reads {} values, not two",
                 operands.len()
-            ).into());
+            )
+            .into());
         };
         let left = self.render_value(*left_value, at, depth + 1)?;
         let right = self.render_value(*right_value, at, depth + 1)?;
@@ -31232,9 +31239,9 @@ impl<'a> Builder<'a> {
             0x78 | 0x7a | 0x7c => Type::Int,
             0x79 | 0x7b | 0x7d => Type::Long,
             opcode => {
-                return Err(format!(
-                    "the shift at BCI {bci} has unexpected opcode {opcode:#04x}"
-                ).into());
+                return Err(
+                    format!("the shift at BCI {bci} has unexpected opcode {opcode:#04x}").into(),
+                );
             }
         };
         let expression = Expr::direct(
@@ -31332,7 +31339,8 @@ impl<'a> Builder<'a> {
             return Err(format!(
                 "the negation at BCI {bci} reads {} values, not one",
                 operands.len()
-            ).into());
+            )
+            .into());
         }
         let value = self.render_value(operands[0].1, at, depth + 1)?;
         let negated = Expr::direct(
@@ -31344,7 +31352,8 @@ impl<'a> Builder<'a> {
         if negated.presented.is_none() {
             return Err(format!(
                 "the negation at BCI {bci} reads a value whose numeric type this run cannot state"
-            ).into());
+            )
+            .into());
         }
         Ok(negated)
     }
@@ -31371,16 +31380,15 @@ impl<'a> Builder<'a> {
         };
         let op = *op;
         let Some(instruction) = self.instructions.get(&bci).copied() else {
-            return Err(format!(
-                "no names record for the bitwise instruction at BCI {bci}"
-            ).into());
+            return Err(format!("no names record for the bitwise instruction at BCI {bci}").into());
         };
         let operands = stack_operands(instruction);
         let [(_, left_value), (_, right_value)] = operands.as_slice() else {
             return Err(format!(
                 "the bitwise operator at BCI {bci} reads {} values, not two",
                 operands.len()
-            ).into());
+            )
+            .into());
         };
         let boolean_xor_literal = if op == BitwiseOp::Xor
             && instruction.opcode() == 0x82
@@ -31411,9 +31419,7 @@ impl<'a> Builder<'a> {
                 }
                 _ => None,
             };
-            right_literal.filter(|_| {
-                self.boolean_evidence(*left_value, at).has_seed()
-            })
+            right_literal.filter(|_| self.boolean_evidence(*left_value, at).has_seed())
         } else {
             None
         };
@@ -31422,8 +31428,8 @@ impl<'a> Builder<'a> {
             && left.presented == Some(Type::Boolean)
         {
             if negate {
-                let origin = OriginSet::new(Origin::direct(bci))
-                    .plus_derived(Origin::derived(literal_bci));
+                let origin =
+                    OriginSet::new(Origin::direct(bci)).plus_derived(Origin::derived(literal_bci));
                 return Ok(Expr::new(
                     ExprKind::Not {
                         value: Box::new(left),
@@ -31494,9 +31500,9 @@ impl<'a> Builder<'a> {
         let source = source.clone();
         let target = target.clone();
         let Some(instruction) = self.instructions.get(&bci).copied() else {
-            return Err(format!(
-                "no names record for the primitive conversion at BCI {bci}"
-            ).into());
+            return Err(
+                format!("no names record for the primitive conversion at BCI {bci}").into(),
+            );
         };
         let Some((_, operand)) = single_stack_read(instruction) else {
             return Err(format!(
@@ -31590,7 +31596,8 @@ impl<'a> Builder<'a> {
         let Some((_, operand)) = single_stack_read(instruction) else {
             return Err(format!(
                 "the cast at BCI {bci} does not read exactly one value this run states"
-            ).into());
+            )
+            .into());
         };
         if self.bridge_owns(bci) {
             // The cast is dropped *and* kept: the value is written where the
@@ -31651,18 +31658,16 @@ impl<'a> Builder<'a> {
                 "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
             ).into());
         };
-        let instruction = self.instructions.get(&bci).copied().ok_or_else(|| {
-            format!("no names record for the type test at BCI {bci}")
-        })?;
+        let instruction = self
+            .instructions
+            .get(&bci)
+            .copied()
+            .ok_or_else(|| format!("no names record for the type test at BCI {bci}"))?;
         let (_, operand) = single_stack_read(instruction).ok_or_else(|| {
-            format!(
-                "the type test at BCI {bci} does not read exactly one stack value"
-            )
+            format!("the type test at BCI {bci} does not read exactly one stack value")
         })?;
         let ty = spell_class_operand(ty).ok_or_else(|| {
-            format!(
-                "the type test at BCI {bci} names an invalid Java reference type"
-            )
+            format!("the type test at BCI {bci} names an invalid Java reference type")
         })?;
         let value = self.render_value(operand, at, depth + 1)?;
         let value = reference_check_operand(
@@ -31725,7 +31730,9 @@ impl<'a> Builder<'a> {
             // The family certificate named a read through the child's own entry
             // receiver. Keep the load and read origins in this child method, while
             // the constructor's distinct method origin stays in the handoff fact.
-            if !shape.receiver.is_some_and(|value| self.receiver_is_entry_this(value))
+            if !shape
+                .receiver
+                .is_some_and(|value| self.receiver_is_entry_this(value))
                 || !matches!(&receiver.kind, ExprKind::Local(name) if name == "this")
             {
                 return Err(format!(
@@ -31748,26 +31755,37 @@ impl<'a> Builder<'a> {
         }
         let mut declared_type = None;
         if let Some(types) = self.declared_types
-            && let Some(member @ crate::report::DeclaredGenericMemberTypes::Field { application, ty, access_flags, .. }) = self.declared_member_at(bci)? {
-                let instance = shape.receiver.is_some() && source_receiver_typed;
-                let static_field = *access_flags & ACC_STATIC != 0;
-                let mut typed = false;
-                for node in std::iter::once(application).chain(std::iter::once(ty)).chain(receiver.declared_type.as_ref()) {
-                    typed |= crate::generic_types::has_source_arguments(types, *node, self.budget)
-                        .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?;
-                }
-                if typed && (instance || static_field) {
-                    if let Some(value) = shape.receiver {
-                        receiver = self.declared_field_receiver(receiver, value, member, bci)?;
-                    } else {
-                        let owner = crate::generic_types::spell_declared_type(types, *application, self.budget)
+            && let Some(
+                member @ crate::report::DeclaredGenericMemberTypes::Field {
+                    application,
+                    ty,
+                    access_flags,
+                    ..
+                },
+            ) = self.declared_member_at(bci)?
+        {
+            let instance = shape.receiver.is_some() && source_receiver_typed;
+            let static_field = *access_flags & ACC_STATIC != 0;
+            let mut typed = false;
+            for node in std::iter::once(application)
+                .chain(std::iter::once(ty))
+                .chain(receiver.declared_type.as_ref())
+            {
+                typed |= crate::generic_types::has_source_arguments(types, *node, self.budget)
+                    .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?;
+            }
+            if typed && (instance || static_field) {
+                if let Some(value) = shape.receiver {
+                    receiver = self.declared_field_receiver(receiver, value, member, bci)?;
+                } else {
+                    let owner = crate::generic_types::spell_declared_type(types, *application, self.budget)
                             .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
                             .ok_or_else(|| format!("the generic static field at BCI {bci} has no bound declaring type spelling"))?;
-                        receiver = Expr::direct(ExprKind::Path(owner), bci);
-                    }
-                    declared_type = Some(*ty);
+                    receiver = Expr::direct(ExprKind::Path(owner), bci);
                 }
+                declared_type = Some(*ty);
             }
+        }
         let field = Expr::new(
             ExprKind::Field {
                 receiver: Box::new(receiver),
@@ -31781,7 +31799,9 @@ impl<'a> Builder<'a> {
         if let (Some(types), Some(node)) = (self.declared_types, declared_type) {
             let ty = crate::generic_types::erased_type(types, node, self.budget)
                 .map_err(|error| crate::stop::stop_from_error(self.budget, error, Some(bci)))?
-                .ok_or_else(|| format!("the generic field read at BCI {bci} has no faithful erasure"))?;
+                .ok_or_else(|| {
+                    format!("the generic field read at BCI {bci} has no faithful erasure")
+                })?;
             return Ok(field.presenting(ty).declaring(node));
         }
         Ok(match descriptor_type_bytes(&evidence.descriptor.0) {
@@ -31806,7 +31826,10 @@ impl<'a> Builder<'a> {
                 "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
             ).into());
         };
-        if !matches!(operation, Operation::ArrayLoad | Operation::ArrayElementLoad { .. }) {
+        if !matches!(
+            operation,
+            Operation::ArrayLoad | Operation::ArrayElementLoad { .. }
+        ) {
             return Err(format!(
                 "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
             ).into());
@@ -31819,7 +31842,8 @@ impl<'a> Builder<'a> {
             return Err(format!(
                 "the array read at BCI {bci} reads {} value(s), not an array and an index",
                 operands.len()
-            ).into());
+            )
+            .into());
         }
         // The dispatch table of an enum `switch` is this very read, claimed by the
         // rule that proved which table and which index it indexes (P3 2.3): its text
@@ -31844,26 +31868,26 @@ impl<'a> Builder<'a> {
             .presenting(Type::Int));
         }
         let stated = stated_element(operation);
-        let element = array_element(
-            self.ssa,
-            self.operations,
-            operands[0].1,
-            stated.as_ref(),
-        );
+        let element = array_element(self.ssa, self.operations, operands[0].1, stated.as_ref());
         let array = self.render_value(operands[0].1, at, depth + 1)?;
         let element = match array.presented.as_ref() {
             Some(ty) => Some(ty.array_component().ok_or_else(|| {
-                format!("the array read at BCI {bci} presents non-array type `{}`", ty.spell())
+                format!(
+                    "the array read at BCI {bci} presents non-array type `{}`",
+                    ty.spell()
+                )
             })?),
             None => element,
         };
         let index = self.render_value(operands[1].1, at, depth + 1)?;
-        let declared = self.declared_types.and_then(|types| array.declared_type.and_then(|node| {
-            match types.types.get(node) {
-                Some(crate::report::DeclaredGenericType::Array(component)) => Some(*component),
-                _ => None,
-            }
-        }));
+        let declared = self.declared_types.and_then(|types| {
+            array
+                .declared_type
+                .and_then(|node| match types.types.get(node) {
+                    Some(crate::report::DeclaredGenericType::Array(component)) => Some(*component),
+                    _ => None,
+                })
+        });
         let read = Expr::new(
             ExprKind::Index {
                 array: Box::new(array),
@@ -31878,7 +31902,10 @@ impl<'a> Builder<'a> {
             Some(ty) => read.presenting(ty),
             None => read,
         };
-        Ok(match declared { Some(node) => read.declaring(node), None => read })
+        Ok(match declared {
+            Some(node) => read.declaring(node),
+            None => read,
+        })
     }
 
     /// One `render_value_definition` operation arm, in a frame of its own (see
@@ -31893,14 +31920,12 @@ impl<'a> Builder<'a> {
     ) -> Result<Expr, ValueRenderFailure> {
         let _ = value;
         let Some(instruction) = self.instructions.get(&bci).copied() else {
-            return Err(format!(
-                "no names record for the length read at BCI {bci}"
-            ).into());
+            return Err(format!("no names record for the length read at BCI {bci}").into());
         };
         let Some((_, array)) = single_stack_read(instruction) else {
-            return Err(format!(
-                "the length read at BCI {bci} does not read exactly one array"
-            ).into());
+            return Err(
+                format!("the length read at BCI {bci} does not read exactly one array").into(),
+            );
         };
         let array = self.render_value(array, at, depth + 1)?;
         Ok(Expr::new(
@@ -31931,7 +31956,8 @@ impl<'a> Builder<'a> {
             element,
             dimensions,
             total_dimensions,
-        } = operation else {
+        } = operation
+        else {
             return Err(format!(
                 "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
             ).into());
@@ -31940,9 +31966,7 @@ impl<'a> Builder<'a> {
         let dimensions = *dimensions;
         let total_dimensions = *total_dimensions;
         let Some(instruction) = self.instructions.get(&bci).copied() else {
-            return Err(format!(
-                "no names record for the array creation at BCI {bci}"
-            ).into());
+            return Err(format!("no names record for the array creation at BCI {bci}").into());
         };
         let operands = stack_operands(instruction);
         if operands.len() != usize::from(dimensions) {
@@ -31955,20 +31979,18 @@ impl<'a> Builder<'a> {
         let mut lengths = Vec::with_capacity(operands.len());
         let mut initializers = None;
         let mut origin = OriginSet::new(Origin::direct(bci));
-        if let Some(initializer) =
-            self.array_initializers.at_allocation(bci).cloned()
-        {
+        if let Some(initializer) = self.array_initializers.at_allocation(bci).cloned() {
             let component = if total_dimensions == 1 {
                 element.clone()
             } else {
                 Type::Reference(format!(
-                    "{}{}", element.spell(),
+                    "{}{}",
+                    element.spell(),
                     "[]".repeat(usize::from(total_dimensions) - 1)
                 ))
             };
             let mut rendered = Vec::with_capacity(initializer.elements.len());
-            for (element_index, (value, store_bci)) in
-                initializer.elements.into_iter().enumerate()
+            for (element_index, (value, store_bci)) in initializer.elements.into_iter().enumerate()
             {
                 if let Some(expected_head) = initializer
                     .element_sites
@@ -31989,8 +32011,7 @@ impl<'a> Builder<'a> {
                         .into());
                     }
                 }
-                let element_value = if let Some(postfix) =
-                    initializer.local_postfix.get(&store_bci)
+                let element_value = if let Some(postfix) = initializer.local_postfix.get(&store_bci)
                 {
                     let (variable, name) = self
                         .write_target(postfix.slot, postfix.update, "postfix increment")
@@ -31998,7 +32019,9 @@ impl<'a> Builder<'a> {
                     if self.reuse.variable_at(postfix.slot, postfix.load) != Some(variable)
                         || self.decided_type(variable) != Some(Type::Int)
                         || !self.slot_name_denotes_the_same_value(
-                            postfix.slot, postfix.old_local, postfix.load,
+                            postfix.slot,
+                            postfix.old_local,
+                            postfix.load,
                         )
                     {
                         return Err(format!(
@@ -34928,9 +34951,7 @@ impl<'a> Builder<'a> {
                 // refused text stood for unmapped (`refused_checkcast_quote_retains_the_stack_
                 // copy_origin`).
                 let held_by_a_proved_binding = self.bindings.contains_key(input);
-                if (rides_with_a_named_call || held_by_a_proved_binding)
-                    && !into.contains(&bci)
-                {
+                if (rides_with_a_named_call || held_by_a_proved_binding) && !into.contains(&bci) {
                     if let Some(budget) = budget {
                         poll(budget, Some(bci))?;
                     }
@@ -36675,12 +36696,12 @@ fn reference_check_operand(
             // proved relation relates, where the target cast alone would not compile.
             let proved_downcast = cast_target.is_some_and(|target| {
                 matches!(target, Type::Reference(target_name)
-                    if crate::assignability::reference_intrinsically_assignable(target_name, name)
-                        || relations.iter().any(|proof| {
-                            ((proof.source == *target_name && proof.target == *name)
-                                || (proof.source == *name && proof.target == *target_name))
-                                && proof.relation.is_assignable(java_release)
-                        }))
+                if crate::assignability::reference_intrinsically_assignable(target_name, name)
+                    || relations.iter().any(|proof| {
+                        ((proof.source == *target_name && proof.target == *name)
+                            || (proof.source == *name && proof.target == *target_name))
+                            && proof.relation.is_assignable(java_release)
+                    }))
             });
             if proved_downcast {
                 return Ok(value);
@@ -39376,7 +39397,7 @@ mod tests {
     }
 
     const HOISTED_ITERATOR_CLASS: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class"
     );
     const SCOPE_REUSE_CLASS: &[u8] =
         include_bytes!("../../../tests/fixtures/p3-scope/v8-debug/Scope.class");
@@ -44363,10 +44384,10 @@ mod tests {
         };
 
         const MEMBER: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
         );
         const OUTER: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
         );
         let mut budget = Budget::new(jarde_reader::budget::Limits {
             input_bytes: 1 << 20,
@@ -44622,7 +44643,7 @@ mod tests {
         };
 
         const CALLER: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/UseInner.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/UseInner.class"
         );
         let mut budget = Budget::new(jarde_reader::budget::Limits {
             input_bytes: 1 << 20,
@@ -46418,10 +46439,10 @@ mod tests {
     const TERNARY_CORE_FIXTURE: &[u8] =
         include_bytes!("../../../tests/fixtures/p3-conditional-values/v8/TernaryCore.class");
     const NESTED_CONDITIONAL_FIXTURE: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class"
     );
     const INTERMEDIATE_JOIN_FIXTURE: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-26/conditional-intermediate-join/ConditionalIntermediateJoin.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/conditional-intermediate-join/ConditionalIntermediateJoin.class"
     );
     const INTERMEDIATE_UNKNOWN_OPERATION_FIXTURE: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-intermediate-join/unknown-operation/ConditionalIntermediateJoin.class"
@@ -46498,10 +46519,10 @@ mod tests {
     const LOOP_TRANSFERS_FIXTURE: &[u8] =
         include_bytes!("../../../tests/fixtures/p3-loop-transfers/v8/OuterContinue.class");
     const EXCEPTION_IF_JOIN_FIXTURE: &[u8] = include_bytes!(
-        "../../../openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class"
+        "../../../tests/fixtures/recovered-inputs/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class"
     );
     const COMPOUND_STATEMENT_CONDITIONS_FIXTURE: &[u8] = include_bytes!(
-        "../../../openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class"
+        "../../../tests/fixtures/recovered-inputs/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class"
     );
     const PROVED_ASSIGNMENT_CONDITION_FIXTURE: &[u8] = include_bytes!(
         "../../../tests/fixtures/java8/assignment-condition-widening/upstream-debug/TestLoopConditionInvoke$TestCls.class"
@@ -49928,7 +49949,7 @@ mod tests {
     fn carried_constructor_argument_keeps_both_conditionals_and_all_origins() {
         let (_, _, _, _, report) = fixture_conditional_attempt(
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-25/constructor-conditional-delegation/ConstructorPairProbe.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/constructor-conditional-delegation/ConstructorPairProbe.class"
             ),
             "<init>",
             "(Ljava/lang/String;I)V",
@@ -50355,7 +50376,7 @@ mod tests {
         };
 
         const CLASS: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
         );
         assert_eq!(CLASS.len(), 1563);
         assert_eq!(

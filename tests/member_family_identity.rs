@@ -36,7 +36,7 @@ impl Drop for TestDirectory {
 }
 
 const FAMILY_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar"
 );
 
 fn report_with(limits: Limits) -> ClassSourceReport {
@@ -602,10 +602,10 @@ fn projected_stage1_compiles_and_matches_original_and_jadx_java8_behavior() {
         }
     ));
     let original = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/NamedMemberFamilyStage1.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-family-stage1/NamedMemberFamilyStage1.java"
     );
     let jadx = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/recompiled-jadx/NamedMemberFamilyStage1.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-family-stage1/recompiled-jadx/NamedMemberFamilyStage1.java"
     );
     for source in [original, jadx, &report.text] {
         assert_eq!(
@@ -787,10 +787,10 @@ fn static_member_projects_as_nested_and_keeps_dollar_top_level_independent() {
 #[test]
 fn declaration_only_static_abstract_member_projects_once_with_physical_anchors() {
     const SOURCE: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-27/em01-declarations/input-single/em01/SingleAbstract.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/em01-declarations/input-single/em01/SingleAbstract.java"
     );
     const RUNNER: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-27/em01-declarations/input-single/em01/Runner.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/em01-declarations/input-single/em01/Runner.java"
     );
     let compile = |source: &str| {
         let temp = TestDirectory::new();
@@ -1596,12 +1596,15 @@ fn member_call_without_early_null_check_retains_physical_source() {
     // the following pop keeps the operand stack balanced, and -Xverify:all accepts the jar.
     let report = report_from(
         include_bytes!(
-            "../openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/null-check-removed.jar"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-family-calls/null-check-removed.jar"
         )
         .to_vec(),
         task_limits(&[]).unwrap(),
     );
-    let ClassSourceMemberFamily::PreparedFold { members, projection: _ } = &report.member_family
+    let ClassSourceMemberFamily::PreparedFold {
+        members,
+        projection: _,
+    } = &report.member_family
     else {
         panic!(
             "null-check removal must fold the family: {:?}",
@@ -1651,7 +1654,7 @@ fn member_call_without_early_null_check_retains_physical_source() {
 #[test]
 fn qualified_member_call_preserves_internal_and_preceding_effect_positions() {
     let jar = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/qualified-effects.jar"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-family-calls/qualified-effects.jar"
     );
     let essential = report_from_named(
         jar.to_vec(),
@@ -1739,7 +1742,7 @@ fn qualified_member_call_preserves_internal_and_preceding_effect_positions() {
 fn disagreeing_child_relation_cannot_authorize_package_private_call() {
     let report = report_from(
         include_bytes!(
-            "../openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/wrong-relation.jar"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-family-calls/wrong-relation.jar"
         )
         .to_vec(),
         task_limits(&[]).unwrap(),
@@ -1836,7 +1839,7 @@ fn family_output_budget_refusal_keeps_both_physical_texts() {
 #[test]
 fn outer_super_method_bridge_projects_with_physical_origin() {
     let report = report_from_named(
-        include_bytes!("../openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar").to_vec(),
+        include_bytes!("../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar").to_vec(),
         "OuterReceiverCases",
         task_limits(&[]).unwrap(),
     );
@@ -1871,13 +1874,13 @@ fn em12_jar(case: &str, parent: &str, omit_narrow: bool) -> Vec<u8> {
         (
             "Arg",
             include_str!(
-                "../openspec/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/Arg.java"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/Arg.java"
             ),
         ),
         (
             "NarrowArg",
             include_str!(
-                "../openspec/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/NarrowArg.java"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/NarrowArg.java"
             ),
         ),
     ] {
@@ -1926,10 +1929,10 @@ fn em12_jar(case: &str, parent: &str, omit_narrow: bool) -> Vec<u8> {
 #[test]
 fn outer_super_overload_requires_direct_source_parameter_and_complete_subclass_chain() {
     const CASE: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/Case.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/Case.java"
     );
     const PARENT: &str = include_str!(
-        "../openspec/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/Parent.java"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/Parent.java"
     );
     let projected = report_from_named(
         em12_jar(CASE, PARENT, false),

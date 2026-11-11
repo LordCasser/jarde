@@ -1,0 +1,10 @@
+REFLECT|ctor[0].formalCount=1;typeVariableCount=0
+REFLECT|ctor[0].param[0]=T;binder=class
+REFLECT|ctor[1].formalCount=2;typeVariableCount=0
+REFLECT|ctor[1].param[0]=T;binder=class
+REFLECT|ctor[1].param[1]=int;binder=non-variable
+REFLECT|classTypeVariableCount=1
+REFLECT|classVar[0]=T;bounds=java.lang.Object
+REFLECT|field[v]=T;binder=class
+BEHAVIOR|field[v]=arg0
+BEHAVIOR|constructed=ThisDelegateHold

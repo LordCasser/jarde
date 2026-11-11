@@ -33,7 +33,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 /// The patrol's frozen anchor: javac 23.0.1, `--release 8`, with line numbers.
 const JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-05/explicit-lock-patrol/fixture/lk.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/explicit-lock-patrol/fixture/lk.jar"
 );
 /// The same source on this fixture's own legs (see the fixture's `README.md`).
 const LK_V8: &[u8] = include_bytes!("fixtures/recover-lock-guard-loop-finally/v8/LK.class");

@@ -8,13 +8,13 @@ use std::{
 };
 
 const BODY_THROWS: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/body-generic-throws/fixture/BodyThrows.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/body-generic-throws/fixture/BodyThrows.java"
 );
 const CALLER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/body-generic-throws/fixture/BodyThrowsCaller.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/body-generic-throws/fixture/BodyThrowsCaller.java"
 );
 const REFLECT: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/body-generic-throws/fixture/BodyThrowsReflect.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/body-generic-throws/fixture/BodyThrowsReflect.java"
 );
 
 struct Scratch(std::path::PathBuf);

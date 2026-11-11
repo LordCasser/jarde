@@ -51,7 +51,7 @@ fn source_with_budget(
 fn bounded_method_variable_follows_same_run_parameters() {
     let report = source(
         include_bytes!(
-            "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericMethodProbe.class"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericMethodProbe.class"
         ),
         "GenericMethodProbe",
     );
@@ -84,7 +84,7 @@ fn bounded_method_variable_follows_same_run_parameters() {
 fn exceptions_without_generic_throws_suffix_survive() {
     let report = source(
         include_bytes!(
-            "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericThrowsProbe.class"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericThrowsProbe.class"
         ),
         "GenericThrowsProbe",
     );
@@ -711,25 +711,25 @@ fn erasure_shape_and_body_refusals_keep_descriptor_declarations() {
         (
             "GenericMethodProbe",
             &include_bytes!(
-                "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/object-bound.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/object-bound.class"
             )[..],
         ),
         (
             "GenericMethodProbe",
             &include_bytes!(
-                "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/unbound-variable.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/unbound-variable.class"
             )[..],
         ),
         (
             "ComplexMethodProbe",
             &include_bytes!(
-                "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/complex-method.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/complex-method.class"
             )[..],
         ),
         (
             "IncompatibleBodyProbe",
             &include_bytes!(
-                "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/incompatible-body.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/incompatible-body.class"
             )[..],
         ),
     ] {
@@ -747,7 +747,7 @@ fn erasure_shape_and_body_refusals_keep_descriptor_declarations() {
     }
     let class_variable = source(
         include_bytes!(
-            "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/class-variable.class"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/class-variable.class"
         ),
         "ClassVariableProbe",
     );
@@ -767,7 +767,7 @@ fn erasure_shape_and_body_refusals_keep_descriptor_declarations() {
     );
     let incompatible = source(
         include_bytes!(
-            "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/incompatible-body.class"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/incompatible-body.class"
         ),
         "IncompatibleBodyProbe",
     );

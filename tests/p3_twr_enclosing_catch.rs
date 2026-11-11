@@ -39,7 +39,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 macro_rules! patrol {
     ($rest:literal) => {
         concat!(
-            "../openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/",
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/",
             $rest
         )
     };
@@ -48,7 +48,7 @@ macro_rules! patrol {
 const T3: &[u8] = include_bytes!(patrol!("fixture/T3.class"));
 const T1: &[u8] = include_bytes!(patrol!("fixture/T1.class"));
 const C4: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C4.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C4.class"
 );
 const W17B: &[u8] = include_bytes!(patrol!("enclosing-17b/original/W17b.class"));
 const N17B: &[u8] = include_bytes!(patrol!("enclosing-17b/original/N17b.class"));

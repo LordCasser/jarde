@@ -28,22 +28,22 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const T2: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/fixture/T2.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/fixture/T2.class"
 );
 const V17A: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/original/V17a.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/original/V17a.class"
 );
 const V17A_G17: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/original/V17a$G17.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/original/V17a$G17.class"
 );
 const V17A_G17_IMPL: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/original/V17a$G17Impl.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/original/V17a$G17Impl.class"
 );
 const V17A_RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/V17aRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/V17aRunner.java"
 );
 const N17A: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/original/N17a.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/original/N17a.class"
 );
 
 /// The run of the original frozen `T2.main` — the text every compileable leg printed (recorded

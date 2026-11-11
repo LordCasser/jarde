@@ -5,7 +5,7 @@ use std::io::{Cursor, Read, Write};
 use std::slice;
 
 const H1: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar"
 );
 
 fn limits(class_headers: u64) -> Limits {
@@ -378,10 +378,7 @@ fn h1_cap_eight_stops_snapshot_proof_before_main_body() {
     let ClassSourceOutcome::Refused { execution, .. } = &main.outcome else {
         panic!("cap 8 refuses main's own run: {:?}", main.outcome);
     };
-    assert!(
-        stopped_for_class_headers(execution),
-        "{execution:?}"
-    );
+    assert!(stopped_for_class_headers(execution), "{execution:?}");
     assert!(report.methods.iter().any(|method| matches!(&method.outcome,
         ClassSourceOutcome::Recovered { report: body, .. }
         if body.produced() && body.content == RecoveryContent::ContainsStatements)));
@@ -460,4 +457,3 @@ fn without_elapsed(value: serde_json::Value) -> serde_json::Value {
         other => other,
     }
 }
-

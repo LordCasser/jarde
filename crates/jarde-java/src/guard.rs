@@ -13531,7 +13531,7 @@ mod finally_copy_tests {
     #[test]
     fn branch_throw_return_finally_resources_claims_the_sealed_method() {
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
         );
         probe_descriptor(
             class,
@@ -13663,7 +13663,7 @@ mod finally_copy_tests {
     #[test]
     fn branch_throw_return_finally_rejects_real_classfile_neighbor_mutations() {
         let original = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
         );
         let mut controls = Vec::new();
 
@@ -13761,7 +13761,7 @@ mod finally_copy_tests {
         }
 
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
         );
         probe_descriptor(
             class,
@@ -15163,7 +15163,7 @@ mod finally_copy_tests {
     /// The fixed CF-16 Tf1 transcription: the two-row nullable local whose cleanup reads the
     /// slot the lead initialised and the body assigned.
     const LOCAL_NULL_TF1: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf1.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf1.class"
     );
     const LOCAL_NULL_TF1_DESCRIPTOR: &[u8] = b"(LContext;Ljava/lang/Object;)Ljava/lang/String;";
 
@@ -15220,7 +15220,7 @@ mod finally_copy_tests {
     /// The fixed CF-16 Tf3 transcription: the segmented two-row null-lead whose gap is the
     /// early return's own unguarded copy.
     const SEGMENTED_NULL_LEAD_TF3: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf3.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf3.class"
     );
     const SEGMENTED_NULL_LEAD_TF3_DESCRIPTOR: &[u8] = b"()[B";
 
@@ -15231,55 +15231,55 @@ mod finally_copy_tests {
         (
             "Tf3GapExtra",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3GapExtra/Tf3GapExtra.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3GapExtra/Tf3GapExtra.class"
             ),
         ),
         (
             "Tf3LeadField",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3LeadField/Tf3LeadField.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3LeadField/Tf3LeadField.class"
             ),
         ),
         (
             "Tf3TargetMismatch",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3TargetMismatch/Tf3TargetMismatch.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3TargetMismatch/Tf3TargetMismatch.class"
             ),
         ),
         (
             "Tf3ArgOtherSlot",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3ArgOtherSlot/Tf3ArgOtherSlot.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3ArgOtherSlot/Tf3ArgOtherSlot.class"
             ),
         ),
         (
             "Tf3ReturnIdentity",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3ReturnIdentity/Tf3ReturnIdentity.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3ReturnIdentity/Tf3ReturnIdentity.class"
             ),
         ),
         (
             "Tf3SelfRowWidened",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3SelfRowWidened/Tf3SelfRowWidened.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3SelfRowWidened/Tf3SelfRowWidened.class"
             ),
         ),
         (
             "Tf3CondNonNullRewrite",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3CondNonNullRewrite/Tf3CondNonNullRewrite.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3CondNonNullRewrite/Tf3CondNonNullRewrite.class"
             ),
         ),
         (
             "Tf3CondIfneRewrite",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3CondIfneRewrite/Tf3CondIfneRewrite.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3CondIfneRewrite/Tf3CondIfneRewrite.class"
             ),
         ),
         (
             "Tf3RethrowIdentity",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3RethrowIdentity/Tf3RethrowIdentity.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3RethrowIdentity/Tf3RethrowIdentity.class"
             ),
         ),
     ];
@@ -15363,7 +15363,7 @@ mod finally_copy_tests {
             (
                 "Tf4",
                 include_bytes!(
-                    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
+                    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
                 ) as &[u8],
                 &b"()Ljava/lang/String;"[..],
                 "flag",
@@ -15371,7 +15371,7 @@ mod finally_copy_tests {
             (
                 "Tf1",
                 include_bytes!(
-                    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf1.class"
+                    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf1.class"
                 ) as &[u8],
                 &b"(LContext;Ljava/lang/Object;)Ljava/lang/String;"[..],
                 "local-null",
@@ -15379,7 +15379,7 @@ mod finally_copy_tests {
             (
                 "Tf2",
                 include_bytes!(
-                    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf2.class"
+                    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf2.class"
                 ) as &[u8],
                 &NULL_LEAD_TF2_DESCRIPTOR[..],
                 "straight",
@@ -15404,7 +15404,7 @@ mod finally_copy_tests {
         // conditional keeps Test14's. Each shape only ever answers for its own grammar.
         let flag = shared_probe_method(
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
             ),
             b"test",
             b"()Ljava/lang/String;",
@@ -15424,7 +15424,7 @@ mod finally_copy_tests {
     /// the cleanup local with `null`, the body assigns from a call, and whose one saved return
     /// is a construction inside the protected range.
     const NULL_LEAD_TF2: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf2.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf2.class"
     );
     const NULL_LEAD_TF2_DESCRIPTOR: &[u8] = b"([B)LTf2$Result;";
 
@@ -15435,55 +15435,55 @@ mod finally_copy_tests {
         (
             "Tf2LeadField",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2LeadField/Tf2LeadField.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2LeadField/Tf2LeadField.class"
             ),
         ),
         (
             "Tf2LeadExtra",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2LeadExtra/Tf2LeadExtra.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2LeadExtra/Tf2LeadExtra.class"
             ),
         ),
         (
             "Tf2SlotMismatch",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2SlotMismatch/Tf2SlotMismatch.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2SlotMismatch/Tf2SlotMismatch.class"
             ),
         ),
         (
             "Tf2ArgOtherSlot",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2ArgOtherSlot/Tf2ArgOtherSlot.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2ArgOtherSlot/Tf2ArgOtherSlot.class"
             ),
         ),
         (
             "Tf2CleanupExtra",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2CleanupExtra/Tf2CleanupExtra.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2CleanupExtra/Tf2CleanupExtra.class"
             ),
         ),
         (
             "Tf2TargetMismatch",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2TargetMismatch/Tf2TargetMismatch.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2TargetMismatch/Tf2TargetMismatch.class"
             ),
         ),
         (
             "Tf2ReturnIdentity",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2ReturnIdentity/Tf2ReturnIdentity.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2ReturnIdentity/Tf2ReturnIdentity.class"
             ),
         ),
         (
             "Tf2RethrowIdentity",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2RethrowIdentity/Tf2RethrowIdentity.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2RethrowIdentity/Tf2RethrowIdentity.class"
             ),
         ),
         (
             "Tf2SelfRowWidened",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2SelfRowWidened/Tf2SelfRowWidened.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2SelfRowWidened/Tf2SelfRowWidened.class"
             ),
         ),
     ];
@@ -15724,7 +15724,7 @@ mod finally_copy_tests {
     #[test]
     fn nested_finally_rejects_complete_verifier_valid_classfile_neighbors() {
         const EX: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
         );
         let code = nested_fin_code_start(EX);
         let mut controls: Vec<(&str, Vec<u8>)> = Vec::new();
@@ -15896,7 +15896,7 @@ mod finally_copy_tests {
         }
 
         const EX: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
         );
         probe_descriptor(EX, "nestedFin", b"(I)I", false, None, |facts| {
             let entry = facts.canonical.blocks()[0].id().clone();
@@ -15989,7 +15989,7 @@ mod finally_copy_tests {
     #[test]
     fn nested_finally_saved_return_claims_the_complete_four_row_lowering() {
         const EX: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
         );
         let Verdict::Claimed(plan) =
             examine_probe_labelled("EX", EX, b"nestedFin", b"(I)I", None).unwrap()
@@ -16086,7 +16086,7 @@ mod finally_copy_tests {
         let flag = examine_probe_labelled(
             "Tf4",
             include_bytes!(
-                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
+                "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
             ),
             b"test",
             b"()Ljava/lang/String;",
@@ -16118,28 +16118,28 @@ mod finally_copy_tests {
         "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyCall.class"
     );
     const EMPTY_CATCH_TEST16: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/Test16.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/Test16.class"
     );
     const EMPTY_CATCH_TEST16_NEIGHBORS: [&[u8]; 5] = [
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/different-target.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/different-target.class"
         ),
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/cleanup-covered.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/cleanup-covered.class"
         ),
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/rows-swapped.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/rows-swapped.class"
         ),
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/throwable-rewritten.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/throwable-rewritten.class"
         ),
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/external-cleanup-entry.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/external-cleanup-entry.class"
         ),
     ];
 
     const NESTED_CLEANUP_TEST4: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test4-nested-cleanup/classes/jadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test4-nested-cleanup/classes/jadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls.class"
     );
 
     #[test]
@@ -16261,7 +16261,7 @@ mod finally_copy_tests {
     #[test]
     fn two_catch_test17_four_real_rows_four_call_copies() {
         const CLASS: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/Test17.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/Test17.class"
         );
         let probe = |stop| shared_probe_method(CLASS, b"test", b"()I", |_| {}, stop);
         let plan = probe(None).unwrap().expect("four-row certificate");
@@ -16301,29 +16301,29 @@ mod finally_copy_tests {
         ));
     }
     const CONCAT_SAVED: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-27/cf16-finally/original/FinallyOnce.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf16-finally/original/FinallyOnce.class"
     );
     const CONDITIONAL_TEST14: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/TestTryCatchFinally14$TestCls.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/TestTryCatchFinally14$TestCls.class"
     );
     const CONDITIONAL_TEST14_NEGATIVES: [&[u8]; 6] = [
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-field.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-field.class"
         ),
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-call.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-call.class"
         ),
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-predicate.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-predicate.class"
         ),
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-self-protected.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-self-protected.class"
         ),
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-external-entry.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-external-entry.class"
         ),
         include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-throwable.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-throwable.class"
         ),
     ];
     const CONDITIONAL_TEST14_SLOT0: &[u8] =
@@ -16338,25 +16338,25 @@ mod finally_copy_tests {
         "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoin.class"
     );
     const NESTED_TEST_CLS: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
     );
     const SEGMENTED_TEST_CLS: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/TestTryCatchFinally13$TestCls.probe.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/TestTryCatchFinally13$TestCls.probe.class"
     );
     const SEGMENTED_NEGATIVE_TARGET: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/cleanup-target.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/cleanup-target.class"
     );
     const SEGMENTED_NEGATIVE_BRANCH: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/branch-bypass.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/branch-bypass.class"
     );
     const SEGMENTED_NEGATIVE_RANGE: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/range-expanded.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/range-expanded.class"
     );
     const SEGMENTED_NEGATIVE_THROW: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/rethrow-changed.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/rethrow-changed.class"
     );
     const SEGMENTED_EXTERNAL_ENTRY: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/acceptance/external-entry.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/acceptance/external-entry.class"
     );
 
     #[test]
@@ -16875,7 +16875,7 @@ mod finally_copy_tests {
     #[test]
     fn constructor_resource_requires_its_verified_site() {
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr.class"
         );
         let mut budget = Budget::new(limits());
         let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
@@ -17030,7 +17030,7 @@ mod finally_copy_tests {
     #[test]
     fn implicit_cleanup_has_a_physical_copy_certificate() {
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
         );
         let proved = proof(class, "run").expect("the straight call copies match");
         assert_eq!(proved.protected, (0, 20));
@@ -17047,7 +17047,7 @@ mod finally_copy_tests {
     #[test]
     fn widened_range_cannot_reenter_the_proved_cleanup() {
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class"
         );
         assert!(proof(class, "run").is_none());
     }
@@ -17055,7 +17055,7 @@ mod finally_copy_tests {
     #[test]
     fn a_competing_row_refuses_the_same_otherwise_proved_copy() {
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
         );
         assert!(proof(class, "run").is_some());
         assert!(proof_with_row(class, "run", true).is_none());
@@ -17064,13 +17064,13 @@ mod finally_copy_tests {
     #[test]
     fn changed_argument_or_missing_coverage_refuses_the_copy() {
         let baseline = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/baseline/CleanupBoundaries.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/baseline/CleanupBoundaries.class"
         );
         let divergent = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/copy-divergence/CleanupBoundaries.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/copy-divergence/CleanupBoundaries.class"
         );
         let narrowed = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/range-narrowed/CleanupBoundaries.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/range-narrowed/CleanupBoundaries.class"
         );
         let proved = proof(baseline, "snapshotReturn").expect("the matching snapshot copies prove");
         assert_eq!(proved.protected, (5, 14));
@@ -17118,7 +17118,7 @@ mod finally_copy_tests {
     #[test]
     fn proof_propagates_the_existing_budget_and_cancellation_stops() {
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
         );
         assert!(matches!(
             probe(class, "run", false, Some("budget")),
@@ -17136,7 +17136,7 @@ mod finally_copy_tests {
         // whose body holds an inner explicit `finally` obeys the same stops every other proof
         // does — a stopped run claims nothing.
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/TF.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/TF.class"
         );
         assert!(matches!(
             examine_probe_labelled(
@@ -17166,7 +17166,7 @@ mod finally_copy_tests {
         // that itself carries a `finally` obeys the same stops every other proof does — a
         // stopped run claims nothing.
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/direct/fixture/PD.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/twr-clause-patrol/direct/fixture/PD.class"
         );
         assert!(matches!(
             examine_probe_labelled(
@@ -17818,14 +17818,14 @@ mod monitor_branch_tests {
     #[test]
     fn completed_instance_field_prefix_is_not_a_resource_header() {
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/TestTryCatchFinally12$TestCls.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-switch-catch/TestTryCatchFinally12$TestCls.class"
         );
         assert!(matches!(
             plans(class, "runTest", "(II)Ljava/lang/String;").first(),
             Some(Verdict::NotGuarded)
         ));
         let resource = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/TwrSwitchCatch.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/TwrSwitchCatch.class"
         );
         assert!(matches!(
             plans(resource, "runTest", "(II)Ljava/lang/String;").first(),
@@ -17839,14 +17839,14 @@ mod monitor_branch_tests {
     #[test]
     fn a_non_store_statement_prefix_is_not_examined_as_a_resource_header() {
         let getstatic = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P2GetstaticRead.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P2GetstaticRead.class"
         );
         assert!(matches!(
             plans(getstatic, "run", "()Ljava/lang/String;").first(),
             Some(Verdict::NotGuarded)
         ));
         let void_call = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M5.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M5.class"
         );
         assert!(matches!(
             plans(void_call, "main", "([Ljava/lang/String;)V").first(),
@@ -17863,21 +17863,21 @@ mod monitor_branch_tests {
     #[test]
     fn a_named_row_a_completed_store_precedes_is_not_examined_as_a_resource_header() {
         let five = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C1.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C1.class"
         );
         assert!(matches!(
             plans(five, "five", "()Ljava/lang/String;").first(),
             Some(Verdict::NotGuarded)
         ));
         let construct = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C4.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C4.class"
         );
         assert!(matches!(
             plans(construct, "constructNamed", "()Ljava/lang/String;").first(),
             Some(Verdict::NotGuarded)
         ));
         let call = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/N1.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/N1.class"
         );
         assert!(matches!(
             plans(call, "main", "([Ljava/lang/String;)V").first(),
@@ -17892,19 +17892,19 @@ mod monitor_branch_tests {
     #[test]
     fn the_crossing_answer_keeps_every_unreadable_or_unowned_store_refused() {
         const X1: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X1Catchall.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X1Catchall.class"
         );
         const X2: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X2Split.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X2Split.class"
         );
         const X3: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X3Between.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X3Between.class"
         );
         const X4: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X4DoubleUse.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X4DoubleUse.class"
         );
         const X5: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X5CrossBlock.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X5CrossBlock.class"
         );
         for (name, class) in [
             ("X1Catchall", X1),
@@ -17936,14 +17936,14 @@ mod monitor_branch_tests {
     #[test]
     fn a_twr_lowering_row_a_completed_store_precedes_keeps_its_examination() {
         let twr_named = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C4.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C4.class"
         );
         assert!(matches!(
             plans(twr_named, "twrNamed", "()Ljava/lang/String;").first(),
             Some(Verdict::Refused { pass: Some(_), .. })
         ));
         let two = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
         );
         let verdicts = plans(two, "two", "()Ljava/lang/String;");
         assert!(verdicts.iter().any(|verdict| matches!(
@@ -17957,7 +17957,7 @@ mod monitor_branch_tests {
     #[test]
     fn a_two_resource_header_keeps_its_certificate() {
         let class = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
         );
         let verdicts = plans(class, "two", "()Ljava/lang/String;");
         assert!(verdicts.iter().any(|verdict| matches!(
@@ -17969,10 +17969,10 @@ mod monitor_branch_tests {
     #[test]
     fn frozen_two_arm_fixture_is_one_monitor_plan_and_three_arm_control_is_refused() {
         let accepted = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-22/synchronized-multi-exit/SynchronizedMultiExit.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/synchronized-multi-exit/SynchronizedMultiExit.class"
         );
         let refused = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-09-22/synchronized-multi-exit/negative-three-arm/SynchronizedThreeWay.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/synchronized-multi-exit/negative-three-arm/SynchronizedThreeWay.class"
         );
         let accepted = plans(accepted, "choose", "(Ljava/lang/Object;Z)I");
         assert!(accepted.iter().any(|verdict| matches!(

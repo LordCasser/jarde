@@ -277,11 +277,32 @@ fn the_interleaved_and_exceptional_controls_present_the_copy_once() {
         ),
     ];
     for (name, expected, quoted_bci) in cases {
-        let report = recover_method(NEGATIVE, "cf06/NegativeAssignments", name, "(Ljava/lang/String;)I", 1, 0x0009, None);
+        let report = recover_method(
+            NEGATIVE,
+            "cf06/NegativeAssignments",
+            name,
+            "(Ljava/lang/String;)I",
+            1,
+            0x0009,
+            None,
+        );
         assert!(report.produced(), "{name}: {:?}", report.outcome);
-        assert_eq!(report.quality, Quality::Structured, "{name}: {}", report.text);
-        assert!(report.fallbacks.is_empty(), "{name}: {:?}", report.fallbacks);
-        assert!(!report.text.contains("@bytecode"), "{name}: {}", report.text);
+        assert_eq!(
+            report.quality,
+            Quality::Structured,
+            "{name}: {}",
+            report.text
+        );
+        assert!(
+            report.fallbacks.is_empty(),
+            "{name}: {:?}",
+            report.fallbacks
+        );
+        assert!(
+            !report.text.contains("@bytecode"),
+            "{name}: {}",
+            report.text
+        );
         assert_eq!(
             report.text.matches("arg0.length()").count(),
             1,
@@ -298,12 +319,12 @@ fn the_interleaved_and_exceptional_controls_present_the_copy_once() {
             "{name}: {}",
             report.text
         );
+        assert!(report.text.contains(expected), "{name}: {}", report.text);
         assert!(
-            report.text.contains(expected),
+            report.text.contains("return local1;"),
             "{name}: {}",
             report.text
         );
-        assert!(report.text.contains("return local1;"), "{name}: {}", report.text);
         assert!(
             !report.source_map.of_bci(quoted_bci).is_empty(),
             "{name} BCI {quoted_bci}: {}",
@@ -354,10 +375,22 @@ fn extra_copy_of_the_call_result_is_a_faithful_self_comparison() {
     assert!(report.produced(), "{:?}", report.outcome);
     assert_eq!(report.quality, Quality::Structured, "{}", report.text);
     assert!(!report.text.contains("@bytecode"), "{}", report.text);
-    assert!(report.text.contains("int saved0 = arg0.length();"), "{}", report.text);
-    assert!(report.text.contains("int local1 = saved0;"), "{}", report.text);
+    assert!(
+        report.text.contains("int saved0 = arg0.length();"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("int local1 = saved0;"),
+        "{}",
+        report.text
+    );
     // The faithful form: the duplicated value compared with itself, not a second variable.
-    assert!(report.text.contains("if (saved0 > saved0) {"), "{}", report.text);
+    assert!(
+        report.text.contains("if (saved0 > saved0) {"),
+        "{}",
+        report.text
+    );
     assert_eq!(
         report.text.matches("saved0").count(),
         4,

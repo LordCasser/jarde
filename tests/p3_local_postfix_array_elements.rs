@@ -204,7 +204,7 @@ fn complete_class_matches_five_verified_jvm_rows() {
     assert_eq!(
         String::from_utf8(run.stdout).expect("UTF-8"),
         include_str!(
-            "../openspec/evidence/java-syntax-2026-09-25/array-postfix-element/original-run.txt"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/array-postfix-element/original-run.txt"
         )
     );
 }
@@ -246,7 +246,7 @@ fn patched_controls_remain_verifier_valid_and_distinguishable() {
     assert_eq!(
         String::from_utf8(run.stdout).expect("UTF-8"),
         include_str!(
-            "../openspec/evidence/java-syntax-2026-09-25/array-postfix-element/plus2-original-run.txt"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/array-postfix-element/plus2-original-run.txt"
         )
         .strip_suffix("exit=0\n")
         .expect("frozen run records its successful exit")

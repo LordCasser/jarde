@@ -33,25 +33,25 @@ use jarde_reader::view::{
 };
 
 const S1: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/string-ops-patrol/fixture/S1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/string-ops-patrol/fixture/S1.class"
 );
 const R1: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/R1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/R1.class"
 );
 const R2: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/R2.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/R2.class"
 );
 const R3: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/R3.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/R3.class"
 );
 const N1: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/N1.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/N1.class"
 );
 const N2: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/N2.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/N2.class"
 );
 const N3: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/N3.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/string-ops-patrol/repeq-variants/fixture/N3.class"
 );
 
 fn limits() -> Limits {

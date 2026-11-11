@@ -97,21 +97,21 @@ fn staged_generic_headers_keep_the_same_debug_names_as_the_emitted_body() {
         (
             "CallRelay",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CallRelay.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CallRelay.java"
             ),
             "public T relay(T ",
         ),
         (
             "NestedCallArgument",
             include_str!(
-                "../openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/input/NestedCallArgument.java"
+                "../tests/fixtures/recovered-inputs/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/input/NestedCallArgument.java"
             ),
             "public T relay(T ",
         ),
         (
             "CatchCallMarker",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CatchCallMarker.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CatchCallMarker.java"
             ),
             "private T maybe(T ",
         ),
@@ -138,7 +138,7 @@ fn exhausted_call_publication_does_not_leave_a_partial_generic_chain() {
         (
             "CallRelay",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CallRelay.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CallRelay.java"
             ),
             &[(
                 "identity",
@@ -173,7 +173,7 @@ fn exhausted_call_publication_does_not_leave_a_partial_generic_chain() {
         (
             "MethodShadow",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/MethodShadow.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/MethodShadow.java"
             ),
             &[(
                 "identity",
@@ -284,14 +284,14 @@ fn direct_generic_calls_publish_only_closed_parameterized_headers() {
         (
             "CallRelay",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CallRelay.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CallRelay.java"
             ),
             &["public T identity(T arg1)", "public T relay(T arg1)"][..],
         ),
         (
             "ArrayRelay",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/ArrayRelay.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/ArrayRelay.java"
             ),
             &[
                 "public T[] identity(T[] arg1)",
@@ -301,21 +301,21 @@ fn direct_generic_calls_publish_only_closed_parameterized_headers() {
         (
             "NumberBoundRelay",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/NumberBoundRelay.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/NumberBoundRelay.java"
             ),
             &["public T identity(T arg1)", "public T relay(T arg1)"][..],
         ),
         (
             "WideRelay",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/WideRelay.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/WideRelay.java"
             ),
             &["public T relay(long arg1, T arg3, double arg4, T arg6)"][..],
         ),
         (
             "DeepRelay",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/DeepRelay.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/DeepRelay.java"
             ),
             &[
                 "public T relay0(T arg1)",
@@ -327,14 +327,14 @@ fn direct_generic_calls_publish_only_closed_parameterized_headers() {
         (
             "EmptySink",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/EmptySink.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/EmptySink.java"
             ),
             &["public void sink(T arg1)"],
         ),
         (
             "ReverseDeclarationRelay",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/ReverseDeclarationRelay.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/ReverseDeclarationRelay.java"
             ),
             &[
                 "public T identity(T arg1)",
@@ -346,7 +346,7 @@ fn direct_generic_calls_publish_only_closed_parameterized_headers() {
         (
             "MethodShadow",
             include_str!(
-                "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/MethodShadow.java"
+                "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/MethodShadow.java"
             ),
             &[
                 "public <T extends java.lang.Number> T relay(T arg1)",
@@ -370,7 +370,7 @@ fn direct_generic_calls_publish_only_closed_parameterized_headers() {
 #[test]
 fn unknown_incoming_call_rolls_back_only_its_connected_component() {
     let source = include_str!(
-        "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/UnknownIncoming.java"
+        "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/UnknownIncoming.java"
     );
     let report = class_source("UnknownIncoming", source);
     assert!(
@@ -393,7 +393,7 @@ fn unknown_incoming_call_rolls_back_only_its_connected_component() {
 #[test]
 fn structured_catch_call_results_keep_the_constructor_contract() {
     let source = include_str!(
-        "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CatchCallMarker.java"
+        "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/CatchCallMarker.java"
     );
     let report = class_source("CatchCallMarker", source);
     assert!(
@@ -415,7 +415,7 @@ fn structured_catch_call_results_keep_the_constructor_contract() {
 #[test]
 fn nested_generic_call_results_feed_the_next_proved_call() {
     let source = include_str!(
-        "../openspec/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/input/NestedCallArgument.java"
+        "../tests/fixtures/recovered-inputs/changes/recover-same-class-generic-call-consumers/results/extension/nested-call-argument-v1/input/NestedCallArgument.java"
     );
     let report = class_source("NestedCallArgument", source);
     for expected in [
@@ -434,7 +434,7 @@ fn nested_generic_call_results_feed_the_next_proved_call() {
 #[test]
 fn bounded_same_class_overloads_keep_the_physical_target_with_only_proved_casts() {
     let bound = include_str!(
-        "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/openjdk23/debug/BoundOverload/BoundOverload.original.java"
+        "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/frozen-inputs-v1/openjdk23/debug/BoundOverload/BoundOverload.original.java"
     );
     let report = class_source("BoundOverload", bound);
     assert!(
@@ -457,7 +457,7 @@ fn bounded_same_class_overloads_keep_the_physical_target_with_only_proved_casts(
     );
 
     let plain = include_str!(
-        "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/PlainUpperBoundOverload.java"
+        "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/PlainUpperBoundOverload.java"
     );
     let report = class_source("PlainUpperBoundOverload", plain);
     assert!(
@@ -469,7 +469,7 @@ fn bounded_same_class_overloads_keep_the_physical_target_with_only_proved_casts(
     );
 
     let same_name = include_str!(
-        "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/SameNameOverload.java"
+        "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/SameNameOverload.java"
     );
     let report = class_source("SameNameOverload", same_name);
     assert!(
@@ -487,7 +487,7 @@ fn constructor_only_classes_keep_the_existing_generic_projection() {
     let raw = class_source(
         "RawNewHold",
         include_str!(
-            "../openspec/changes/recover-class-scope-constructor-parameters/evidence/fixtures/RawNewHold/RawNewHold.java"
+            "../tests/fixtures/recovered-inputs/changes/recover-class-scope-constructor-parameters/evidence/fixtures/RawNewHold/RawNewHold.java"
         ),
     );
     assert!(
@@ -498,7 +498,7 @@ fn constructor_only_classes_keep_the_existing_generic_projection() {
     let peer = class_source(
         "PeerNewHold",
         include_str!(
-            "../openspec/changes/recover-class-scope-constructor-parameters/evidence/fixtures/PeerNewHold/PeerNewHold.java"
+            "../tests/fixtures/recovered-inputs/changes/recover-class-scope-constructor-parameters/evidence/fixtures/PeerNewHold/PeerNewHold.java"
         ),
     );
     assert!(
@@ -515,7 +515,9 @@ fn constructor_only_classes_keep_the_existing_generic_projection() {
 fn raw_incoming_call_keeps_the_previously_proved_field_setter() {
     let report = class_source(
         "SCGA",
-        include_str!("../openspec/evidence/generic-holder-write-boundaries/SCGA/source/SCGA.java"),
+        include_str!(
+            "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/SCGA/source/SCGA.java"
+        ),
     );
     assert!(
         report.text.contains("public void put(T ") && report.text.contains("public T v;"),
@@ -529,7 +531,7 @@ fn proved_void_effects_survive_generic_call_staging() {
     let report = class_source(
         "VoidDirect",
         include_str!(
-            "../openspec/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/VoidDirect.java"
+            "../tests/fixtures/recovered-inputs/evidence/same-class-generic-call-consumers-2026-10-09/fixtures/sources/VoidDirect.java"
         ),
     );
     assert!(

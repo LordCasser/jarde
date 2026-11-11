@@ -25,11 +25,11 @@ use jarde_reader::view::{
 };
 
 const CLASS: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
 );
 const CLASS_BLAKE3: &str = "92a103230cd6cbb8ccc535ca33a838ad3c91265b1b784d5ad5a69db824b17edd";
 const FT2_CLASS: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase2.test/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase2.test/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class"
 );
 const FT2_CLASS_BLAKE3: &str = "3b3fcb2925d1cf2d6ef1a69bfa451434711be9701602683032a53acf98656d03";
 const FT2_OWNER: &str = "jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls";
@@ -800,7 +800,7 @@ fn cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artif
 }
 
 const COMPOUND_CLASS: &[u8] = include_bytes!(
-    "../../../openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class"
+    "../../../tests/fixtures/recovered-inputs/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class"
 );
 const COMPOUND_CLASS_BLAKE3: &str =
     "bdd8be9a2985ec4561dc5aa69de3fdfaa51db7f151cd42cfb6653a2b230ff65a";

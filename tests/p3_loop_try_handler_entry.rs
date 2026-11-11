@@ -4,7 +4,7 @@ use jarde::*;
 use std::slice;
 
 const CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/loop-try-handler-entry/LoopTryHandlerEntry.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/loop-try-handler-entry/LoopTryHandlerEntry.class"
 );
 const ARGS_CLASS: &[u8] =
     include_bytes!("fixtures/p3-loop-try-handler-entry/v8/LoopTryHandlerEntryArgs.class");

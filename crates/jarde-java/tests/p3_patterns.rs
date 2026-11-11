@@ -50,7 +50,7 @@ use jarde_reader::view::{
 const STRING_BUILDER: &str = "java/lang/StringBuilder";
 const STRING_BUFFER: &str = "java/lang/StringBuffer";
 const BOXED_SAM_PROBE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class"
 );
 const EM21_THIS_ALIAS: &[u8] = include_bytes!("fixtures/em21-this-alias/ThisUse.class");
 const EM21_ALIAS_REFUSALS: &[u8] =
@@ -4908,9 +4908,7 @@ fn a_shared_deferred_argument_dag_is_quoted_once_and_budgeted() {
         "{body}"
     );
     assert!(
-        body.contains(
-            "return take((java.lang.Exception) saved0, (java.lang.Exception) saved0);"
-        ),
+        body.contains("return take((java.lang.Exception) saved0, (java.lang.Exception) saved0);"),
         "{body}"
     );
     assert!(!body.contains("@bytecode"), "{body}");
@@ -5639,7 +5637,7 @@ fn class_source_preserves_aliases_without_closed_receiver_uses() {
 #[test]
 fn structured_finally_keeps_the_saved_return_inside_its_branch() {
     let class = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
     );
     let mut essential_budget = Budget::new(limits());
     let essential = recover_class_source_exact(
@@ -5681,7 +5679,7 @@ fn structured_finally_keeps_the_saved_return_inside_its_branch() {
     }
 
     let widened = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class"
     );
     let refused = present_exact(widened, b"run", b"()I", 0, Vec::new());
     assert!(!refused.text.contains("finally {"), "{}", refused.text);
@@ -5691,7 +5689,7 @@ fn structured_finally_keeps_the_saved_return_inside_its_branch() {
 #[test]
 fn structured_finally_stop_never_publishes_partial_class_source() {
     let class = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
     );
 
     let mut baseline_budget = Budget::new(limits());
@@ -5872,7 +5870,7 @@ fn cf16_region_depth_stop_never_publishes_class_source() {
 #[test]
 fn nested_string_switch_keeps_its_final_dispatch_inside_the_outer_default() {
     let class = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/NestedStringSwitchAudit.original.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/NestedStringSwitchAudit.original.class"
     );
     let mut budget = Budget::new(limits());
     let recovery = recover_class_source_exact(
@@ -5947,7 +5945,7 @@ fn nested_string_switch_keeps_its_final_dispatch_inside_the_outer_default() {
 #[test]
 fn nested_string_switch_cross_case_exit_is_refused() {
     let mut class = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/NestedStringSwitchAudit.original.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/NestedStringSwitchAudit.original.class"
     )
     .to_vec();
     // The verified fixture's BCI 108 `goto 123` becomes `goto 60`: the inner "b"
@@ -5985,7 +5983,7 @@ fn nested_string_switch_cross_case_exit_is_refused() {
 #[test]
 fn independent_hash_use_keeps_both_physical_switches() {
     let class = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/ExtraHashUse.original.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/ExtraHashUse.original.class"
     );
     let mut budget = Budget::new(limits());
     let recovery = recover_class_source_exact(
@@ -6006,7 +6004,7 @@ fn independent_hash_use_keeps_both_physical_switches() {
 #[test]
 fn straight_finally_reuses_its_guard_verdict_with_a_tight_budget() {
     let class = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-24/finally-straight-cleanup-throws/FinallyStraightThrow.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/finally-straight-cleanup-throws/FinallyStraightThrow.class"
     );
     let payload = analyze(class, b"run", b"()I");
     let facts = facts_of_exact(class, b"run", b"()I", 0, Vec::new());

@@ -47,55 +47,55 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const A12_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/f12.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/f12.jar"
 );
 const A12_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/o4.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/o4.out"
 );
 const N2_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/fn2.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/fn2.jar"
 );
 const A11_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/a11.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/a11.jar"
 );
 const A11_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/o3.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/o3.out"
 );
 const A9_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/a9.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/a9.jar"
 );
 const A9_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A9.orig.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A9.orig.out"
 );
 const A10_CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A10.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A10.class"
 );
 const A10_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/o2.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/o2.out"
 );
 const LC_CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/LC.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/LC.class"
 );
 const WC1_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture-variants/WC1/wc1.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture-variants/WC1/wc1.jar"
 );
 const WC1_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture-variants/WC1/WC1.orig.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture-variants/WC1/WC1.orig.out"
 );
 const WV1_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture-variants/WV1/wv1.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture-variants/WV1/wv1.jar"
 );
 const WV1_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture-variants/WV1/WV1.orig.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture-variants/WV1/WV1.orig.out"
 );
 const A12_CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A12.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/fixture/A12.class"
 );
 const RF_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/fixture/rf.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/fixture/rf.jar"
 );
 const RF_OUT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/results/original.out"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/results/original.out"
 );
 
 fn budget() -> Budget {
@@ -612,7 +612,7 @@ fn a_refused_fold_reruns_the_structural_reader_and_the_family_stays_loud() {
     assert_eq!(
         RF_OUT,
         include_bytes!(
-            "../openspec/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/results/original.out"
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/nested-class-literal-patrol/residual-boundary/results/original.out"
         ),
         "the frozen original output states `Inner`, `7`"
     );

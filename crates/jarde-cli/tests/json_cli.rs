@@ -74,7 +74,7 @@ fn limits(value: u64) -> Limits {
 #[ignore = "external dual-javac full-class replay; run explicitly for recovery evidence"]
 fn functional_constructor_arguments_replay_the_complete_class_on_both_jdks() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../openspec/evidence/java-syntax-2026-10-08/lambda-constructor-arguments");
+        .join("../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-08/lambda-constructor-arguments");
     let temp = TempDir::new();
     for (leg, preferred_home) in [
         (

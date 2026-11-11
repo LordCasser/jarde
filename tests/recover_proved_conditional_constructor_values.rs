@@ -789,7 +789,7 @@ fn assert_precancel(outcome: OperationOutcome<ClassSourceReport>) {
 #[test]
 fn conditional_sites_are_not_presented_when_the_final_body_is_explanation_only() {
     let fixture = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class"
     );
     let snapshot = open_fixture(fixture);
     let request = request_for(&snapshot, "X4");

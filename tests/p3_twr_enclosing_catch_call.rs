@@ -37,7 +37,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 macro_rules! patrol {
     ($rest:literal) => {
         concat!(
-            "../openspec/evidence/java-syntax-2026-10-02/twr-clause-patrol/",
+            "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/twr-clause-patrol/",
             $rest
         )
     };

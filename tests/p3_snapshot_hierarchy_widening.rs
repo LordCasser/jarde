@@ -24,19 +24,19 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const FAM_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/fam.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/fam.jar"
 );
 const HIER_FAM_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar"
 );
 const HIER_NEG_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-neg.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-neg.jar"
 );
 const HIER_DEPTH_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-depth.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-depth.jar"
 );
 const HELPER_CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/Helper.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/Helper.class"
 );
 
 /// The one run of the original `I1.main` under `java -Xverify:all` (`fixture/orig.out`).

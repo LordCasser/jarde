@@ -25,24 +25,24 @@ use jarde_reader::view::{
 
 /// The patrol's frozen T4, whose `nested` is the shape the whole slice is anchored on.
 const T4: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/fixture/T4.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/compound-guard-patrol/fixture/T4.class"
 );
 /// The frozen variants: `v1` (outer TWR + plain inner finally), `v2` (double TWR, no finally),
 /// `v3` (the inner finally's guarded body returns), `nested` (the T4 form in its own class) and
 /// `solo` (a TWR with its own finally and no enclosing TWR — not this certificate's shape, and
 /// it keeps its refusal).
 const TF: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/TF.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/TF.class"
 );
 /// The frozen negatives, both verifier-valid single-field patches of T4's own table (see the
 /// evidence directory): the inner finally row widened past the inner statement's lowering into
 /// the enclosing cleanup and the resource suppression row, and the self-protection row widened
 /// over the inner TWR's own suppression machinery.
 const T4_OVERLAP: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/T4Ov.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/T4Ov.class"
 );
 const T4_SELF_ROW: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/T4Self.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/compound-guard-patrol/twrfin/fixture/T4Self.class"
 );
 /// The committed pure-domain control: the plain one-resource TWR and the plain straight `finally`
 /// whose texts this slice must not move.

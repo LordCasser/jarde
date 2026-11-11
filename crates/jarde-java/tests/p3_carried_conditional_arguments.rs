@@ -143,7 +143,7 @@ fn report_with_recovery_budget(
 }
 
 const PAIR: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-25/constructor-conditional-delegation/ConstructorPairProbe.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/constructor-conditional-delegation/ConstructorPairProbe.class"
 );
 const TYPE: &[u8] = include_bytes!(
     "../../../tests/fixtures/p3-carried-conditional-arguments/CarriedTypeMismatch.class"

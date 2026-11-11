@@ -13,8 +13,9 @@ const DO_LOOP: &[u8] =
     include_bytes!("fixtures/proved-java-structure/loop-boolean-do/DoLoopBool.class");
 const DO_LOOP_SOURCE: &str =
     include_str!("fixtures/proved-java-structure/loop-boolean-do/DoLoopBool.java");
-const JADX_DO_LOOP_SOURCE: &str =
-    include_str!("../openspec/evidence/java-syntax-2026-09-26/loop-boolean-do/jadx.java");
+const JADX_DO_LOOP_SOURCE: &str = include_str!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/loop-boolean-do/jadx.java"
+);
 const DO_WHILE_CORE: &[u8] =
     include_bytes!("fixtures/p3-do-while-body-transfers/v8/DoWhileCore.class");
 const DO_WHILE_CORE_SOURCE: &str =

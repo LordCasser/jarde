@@ -8,7 +8,7 @@ use jarde_reader::model::ExecutionReport;
 use std::slice;
 
 const STEP_INDEX: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-27/cf10-foreach/isolation/step-index/original/StepIndex.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf10-foreach/isolation/step-index/original/StepIndex.class"
 );
 
 fn source(evidence: RecoveryEvidenceRequest) -> ClassSourceReport {

@@ -19,12 +19,12 @@ use jarde_reader::view::{
 };
 
 const FIXED: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
 );
 
 /// The same-layout probe whose cleanup can itself fail: the certificate's guarded-throw tail.
 const CLEANUP_PROBE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/probe/original/Tf4CleanupProbe.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/probe/original/Tf4CleanupProbe.class"
 );
 
 /// Verifier-valid neighbors the certificate must refuse. Each one breaks exactly one link of the
@@ -32,37 +32,37 @@ const CLEANUP_PROBE: &[u8] = include_bytes!(
 /// (`negatives/patch.py`) whose handler copy disagrees with the normal copy.
 const NEGATIVES: [&[u8]; 11] = [
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4NoSetTrue.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4NoSetTrue.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4TwoSetTrue.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4TwoSetTrue.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4StatementAfterSetTrue.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4StatementAfterSetTrue.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4InvertedCondition.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4InvertedCondition.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4LeadTrue.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4LeadTrue.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4LeadExtra.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4LeadExtra.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4CleanupCall.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4CleanupCall.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4CleanupDoubleUpdate.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4CleanupDoubleUpdate.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4KMismatch.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4KMismatch.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4FieldMismatch.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4FieldMismatch.class"
     ),
     include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4GuardFieldMismatch.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4GuardFieldMismatch.class"
     ),
 ];
 

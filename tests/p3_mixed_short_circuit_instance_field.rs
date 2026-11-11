@@ -16,7 +16,7 @@ const SOURCE: &str = include_str!(
 const RUNNER: &str =
     include_str!("fixtures/p3-conditional-values/mixed-short-circuit-instance-field/Runner.java");
 const EXPECTED: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/mixed-short-circuit-instance-field/original-run.txt"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/mixed-short-circuit-instance-field/original-run.txt"
 );
 const CONTROLS: &[u8] = include_bytes!(
     "fixtures/p3-conditional-values/mixed-short-circuit-instance-field/MixedInstanceControls.class"

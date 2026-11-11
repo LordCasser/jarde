@@ -5,16 +5,16 @@ use std::slice;
 
 const BASIC: &[u8] = include_bytes!("fixtures/p3-string-switch/v8/StringSwitchProbe.class");
 const UNICODE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/string-switch-unicode/StringSwitchUnicode.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/string-switch-unicode/StringSwitchUnicode.class"
 );
 const MIDDLE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/string-switch-variants/StringSwitchMiddleDefault.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/string-switch-variants/StringSwitchMiddleDefault.class"
 );
 const HASH_USE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/string-switch-negative-fixtures/classes/ExtraHashUse.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/string-switch-negative-fixtures/classes/ExtraHashUse.class"
 );
 const WRONG_BUCKET: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/string-switch-negative-fixtures/classes/WrongHashBucket.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/string-switch-negative-fixtures/classes/WrongHashBucket.class"
 );
 const BUCKET_EFFECT: &[u8] = include_bytes!("fixtures/p3-string-switch/v8/ExtraBucketEffect.class");
 

@@ -1,0 +1,1 @@
+public class UnknownIncoming<T> { public T identity(T x) { return x; } public T safe(T x) { return identity(x); } public T untouched(T x) { return x; } @SuppressWarnings("unchecked") public T unsafe(Object x) { return identity((T)x); } }

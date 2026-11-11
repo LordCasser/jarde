@@ -19,7 +19,7 @@ use jarde_reader::view::{
 };
 
 const FIXTURE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-26/conditional-intermediate-join/ConditionalIntermediateJoin.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-26/conditional-intermediate-join/ConditionalIntermediateJoin.class"
 );
 const NEGATIVE: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-intermediate-join/IntermediateJoinNegative.class");

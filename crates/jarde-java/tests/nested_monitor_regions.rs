@@ -23,27 +23,27 @@ use jarde_reader::view::{
 
 /// The patrol's frozen T4, whose `sync` is the shape the whole slice is anchored on.
 const T4: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/fixture/T4.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/compound-guard-patrol/fixture/T4.class"
 );
 /// The frozen variants: `v1` (the T4 form), `v2` (the inner pair inside the outer's loop), `v3`
 /// (the inner body ends in the return), `n3` (three levels — stays refused) and `sr` (the same
 /// lock re-entered, whose slot pairing proves and presents the reentrant block).
 const NM: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/nested-mon/fixture/NM.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/compound-guard-patrol/nested-mon/fixture/NM.class"
 );
 /// The inner pair's normal `monitorexit` patched to a `pop`: the pair has no normal exit to pair.
 const N_MISSING_EXIT: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/nested-mon/fixture/NMissingExit.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/compound-guard-patrol/nested-mon/fixture/NMissingExit.class"
 );
 /// The inner-position exit's load patched to the outer lock's slot: an unpaired inner exit.
 const N_WRONG_EXIT_LOCK: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-10-02/compound-guard-patrol/nested-mon/fixture/NWrongExitLock.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-02/compound-guard-patrol/nested-mon/fixture/NWrongExitLock.class"
 );
 /// The committed single-exit monitor and the committed two-arm one: their texts are the
 /// byte-identity control for every shape this slice did not change.
 const LOCKED: &[u8] = include_bytes!("../../../tests/fixtures/p3-sync-return/v8/Locked.class");
 const MULTI_EXIT: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-22/synchronized-multi-exit/SynchronizedMultiExit.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/synchronized-multi-exit/SynchronizedMultiExit.class"
 );
 
 fn limits() -> Limits {

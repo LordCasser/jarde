@@ -22,7 +22,7 @@ const DESCRIPTOR: &str = "(Ljava/util/List;Ljava/util/List;)V";
 const NEGATIVE_FIXTURE: &[u8] =
     include_bytes!("../../../../tests/fixtures/p3-protected-prefix-loop-negatives/Negative.class");
 const RESOURCE_GUARD_FIXTURE: &[u8] = include_bytes!(
-    "../../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
+    "../../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
 );
 
 fn limits() -> Limits {

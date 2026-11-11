@@ -6,16 +6,16 @@ use std::slice;
 
 const STRAIGHT: &[u8] = include_bytes!("fixtures/p3-finally-straight/v8/FinallyNormal.class");
 const BRANCHING: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
 );
 const LEAD_SNAPSHOT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/finally-lead-snapshot/FinallyLeadSnapshot.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/finally-lead-snapshot/FinallyLeadSnapshot.class"
 );
 const COPY_DIVERGENT: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/copy-divergence/CleanupBoundaries.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/copy-divergence/CleanupBoundaries.class"
 );
 const RANGE_NARROWED: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/range-narrowed/CleanupBoundaries.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/range-narrowed/CleanupBoundaries.class"
 );
 
 fn source(bytes: &[u8], class: &str) -> ClassSourceReport {

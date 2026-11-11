@@ -458,7 +458,7 @@ fn source7_refuses_lambda_method_reference_interface_bodies_and_type_uses_withou
         ),
         (
             include_bytes!(
-                "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/original/TypeUseSubject.class"
+                "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/type-use-annotations/generated/original/TypeUseSubject.class"
             ),
             "TypeUseSubject",
             true,
@@ -508,7 +508,7 @@ fn source7_refuses_lambda_method_reference_interface_bodies_and_type_uses_withou
 #[test]
 fn java7_keeps_twr_but_refuses_proved_qualified_super_calls() {
     let twr = include_bytes!(
-        "../openspec/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/fixture/real-javac8-TR/TR.class"
+        "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-04/twr-javac8-codegen-patrol/fixture/real-javac8-TR/TR.class"
     );
     let seven = source(twr, "TR", SourceTarget::JAVA_7);
     let eight = source(twr, "TR", SourceTarget::JAVA_8);

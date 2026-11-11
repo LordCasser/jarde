@@ -12422,7 +12422,11 @@ mod tests {
             // are the tree's newest fixture files and account for them, bringing this walk's
             // measured +35 Code bodies, +2 handler rows and +15 direct targets; the subroutines
             // field stands at 16. No fixture file's mtime is later than 2026-10-27.
-            (1382, 6048, 652, 4375, 16),
+            // 2026-11-10 durable recovery adds 511 exact historical class files:
+            // +2,289 bodies, +1,006 handlers, +2,317 branch targets and +2 jsr sites.
+            // The explicitly new five-class S2b baseline adds 15 bodies, three handlers
+            // and 33 branch targets. An independent raw-Code census matches this walk.
+            (1898, 8352, 1661, 6725, 18),
             "fixture population changed: re-measure these counts"
         );
     }

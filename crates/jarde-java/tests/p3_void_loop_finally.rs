@@ -23,7 +23,7 @@ use jarde_reader::view::{
 };
 
 const VOID_LOOP_TEST2: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test2-loop-finally/fixed/TestTryCatchFinally2$TestCls.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-28/cf16-test2-loop-finally/fixed/TestTryCatchFinally2$TestCls.class"
 );
 const VOID_LOOP_TEST2_NEIGHBORS: [(&str, &[u8]); 6] = [
     (

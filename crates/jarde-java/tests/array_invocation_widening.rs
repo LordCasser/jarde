@@ -31,7 +31,7 @@ const BUILTIN_INTERFACES: &[u8] = include_bytes!(
     "../../../tests/fixtures/p3-array-invocation-widening/v8/ArrayInterfaceProbe.class"
 );
 const LIST_TO_ITERABLE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-27/cf10-foreach/isolation/list-iterable-call/original/ListToIterable.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/cf10-foreach/isolation/list-iterable-call/original/ListToIterable.class"
 );
 
 fn limits() -> Limits {

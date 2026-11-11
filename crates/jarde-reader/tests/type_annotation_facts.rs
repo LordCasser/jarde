@@ -2,7 +2,7 @@ use jarde_reader::budget::{Budget, BudgetDimension, CancellationToken, Limits};
 use jarde_reader::classfile::{TypeAnnotationFacts, attribute_facts, class_facts};
 
 const CLASS: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/original/TypeUseSubject.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/type-use-annotations/generated/original/TypeUseSubject.class"
 );
 
 fn limits() -> Limits {

@@ -18313,7 +18313,7 @@ mod generic_void_parameter_census_tests {
         "../../../tests/fixtures/cf11-ordinary-try-list-generic/UpstreamNestedLoops.class"
     );
     const RESOURCE_GUARD: &[u8] = include_bytes!(
-        "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
+        "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
     );
     const INDEXED_LIST_CONTROLS: &[u8] = include_bytes!(
         "../../../tests/fixtures/java8/indexed-list-parameters/debug/NestedLoops2GenericControls.class"

@@ -15,7 +15,7 @@ const SOURCE: &str =
 const RUNNER: &str =
     include_str!("fixtures/p3-conditional-values/mixed-short-circuit-field/Runner.java");
 const EXPECTED: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/mixed-short-circuit-field/original-run.txt"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/mixed-short-circuit-field/original-run.txt"
 );
 
 struct Scratch(PathBuf);

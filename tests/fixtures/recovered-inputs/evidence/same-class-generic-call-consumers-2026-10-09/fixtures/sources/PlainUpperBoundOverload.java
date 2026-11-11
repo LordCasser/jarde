@@ -1,0 +1,1 @@
+public class PlainUpperBoundOverload<T extends Number> { public String selected; public void pick(Number x) { selected="number"; } public void pick(Object x) { selected="object"; } public void relay(T x) { pick(x); } }

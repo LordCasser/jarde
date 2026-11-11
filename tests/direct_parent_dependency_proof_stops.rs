@@ -5,7 +5,7 @@ use std::io::{Cursor, Read, Write};
 use std::slice;
 
 const DT29: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/input.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/input.jar"
 );
 
 fn limits(headers: u64) -> Limits {
@@ -16,7 +16,7 @@ fn limits(headers: u64) -> Limits {
 }
 
 const EXTERNAL_SOURCE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/combined-input.jar"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/combined-input.jar"
 );
 
 const DT29_PARENT: &[u8] = b"dt29/SamePackageParentFamily$A.class";

@@ -1859,7 +1859,8 @@ fn retry_transfer_paths(
             let Some(catch_body) = clause.body else {
                 return Ok(None);
             };
-            let Some(body_closed) = retry_transfer_paths(body, handler, transfers, handlers, budget)?
+            let Some(body_closed) =
+                retry_transfer_paths(body, handler, transfers, handlers, budget)?
             else {
                 return Ok(None);
             };
@@ -1990,12 +1991,14 @@ pub(crate) fn ordinary_try_list_scope(
             }
         }
     }
-    let Some(try_region @ Region::Try {
-        lead,
-        body,
-        transparent: None,
-        ..
-    }) = found
+    let Some(
+        try_region @ Region::Try {
+            lead,
+            body,
+            transparent: None,
+            ..
+        },
+    ) = found
     else {
         return Ok(None);
     };
@@ -6130,7 +6133,21 @@ impl Walker<'_> {
                 && let Some((body, lead, catches, join, tails, exit_bci, transparent, retry)) =
                     self.try_region(&current, node, frame, &prefix)?
             {
-                return self.named_try_region(prefix, &current, frame, (body, lead, catches, join, tails, exit_bci, transparent, retry));
+                return self.named_try_region(
+                    prefix,
+                    &current,
+                    frame,
+                    (
+                        body,
+                        lead,
+                        catches,
+                        join,
+                        tails,
+                        exit_bci,
+                        transparent,
+                        retry,
+                    ),
+                );
             }
             // A loop this walk enters from outside is a region of its own, and it *starts* one: the
             // run that led here ends before the loop, because the loop's test is written inside the
@@ -6456,7 +6473,6 @@ impl Walker<'_> {
         }
     }
 
-
     /// One `region_at_inner` dispatch arm — the two-successor branch — in a frame of its
     /// own.
     ///
@@ -6501,9 +6517,7 @@ impl Walker<'_> {
             let reason = FallbackReason::UnrenderableOperand { bci: branch_bci };
             return Ok(gap(prefix, vec![branch], reason, None));
         };
-        if let Some(region) =
-            self.shared_tail_early_return(&prefix, &branch, branch_bci, frame)?
-        {
+        if let Some(region) = self.shared_tail_early_return(&prefix, &branch, branch_bci, frame)? {
             let next = frame
                 .shared_tail
                 .and_then(|tail| self.view.id_of(tail).cloned());
@@ -6514,9 +6528,7 @@ impl Walker<'_> {
         {
             return Ok((regions, next));
         }
-        if let Some(region) =
-            self.two_exit_return(&prefix, &branch, branch_bci, frame)?
-        {
+        if let Some(region) = self.two_exit_return(&prefix, &branch, branch_bci, frame)? {
             return Ok(one(region, None));
         }
         let post_join = self
@@ -6525,8 +6537,7 @@ impl Walker<'_> {
             .filter(|join| *join != node)
             .filter(|join| {
                 !frame.loop_targets.iter().any(|target| {
-                    frame.loop_targets.last().map(|current| current.header)
-                        != Some(target.header)
+                    frame.loop_targets.last().map(|current| current.header) != Some(target.header)
                         && target.continue_target == *join
                 })
             });
@@ -6555,29 +6566,27 @@ impl Walker<'_> {
                 .into_iter()
                 .flatten()
                 .any(|arm| blocks.contains(&arm) && self.view.reaches(arm, boundary));
-            (frame.switch_join.is_none() && through_bridge && through_latch).then(
-                || {
-                    // A body that holds two loop-jump edges — one breaking out, one
-                    // keeping the loop — has no single graph join: the post-dominator
-                    // was an enclosing loop's continue target and the bridge proof is
-                    // what classified the arms. When a proved for-header owns an
-                    // update block apart from the header, the loop-side arm's
-                    // statements end there and the join is that block, so the walk
-                    // stops at the update instead of absorbing it. A loop whose
-                    // continue target *is* its header — a `while`/endless loop, where
-                    // the update is the body's own last statement — keeps the
-                    // boundary: the header is where the loop's arms regroup, and a
-                    // join placed on it would end the body walk early.
-                    if target.continue_target != target.header
-                        && target.continue_target != boundary
-                        && blocks.contains(&target.continue_target)
-                    {
-                        target.continue_target
-                    } else {
-                        boundary
-                    }
-                },
-            )
+            (frame.switch_join.is_none() && through_bridge && through_latch).then(|| {
+                // A body that holds two loop-jump edges — one breaking out, one
+                // keeping the loop — has no single graph join: the post-dominator
+                // was an enclosing loop's continue target and the bridge proof is
+                // what classified the arms. When a proved for-header owns an
+                // update block apart from the header, the loop-side arm's
+                // statements end there and the join is that block, so the walk
+                // stops at the update instead of absorbing it. A loop whose
+                // continue target *is* its header — a `while`/endless loop, where
+                // the update is the body's own last statement — keeps the
+                // boundary: the header is where the loop's arms regroup, and a
+                // join placed on it would end the body walk early.
+                if target.continue_target != target.header
+                    && target.continue_target != boundary
+                    && blocks.contains(&target.continue_target)
+                {
+                    target.continue_target
+                } else {
+                    boundary
+                }
+            })
         });
         let fragmented_handler_join = self.fragmented.as_ref().and_then(|proof| {
             let boundary = frame.boundary?;
@@ -6653,9 +6662,7 @@ impl Walker<'_> {
                 .as_ref()
                 .is_some_and(|scope| !scope.contains(&join))
         }) {
-            self.direct_continue_local_join(
-                node, then_node, else_node, frame, branch_bci,
-            )?
+            self.direct_continue_local_join(node, then_node, else_node, frame, branch_bci)?
         } else {
             None
         };
@@ -6678,41 +6685,33 @@ impl Walker<'_> {
             .is_none()
             .then(|| {
                 frame.loop_targets.last().and_then(|target| {
-                    let blocks =
-                        self.view.loop_entered_at(target.header)?.blocks().clone();
+                    let blocks = self.view.loop_entered_at(target.header)?.blocks().clone();
                     [then_node, else_node]
                         .into_iter()
                         .flatten()
                         .find(|arm| {
-                            self.loop_continue_bridge(
-                                node,
-                                *arm,
-                                target.continue_target,
-                                &blocks,
-                            ) || frame.loop_targets[..frame.loop_targets.len() - 1]
-                                .iter()
-                                .any(|enclosing| {
-                                    [
-                                        enclosing.break_target,
-                                        Some(enclosing.continue_target),
-                                    ]
-                                    .into_iter()
-                                    .flatten()
-                                    .any(|destination| {
-                                        // A bare transfer onto an *enclosing*
-                                        // loop's break or continue destination —
-                                        // a labeled `continue outer`/`break outer`
-                                        // edge of this two-edge body, whose
-                                        // destination leaves this loop entirely.
-                                        !blocks.contains(&destination)
-                                            && self.loop_break_transfer(
-                                                node,
-                                                *arm,
-                                                destination,
-                                                &blocks,
-                                            )
+                            self.loop_continue_bridge(node, *arm, target.continue_target, &blocks)
+                                || frame.loop_targets[..frame.loop_targets.len() - 1]
+                                    .iter()
+                                    .any(|enclosing| {
+                                        [enclosing.break_target, Some(enclosing.continue_target)]
+                                            .into_iter()
+                                            .flatten()
+                                            .any(|destination| {
+                                                // A bare transfer onto an *enclosing*
+                                                // loop's break or continue destination —
+                                                // a labeled `continue outer`/`break outer`
+                                                // edge of this two-edge body, whose
+                                                // destination leaves this loop entirely.
+                                                !blocks.contains(&destination)
+                                                    && self.loop_break_transfer(
+                                                        node,
+                                                        *arm,
+                                                        destination,
+                                                        &blocks,
+                                                    )
+                                            })
                                     })
-                                })
                         })
                         .filter(|arm| {
                             // The sibling arm stays the loop's continuation: each of
@@ -6766,8 +6765,7 @@ impl Walker<'_> {
         } else if join_outside_scope {
             // A method-wide post-dominator cannot close an arm of a loop body. Replace
             // that outside candidate only when the narrow local route proof succeeds.
-            let local =
-                self.ladder_join(node, then_node, else_node, frame, branch_bci, true)?;
+            let local = self.ladder_join(node, then_node, else_node, frame, branch_bci, true)?;
             (local, local.is_some())
         } else {
             (None, false)
@@ -6803,8 +6801,7 @@ impl Walker<'_> {
                 .into_iter()
                 .flatten()
                 .find(|stay| {
-                    blocks.contains(stay)
-                        && self.nested_loop_ahead(*stay, target.header, &blocks)
+                    blocks.contains(stay) && self.nested_loop_ahead(*stay, target.header, &blocks)
                 })
                 .and_then(|stay| {
                     [then_node, else_node]
@@ -6814,12 +6811,7 @@ impl Walker<'_> {
                             *exit != stay
                                 && frame.loop_targets.iter().any(|known| {
                                     known.break_target.is_some_and(|destination| {
-                                        self.loop_break_transfer(
-                                            node,
-                                            *exit,
-                                            destination,
-                                            &blocks,
-                                        )
+                                        self.loop_break_transfer(node, *exit, destination, &blocks)
                                     })
                                 })
                         })
@@ -6842,17 +6834,16 @@ impl Walker<'_> {
                 })
                 .map(|proof| proof.stay)
         });
-        let proved_break_body_boundary_join =
-            frame.loop_targets.iter().rev().find_map(|target| {
-                let proof = target.break_body.as_ref()?;
-                let boundary = frame.boundary?;
-                (proof.header == target.header
-                    && proof.exit == target.break_target.unwrap_or(usize::MAX)
-                    && proof.owners.contains(&node)
-                    && proof.owners.contains(&boundary)
-                    && (then_node == Some(boundary) || else_node == Some(boundary)))
-                .then_some(boundary)
-            });
+        let proved_break_body_boundary_join = frame.loop_targets.iter().rev().find_map(|target| {
+            let proof = target.break_body.as_ref()?;
+            let boundary = frame.boundary?;
+            (proof.header == target.header
+                && proof.exit == target.break_target.unwrap_or(usize::MAX)
+                && proof.owners.contains(&node)
+                && proof.owners.contains(&boundary)
+                && (then_node == Some(boundary) || else_node == Some(boundary)))
+            .then_some(boundary)
+        });
         let join_node = proved_break_body_join
             .or(proved_break_body_boundary_join)
             .or(in_loop_successor_join)
@@ -6874,20 +6865,17 @@ impl Walker<'_> {
         //
         // A branch whose **two** successors are both the join states no arm at all and
         // keeps the refusal below.
-        let forward_then = shared_join.is_none()
-            && self.forward_join(node, then_node, else_node, frame);
-        let forward_else = shared_join.is_none()
-            && self.forward_join(node, else_node, then_node, frame);
+        let forward_then =
+            shared_join.is_none() && self.forward_join(node, then_node, else_node, frame);
+        let forward_else =
+            shared_join.is_none() && self.forward_join(node, else_node, then_node, frame);
         if std::env::var_os("JRE_JOIN_PROBE").is_some() {
             eprintln!(
                 "P3JOIN branch={} ipdom={:?} then={:?} else={:?} ft={forward_then} fe={forward_else} frame_boundary={:?}",
                 branch.bci(),
-                join_node
-                    .and_then(|join| self.view.id_of(join).map(CanonicalBlockId::bci)),
-                then_node
-                    .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
-                else_node
-                    .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
+                join_node.and_then(|join| self.view.id_of(join).map(CanonicalBlockId::bci)),
+                then_node.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
+                else_node.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
                 frame
                     .boundary
                     .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
@@ -6915,9 +6903,7 @@ impl Walker<'_> {
             return Ok(one(region, Some(next)));
         }
         let one_armed = match join_node {
-            Some(join_node)
-                if (then_node == Some(join_node)) != (else_node == Some(join_node)) =>
-            {
+            Some(join_node) if (then_node == Some(join_node)) != (else_node == Some(join_node)) => {
                 Some(join_node)
             }
             // The post-dominator states no one-armed shape here: exactly one successor
@@ -6953,23 +6939,21 @@ impl Walker<'_> {
                 arm_frame.shared_tail = Some(join_node);
             }
             let arm_trial = TrialState::of(self);
-            let certified_break_body_arm =
-                frame.loop_targets.last().and_then(|target| {
-                    let proof = target.break_body.as_ref()?;
-                    let walk_node = self.view.index_of(walk)?;
-                    (proof.header == target.header
-                        && proof.exit == target.break_target.unwrap_or(usize::MAX)
-                        && (proof.branch == node || proof.owners.contains(&node))
-                        && proof.owners.contains(&walk_node))
-                    .then_some(proof)
-                });
+            let certified_break_body_arm = frame.loop_targets.last().and_then(|target| {
+                let proof = target.break_body.as_ref()?;
+                let walk_node = self.view.index_of(walk)?;
+                (proof.header == target.header
+                    && proof.exit == target.break_target.unwrap_or(usize::MAX)
+                    && (proof.branch == node || proof.owners.contains(&node))
+                    && proof.owners.contains(&walk_node))
+                .then_some(proof)
+            });
             let arm_walk = if let Some(proof) = certified_break_body_arm {
                 poll(self.budget, Some(branch.bci()))?;
                 charge(
                     self.budget,
                     CountedBudgetDimension::AnalysisSteps,
-                    u64::try_from(proof.owners.len().saturating_add(1))
-                        .unwrap_or(u64::MAX),
+                    u64::try_from(proof.owners.len().saturating_add(1)).unwrap_or(u64::MAX),
                     Some(branch.bci()),
                 )?;
                 self.loop_body_sequence(walk, &arm_frame, &proof.owners)
@@ -7010,12 +6994,8 @@ impl Walker<'_> {
                         }
                     }
                 } else {
-                    let mut continued = self.continue_early_return_arm(
-                        &mut arm_run,
-                        next,
-                        &arm_frame,
-                        frame,
-                    )?;
+                    let mut continued =
+                        self.continue_early_return_arm(&mut arm_run, next, &arm_frame, frame)?;
                     if !continued {
                         continued = self.continue_prefixed_loop_arm(
                             &mut arm_run,
@@ -7119,9 +7099,7 @@ impl Walker<'_> {
             }];
             return Ok((run, join));
         }
-        if let Some((boundary, continue_arm, expected_chain)) =
-            direct_continue_join.as_ref()
-        {
+        if let Some((boundary, continue_arm, expected_chain)) = direct_continue_join.as_ref() {
             let refusal_bci = branch.bci();
             let Some(boundary_id) = self.view.id_of(*boundary).cloned() else {
                 let reason = FallbackReason::ArmsDoNotMeet {
@@ -7143,8 +7121,7 @@ impl Walker<'_> {
             let other_id = self.view.id_of(other).cloned().expect("known arm id");
             let other_trial = TrialState::of(self);
             let other_frame = frame.arm(Some(*boundary), Some(branch_bci));
-            let (other_run, other_next) = match self.region_at(&other_id, &other_frame)
-            {
+            let (other_run, other_next) = match self.region_at(&other_id, &other_frame) {
                 Ok(run) => run,
                 Err(stop) => {
                     self.restore_claims_and_tail(&other_trial);
@@ -7219,8 +7196,8 @@ impl Walker<'_> {
         let mut then_frame = arm_frame.clone();
         let mut else_frame = arm_frame.clone();
         let direct_arm = frame.boundary.is_none() && frame.if_arm.is_none();
-        let second_level = frame.if_arm.is_some_and(|(_, _, outer)| outer.is_none())
-            && frame.boundary.is_some();
+        let second_level =
+            frame.if_arm.is_some_and(|(_, _, outer)| outer.is_none()) && frame.boundary.is_some();
         if (direct_arm || second_level)
             && frame.scope.is_none()
             && frame.loop_targets.is_empty()
@@ -7236,36 +7213,20 @@ impl Walker<'_> {
                 else_frame.if_arm = Some((node, entry, outer));
             }
         }
-        let (mut then_run, mut then_next) =
-            self.region_at(&fall_through, &then_frame)?;
+        let (mut then_run, mut then_next) = self.region_at(&fall_through, &then_frame)?;
         let (mut else_run, mut else_next) = self.region_at(&taken, &else_frame)?;
         // Test5's non-returning arm reaches an ordinary do-while header
         // after its list-allocation block. The generic arm walk stops at
         // that header, so finish this certified arm within the bounded
         // two-segment finally scope before comparing the arms.
         if frame.multi_return_finally_rows.is_some() {
-            self.continue_multi_return_loop_arm(
-                &mut then_run,
-                &mut then_next,
-                &then_frame,
-            )?;
-            self.continue_multi_return_loop_arm(
-                &mut else_run,
-                &mut else_next,
-                &else_frame,
-            )?;
+            self.continue_multi_return_loop_arm(&mut then_run, &mut then_next, &then_frame)?;
+            self.continue_multi_return_loop_arm(&mut else_run, &mut else_next, &else_frame)?;
         }
-        let then_loop = self.continue_effectful_loop_arm(
-            &mut then_run,
-            &mut then_next,
-            &then_frame,
-        )?;
+        let then_loop =
+            self.continue_effectful_loop_arm(&mut then_run, &mut then_next, &then_frame)?;
         let else_loop = if then_loop {
-            self.continue_effectful_loop_arm(
-                &mut else_run,
-                &mut else_next,
-                &else_frame,
-            )?
+            self.continue_effectful_loop_arm(&mut else_run, &mut else_next, &else_frame)?
         } else {
             false
         };
@@ -7346,13 +7307,14 @@ impl Walker<'_> {
             let loop_of = self.view.loop_entered_at(last.header)?;
             let latches = loop_of.latches();
             let blocks = loop_of.blocks();
-            let (bridge, jump_is_then) = [then_node, else_node]
-                .into_iter()
-                .flatten()
-                .find_map(|entry| {
-                self.loop_continue_bridge(node, entry, destination, blocks)
-                    .then_some((entry, then_node == Some(entry)))
-            })?;
+            let (bridge, jump_is_then) =
+                [then_node, else_node]
+                    .into_iter()
+                    .flatten()
+                    .find_map(|entry| {
+                        self.loop_continue_bridge(node, entry, destination, blocks)
+                            .then_some((entry, then_node == Some(entry)))
+                    })?;
             let (run, next) = if jump_is_then {
                 (&then_run, &else_next)
             } else {
@@ -7369,9 +7331,7 @@ impl Walker<'_> {
             let source_bci = self.terminal_bci(bridge_block)?;
             let nested = next.as_ref()?;
             let nested_node = self.view.index_of(nested)?;
-            if self.visited.contains(&nested_node)
-                || frame.boundary == Some(nested_node)
-            {
+            if self.visited.contains(&nested_node) || frame.boundary == Some(nested_node) {
                 return None;
             }
             let Some(nested_of) = self.view.loop_entered_at(nested_node) else {
@@ -7423,8 +7383,7 @@ impl Walker<'_> {
         let continuing_join_elected = continuing_join.is_some();
         let shared_latch_elected = shared_latch_join.is_some();
         let shared_latch = shared_latch_join.and_then(|(jump_is_then, source_bci)| {
-            let loop_header =
-                self.view.id_of(frame.loop_targets.last()?.header)?.clone();
+            let loop_header = self.view.id_of(frame.loop_targets.last()?.header)?.clone();
             let run = if jump_is_then {
                 &mut then_run
             } else {
@@ -7464,23 +7423,13 @@ impl Walker<'_> {
         // join. Keep that intervening straight run inside the *same* arm and frame.
         // The helper refuses a partial or multiply entered continuation before any
         // of its visited nodes can become a published owner.
-        let then_at_join =
-            continuing_join_elected && then_next.as_ref() == join.as_ref();
+        let then_at_join = continuing_join_elected && then_next.as_ref() == join.as_ref();
         let then_continued = then_at_join
-            || self.continue_inner_join_arm(
-                &mut then_run,
-                then_next.as_ref(),
-                &arm_frame,
-            )?;
-        let else_at_join =
-            continuing_join_elected && else_next.as_ref() == join.as_ref();
+            || self.continue_inner_join_arm(&mut then_run, then_next.as_ref(), &arm_frame)?;
+        let else_at_join = continuing_join_elected && else_next.as_ref() == join.as_ref();
         let else_continued = if then_continued {
             else_at_join
-                || self.continue_inner_join_arm(
-                    &mut else_run,
-                    else_next.as_ref(),
-                    &arm_frame,
-                )?
+                || self.continue_inner_join_arm(&mut else_run, else_next.as_ref(), &arm_frame)?
         } else {
             false
         };
@@ -7510,10 +7459,8 @@ impl Walker<'_> {
         // Both arms must meet the join, or leave the method; anything else means the
         // recovered structure runs into a block the branch did not describe.
         if let Some(join_node) = join_node {
-            let then_meets =
-                then_node.is_some_and(|node| self.view.reaches(node, join_node));
-            let else_meets =
-                else_node.is_some_and(|node| self.view.reaches(node, join_node));
+            let then_meets = then_node.is_some_and(|node| self.view.reaches(node, join_node));
+            let else_meets = else_node.is_some_and(|node| self.view.reaches(node, join_node));
             let certified_continue = fragmented_handler_join == Some(join_node)
                 && ((then_meets
                     && else_next.is_none()
@@ -7536,9 +7483,9 @@ impl Walker<'_> {
                     return true;
                 }
                 run_single_block(run).is_some_and(|bridge| {
-                    self.view.index_of(bridge).is_some_and(|node| {
-                        self.view.successors(node) == [join_node]
-                    })
+                    self.view
+                        .index_of(bridge)
+                        .is_some_and(|node| self.view.successors(node) == [join_node])
                 })
             };
             let then_breaks = then_next.is_none()
@@ -7554,10 +7501,13 @@ impl Walker<'_> {
                 arm.fallthrough_proved()
                     && arm.join_node() == Some(join_node)
                     && run_transfer(run).is_some_and(|transfer| {
-                        transfer.kind.switch_break().is_some_and(|(switch_bci, join)| {
-                            arm.branch_bci() == Some(switch_bci)
-                                && self.view.index_of(join) == Some(join_node)
-                        })
+                        transfer
+                            .kind
+                            .switch_break()
+                            .is_some_and(|(switch_bci, join)| {
+                                arm.branch_bci() == Some(switch_bci)
+                                    && self.view.index_of(join) == Some(join_node)
+                            })
                     })
             };
             let then_switch_breaks = then_next.is_none() && switch_breaks(&then_run);
@@ -7637,7 +7587,6 @@ impl Walker<'_> {
         return Ok((run, join));
     }
 
-
     /// One nested-monitor verdict, in a frame of its own (see [`Self::two_way_region`]).
     #[inline(never)]
     fn monitor_nested_region(
@@ -7671,8 +7620,7 @@ impl Walker<'_> {
             pass: None,
             code: "jre_guard_body",
             at: current.bci(),
-            message: "the nested synchronized body has no complete bounded structure"
-                .into(),
+            message: "the nested synchronized body has no complete bounded structure".into(),
         };
         return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
     }
@@ -7803,8 +7751,7 @@ impl Walker<'_> {
             transparent,
             normal_exit_bci: exit_bci.or_else(|| {
                 self.fragmented.as_ref().and_then(|proof| {
-                    (proof.outer_start != proof.inner_start
-                        && current.bci() == proof.inner_start)
+                    (proof.outer_start != proof.inner_start && current.bci() == proof.inner_start)
                         .then_some(proof.inner_exit_bci)
                 })
             }),
@@ -7934,9 +7881,8 @@ impl Walker<'_> {
             pass: None,
             code: "jre_guard_finally_copy",
             at: current.bci(),
-            message:
-                "the shared catch-all finally has no complete bounded try and catch bodies"
-                    .into(),
+            message: "the shared catch-all finally has no complete bounded try and catch bodies"
+                .into(),
         };
         return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
     }
@@ -8258,7 +8204,8 @@ impl Walker<'_> {
             match region {
                 Region::Sequence { regions } => {
                     for pair in regions.windows(2) {
-                        gateway_break |= is_gateway_break_pair(pair, targets.gateway, targets.parent);
+                        gateway_break |=
+                            is_gateway_break_pair(pair, targets.gateway, targets.parent);
                     }
                     for child in regions {
                         let facts = visit(child, targets, budget, at)?;
@@ -8784,10 +8731,7 @@ impl Walker<'_> {
                 return Ok(None);
             }
             let (child_run, child_next) = self.region_at(next, frame)?;
-            let [
-                child_loop @ Region::Loop { header, .. },
-            ] = child_run.as_slice()
-            else {
+            let [child_loop @ Region::Loop { header, .. }] = child_run.as_slice() else {
                 return Ok(None);
             };
             // The child loop's own stated exit is this proof's gateway.
@@ -8968,7 +8912,8 @@ impl Walker<'_> {
                 return Ok(None);
             };
             // The nested loop's own stated exit is this arm's boundary, which the run resumes at.
-            if !loop_region.loop_exits_at(&boundary) || loop_next.as_ref() != loop_region.loop_exit()
+            if !loop_region.loop_exits_at(&boundary)
+                || loop_next.as_ref() != loop_region.loop_exit()
             {
                 return Ok(None);
             }
@@ -15142,7 +15087,8 @@ impl Walker<'_> {
             let mut allowed_join_sources = tests_owned.clone();
             allowed_join_sources.extend(all_arms.iter().cloned());
             allowed_join_sources.extend(
-                trial.visited()
+                trial
+                    .visited()
                     .iter()
                     .filter_map(|node| self.view.id_of(*node).cloned()),
             );
@@ -15195,7 +15141,8 @@ impl Walker<'_> {
                 }
                 if exits.contains(&edge.to()) {
                     let external_join_source = edge.to() == &proof.join
-                        && trial.visited()
+                        && trial
+                            .visited()
                             .iter()
                             .any(|node| self.view.id_of(*node) == Some(edge.from()));
                     if edge.kind() != CanonicalEdgeKind::Normal
@@ -27408,7 +27355,7 @@ mod tests {
     #[test]
     fn cf12_ft2_switch_join_stays_outside_cases_and_straight_tail_is_claimed_once() {
         const CLASS: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase2.test/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase2.test/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class"
         );
 
         fn find_outer_if(region: &Region) -> Option<&Region> {
@@ -28025,7 +27972,7 @@ mod tests {
         };
 
         const CLASS: &[u8] = include_bytes!(
-            "../../../openspec/changes/recover-proved-computed-for-initializers/results/shared-stack-input-root-v1/javac8/original/classes/SharedStoreInput.class"
+            "../../../tests/fixtures/recovered-inputs/changes/recover-proved-computed-for-initializers/results/shared-stack-input-root-v1/javac8/original/classes/SharedStoreInput.class"
         );
         let mut budget = Budget::new(Limits {
             input_bytes: 1 << 20,
@@ -28263,7 +28210,7 @@ mod tests {
         };
 
         const CLASS: &[u8] = include_bytes!(
-            "../../../openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class"
+            "../../../tests/fixtures/recovered-inputs/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class"
         );
 
         fn find_loop(region: &Region, bci: u32) -> Option<&Region> {
@@ -28872,7 +28819,7 @@ mod tests {
         };
 
         const CLASS: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
         );
         assert_eq!(CLASS.len(), 1563, "frozen whole-class input changed");
 
@@ -29506,7 +29453,7 @@ mod tests {
     #[test]
     fn real_switch2_direct_target_join_proves_candidate_witnesses() {
         const CLASS: &[u8] = include_bytes!(
-            "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class"
+            "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class"
         );
         assert_eq!(CLASS.len(), 1123);
         assert_eq!(
@@ -30566,7 +30513,7 @@ mod tests {
         };
 
         const CLASS: &[u8] = include_bytes!(
-            "../../../openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observer-namespace-failed/original-bytecode/CompoundStatementConditions.class"
+            "../../../tests/fixtures/recovered-inputs/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observer-namespace-failed/original-bytecode/CompoundStatementConditions.class"
         );
         assert_eq!(CLASS.len(), 2848);
         assert_eq!(
@@ -31297,13 +31244,13 @@ mod tests {
         };
 
         const CYCLE: &[u8] = include_bytes!(
-            "../../../openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsCycle.class"
+            "../../../tests/fixtures/recovered-inputs/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsCycle.class"
         );
         const IRREDUCIBLE: &[u8] = include_bytes!(
-            "../../../openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsIrreducible.class"
+            "../../../tests/fixtures/recovered-inputs/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsIrreducible.class"
         );
         const NO_REPEAT: &[u8] = include_bytes!(
-            "../../../openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsNoRepeat.class"
+            "../../../tests/fixtures/recovered-inputs/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsNoRepeat.class"
         );
 
         for (
@@ -31652,7 +31599,7 @@ mod tests {
         };
 
         const CLASS: &[u8] = include_bytes!(
-            "../../../openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class"
+            "../../../tests/fixtures/recovered-inputs/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class"
         );
         assert_eq!(CLASS.len(), 2662);
         assert_eq!(
@@ -34501,10 +34448,10 @@ mod tests {
     #[test]
     fn trial_rollback_scopes_keep_exactly_their_own_facts() {
         use jarde_jvm::engine::analyze_method_ir;
-        use jarde_reader::budget::Limits;
         use jarde_jvm::environment::ResolutionEnvironment;
         use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
         use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::budget::Limits;
         use jarde_reader::model::{
             ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
             PhysicalMethodId, PhysicalVariant,
@@ -34516,7 +34463,7 @@ mod tests {
         };
 
         const CLASS: &[u8] = include_bytes!(
-            "../../../openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsCycle.class"
+            "../../../tests/fixtures/recovered-inputs/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsCycle.class"
         );
 
         let mut budget = Budget::new(Limits {

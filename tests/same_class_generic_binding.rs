@@ -321,7 +321,7 @@ fn compile_frozen_report_and_run(
     std::fs::write(
         temp.path().join("ReflectDriver.java"),
         include_str!(
-            "../openspec/changes/prove-generic-field-write-source-types/results/generic-holder-write-boundaries/ReflectDriver.java"
+            "../tests/fixtures/recovered-inputs/changes/prove-generic-field-write-source-types/results/generic-holder-write-boundaries/ReflectDriver.java"
         ),
     )
     .expect("the reflection runner is written");
@@ -544,78 +544,81 @@ fn append_dangling_pool_references(bytes: &[u8], class_internal: &str) -> Vec<u8
 
 const METHOD_SOURCE: &str = "public class SCGA<T extends java.lang.Comparable<T>> {\n    public void note(T value) {\n        java.util.Collections.singletonList(value);\n        return;\n    }\n    public static void main(java.lang.String[] args) {\n        SCGA z = new SCGA<java.lang.String>();\n        java.lang.Comparable word = \"b\";\n        z.note(word);\n        System.out.println(\"note:\" + word.equals(\"b\"));\n    }\n}\n";
 
-const DEFERRED_FIELD_WRITER_SOURCE: &str =
-    include_str!("../openspec/evidence/generic-holder-write-boundaries/SCGA/source/SCGA.java");
+const DEFERRED_FIELD_WRITER_SOURCE: &str = include_str!(
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/SCGA/source/SCGA.java"
+);
 const TYPED_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/evidence/generic-holder-write-boundaries/TypedSetter/source/TypedSetter.java"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/TypedSetter/source/TypedSetter.java"
 );
 const NULL_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/evidence/generic-holder-write-boundaries/NullSetter/source/NullSetter.java"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/NullSetter/source/NullSetter.java"
 );
 const UNSAFE_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/evidence/generic-holder-write-boundaries/MixedSetter/source/MixedSetter.java"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/MixedSetter/source/MixedSetter.java"
 );
 const RAW_LIST_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/evidence/generic-holder-write-boundaries/RawListField/source/RawListField.java"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/RawListField/source/RawListField.java"
 );
 const CROSS_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/evidence/generic-holder-write-boundaries/CrossSetter/source/CrossSetter.java"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/CrossSetter/source/CrossSetter.java"
 );
 const SHADOW_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/evidence/generic-holder-write-boundaries/ShadowSetter/source/ShadowSetter.java"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/ShadowSetter/source/ShadowSetter.java"
 );
 const ARRAY_OBJECT_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/evidence/generic-holder-write-boundaries/ArrayObjectSetter/source/ArrayObjectSetter.java"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/ArrayObjectSetter/source/ArrayObjectSetter.java"
 );
 const NULL_LOCAL_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/NullLocal/NullLocal.java"
+    "../tests/fixtures/recovered-inputs/changes/prove-generic-field-write-source-types/results/root-probes/NullLocal/NullLocal.java"
 );
 const PARAM_REASSIGNED_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/ParamReassigned/ParamReassigned.java"
+    "../tests/fixtures/recovered-inputs/changes/prove-generic-field-write-source-types/results/root-probes/ParamReassigned/ParamReassigned.java"
 );
 const RAW_ALLOCATION_VARIABLE_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/RawAllocationVariable/RawAllocationVariable.java"
+    "../tests/fixtures/recovered-inputs/changes/prove-generic-field-write-source-types/results/root-probes/RawAllocationVariable/RawAllocationVariable.java"
 );
 const PARAMETER_SHIFT_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/ParameterShift/ParameterShift.java"
+    "../tests/fixtures/recovered-inputs/changes/prove-generic-field-write-source-types/results/root-probes/ParameterShift/ParameterShift.java"
 );
 const RAW_PARAMETER_ARRAY_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/RawParamArray/RawParamArray.java"
+    "../tests/fixtures/recovered-inputs/changes/prove-generic-field-write-source-types/results/root-probes/RawParamArray/RawParamArray.java"
 );
 const RAW_FALLBACK_LIST_WRITER_SOURCE: &str = include_str!(
-    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/ListWrong/ListWrong.java"
+    "../tests/fixtures/recovered-inputs/changes/prove-generic-field-write-source-types/results/root-probes/ListWrong/ListWrong.java"
 );
 const STATIC_RAW_FIELD_WRITER_SOURCE: &str = include_str!(
-    "../openspec/changes/prove-generic-field-write-source-types/results/root-probes/StaticRawField/StaticRawField.java"
+    "../tests/fixtures/recovered-inputs/changes/prove-generic-field-write-source-types/results/root-probes/StaticRawField/StaticRawField.java"
 );
 const RAW_BOUND_FIELD_WRITER_SOURCE: &str = "public class RawBoundWriter { public java.util.Map<java.lang.String,java.lang.String> v; public <R extends java.util.HashMap> void put(R raw, boolean flag) { this.v=raw; } }";
-const HOLD_JAVAC8_JAR: &[u8] =
-    include_bytes!("../openspec/evidence/generic-holder-write-boundaries/javac8/Hold/Hold.jar");
+const HOLD_JAVAC8_JAR: &[u8] = include_bytes!(
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/javac8/Hold/Hold.jar"
+);
 const OBJECT_HOLD_JAVAC8_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/generic-holder-write-boundaries/javac8/ObjectHold/ObjectHold.jar"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/javac8/ObjectHold/ObjectHold.jar"
 );
 const OBJECT_SETTER_JAVAC8_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/generic-holder-write-boundaries/javac8/ObjectSetter/ObjectSetter.jar"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/javac8/ObjectSetter/ObjectSetter.jar"
 );
 const TYPED_SETTER_JAVAC8_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/generic-holder-write-boundaries/javac8/TypedSetter/TypedSetter.jar"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/javac8/TypedSetter/TypedSetter.jar"
 );
 const CROSS_SETTER_JAVAC8_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/generic-holder-write-boundaries/javac8/CrossSetter/CrossSetter.jar"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/javac8/CrossSetter/CrossSetter.jar"
 );
-const HOLD_JAVAC23_JAR: &[u8] =
-    include_bytes!("../openspec/evidence/generic-holder-write-boundaries/javac23/Hold/Hold.jar");
+const HOLD_JAVAC23_JAR: &[u8] = include_bytes!(
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/javac23/Hold/Hold.jar"
+);
 const OBJECT_HOLD_JAVAC23_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/generic-holder-write-boundaries/javac23/ObjectHold/ObjectHold.jar"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/javac23/ObjectHold/ObjectHold.jar"
 );
 const OBJECT_SETTER_JAVAC23_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/generic-holder-write-boundaries/javac23/ObjectSetter/ObjectSetter.jar"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/javac23/ObjectSetter/ObjectSetter.jar"
 );
 const TYPED_SETTER_JAVAC23_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/generic-holder-write-boundaries/javac23/TypedSetter/TypedSetter.jar"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/javac23/TypedSetter/TypedSetter.jar"
 );
 const CROSS_SETTER_JAVAC23_JAR: &[u8] = include_bytes!(
-    "../openspec/evidence/generic-holder-write-boundaries/javac23/CrossSetter/CrossSetter.jar"
+    "../tests/fixtures/recovered-inputs/evidence/generic-holder-write-boundaries/javac23/CrossSetter/CrossSetter.jar"
 );
 
 const FIELD_SOURCE: &str = "public class SCGB<T extends java.lang.Comparable<T>> {\n    private java.util.Map<java.lang.String, java.util.List<T>> index = new java.util.HashMap<java.lang.String, java.util.List<T>>();\n    public static void main(java.lang.String[] args) {\n        SCGB<java.lang.String> z = new SCGB<java.lang.String>();\n        if (z.index != null) { System.out.println(\"index:true\"); } else { System.out.println(\"index:false\"); }\n        java.lang.Object read = z.index;\n        if (read instanceof java.util.Map) { System.out.println(\"read:true\"); } else { System.out.println(\"read:false\"); }\n    }\n}\n";
@@ -1513,7 +1516,7 @@ fn receiver_consumed_field_read_keeps_the_field_refusal() {
 fn z1_family_replays_item_by_item_after_the_binding_proof() {
     let fixture = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/openspec/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/fixture"
+        "/tests/fixtures/recovered-inputs/evidence/java-syntax-2026-10-03/nested-generic-header-patrol/fixture"
     );
     let z1 = std::fs::read(format!("{fixture}/Z1.class")).expect("the Z1 fixture reads");
     let report = standalone_source(&z1, "Z1");

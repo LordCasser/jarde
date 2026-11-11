@@ -8,10 +8,10 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const CLASS: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-24/array-wrapped-binding/ArrayWrappedBinding.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/array-wrapped-binding/ArrayWrappedBinding.class"
 );
 const RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-24/array-wrapped-binding/ArrayWrappedBindingRunner.java"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/array-wrapped-binding/ArrayWrappedBindingRunner.java"
 );
 
 fn opened() -> (artifact::ArtifactSnapshot, ClassSourceRequest) {

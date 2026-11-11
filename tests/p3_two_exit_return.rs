@@ -8,7 +8,7 @@ use std::slice;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const POSITIVE: &[u8] = include_bytes!(
-    "../openspec/evidence/java-syntax-2026-09-25/ternary-in-if/TernaryInIfProbe.class"
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/ternary-in-if/TernaryInIfProbe.class"
 );
 const RETURN2: &[u8] = include_bytes!("fixtures/p3-two-exit-return/TernaryInIfProbe-return2.class");
 const INT_RETURN: &[u8] = include_bytes!("fixtures/p3-two-exit-return/TernaryInIfProbe-int.class");
@@ -20,15 +20,18 @@ const COUNTED_VALUE_SOURCE: &str = include_str!("fixtures/p3-two-exit-return/Cou
 const COUNTING_SOURCE: &str = include_str!("fixtures/p3-two-exit-return/CountingProbe.java");
 const COUNTING_RUNNER: &str = include_str!("fixtures/p3-two-exit-return/CountingRunner.java");
 const COUNTING_EXPECTED: &str = include_str!("fixtures/p3-two-exit-return/counting-run.txt");
-const SOURCE: &str =
-    include_str!("../openspec/evidence/java-syntax-2026-09-25/ternary-in-if/TernaryInIfProbe.java");
-const JADX: &str =
-    include_str!("../openspec/evidence/java-syntax-2026-09-25/ternary-in-if/jadx.java");
-const RUNNER: &str = include_str!(
-    "../openspec/evidence/java-syntax-2026-09-25/ternary-in-if/TernaryInIfRunner.java"
+const SOURCE: &str = include_str!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/ternary-in-if/TernaryInIfProbe.java"
 );
-const EXPECTED: &str =
-    include_str!("../openspec/evidence/java-syntax-2026-09-25/ternary-in-if/original-run.txt");
+const JADX: &str = include_str!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/ternary-in-if/jadx.java"
+);
+const RUNNER: &str = include_str!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/ternary-in-if/TernaryInIfRunner.java"
+);
+const EXPECTED: &str = include_str!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-25/ternary-in-if/original-run.txt"
+);
 
 struct Scratch(PathBuf);
 impl Scratch {

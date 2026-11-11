@@ -22,7 +22,7 @@ use jarde_reader::view::{
 };
 
 const PROBE_CLASS: &[u8] = include_bytes!(
-    "../../../openspec/changes/preserve-proved-discarded-call-origins/results/baseline-root-v1/javac23/original/discardprobe/DiscardedCallSourceProbe.class"
+    "../../../tests/fixtures/recovered-inputs/changes/preserve-proved-discarded-call-origins/results/baseline-root-v1/javac23/original/discardprobe/DiscardedCallSourceProbe.class"
 );
 
 fn limits() -> Limits {
@@ -573,7 +573,7 @@ fn exact_pop_charge_and_cancel_publish_no_partial_statement() {
 #[test]
 fn wide_pop2_is_not_attached_to_a_call_statement() {
     const POP2_CLASS: &[u8] = include_bytes!(
-        "../../../openspec/changes/preserve-proved-discarded-call-origins/results/baseline-root-v1/javac23/original/discardprobe/ProbePop2.class"
+        "../../../tests/fixtures/recovered-inputs/changes/preserve-proved-discarded-call-origins/results/baseline-root-v1/javac23/original/discardprobe/ProbePop2.class"
     );
     assert_eq!(POP2_CLASS.len(), 244);
     let (report, _) = recover_class_method_with_budget(

@@ -17,10 +17,12 @@ const LOCAL_NAME_SOURCE: &str = include_str!("fixtures/p3-class-literals/LocalNa
 const COLLISION_SOURCE: &str = include_str!("fixtures/p3-class-literals/TypeNameCollision.java");
 const STRING_NAME_SOURCE: &str = include_str!("fixtures/p3-class-literals/TypeNameString.java");
 const RUNNER_SOURCE: &str = include_str!("fixtures/p3-class-literals/ClassLiteralRunner.java");
-const JADX_SOURCE: &str =
-    include_str!("../openspec/evidence/java-syntax-2026-09-22/class-literals/jadx.java.txt");
-const JARDE_RED_SOURCE: &str =
-    include_str!("../openspec/evidence/java-syntax-2026-09-22/class-literals/jarde.java.txt");
+const JADX_SOURCE: &str = include_str!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/class-literals/jadx.java.txt"
+);
+const JARDE_RED_SOURCE: &str = include_str!(
+    "../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-22/class-literals/jarde.java.txt"
+);
 
 const EXPECTED_OUTPUT: &str = "reference:java.lang.String\n\
 array:[[Ljava.lang.String;\n\

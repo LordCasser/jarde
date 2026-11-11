@@ -6,25 +6,25 @@ use jarde_reader::signature::{
 };
 
 const ORIGINAL: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericMethodProbe.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericMethodProbe.class"
 );
 const THROWS_WITHOUT_SUFFIX: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericThrowsProbe.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericThrowsProbe.class"
 );
 const OBJECT_BOUND: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/object-bound.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/object-bound.class"
 );
 const UNBOUND_VARIABLE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/unbound-variable.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/unbound-variable.class"
 );
 const CLASS_VARIABLE: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/class-variable.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/class-variable.class"
 );
 const COMPLEX_METHOD: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/complex-method.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/complex-method.class"
 );
 const INCOMPATIBLE_BODY: &[u8] = include_bytes!(
-    "../../../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/incompatible-body.class"
+    "../../../tests/fixtures/recovered-inputs/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/incompatible-body.class"
 );
 
 fn budget() -> Budget {
