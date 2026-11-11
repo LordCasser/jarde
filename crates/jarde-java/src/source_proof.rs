@@ -15832,6 +15832,85 @@ pub fn matches_current_text(
     expected == region
 }
 
+/// The declared cohort may reuse an unchanged physical body or a declaration-only overlay.
+/// Keep this separate from `matches_current_text`: other projection owners retain its stricter
+/// contract. Existing projection facts select the additional replay; exact member placement
+/// still rejects changed statements, envelopes, annotations, or marker placement.
+#[doc(hidden)]
+pub fn matches_declared_projection_input(
+    declaration: Option<&str>,
+    current_text: &str,
+    recovery: Option<&crate::RecoveryReport>,
+    markers: &[String],
+    annotations: &crate::report::MemberAnnotationUses,
+    name: &jarde_reader::model::JvmString,
+    descriptor: &jarde_reader::model::JvmString,
+    generic_signature_projected: bool,
+    generic_body_proof: Option<&crate::generic_source_proof::SameClassGenericMethodBodyProof>,
+    budget: &mut Budget,
+) -> Result<bool> {
+    let Some(recovery) = recovery else {
+        return Ok(false);
+    };
+    budget.poll()?;
+    // A record claiming a declaration overlay must replay its exact metadata too. Trying
+    // the raw-body comparison first would accept a missing recorded Signature marker.
+    if !generic_signature_projected
+        || generic_body_proof.is_some()
+        || recovery.content != crate::RecoveryContent::ContainsStatements
+    {
+        return Ok(matches_current_text(
+            declaration,
+            current_text,
+            &recovery.text,
+            Some(recovery),
+            markers,
+            name,
+            descriptor,
+        ));
+    }
+    let Some(declaration) = declaration else {
+        return Ok(false);
+    };
+    let scan_bytes = current_text
+        .len()
+        .saturating_add(recovery.text.len())
+        .saturating_add(declaration.len());
+    for value in markers.iter().chain(&annotations.uses) {
+        budget.poll()?;
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(value.len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(1),
+        )?;
+    }
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(scan_bytes).unwrap_or(u64::MAX),
+    )?;
+    let Some(body) = artifact(&recovery.text) else {
+        return Ok(false);
+    };
+    // Like other member staging, OutputBytes accounts for cumulative temporary text work,
+    // including this replay; it does not describe only the final emitted source length.
+    budget.charge(
+        CountedBudgetDimension::OutputBytes,
+        block_member_text_bytes(
+            declaration,
+            body.envelope,
+            body.statements,
+            markers,
+            annotations,
+        ),
+    )?;
+    let expected = prefix_method_annotations(
+        block_member(declaration, Placed::Block(body), markers),
+        annotations,
+    );
+    Ok(expected == current_text)
+}
+
 fn current_body_region<'a>(current_text: &'a str, declaration: &str) -> Option<Vec<&'a str>> {
     let opening = format!("    {declaration} {{");
     let mut opening_at = None;

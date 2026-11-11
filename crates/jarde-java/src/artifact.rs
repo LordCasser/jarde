@@ -85,7 +85,10 @@ pub const ARTIFACT_SCHEMA: u16 = 14;
 /// 69 → 70: CHECKCAST relation collection also asks for the target-to-operand relation.
 /// A selected narrowing edge can now omit an unnecessary Object bridge. This changes source
 /// recovery semantics, not artifact encoding or resolution semantics.
-pub const RECOVERY_SEMANTICS: u16 = 70;
+///
+/// 70 → 71: a declared generic cohort may retain an already proved declaration-only overlay
+/// when exact Java member replay proves its physical body and metadata were not rewritten.
+pub const RECOVERY_SEMANTICS: u16 = 71;
 
 /// Actual Java and optional facade implementations participating in this recovery.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]

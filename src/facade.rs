@@ -11601,13 +11601,9 @@ fn project_declared_method_bodies(
             };
             declaration
         };
-        // Other already committed body projections own their text. A different declaration alone
-        // does not change the source-program comparison performed by this existing predicate.
-        if let class_source::ClassSourceOutcome::Recovered { report, .. } = &method.outcome {
-            if !method.matches_current_text(&report.text) {
-                continue;
-            }
-        } else {
+        // Reuse only an unchanged physical body or an exactly replayed declaration-only overlay.
+        // Previously committed body projections keep ownership of their text.
+        if !method.matches_declared_projection_input(budget)? {
             continue;
         }
         let (body, map) = jarde_java::report::emit_class_source_method_artifact(

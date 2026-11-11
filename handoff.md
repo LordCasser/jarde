@@ -1,3 +1,11 @@
+# 2026-11-10 S2b 声明投影逐字重放
+
+修复已投影泛型声明的 Signature 标记使后续 declared cohort 误拒绝原物理 body 的问题。Java 层按已有声明投影事实重放完整 member 文本，逐字核对声明、注解、标记、envelope 与 body；不先用忽略标记的旧比较器放行。已有 body 投影仍保持原所有权。根门面只转交事实；重放按既有暂存合同计 AnalysisSteps/OutputBytes，停止先于事务提交，不增影子状态。恢复语义 70→71，schema14/解析6 不变。
+
+实际通过：原 S2b Engine 5/5；显式两目标完整类重编译运行门 1/1（CustomChild/PlatformChild 使用原 Parent/Mid 支持类，不冒称四类全部重新生成）；class_source 56/56；邻接泛型六套件 57/57。随后在官方校验的 Rust/Clippy1.99.1、Temurin25.0.4+7 上通过新增声明重放 2/2、Java 库621/621、四个 Java S2b 套件49/49。新增反例覆盖 body、方法 envelope、漏失/多余/过期标记、投影所有权、注解拼写和位置；精确 OutputBytes/N−1、零预算与取消均保留。只读审查无阻塞发现。
+
+最新原生批次源码摘要前后一致、默认栈、单编译/测试线程，target 峰值812,415,315字节并清理。rustfmt 已通过。严格 CI Clippy 尚红：当前 stable 实测17项既有 lint 错误，均已核对存在于本修改前 HEAD，另行按等价维护处理，不添加 allowlist。早前1.88 Clippy结果不能代替 stable CI。此项不宣告全 workspace/CI 或架构阶段完成，33/65及S0资源缺口不变。下一步独立验证构造器-only Mid 与四类完整生成族，继而继续剩余机制和全量门。
+
 # 2026-11-10 CHECKCAST 双向物理继承证明
 
 CHECKCAST 收集器现在通过原有按身份去重/计费路径同时请求操作数→目标及目标→操作数关系；目标的真实父边可证明缩窄，缺失目标仍保守保留 Object 桥，运行时 cast 不删除。恢复语义 69→70，schema14/解析6 不变。

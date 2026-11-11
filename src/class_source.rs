@@ -5248,6 +5248,25 @@ impl ClassSourceMethod {
         )
     }
 
+    /// Supply the existing projection facts to the Java-owned declared-cohort replay policy.
+    pub(crate) fn matches_declared_projection_input(&self, budget: &mut Budget) -> Result<bool> {
+        jarde_java::source_proof::matches_declared_projection_input(
+            self.declaration.as_deref(),
+            &self.text,
+            match &self.outcome {
+                ClassSourceOutcome::Recovered { report, .. } => Some(report.as_ref()),
+                _ => None,
+            },
+            &self.markers,
+            &self.annotations,
+            &self.item.name,
+            &self.item.descriptor,
+            self.generic_signature_projected,
+            self.same_class_generic_body_proof.as_ref(),
+            budget,
+        )
+    }
+
     /// This member's declaration with the companion's method name replaced by its renamed,
     /// non-conflicting spelling. `None` unless the name occurs exactly once in the declaration —
     /// the rename is surgical or it is not made at all.
@@ -7505,6 +7524,15 @@ mod tests {
             &changed.markers,
         );
         assert!(!changed.matches_current_text(&report.text));
+        changed.generic_signature_projected = true;
+        assert!(
+            !changed
+                .matches_declared_projection_input(&mut Budget::new(
+                    unlimited_annotation_test_limits()
+                ))
+                .unwrap(),
+            "a forged generic flag cannot admit explanation-only text with an extra marker"
+        );
         let notes = ["// jarde: derived body".to_string()];
         let placed = method
             .projected_body_method_text(&report.text, None, &notes)
@@ -8090,6 +8118,183 @@ mod tests {
         .expect_err("an exhausted analysis budget stops the void Signature proof");
         assert!(matches!(error, Error::BudgetExceeded { .. }));
         assert_eq!(detached_record, before);
+    }
+
+    #[test]
+    fn declared_projection_replay_requires_exact_physical_body_and_recorded_metadata() {
+        let (mut record, _, _) = array_return_projection_probe();
+        record
+            .project_generic(
+                "public static java.util.Collection<?>[][] collectionGridDirect()".to_owned(),
+                b"()[[Ljava/util/Collection<*>;",
+                "same-run array-return proof",
+                &mut Budget::new(unlimited_annotation_test_limits()),
+            )
+            .unwrap();
+        let ClassSourceOutcome::Recovered { report, .. } = &record.outcome else {
+            panic!("the real fixture retains its physical body");
+        };
+        assert!(!record.matches_current_text(&report.text));
+        assert!(
+            record
+                .matches_declared_projection_input(&mut Budget::new(
+                    unlimited_annotation_test_limits()
+                ))
+                .unwrap()
+        );
+        let marker_line = format!("        {}\n", record.markers[0]);
+        assert!(record.text.contains(&marker_line));
+        assert!(record.text.contains("        return "));
+        for text in [
+            record
+                .text
+                .replace("        return ", "        return null; // "),
+            record.text.replace("// @method ", "// @method stale "),
+            record.text.replace(&marker_line, ""),
+            record.text.replace(
+                &marker_line,
+                &format!("{marker_line}        // unrecorded prior projection\n"),
+            ),
+        ] {
+            assert_ne!(text, record.text);
+            let mut changed = record.clone();
+            changed.text = text;
+            assert!(
+                !changed
+                    .matches_declared_projection_input(&mut Budget::new(
+                        unlimited_annotation_test_limits()
+                    ))
+                    .unwrap(),
+                "a stale generic flag does not authorize changed body or metadata: {}",
+                changed.text
+            );
+        }
+        let mut changed = record.clone();
+        changed.markers[0].push_str(" stale recorded metadata");
+        assert!(
+            !changed
+                .matches_declared_projection_input(&mut Budget::new(
+                    unlimited_annotation_test_limits()
+                ))
+                .unwrap()
+        );
+        changed = record.clone();
+        changed.generic_signature_projected = false;
+        assert!(
+            !changed
+                .matches_declared_projection_input(&mut Budget::new(
+                    unlimited_annotation_test_limits()
+                ))
+                .unwrap(),
+            "unowned markers cannot opt another projection into the replay path"
+        );
+        let mut annotated = record.clone();
+        annotated.annotations.uses.push("@Deprecated".into());
+        annotated.text = prefix_method_annotations(annotated.text, &annotated.annotations);
+        assert!(
+            annotated
+                .matches_declared_projection_input(&mut Budget::new(
+                    unlimited_annotation_test_limits()
+                ))
+                .unwrap()
+        );
+        for text in [
+            annotated.text.replace("    @Deprecated\n", ""),
+            annotated.text.replace("@Deprecated", "@Override"),
+            annotated
+                .text
+                .replace("    @Deprecated\n", "        @Deprecated\n"),
+        ] {
+            assert_ne!(text, annotated.text);
+            let mut changed = annotated.clone();
+            changed.text = text;
+            assert!(
+                !changed
+                    .matches_declared_projection_input(&mut Budget::new(
+                        unlimited_annotation_test_limits()
+                    ))
+                    .unwrap(),
+                "recorded annotations must retain their exact spelling and placement"
+            );
+        }
+        annotated.annotations.uses[0] = "@Override".into();
+        assert!(
+            !annotated
+                .matches_declared_projection_input(&mut Budget::new(
+                    unlimited_annotation_test_limits()
+                ))
+                .unwrap()
+        );
+    }
+
+    #[test]
+    fn declared_projection_replay_propagates_budget_and_cancellation() {
+        let (mut record, _, _) = array_return_projection_probe();
+        record
+            .project_generic(
+                "public static java.util.Collection<?>[][] collectionGridDirect()".to_owned(),
+                b"()[[Ljava/util/Collection<*>;",
+                "same-run array-return proof",
+                &mut Budget::new(unlimited_annotation_test_limits()),
+            )
+            .unwrap();
+        let before = record.clone();
+        let mut measured = Budget::new(unlimited_annotation_test_limits());
+        assert!(
+            record
+                .matches_declared_projection_input(&mut measured)
+                .unwrap()
+        );
+        let exact_bytes = measured.usage().output_bytes;
+        assert_eq!(exact_bytes, record.text.len() as u64);
+        let mut exact = unlimited_annotation_test_limits();
+        exact.output_bytes = exact_bytes;
+        assert!(
+            record
+                .matches_declared_projection_input(&mut Budget::new(exact))
+                .unwrap()
+        );
+        let mut short = unlimited_annotation_test_limits();
+        short.output_bytes = exact_bytes - 1;
+        assert!(matches!(
+            record.matches_declared_projection_input(&mut Budget::new(short)),
+            Err(Error::BudgetExceeded {
+                dimension: crate::BudgetDimension::OutputBytes,
+                ..
+            })
+        ));
+        let (raw, _, _) = array_return_projection_probe();
+        let mut cancelled_raw = Budget::new(unlimited_annotation_test_limits());
+        cancelled_raw.cancellation_token().cancel();
+        assert!(matches!(
+            raw.matches_declared_projection_input(&mut cancelled_raw),
+            Err(Error::Cancelled { .. })
+        ));
+        let mut limits = unlimited_annotation_test_limits();
+        limits.output_bytes = 0;
+        assert!(matches!(
+            record.matches_declared_projection_input(&mut Budget::new(limits)),
+            Err(Error::BudgetExceeded {
+                dimension: crate::BudgetDimension::OutputBytes,
+                ..
+            })
+        ));
+        let mut limits = unlimited_annotation_test_limits();
+        limits.analysis_steps = 0;
+        assert!(matches!(
+            record.matches_declared_projection_input(&mut Budget::new(limits)),
+            Err(Error::BudgetExceeded {
+                dimension: crate::BudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+        let mut cancelled = Budget::new(unlimited_annotation_test_limits());
+        cancelled.cancellation_token().cancel();
+        assert!(matches!(
+            record.matches_declared_projection_input(&mut cancelled),
+            Err(Error::Cancelled { .. })
+        ));
+        assert_eq!(record, before);
     }
 
     #[test]

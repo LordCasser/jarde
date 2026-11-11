@@ -292,4 +292,6 @@ OpenSpec 静态验证：
 openspec validate --all --strict --no-interactive
 ```
 
-当前恢复/解析语义版本为 **70/6**，artifact schema 保持 **14**。CHECKCAST 收集双向关系，目标到操作数的已选 Header 继承边可以证明缩窄；缺失关系不授权转换。
+当前恢复/解析语义版本为 **71/6**，artifact schema 保持 **14**。CHECKCAST 收集双向关系，目标到操作数的已选 Header 继承边可以证明缩窄；缺失关系不授权转换。
+
+声明泛型 cohort 仅在 Java 层逐字重放确认原物理 body 与已有声明元数据未被改写时复用既有投影；已提交 body 投影仍保持原所有权。
