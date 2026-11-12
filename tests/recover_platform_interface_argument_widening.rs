@@ -37,8 +37,8 @@
 //!   — render exactly as they did before this change: a same-run interface is not this change's
 //!   subject;
 //! * `AW.viaNamedPlatform` proves the platform interface a snapshot class header names
-//!   (`java.lang.Runnable`), and `AW.viaAbsent` now proves the selected user header's superclass
-//!   chain through the actual platform headers to `java.lang.Throwable`.
+//!   (`java.lang.Runnable`); `AW.viaAbsent` refuses the missing intermediate
+//!   `java.lang.Exception` header. No physical platform headers are in this fixture.
 //!
 //! The ignored replay (`cargo test -- --ignored`) strips the presentations the way the patrol's own
 //! `isolated-rendered-wrong.java` was made — comment lines dropped — compiles `CP`, `AH`/`AC` and
@@ -321,6 +321,14 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 
 /// One class-source presentation over the snapshot's own root container.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
+    class_source_with_evidence(snapshot, name, &evidence())
+}
+
+fn class_source_with_evidence(
+    snapshot: &ArtifactSnapshot,
+    name: &str,
+    requested: &RecoveryEvidenceRequest,
+) -> ClassSourceReport {
     let request = ClassSourceRequest {
         source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
@@ -342,7 +350,7 @@ fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport
         .class_source_with_evidence(
             slice::from_ref(snapshot),
             &request,
-            &evidence(),
+            requested,
             &mut budget(),
         )
         .expect("a legal class-source request is answered")
@@ -425,7 +433,10 @@ const AN_LOCAL_VAR: &str = "    static int localVar() {\n        // @method loca
 /// states `implements java.lang.Runnable` and the call presents.
 const AW_VIA_NAMED_PLATFORM: &str = "    static void viaNamedPlatform() {\n        // @method viaNamedPlatform()V\n        // @declaration a static method of `AW`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        runRunnable((java.lang.Runnable) new AW$Work());\n        return;\n    }\n";
 
-const AW_VIA_ABSENT_RECOVERED: &str = "    static void viaAbsent() {\n        // @method viaAbsent()V\n        // @declaration a static method of `AW`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        sinkT((java.lang.Throwable) new AW$MyErr());\n        return;\n    }\n";
+/// `AW.viaAbsent`: the target appears in no snapshot header at all (`AW$MyErr extends
+/// java.lang.Exception`, and the platform chain up to `java.lang.Throwable` is not in this
+/// snapshot), so the refusal stands verbatim — no classpath is consulted and nothing is guessed.
+const AW_VIA_ABSENT: &str = "    static void viaAbsent() {\n        // jarde: not recovered: the recovery run for `viaAbsent()V` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method viaAbsent()V\n        // @declaration a static method of `AW`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 7 0 3 4 10\n        // the parameter 0 of the invocation at BCI 7 is declared `java.lang.Throwable` presents `AW$MyErr` but the invocation requires `java.lang.Throwable` and this layer has no safe reference conversion evidence (relation: Some(Missing))\n        jarde_refused_body();\n    }\n";
 
 // -------------------------------------------------------------------------------------------
 // The anchors.
@@ -509,7 +520,7 @@ fn the_own_interface_positions_do_not_move() {
 }
 
 #[test]
-fn the_named_platform_target_and_selected_user_header_chain_are_proved() {
+fn the_named_platform_target_is_proved_and_the_missing_intermediate_refuses() {
     for leg in LEGS {
         let snapshot = open(&leg.fixture("AW"));
         let report = class_source_of(&snapshot, "AW");
@@ -521,23 +532,33 @@ fn the_named_platform_target_and_selected_user_header_chain_are_proved() {
         );
         assert_eq!(
             text_of(&report, "viaAbsent"),
-            AW_VIA_ABSENT_RECOVERED,
+            AW_VIA_ABSENT,
             "{}",
             leg.label
         );
+        let bytes = leg
+            .files
+            .iter()
+            .find(|(name, _)| *name == "AW.class")
+            .unwrap()
+            .1;
+        assert_missing_intermediate(&report, bytes, "AW$MyErr");
         let via_absent = method_of(&report, "viaAbsent");
-        assert!(via_absent.markers.is_empty(), "{}", leg.label);
+        assert!(!via_absent.markers.is_empty(), "{}", leg.label);
         let ClassSourceOutcome::Recovered { report: body, .. } = &via_absent.outcome else {
-            panic!("viaAbsent is a recovered method on {}", leg.label);
+            panic!(
+                "viaAbsent retains its produced refusal report on {}",
+                leg.label
+            );
         };
-        assert_eq!(
+        assert_ne!(
             body.quality,
             jarde_jvm::ir::Quality::Structured,
             "{}",
             leg.label
         );
         assert!(
-            !body.text.contains("@bytecode"),
+            body.text.contains("@bytecode"),
             "{}: {}",
             leg.label,
             body.text
@@ -563,8 +584,8 @@ fn the_named_platform_target_and_selected_user_header_chain_are_proved() {
                 .text
                 .matches("no safe reference conversion evidence")
                 .count(),
-            0,
-            "both supported target relations are proved on `{}`:\n{}",
+            1,
+            "only the direct target relation is proved on `{}`:\n{}",
             leg.label,
             report.text
         );
@@ -587,6 +608,177 @@ fn the_named_platform_target_and_selected_user_header_chain_are_proved() {
             leg.label,
             report.text
         );
+    }
+}
+
+fn assert_exception_header(bytes: &[u8], name: &str) {
+    assert_eq!(u16::from_be_bytes([bytes[6], bytes[7]]), 52);
+    let header = jarde_reader::classfile::class_member_facts(bytes, &mut budget()).unwrap();
+    assert_eq!(header.this_class.raw().0, name.as_bytes());
+    assert_eq!(header.super_class.unwrap().raw().0, b"java/lang/Exception");
+    assert!(header.interfaces.is_empty());
+    assert_eq!(header.access_flags, 0x0020);
+}
+
+/// A refusal is a produced explanation, not a recovered invocation or JVM-equivalent empty body.
+fn assert_missing_intermediate(report: &ClassSourceReport, bytes: &[u8], exception: &str) {
+    assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+    let member = method_of(report, "viaAbsent");
+    let ClassSourceOutcome::Recovered { report: body, .. } = &member.outcome else {
+        panic!("expected a produced explanation: {:?}", member.outcome);
+    };
+    assert!(matches!(body.execution, ExecutionReport::Complete { .. }));
+    assert_eq!(body.content, RecoveryContent::ExplanationOnly);
+    assert_ne!(body.quality, jarde_jvm::ir::Quality::Structured);
+    assert!(!member.markers.is_empty());
+    let inspection = jarde_reader::classfile::inspect_method_bytecode(
+        bytes,
+        jarde_reader::classfile::MethodSelector {
+            name: member.item.name.raw().clone(),
+            descriptor: member.item.descriptor.raw().clone(),
+        },
+        &mut budget(),
+    )
+    .unwrap();
+    let calls: Vec<_> = inspection
+        .instructions
+        .iter()
+        .filter(|instruction| instruction.opcode == 0xb8)
+        .collect();
+    assert_eq!(
+        calls.len(),
+        1,
+        "the physical method has one static sink invocation"
+    );
+    let bci = calls[0].bci;
+    let failure = format!(
+        "the parameter 0 of the invocation at BCI {bci} is declared `java.lang.Throwable` presents `{exception}` but the invocation requires `java.lang.Throwable` and this layer has no safe reference conversion evidence (relation: Some(Missing))"
+    );
+    assert!(body.text.contains(&failure), "{}", body.text);
+    assert!(
+        !body.text.contains("sinkT("),
+        "refused calls must not be presented"
+    );
+    let expected_entry = format!("{exception}.class");
+    let binding = body
+        .artifact
+        .binding()
+        .expect("refusal retains physical provenance");
+    assert!(
+        binding.dependencies().iter().any(|dependency| {
+            dependency.loader == LoaderId("app".into())
+                && dependency
+                    .definition
+                    .entry()
+                    .is_some_and(|entry| entry.raw_name.0 == expected_entry.as_bytes())
+        }),
+        "missing selected exception identity: {:?}",
+        binding.dependencies()
+    );
+    println!(
+        "missing-intermediate evidence: {exception}, BCI {bci}, content {:?}, quality {:?}, execution {:?}, dependencies {:?}, failure {failure}",
+        body.content,
+        body.quality,
+        body.execution,
+        binding.dependencies()
+    );
+}
+
+#[test]
+fn evidence_requests_do_not_supply_missing_platform_headers() {
+    for leg in LEGS {
+        let snapshot = open(&leg.fixture("AW"));
+        let exception_bytes = leg
+            .files
+            .iter()
+            .find(|(name, _)| *name == "AW$MyErr.class")
+            .unwrap()
+            .1;
+        assert_exception_header(exception_bytes, "AW$MyErr");
+        let bytes = leg
+            .files
+            .iter()
+            .find(|(name, _)| *name == "AW.class")
+            .unwrap()
+            .1;
+        for request in [
+            RecoveryEvidenceRequest::essential(),
+            evidence(),
+            RecoveryEvidenceRequest::all(),
+        ] {
+            let report = class_source_with_evidence(&snapshot, "AW", &request);
+            assert_missing_intermediate(&report, bytes, "AW$MyErr");
+            assert!(
+                text_of(&report, "viaNamedPlatform")
+                    .contains("runRunnable((java.lang.Runnable) new AW$Work());")
+            );
+        }
+    }
+}
+
+#[test]
+fn constructor_and_name_variants_do_not_supply_missing_platform_headers() {
+    // These same-context derivatives are counterexamples, not an independent holdout or
+    // replacements for the two frozen compiler legs. Only the original input is executed.
+    for (class, exception, nested) in [
+        ("GapProbe", "GapProbe$MyErr", true),
+        ("RenamedProbe", "RenamedFault", false),
+    ] {
+        for string_constructor in [false, true] {
+            let short = if nested { "MyErr" } else { exception };
+            let declaration = if string_constructor {
+                format!("{short}(String value) {{ super(value); }}")
+            } else {
+                format!("{short}() {{ super(); }}")
+            };
+            let exception_source = format!(
+                "{} class {short} extends Exception {{ {declaration} }}",
+                if nested { "static" } else { "" }
+            );
+            let argument = if string_constructor {
+                "\"message\""
+            } else {
+                ""
+            };
+            let source = format!(
+                "public class {class} {{ {} static void sinkT(Throwable value) {{ System.out.println(\"called\"); }} static void viaAbsent() {{ sinkT(new {short}({argument})); }} public static void main(String[] args) {{ viaAbsent(); }} }} {}",
+                if nested { &exception_source } else { "" },
+                if nested { "" } else { &exception_source }
+            );
+            let directory = TempDir::new("missing-intermediate-control");
+            compile_with(
+                Path::new("javac"),
+                true,
+                directory.path(),
+                &[(format!("{class}.java"), source)],
+            );
+            assert_eq!(
+                run(directory.path(), class),
+                "called\n",
+                "original input semantics only"
+            );
+            let class_bytes = fs::read(directory.path().join(format!("{class}.class"))).unwrap();
+            let exception_bytes =
+                fs::read(directory.path().join(format!("{exception}.class"))).unwrap();
+            assert_exception_header(&exception_bytes, exception);
+            let files = [
+                (format!("{class}.class"), class_bytes),
+                (format!("{exception}.class"), exception_bytes),
+            ];
+            let entries: Vec<_> = files
+                .iter()
+                .map(|(name, bytes)| (name.as_bytes(), bytes.as_slice()))
+                .collect();
+            let snapshot = open(&zip_of(&entries));
+            for request in [
+                RecoveryEvidenceRequest::essential(),
+                evidence(),
+                RecoveryEvidenceRequest::all(),
+            ] {
+                let report = class_source_with_evidence(&snapshot, class, &request);
+                assert_missing_intermediate(&report, &files[0].1, exception);
+            }
+        }
     }
 }
 
