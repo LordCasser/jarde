@@ -124,6 +124,8 @@ use std::sync::{Condvar, Mutex, MutexGuard};
 use std::time::Duration;
 
 mod observation;
+#[cfg(all(test, feature = "test-support"))]
+mod tests;
 #[cfg(feature = "test-support")]
 pub use observation::{BulkProbe, BulkProbeReading, LedgerSiteReading, WindowSiteReading};
 use observation::{Observation, WindowSite};
@@ -1720,6 +1722,17 @@ fn position_of(state: &OperationState, index: u64) -> Option<usize> {
     slot_of(state, index)
 }
 
+/// Takes one seated method from the front class and releases exactly its window charges.
+///
+/// Both ordinary delivery and the infrastructure-stop drain transfer ownership through this take.
+/// A refused delivery drops the returned record; retiring the slot releases only records still seated.
+fn take_pending_method(state: &mut OperationState) -> Option<Box<MethodResultEvent>> {
+    let pending = state.slots.front_mut()?.methods.pop_front()?;
+    state.retained_weight = state.retained_weight.saturating_sub(pending.event.weight);
+    state.pool_used = state.pool_used.saturating_sub(pending.pool_charge);
+    Some(pending.event)
+}
+
 /// Retires the front slot: the class is delivered, the front moves on, and everything its pending
 /// records held leaves the window with it.
 ///
@@ -2738,22 +2751,12 @@ fn take_front(registry: &Registry, budget: &Budget) -> Front {
         // never removes the others: a worker that produced its result while the coordinator had not
         // yet taken the class's `ClassPrepared` record has both pending, and the method records must
         // survive that delivery. The method records of one class leave in production order.
-        let mut taken: Option<Front> = None;
-        let mut leaving: Option<PendingMethod> = None;
-        if let Some(slot) = state.slots.front_mut() {
-            match slot.preparation.hand_off() {
-                Some(control) => taken = Some(Front::Control(Box::new(control))),
-                None => leaving = slot.methods.pop_front(),
-            }
-        }
-        if let Some(pending) = leaving {
-            // The record leaves the window with this take: what it retained and what it held of the
-            // pool are released here and nowhere else, so the room this delivery made is what the
-            // next producer — of this class or of any other — can be seated by.
-            state.retained_weight = state.retained_weight.saturating_sub(pending.event.weight);
-            state.pool_used = state.pool_used.saturating_sub(pending.pool_charge);
-            taken = Some(Front::Method(pending.event));
-        }
+        let taken = state
+            .slots
+            .front_mut()
+            .and_then(|slot| slot.preparation.hand_off())
+            .map(|control| Front::Control(Box::new(control)))
+            .or_else(|| take_pending_method(&mut state).map(Front::Method));
         if let Some(front) = taken {
             registry.changed.notify_all();
             return front;
@@ -3070,14 +3073,13 @@ fn coordinate(
     Stream { traversal_complete }
 }
 
-/// Publishes the `ClassEnd` of every class whose task already ended, in delivery order.
+/// Drains ended classes in delivery order, preserving seated methods on infrastructure failure.
 ///
-/// A stream that closes before the coordinator reached a class still owes that class a statement of
-/// where it stopped: this drains the window from the front, one ended class at a time, and stops at
-/// the first class that has not ended (its task is still working, and no record of it may claim
-/// otherwise). Nothing else is delivered: the method records still waiting in those slots were never
-/// confirmed by the consumer, so they stay executed-but-undelivered. A task that finished with
-/// records still pending is therefore reported as stopped, not completed.
+/// A worker failure stops production, but does not itself revoke the consumer's delivery budget.
+/// Already seated methods therefore follow their Prepared record before ClassEnd, using the same
+/// quota and sink confirmation as ordinary delivery. Cancellation, exhausted quota and consumer
+/// refusal still stop publication; produced work is never counted as delivered without confirmation.
+/// Other operation endings retain the executed-but-undelivered treatment of pending methods.
 ///
 /// The wait for a class that is still winding down is bounded per class: a task whose next checkpoint
 /// is one slot check returns at once, and one that is in the middle of a method states nothing here
@@ -3092,19 +3094,24 @@ fn drain_ended_classes(
             return false;
         }
         let deadline = std::time::Instant::now() + DRAIN_PER_CLASS;
-        let taken: Option<
-            std::result::Result<(u64, ClassPreparedEvent), (u64, ScopeClass, ClassEnding)>,
-        > = loop {
+        let taken = loop {
             let mut state = operation.registry.lock();
             let ordinal = state.front;
+            let drain_methods = matches!(state.ending, Some(Ending::Infrastructure { .. }));
             match state.slots.front_mut() {
-                None => break None,
+                None => break Front::Empty,
                 Some(slot) => {
                     if slot.ending.is_some() {
                         if let Some(control) = slot.preparation.hand_off() {
-                            break Some(Ok((ordinal, control)));
+                            break Front::Control(Box::new(control));
                         }
-                        if let Some(ending) = slot.ending.take() {
+                        if drain_methods && let Some(method) = take_pending_method(&mut state) {
+                            operation.registry.changed.notify_all();
+                            break Front::Method(method);
+                        }
+                        if let Some(slot) = state.slots.front_mut()
+                            && let Some(ending) = slot.ending.take()
+                        {
                             let ending = match ending {
                                 ClassEnding::Prepared { methods, execution }
                                     if !slot.methods.is_empty() =>
@@ -3120,16 +3127,20 @@ fn drain_ended_classes(
                             let class = slot.class.clone();
                             retire_front(&mut state);
                             operation.registry.changed.notify_all();
-                            break Some(Err((ordinal, class, ending)));
+                            break Front::Ended(Box::new(EndedClass {
+                                ordinal,
+                                class,
+                                ending,
+                            }));
                         }
                     }
                 }
             }
             if !wait_for_task {
-                break None;
+                break Front::Empty;
             }
             let Some(remaining) = deadline.checked_duration_since(std::time::Instant::now()) else {
-                break None;
+                break Front::Empty;
             };
             let guard = operation.registry.wait_signal(
                 state,
@@ -3138,20 +3149,29 @@ fn drain_ended_classes(
             );
             drop(guard);
         };
-        let Some(taken) = taken else {
-            return true;
-        };
         match taken {
-            Ok((_ordinal, control)) => {
+            Front::Control(control) => {
                 if !publish(operation, delivery, Record::Prepared(&control), None) {
                     return false;
                 }
             }
-            Err((ordinal, class, ending)) => {
-                if !publish_class_end(operation, delivery, ordinal, &class, ending) {
+            Front::Method(method) => {
+                if !publish(operation, delivery, Record::Method(&method), Some(&method)) {
                     return false;
                 }
             }
+            Front::Ended(ended) => {
+                if !publish_class_end(
+                    operation,
+                    delivery,
+                    ended.ordinal,
+                    &ended.class,
+                    ended.ending,
+                ) {
+                    return false;
+                }
+            }
+            Front::Empty | Front::Closed => return true,
         }
     }
 }

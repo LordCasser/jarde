@@ -88,6 +88,11 @@
 - **WHEN** 后序任务已经计算完成，前序位置尚未交付时发生取消
 - **THEN** 后序工作进入实际 usage 和执行覆盖，未获 sink 确认的结果不计作交付；报告可有执行孔洞，不能把丢弃缓冲当作未做过工作，不能伪造全局 Complete（B06/B07）
 
+#### Scenario: A worker panics with seated method records
+
+- **WHEN** worker 在 Prepared 交接已安装且方法结果已进入有界窗口后 panic，而 sink 仍消费、调用方未取消且交付额度足够
+- **THEN** 协调器 SHALL 先按原类/成员顺序交付窗口中已入座的前缀，再交付 panic 类的 Stopped 终态；只在正常 sink 确认后计入 methods_delivered，生产计数不变成确认计数；新工作停止、全部 worker join，顶层仍为原基础设施 Failed。消费拒绝、取消或额度不足 SHALL 立即截断该交付，不能强制补发方法、ClassEnd 或 Final（B03/B05/B06/B07）
+
 #### Scenario: Full execution with different worker counts
 
 - **WHEN** 相同输入和语义配置以 1 与 N worker 足额运行
