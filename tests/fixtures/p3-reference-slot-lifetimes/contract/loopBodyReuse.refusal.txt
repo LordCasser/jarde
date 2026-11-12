@@ -1,0 +1,17 @@
+// @method loopBodyReuse(I)I
+// @declaration a static method of `SlotReuseBoundaries`, member flags 0x0009
+// recovered from bytecode; presentation is not claimed to compile
+{
+    // @bytecode 0 1 2 3 6 7 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 31 34 35
+    // a required write of the elevated source variable `local1` was refused; its declarations, reads and dependent effects are quoted together
+    // @bytecode 13
+    // local 2 is treated as one source variable, but the selected type `int[]` is not proved compatible with the value written at BCI 23 (`int`); this region is refused instead of publishing a contradictory local (first write at BCI 13)
+    // @bytecode 14 15 16 17 18 19
+    // the statement at BCI 19 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+    // @bytecode 23
+    // local 2 is treated as one source variable, but the selected type `int[]` is not proved compatible with the value written at BCI 23 (`int`); this region is refused instead of publishing a contradictory local (first write at BCI 13)
+    // @bytecode 27
+    // the arithmetic at BCI 26 reads operands whose Java numeric type this run cannot state
+    // @bytecode 34 35
+    // the statement at BCI 35 reads `local1`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+}

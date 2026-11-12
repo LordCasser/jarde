@@ -654,75 +654,143 @@ fn same_name_lvt_sources_split_into_exact_typed_independent_names() {
     }
 }
 
-#[test]
-fn unsupported_reference_boundaries_keep_the_cli9_source_verbatim() {
-    assert_eq!(NEGATIVE_CASES.len(), 7);
-    for (name, bytes, baseline) in NEGATIVE_CASES {
-        let report = recover(bytes, name, &RecoveryEvidenceRequest::all());
-        if *name == "SlotReuseBoundaries" {
-            assert_category2_adjacent_presentation(&report);
-            let normalized = restore_frozen_category2_method(&report.text, baseline);
-            assert_eq!(
-                normalized, *baseline,
-                "{name}: every byte outside category2Adjacent stays frozen"
-            );
-            continue;
-        }
-        if matches!(*name, "V3" | "V4") {
-            assert_one_local_declaration_refinement(
-                name,
-                &report.text,
-                baseline,
-                "        java.lang.Object local1;\n",
-                "        int[] local1;\n",
-            );
-            continue;
-        }
-        if *name == "HeldUse" {
-            assert_one_local_declaration_refinement(
-                name,
-                &report.text,
-                baseline,
-                "        java.lang.Object local0 = new java.lang.StringBuilder(\"old\");\n",
-                "        java.lang.StringBuilder local0 = new java.lang.StringBuilder(\"old\");\n",
-            );
-            continue;
-        }
-        if *name == "RefLoopBack" {
-            assert!(
-                report
-                    .methods
-                    .iter()
-                    .all(|method| method.markers.is_empty())
-            );
-            for method in &report.methods {
-                assert!(matches!(
-                    method.outcome,
-                    ClassSourceOutcome::Recovered { .. }
-                ));
-            }
-            let current_lifetime = concat!(
-                "            java.lang.StringBuilder local2_2 = new java.lang.StringBuilder(\"second\");\n",
-                "            local1 = local1 + local2_2.length();\n",
-            );
-            let old_lifetime = concat!(
-                "            local2 = new java.lang.StringBuilder(\"second\");\n",
-                "            local1 = local1 + local2.length();\n",
-            );
-            assert_eq!(report.text.matches(current_lifetime).count(), 1);
-            assert_eq!(baseline.matches(old_lifetime).count(), 1);
-            let restored = replace_once(&report.text, current_lifetime, old_lifetime);
-            assert_eq!(
-                restored, *baseline,
-                "{name}: only the proved RefLoopBack split changed"
-            );
-            continue;
-        }
-        assert_eq!(
-            report.text, *baseline,
-            "{name}: unsupported-shape output changed"
+fn assert_negative_case(name: &str, bytes: &[u8], baseline: &str) {
+    let report = recover(bytes, name, &RecoveryEvidenceRequest::all());
+    if name == "SlotReuseBoundaries" {
+        assert_category2_adjacent_presentation(&report);
+        assert_loop_body_refusal(&report);
+        let normalized = restore_frozen_category2_method(&report.text, baseline);
+        let actual_range = loop_body_range(&normalized);
+        let frozen_range = loop_body_range(baseline);
+        let normalized = format!(
+            "{}{}{}",
+            &normalized[..actual_range.start],
+            &baseline[frozen_range],
+            &normalized[actual_range.end..]
         );
+        assert_eq!(
+            normalized, baseline,
+            "{name}: every byte outside category2Adjacent and the complete dependent loop refusal stays frozen"
+        );
+        return;
     }
+    if matches!(name, "V3" | "V4") {
+        assert_one_local_declaration_refinement(
+            name,
+            &report.text,
+            baseline,
+            "        java.lang.Object local1;\n",
+            "        int[] local1;\n",
+        );
+        return;
+    }
+    if name == "HeldUse" {
+        assert_one_local_declaration_refinement(
+            name,
+            &report.text,
+            baseline,
+            "        java.lang.Object local0 = new java.lang.StringBuilder(\"old\");\n",
+            "        java.lang.StringBuilder local0 = new java.lang.StringBuilder(\"old\");\n",
+        );
+        return;
+    }
+    if name == "RefLoopBack" {
+        assert!(
+            report
+                .methods
+                .iter()
+                .all(|method| method.markers.is_empty())
+        );
+        for method in &report.methods {
+            assert!(matches!(
+                method.outcome,
+                ClassSourceOutcome::Recovered { .. }
+            ));
+        }
+        let current_lifetime = concat!(
+            "            java.lang.StringBuilder local2_2 = new java.lang.StringBuilder(\"second\");\n",
+            "            local1 = local1 + local2_2.length();\n",
+        );
+        let old_lifetime = concat!(
+            "            local2 = new java.lang.StringBuilder(\"second\");\n",
+            "            local1 = local1 + local2.length();\n",
+        );
+        assert_eq!(report.text.matches(current_lifetime).count(), 1);
+        assert_eq!(baseline.matches(old_lifetime).count(), 1);
+        let restored = replace_once(&report.text, current_lifetime, old_lifetime);
+        assert_eq!(
+            restored, baseline,
+            "{name}: only the proved RefLoopBack split changed"
+        );
+        return;
+    }
+    assert_eq!(
+        report.text, baseline,
+        "{name}: unsupported-shape output changed"
+    );
+}
+
+#[test]
+fn negative_v2() {
+    let (name, bytes, baseline) = NEGATIVE_CASES
+        .iter()
+        .find(|(name, _, _)| *name == "V2")
+        .unwrap();
+    assert_negative_case(name, bytes, baseline);
+}
+
+#[test]
+fn negative_v3() {
+    let (name, bytes, baseline) = NEGATIVE_CASES
+        .iter()
+        .find(|(name, _, _)| *name == "V3")
+        .unwrap();
+    assert_negative_case(name, bytes, baseline);
+}
+
+#[test]
+fn negative_v4() {
+    let (name, bytes, baseline) = NEGATIVE_CASES
+        .iter()
+        .find(|(name, _, _)| *name == "V4")
+        .unwrap();
+    assert_negative_case(name, bytes, baseline);
+}
+
+#[test]
+fn negative_slotreuseboundaries() {
+    let (name, bytes, baseline) = NEGATIVE_CASES
+        .iter()
+        .find(|(name, _, _)| *name == "SlotReuseBoundaries")
+        .unwrap();
+    assert_negative_case(name, bytes, baseline);
+}
+
+#[test]
+fn negative_parameterheader() {
+    let (name, bytes, baseline) = NEGATIVE_CASES
+        .iter()
+        .find(|(name, _, _)| *name == "ParameterHeader")
+        .unwrap();
+    assert_negative_case(name, bytes, baseline);
+}
+
+#[test]
+fn negative_helduse() {
+    let (name, bytes, baseline) = NEGATIVE_CASES
+        .iter()
+        .find(|(name, _, _)| *name == "HeldUse")
+        .unwrap();
+    assert_negative_case(name, bytes, baseline);
+}
+
+#[test]
+fn negative_refloopback() {
+    let (name, bytes, baseline) = NEGATIVE_CASES
+        .iter()
+        .find(|(name, _, _)| *name == "RefLoopBack")
+        .unwrap();
+    assert_negative_case(name, bytes, baseline);
 }
 
 /// Preserve the frozen class baseline except for its exact local-type refinement and proved
@@ -919,4 +987,275 @@ fn low_analysis_budget_and_cancellation_do_not_publish_a_split_source() {
         Ok(_) => {}
         other => panic!("cancelled request returns its ordinary stop result: {other:?}"),
     }
+}
+
+#[test]
+#[ignore = "installed JDK: exact frozen original execution and unedited whole Engine compile refusal"]
+fn frozen_slot_original_and_complete_engine_refusal() {
+    use std::{fs, path::Path, process::Command};
+    fn command(dir: &Path, label: &str, program: &str, args: &[&str]) -> std::process::Output {
+        let output = Command::new("timeout")
+            .args(["30s", program])
+            .args(args)
+            .current_dir(dir)
+            .output()
+            .unwrap();
+        fs::write(dir.join(format!("{label}.stdout")), &output.stdout).unwrap();
+        fs::write(dir.join(format!("{label}.stderr")), &output.stderr).unwrap();
+        fs::write(
+            dir.join(format!("{label}.status")),
+            format!("{:?}\n", output.status),
+        )
+        .unwrap();
+        output
+    }
+    let root = std::path::PathBuf::from(
+        std::env::var_os("JARDE_SLOT_REFUSAL_EVIDENCE").expect("fresh evidence path"),
+    );
+    fs::create_dir_all(root.parent().unwrap()).unwrap();
+    fs::create_dir(&root).expect("never overwrite evidence");
+    for (name, bytes, _) in NEGATIVE_CASES {
+        let report = recover(bytes, name, &RecoveryEvidenceRequest::all());
+        fs::write(root.join(format!("{name}.java")), &report.text).unwrap();
+        fs::write(
+            root.join(format!("{name}.json")),
+            serde_json::to_vec_pretty(&report).unwrap(),
+        )
+        .unwrap();
+    }
+    let (_, bytes, _) = NEGATIVE_CASES
+        .iter()
+        .find(|(name, _, _)| *name == "SlotReuseBoundaries")
+        .unwrap();
+    let original = root.join("original");
+    fs::create_dir(&original).unwrap();
+    fs::write(original.join("SlotReuseBoundaries.class"), bytes).unwrap();
+    assert_eq!(
+        fs::read(original.join("SlotReuseBoundaries.class")).unwrap(),
+        *bytes
+    );
+    fs::write(
+        original.join("SlotRefusalDriver.java"),
+        include_str!("fixtures/p3-reference-slot-lifetimes/contract/SlotRefusalDriver.java"),
+    )
+    .unwrap();
+    let c = command(
+        &original,
+        "driver-compile",
+        "javac",
+        &[
+            "--release",
+            "8",
+            "-proc:none",
+            "-classpath",
+            ".",
+            "-sourcepath",
+            "empty-sourcepath",
+            "SlotRefusalDriver.java",
+        ],
+    );
+    assert!(c.status.success(), "{}", String::from_utf8_lossy(&c.stderr));
+    let run = command(
+        &original,
+        "original-run",
+        "java",
+        &["-Xverify:all", "-cp", ".", "SlotRefusalDriver"],
+    );
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(
+        String::from_utf8(run.stdout).unwrap(),
+        concat!(
+            "loop(-2)=0\nloop(-1)=0\nloop(0)=0\nloop(1)=3\nloop(2)=8\nloop(3)=15\n",
+            "sameType(-2)=-1\nsameType(0)=3\nsameType(4)=11\nexclusive(false)=9\nexclusive(true)=7\nhandler(false)=3\nhandler(true)=8\ncategory2=4294967300\n"
+        )
+    );
+    let recovered = root.join("recovered");
+    fs::create_dir(&recovered).unwrap();
+    fs::copy(
+        root.join("SlotReuseBoundaries.java"),
+        recovered.join("SlotReuseBoundaries.java"),
+    )
+    .unwrap();
+    assert_eq!(
+        fs::read(root.join("SlotReuseBoundaries.java")).unwrap(),
+        fs::read(recovered.join("SlotReuseBoundaries.java")).unwrap()
+    );
+    let c = command(
+        &recovered,
+        "whole-engine-compile",
+        "javac",
+        &[
+            "--release",
+            "8",
+            "-proc:none",
+            "-classpath",
+            ".",
+            "-sourcepath",
+            "empty-sourcepath",
+            "SlotReuseBoundaries.java",
+        ],
+    );
+    assert!(
+        !c.status.success(),
+        "whole Engine class remains a refusal, not recovered equivalence"
+    );
+    assert!(String::from_utf8_lossy(&c.stderr).contains("missing return statement"));
+    assert!(!recovered.join("SlotReuseBoundaries.class").exists());
+}
+
+// This inventory is the instruction-start list from the unchanged frozen class, independently
+// checked with javap. Operand bytes are not instructions. In particular, 31 is the backedge BCI,
+// not an instruction count; the complete method has 29 instructions.
+const LOOP_BODY_INSTRUCTIONS: &[u32] = &[
+    0, 1, 2, 3, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+    28, 31, 34, 35,
+];
+
+fn loop_body_range(text: &str) -> std::ops::Range<usize> {
+    let signature = "    public static int loopBodyReuse(int arg0) {";
+    let start = text.find(signature).expect("exact frozen loop signature");
+    let end = start
+        + text[start..]
+            .find("\n    }\n")
+            .expect("class method boundary")
+        + "\n    }".len();
+    start..end
+}
+
+fn assert_loop_body_refusal(report: &ClassSourceReport) {
+    use std::collections::BTreeSet;
+    let member = report
+        .methods
+        .iter()
+        .find(|m| m.item.name.raw().0 == b"loopBodyReuse")
+        .unwrap();
+    let ClassSourceOutcome::Recovered { report: run, .. } = &member.outcome else {
+        panic!("missing refusal artifact");
+    };
+    assert_eq!(run.content, RecoveryContent::ExplanationOnly);
+    assert_eq!(run.quality, Quality::Fallback);
+    assert_eq!(run.representation, Representation::Mixed);
+    assert_eq!(
+        run.text,
+        include_str!("fixtures/p3-reference-slot-lifetimes/contract/loopBodyReuse.refusal.txt")
+    );
+    assert!(
+        run.text.lines().all(|line| line.trim().is_empty()
+            || matches!(line.trim(), "{" | "}")
+            || line.trim().starts_with("//")),
+        "no executable fragment"
+    );
+    let expected: BTreeSet<u32> = LOOP_BODY_INSTRUCTIONS.iter().copied().collect();
+    assert_eq!(expected.len(), 29);
+    let quoted: BTreeSet<u32> = run
+        .text
+        .lines()
+        .filter_map(|line| line.trim().strip_prefix("// @bytecode "))
+        .flat_map(str::split_whitespace)
+        .map(|bci| bci.parse().unwrap())
+        .collect();
+    assert_eq!(
+        quoted, expected,
+        "every actual instruction, and no operand byte, is quoted"
+    );
+    let mut origins = BTreeSet::new();
+    for segment in run.source_map.segments() {
+        assert!(segment.start() < segment.end() && segment.end() <= run.text.len());
+        assert!(
+            run.text.is_char_boundary(segment.start()) && run.text.is_char_boundary(segment.end())
+        );
+        for origin in std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
+        {
+            assert_eq!(origin.method(), Some(&member.item.identity));
+            assert!(expected.contains(&origin.bci()));
+            origins.insert(origin.bci());
+        }
+    }
+    assert_eq!(origins, expected, "full refusal source-map closure");
+    // Each diagnostic quote is mapped to exactly its own listed instructions, not merely
+    // somewhere in the same method. This includes the dependent writes and refused return.
+    assert_eq!(run.source_map.segments().len(), 6);
+    for segment in run.source_map.segments() {
+        let text = &run.text[segment.start()..segment.end()];
+        let listed: BTreeSet<u32> = text
+            .lines()
+            .filter_map(|line| line.trim().strip_prefix("// @bytecode "))
+            .flat_map(str::split_whitespace)
+            .map(|bci| bci.parse().unwrap())
+            .collect();
+        let mapped: BTreeSet<u32> = std::iter::once(segment.origin().primary())
+            .chain(segment.origin().derived())
+            .map(|origin| origin.bci())
+            .collect();
+        assert_eq!(
+            listed, mapped,
+            "each dependent diagnostic owns its exact quote"
+        );
+    }
+    assert!(
+        run.fallbacks.is_empty(),
+        "local refusals are textual diagnostics, not region fallback codes"
+    );
+    for region in &run.regions {
+        assert!(expected.contains(&region.bci));
+        assert!(region.blocks.iter().all(|bci| expected.contains(bci)));
+        if let Some(message) = &region.message {
+            assert!(
+                run.text.contains(message),
+                "region diagnostic remains in refused method: {message}"
+            );
+        }
+        if let Some(code) = region.code {
+            assert!(run.fallbacks.contains(&code));
+        }
+    }
+}
+
+#[test]
+fn loop_body_reuse_refuses_the_complete_dependent_method() {
+    let (_, bytes, _) = NEGATIVE_CASES
+        .iter()
+        .find(|(name, _, _)| *name == "SlotReuseBoundaries")
+        .unwrap();
+    let essential = recover(
+        bytes,
+        "SlotReuseBoundaries",
+        &RecoveryEvidenceRequest::essential(),
+    );
+    let all = recover(
+        bytes,
+        "SlotReuseBoundaries",
+        &RecoveryEvidenceRequest::all(),
+    );
+    assert_eq!(
+        essential.text, all.text,
+        "evidence selection never changes class source"
+    );
+    let left = essential
+        .methods
+        .iter()
+        .find(|m| m.item.name.raw().0 == b"loopBodyReuse")
+        .unwrap();
+    let right = all
+        .methods
+        .iter()
+        .find(|m| m.item.name.raw().0 == b"loopBodyReuse")
+        .unwrap();
+    assert_eq!(left.item, right.item);
+    let (
+        ClassSourceOutcome::Recovered { report: left, .. },
+        ClassSourceOutcome::Recovered { report: right, .. },
+    ) = (&left.outcome, &right.outcome)
+    else {
+        panic!("refusal artifacts required");
+    };
+    assert_eq!(left.text, right.text);
+    assert_eq!(left.quality, right.quality);
+    assert_eq!(left.representation, right.representation);
+    assert_eq!(left.content, right.content);
+    assert_loop_body_refusal(&all);
 }
