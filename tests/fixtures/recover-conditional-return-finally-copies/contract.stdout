@@ -1,0 +1,8 @@
+empty:result=-1;value=99;calls=1;events=before,cleanup,returned,after;throw=none
+two:result=-1;value=99;calls=1;events=before,cleanup,returned,after;throw=none
+three:result=3000;value=99;calls=1;events=before,cleanup,returned,after;throw=none
+null:result=777;value=99;calls=1;events=before,cleanup,thrown,after;throw=null;suppressed=0
+empty-cleanup:result=777;value=99;calls=1;events=before,cleanup,thrown,after;throw=cleanup;suppressed=existing;cause=existing
+two-cleanup:result=777;value=99;calls=1;events=before,cleanup,thrown,after;throw=cleanup;suppressed=existing;cause=existing
+return-cleanup:result=777;value=99;calls=1;events=before,cleanup,thrown,after;throw=cleanup;suppressed=existing;cause=existing
+null-cleanup:result=777;value=99;calls=1;events=before,cleanup,thrown,after;throw=cleanup;suppressed=existing;cause=existing

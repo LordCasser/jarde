@@ -163,23 +163,6 @@ const NESTED: Closure = Closure {
     ],
 };
 
-const SHARED: Closure = Closure {
-    member: "sharedHandler",
-    sentence: CROSSES_PROTECTED,
-    quote: "// @bytecode 0 11 14",
-    fallbacks: &[],
-    regions: &[(0, &[0, 11], None), (14, &[14], None)],
-    // The definition `astore_1` at 1 and the transfer `goto 14` at 8; the handler entry at 11; the
-    // consumer `aload_1` at 14.
-    blocks: &[(0, 0, 10), (11, 11, 13), (14, 14, 15)],
-    slice: &[
-        ("definition", 1),
-        ("transfer", 8),
-        ("handler", 11),
-        ("consumer", 14),
-    ],
-};
-
 const ESCAPED: Closure = Closure {
     member: "sharedHandler",
     sentence: ESCAPES_CLAUSE,
@@ -552,19 +535,107 @@ fn the_refused_slices_keep_the_instructions_their_closure_covers() {
         }
         assert_nested_handler_presented(&report, leg);
     }
+}
 
-    // The escape control: the same closure, with the sentence that states the binding's own
-    // reason. The two unmutated legs keep the incomplete-edge answer; the derived class — whose
-    // caught value is read after the clause — keeps the escape answer.
-    for (leg, bytes, closure) in [
-        ("v8", ESCAPE_V8, &SHARED),
-        ("v8-javac8", ESCAPE_V8_JAVAC8, &SHARED),
-        ("escaped", ESCAPE_DERIVED, &ESCAPED),
-    ] {
+#[test]
+fn separate_catch_slot_keeps_the_object_join_and_all_origins() {
+    for (leg, bytes) in [("v8", ESCAPE_V8), ("v8-javac8", ESCAPE_V8_JAVAC8)] {
+        let report = class_source_of(&open(bytes), "ScopeRefusalsEscape", 8);
+        let run = run_of(&report, "sharedHandler");
+        let text = &run.text;
+        assert_eq!(
+            run.content,
+            RecoveryContent::ContainsStatements,
+            "{leg}: {text}"
+        );
+        assert_eq!(run.representation, Representation::Java, "{leg}: {text}");
+        assert_eq!(run.quality, Quality::Structured, "{leg}: {text}");
+        assert!(run.fallbacks.is_empty(), "{leg}: {text}");
+        assert!(
+            member(&report, "sharedHandler").markers.is_empty(),
+            "{leg}: {text}"
+        );
+        assert!(quoted_bcis(text).is_empty(), "{leg}: {text}");
+        let declaration = at(text, "java.lang.Object local1;");
+        let initial = at(text, "local1 = arg0;");
+        let call = at(text, "arg0.run();");
+        let clause = at(
+            text,
+            "catch (java.lang.IllegalArgumentException | java.lang.IllegalStateException local2)",
+        );
+        let assigned = at(text, "local1 = local2;");
+        let returned = at(text, "return local1;");
+        assert!(
+            declaration < initial
+                && initial < call
+                && call < clause
+                && clause < assigned
+                && assigned < returned,
+            "{leg}: {text}"
+        );
+        assert_eq!(text.matches("java.lang.Object local1;").count(), 1);
+        assert_eq!(
+            text.matches("local2").count(),
+            2,
+            "catch header and sole clause-local read"
+        );
+        for (offset, bci) in [
+            (declaration, 1),
+            (initial, 1),
+            (initial + "local1 = ".len(), 0),
+            (call, 2),
+            (call + "arg0.".len(), 3),
+            (assigned, 13),
+            (assigned + "local1 = ".len(), 12),
+            (returned, 15),
+            (returned + "return ".len(), 14),
+        ] {
+            assert_eq!(
+                origin_of(run, offset),
+                bci,
+                "{leg}: source origin at {offset}: {text}"
+            );
+        }
+        assert!(
+            run.source_map
+                .covering(clause)
+                .expect("catch clause origin")
+                .mentions(11)
+                .is_some()
+        );
+        let regions: Vec<_> = run
+            .regions
+            .iter()
+            .map(|region| (region.bci, region.blocks.clone(), region.code))
+            .collect();
+        assert_eq!(regions, vec![(0, vec![0, 11], None), (14, vec![14], None)]);
+    }
+}
+
+#[test]
+fn same_slot_catch_header_stays_refused_with_its_full_closure() {
+    for (leg, bytes, closure) in [("escaped", ESCAPE_DERIVED, &ESCAPED)] {
         let snapshot = open(bytes);
         let report = class_source_of(&snapshot, "ScopeRefusalsEscape", 8);
         let run = run_of(&report, "sharedHandler");
         let text = run.text.as_str();
+        assert_eq!(
+            run.content,
+            RecoveryContent::ExplanationOnly,
+            "{leg}: {text}"
+        );
+        assert_eq!(run.fallbacks, closure.fallbacks, "{leg}: {text}");
+        let regions: Vec<_> = run
+            .regions
+            .iter()
+            .map(|region| (region.bci, region.blocks.clone(), region.code))
+            .collect();
+        let expected: Vec<_> = closure
+            .regions
+            .iter()
+            .map(|(bci, blocks, code)| (*bci, blocks.to_vec(), *code))
+            .collect();
+        assert_eq!(regions, expected, "{leg}: {text}");
         assert!(
             text.contains(closure.sentence) && text.contains(closure.quote),
             "{leg}: the shared handler keeps its own sentence and quote:\n{text}"
@@ -1435,5 +1506,119 @@ fn the_legal_shapes_answer_what_the_original_and_jadx_answer() {
             leg.label,
             std::fs::read_to_string(refused.join("ScopeRefusals.java")).expect("the text reads")
         );
+    }
+}
+
+/// Full class output is compiled verbatim. The same independent oracle executes both frozen
+/// input compiler legs and the escaped original; a refused escaped render is never a runtime pass.
+#[test]
+#[ignore = "needs installed javac --release 8 and java; compiles untouched whole Engine output"]
+fn whole_shared_catch_preserves_identity_and_exception_metadata() {
+    let temp = TestDirectory::new("shared-catch");
+    let root = if let Some(path) = std::env::var_os("JARDE_SHARED_CATCH_EVIDENCE") {
+        let root = PathBuf::from(path);
+        std::fs::create_dir(&root).expect("evidence destination must be fresh");
+        root
+    } else {
+        temp.path().to_path_buf()
+    };
+    let driver = include_str!("fixtures/preserve-local-scope-refusals/SharedCatchDriver.java");
+    for (leg, bytes) in [
+        ("v8", ESCAPE_V8),
+        ("v8-javac8", ESCAPE_V8_JAVAC8),
+        ("escaped", ESCAPE_DERIVED),
+    ] {
+        let report = class_source_of(&open(bytes), "ScopeRefusalsEscape", 8);
+        for side in ["original", "recovered"] {
+            let dir = root.join(leg).join(side);
+            std::fs::create_dir_all(&dir).unwrap();
+            let empty_sourcepath = dir.join("empty-sourcepath");
+            std::fs::create_dir(&empty_sourcepath).unwrap();
+            std::fs::write(dir.join("SharedCatchDriver.java"), driver).unwrap();
+            let mut compiler = Command::new("javac");
+            compiler
+                .args(["--release", "8", "-g:none", "-proc:none", "-sourcepath"])
+                .arg(&empty_sourcepath)
+                .arg("-cp")
+                .arg(&dir)
+                .arg("-d")
+                .arg(&dir)
+                .arg(dir.join("SharedCatchDriver.java"));
+            if side == "original" {
+                std::fs::write(dir.join("ScopeRefusalsEscape.class"), bytes).unwrap();
+            } else {
+                std::fs::write(dir.join("ScopeRefusalsEscape.java"), &report.text).unwrap();
+                std::fs::write(dir.join("report.txt"), format!("{report:#?}")).unwrap();
+                compiler.arg(dir.join("ScopeRefusalsEscape.java"));
+            }
+            let compiled = compiler.output().expect("javac installed");
+            std::fs::write(dir.join("javac.stderr"), &compiled.stderr).unwrap();
+            if leg == "escaped" && side == "recovered" {
+                assert!(
+                    !compiled.status.success(),
+                    "refused method has no returned statement"
+                );
+                assert!(
+                    String::from_utf8_lossy(&compiled.stderr).contains("missing return statement")
+                );
+                assert_eq!(
+                    run_of(&report, "sharedHandler").content,
+                    RecoveryContent::ExplanationOnly
+                );
+                continue;
+            }
+            assert!(
+                compiled.status.success(),
+                "{leg}/{side}: {}",
+                String::from_utf8_lossy(&compiled.stderr)
+            );
+            let run = Command::new("java")
+                .args(["-Xverify:all", "-cp"])
+                .arg(&dir)
+                .arg("SharedCatchDriver")
+                .output()
+                .expect("java installed");
+            std::fs::write(dir.join("java.stdout"), &run.stdout).unwrap();
+            std::fs::write(dir.join("java.stderr"), &run.stderr).unwrap();
+            assert!(
+                run.status.success(),
+                "{leg}/{side}: {}",
+                String::from_utf8_lossy(&run.stderr)
+            );
+            assert_eq!(
+                String::from_utf8(run.stdout).unwrap(),
+                "shared-catch cases=108 identity/cause/suppression/order=OK\n"
+            );
+        }
+    }
+    // The separate refusal fixture still cannot compile as a complete recovered class. Do not
+    // extract nestedHandler and describe that as proof for SAVED/COMPUTED or their cleanup.
+    for (leg, bytes) in [("v8", REFUSALS_V8), ("v8-javac8", REFUSALS_V8_JAVAC8)] {
+        let report = class_source_of(&open(bytes), "ScopeRefusals", 8);
+        let dir = root.join(leg).join("whole-refusal-limit");
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join("ScopeRefusals.class"), bytes).unwrap();
+        std::fs::write(dir.join("ScopeRefusals.java"), &report.text).unwrap();
+        let result = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-cp"])
+            .arg(&dir)
+            .arg("-d")
+            .arg(&dir)
+            .arg(dir.join("ScopeRefusals.java"))
+            .output()
+            .expect("javac installed");
+        std::fs::write(dir.join("javac.stderr"), &result.stderr).unwrap();
+        assert!(
+            !result.status.success(),
+            "{leg}: refused methods do not become compilable"
+        );
+        assert!(String::from_utf8_lossy(&result.stderr).contains("missing return statement"));
+        for name in ["savedAcrossFinally", "handlerComputed"] {
+            assert_eq!(
+                run_of(&report, name).content,
+                RecoveryContent::ExplanationOnly
+            );
+        }
+        assert_nested_handler_presented(&report, leg);
     }
 }

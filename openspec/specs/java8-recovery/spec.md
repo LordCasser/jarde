@@ -1537,3 +1537,27 @@ A proved saved category-1 index consumed by an int-array store SHALL retain the 
 
 - **WHEN** the adjacent BS/CB/CB2/LR2 anchors and LB controls are validated
 - **THEN** both compiler legs SHALL be exposed independently, all existing ladder snapshots and LB refusal contracts SHALL remain unchanged, and a positive two-pointer result MUST NOT imply new exception, multi-level ladder or ownership admission.
+
+### Requirement: A distinct catch slot can feed a method-visible Object local
+
+When the catch entry owns a separate lexical slot and all actual reaching writes are
+assignment-compatible with the proved method-visible `java.lang.Object` declaration,
+the system SHALL preserve that local's initialization, handler assignment and joined
+return. This requirement supersedes only the historical SHARED refusal in
+`recover-loop-body-try-catch/design.md`; its dated evidence remains unchanged.
+It MUST NOT allow a same-slot catch header to declare a method-visible local.
+
+#### Scenario: A shared typed handler retains a separate lexical owner
+
+- **WHEN** the two typed exception rows target one clause-local entry and that value is copied to a distinct Object local before the joined return
+- **THEN** the public Engine report SHALL keep the Object declaration, both writes, multi-catch header, return and their actual source origins; whole untouched class-source compilation and isolated execution SHALL separately check normal object identity, caught and uncaught exception identity, cause, ordered existing suppressed exceptions, invocation count and effects
+
+#### Scenario: A catch-header value escapes its own lexical slot
+
+- **WHEN** the handler-entry value reaches a read of that same local outside the clause
+- **THEN** the whole refusal sentence, region records, quoted block closure and source origins SHALL remain, with no partial executable body; running the original class MUST NOT be reported as recovered equivalence
+
+#### Scenario: Plain finally and resource suppression remain distinct
+
+- **WHEN** independent whole-class cleanup validation replaces a pending return or body failure with a thrown cleanup exception
+- **THEN** plain finally SHALL preserve the cleanup exception identity and existing cause/suppressed values without adding the body failure; try-with-resources primary/suppressed behavior SHALL be checked separately, and an assembled-method harness MUST NOT be described as whole-class validation
