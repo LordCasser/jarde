@@ -12388,7 +12388,9 @@ mod tests {
             // +2,289 bodies, +1,006 handlers, +2,317 branch targets and +2 jsr sites.
             // The explicitly new five-class S2b baseline adds 15 bodies, three handlers
             // and 33 branch targets. An independent raw-Code census matches this walk.
-            (1898, 8352, 1661, 6725, 18),
+            // Plain-finally copy contract derivatives retain <init> and guardIfFirst on both
+            // compiler legs: +2 classes, +4 bodies, +4 handlers, +8 targets and no jsr sites.
+            (1900, 8356, 1665, 6733, 18),
             "fixture population changed: re-measure these counts"
         );
     }
