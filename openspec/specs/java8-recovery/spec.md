@@ -1441,3 +1441,22 @@ Java恢复 SHALL 支持已证明闭合的普通具名catch重试：每次尝试�
 #### Scenario: Incomplete or bounded walks remain uncertain
 - **WHEN** 其它分支仍缺失、歧义、未知，loader 搜索链不封闭，或终端节点到达既有固定深度边界
 - **THEN** 系统 MUST 保留对应的不确定性，不得仅因一个终端分支穷尽就声称 Incompatible；执行预算与取消仍按原停止契约交付
+
+### Requirement: CURRENT — TWR saved-null 声明遵循已证明的消费类型
+
+本要求明确取代历史变更 `recover-saved-return-value-typing` 中“null 保持既有 Object 拼写”的约束；该变更的 proposal/design/spec/tasks 与日期化证据原样保留，只记录当时的实现及机械修补验证，不代表当前验收。系统 SHALL 在 null 保存值沿实际 SSA/local 来源传递、且返回 descriptor 给出已证明的引用消费类型时，使用与该消费兼容的局部声明类型。null 没有可凭空命名的生产者类；`String` 返回位可声明 `java.lang.String local = null`。系统 MUST NOT 为不兼容的非 null `Object` 或 `StringBuilder` 生产者凭空制造 `String` 类型，也 MUST NOT 删除实际 `checkcast`。
+
+#### Scenario: 冻结六族整类无需修补即可执行
+
+- **WHEN** 公共 Engine `class_source` 恢复冻结的 Wtyping 整类，覆盖 String/int/构造/调用/null/Class 保存值
+- **THEN** 原样源文本在不含原 Wtyping 的独立 classpath 编译，正常输出依次为 in、42、built、7、null、java.lang.String.class；boom 路径逐方法保留 touch 主异常与且仅与一个 close 抑制异常。原始与恢复类均以 `-Xverify:all` 执行，stderr 为空；历史的返回位机械调整不再允许作为本契约证据。
+
+#### Scenario: 独立关闭失败与结构变形
+
+- **WHEN** 单一源码派生模板以真实 JDK 生产者覆盖上述六族，并独立切换 bodyBoom/closeBoom，进行基线、仅改名、仅改值、仅偏移及组合变形
+- **THEN** 公共类源整类原样编译执行，正常、仅关闭失败、仅体失败、双失败的结果、事件顺序和抑制链逐项与显式预期及原类一致；偏移变形在保存计算前插入受支持调用，并以公共字节码检查证明计算 BCI 确实变化。该同源矩阵是结构不变量证据，不冒充独立保留集。
+
+#### Scenario: 非 null 与显式转换边界
+
+- **WHEN** 真实 Java 源码保存 new Object 或 StringBuilder 并返回 Object，或保存显式 String 转换结果
+- **THEN** 恢复产物保留真实生产者与转换语义，正常值及异常顺序经独立编译和执行证明；显式转换的生产者还切换为真实 Object，逐项验证 ClassCastException 主异常、关闭事件及有/无 close 抑制异常（仅 JVM 版本相关的 ClassCastException 消息归一化）。无效 verifier mutant 不得作为 JVM 语义对照。更广的不兼容写入拒绝边界由现有 reference-constraint 与 incompatible-write 目标独立验证。
