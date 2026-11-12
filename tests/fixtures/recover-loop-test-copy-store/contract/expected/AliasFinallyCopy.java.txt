@@ -1,0 +1,20 @@
+// jarde: presentation of `AliasFinallyCopy` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class AliasFinallyCopy extends java.lang.Object {
+    public AliasFinallyCopy() {
+        // @method <init>()V
+        // @declaration a constructor of `AliasFinallyCopy`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int run(java.lang.String arg0) throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `run(Ljava/lang/String;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method run(Ljava/lang/String;)I
+        // @declaration a static method of `AliasFinallyCopy`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 15 26 41 52 65
+        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+}

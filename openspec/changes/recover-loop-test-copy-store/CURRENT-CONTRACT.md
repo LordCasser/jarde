@@ -1,0 +1,15 @@
+# Current protected copy-store contract
+
+The original local-assignment-expression gate still rejects an observable assignment moved into a non-loop protected condition. No gate is relaxed here. A separate, generic same-block copy closure may save the producer once, forward the duplicate from that saved value, execute the local store at its original position, and subsequently test the saved value. That is sequential evaluation inside the existing try body, not a newly admitted assignment expression or a new cleanup certificate.
+
+The resource-finally certificate independently requires the same resource identity at reads and both closes, one pre-body definition, matching close targets, exact rethrow identity, cleanup outside protected ranges, and coverage of every normal exit. Its current Transfer arm accepts the one-successor continuation only with the required sole predecessor. The older comment saying transfers are universally refused is stale. Return inside the protected range is still excluded by this certificate. Other recovery rules may independently prove other source forms; their existence is not evidence this certificate was widened.
+
+Frozen ProbeControls has a nonvoid parameterTarget refusal and therefore its unchanged complete output cannot compile. A byte-preserving input derivative removing parameterTarget and its main caller is a distinct input. Compiling and running that derivative's entire Engine output does not repair or establish whole-frozen-class runtime equivalence.
+
+A programmable source-built whole target is independent evidence for observable cleanup: body/read failures, cleanup failures and constructor failures use pre-created distinct references. Plain finally replaces a pending failure with a close failure and does not add suppression. Existing causes and ordered suppressed lists must remain identical. Runtime execution, source-shape contracts, exact physical source-map attribution, and refusal closure are separate checks.
+
+Renames, offsets, values and debug metadata are same-origin variations, not holdouts. GOTO attribution must be reported only to the extent actually present in source maps. Malformed mutations supply no runtime-equivalence evidence. #38 is unresolved and unchanged.
+
+Current validation classification: the complete programmable target and the explicit-body-throw/continue classes compile unchanged and match their originals. Early-return, break and throwing-alias classes are complete refusals. All six resource/cleanup semantic counterexamples remain complete refusals; their original classes pass 36 independently expected bounded records each. Original execution is not recovered execution. Whole-source failure evidence, exact refusal snapshots, quoted-origin closure and fallback records are retained separately.
+
+The frozen input derivative has both compiler legs. Source-built classes and combinations use the installed compiler with --release 8 and installed JVM with -Xverify:all. These are not fresh real-javac8 or Java8-runtime results. The older ignored comment-stripping replay remains separate and is not the basis of these whole-source claims.

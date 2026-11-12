@@ -1,0 +1,136 @@
+{
+  "v8": {
+    "original_sha256": "66368888136a841635f2a49ff70754f13fd46d335360bf6b7ecc5182415caec2",
+    "derivative_sha256": "d6baf06240af0b39c842c3e52b142fc31a96d5c48dc71c4f417dd4f1aade55ad",
+    "cp_prefix_sha256": "215a7e98e3185125597f6317c29a54708a94e3c244ee120a9cc36adf70ec145d",
+    "class_attributes_sha256": "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7",
+    "retained": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "sha256": "e7082738ff62ba7311c19aaa823dada41f69ba466bbd7f0edacb73042f46519a"
+      },
+      {
+        "name": "guardIfFirst",
+        "descriptor": "(Ljava/lang/String;)I",
+        "sha256": "b1eda85bc98d15ff4c6178d3acf675e4d413c763c0e0059c5a9df12335abd982"
+      }
+    ],
+    "removed": [
+      "parameterTarget",
+      "main"
+    ],
+    "retained_method_references": [
+      [
+        "<init>",
+        1,
+        "java/lang/Object",
+        "<init>",
+        "()V"
+      ],
+      [
+        "guardIfFirst",
+        5,
+        "java/io/FileReader",
+        "<init>",
+        "(Ljava/lang/String;)V"
+      ],
+      [
+        "guardIfFirst",
+        12,
+        "java/io/FileReader",
+        "read",
+        "()I"
+      ],
+      [
+        "guardIfFirst",
+        25,
+        "java/io/FileReader",
+        "read",
+        "()I"
+      ],
+      [
+        "guardIfFirst",
+        42,
+        "java/io/FileReader",
+        "close",
+        "()V"
+      ],
+      [
+        "guardIfFirst",
+        51,
+        "java/io/FileReader",
+        "close",
+        "()V"
+      ]
+    ],
+    "scope": "Input derivative only. Full generated class text must remain unchanged."
+  },
+  "v8-javac8": {
+    "original_sha256": "fb01167c4d9c66f8b922775c4ba47eb23a9a1b394ac25de1d308034dc4d91824",
+    "derivative_sha256": "185f23b017d5a05f935b8b509152977a28781197fd0f78525a9b59b84c0e8d95",
+    "cp_prefix_sha256": "9203304aca31cd367f58b69c780555001e5c874cff3fb2ed03789861b03c5839",
+    "class_attributes_sha256": "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7",
+    "retained": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "sha256": "b0f355990c215decd82ab4b0029f97df920340bbcc2a4888ed9ebf960b686cc5"
+      },
+      {
+        "name": "guardIfFirst",
+        "descriptor": "(Ljava/lang/String;)I",
+        "sha256": "4a94829ba6b036e2a9de66d1c9a30afd4dc0ef7a692b7dc2124f9084cedf4f11"
+      }
+    ],
+    "removed": [
+      "parameterTarget",
+      "main"
+    ],
+    "retained_method_references": [
+      [
+        "<init>",
+        1,
+        "java/lang/Object",
+        "<init>",
+        "()V"
+      ],
+      [
+        "guardIfFirst",
+        5,
+        "java/io/FileReader",
+        "<init>",
+        "(Ljava/lang/String;)V"
+      ],
+      [
+        "guardIfFirst",
+        12,
+        "java/io/FileReader",
+        "read",
+        "()I"
+      ],
+      [
+        "guardIfFirst",
+        25,
+        "java/io/FileReader",
+        "read",
+        "()I"
+      ],
+      [
+        "guardIfFirst",
+        42,
+        "java/io/FileReader",
+        "close",
+        "()V"
+      ],
+      [
+        "guardIfFirst",
+        51,
+        "java/io/FileReader",
+        "close",
+        "()V"
+      ]
+    ],
+    "scope": "Input derivative only. Full generated class text must remain unchanged."
+  }
+}

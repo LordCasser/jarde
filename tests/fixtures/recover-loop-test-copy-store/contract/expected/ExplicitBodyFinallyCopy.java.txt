@@ -1,0 +1,39 @@
+// jarde: presentation of `ExplicitBodyFinallyCopy` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ExplicitBodyFinallyCopy extends java.lang.Object {
+    public ExplicitBodyFinallyCopy() {
+        // @method <init>()V
+        // @declaration a constructor of `ExplicitBodyFinallyCopy`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int run(java.lang.String arg0) throws java.lang.Exception {
+        // @method run(Ljava/lang/String;)I
+        // @declaration a static method of `ExplicitBodyFinallyCopy`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ContractResource local1;
+        int local2;
+        local1 = new ContractResource(arg0);
+        local2 = 0;
+        try {
+            int saved0 = local1.read();
+            local2 = saved0;
+            if (saved0 > 0) {
+                local2 = local2 + 1;
+            }
+            if (local2 == 14) {
+                throw ContractResource.readFailure;
+            } else {
+                int local3;
+                while ((local3 = local1.read()) != -1) {
+                    local2 = local2 + local3;
+                }
+            }
+        } finally {
+            local1.close();
+        }
+        return local2;
+    }
+}
