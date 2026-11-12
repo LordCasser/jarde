@@ -238,61 +238,187 @@ fn an_exhausted_output_budget_does_not_publish_a_partial_class() {
     );
 }
 
-#[test]
-fn a_method_without_array_allocations_keeps_its_tight_ir_budget() {
-    let snapshot = open(NO_ARRAY_FIXTURE);
-    let request = method_request(
-        &snapshot,
-        b"text",
-        b"(Ljava/lang/String;)Ljava/lang/String;",
-    );
-    let mut tight = Budget::new(Limits {
-        ir_items: u64::MAX,
-        ..task_limits(&[]).expect("the task defaults are bounded")
-    });
-    let recovered = Engine::new()
-        .recover_method_with_evidence(
-            slice::from_ref(&snapshot),
-            jarde::SourceTarget::JAVA_8,
-            &request,
-            &RecoveryEvidenceRequest::all(),
-            &mut tight,
-        )
-        .expect("a no-array method recovers under the bounded IR allowance");
-    assert!(
-        recovered.recovery().produced(),
-        "a body with no array allocation stays on its existing recovery path: {:?}",
-        recovered.recovery().stop()
-    );
-    panic!("PROBE1 ir_items={}", tight.usage().ir_items);
+// The array pass's zero-cost early exit is tested directly in jarde-java. At the
+// public boundary, derive the complete pipeline cost in this run instead of confusing
+// unrelated proof costs with the array pass's cost. N/N-1 verifies a real enforced bound.
+fn assert_tight_ir_boundary(bytes: &[u8], name: &[u8], descriptor: &[u8]) {
+    let snapshot = open(bytes);
+    let request = method_request(&snapshot, name, descriptor);
+    for (evidence, with_map) in [
+        (RecoveryEvidenceRequest::essential(), false),
+        (RecoveryEvidenceRequest::all(), true),
+    ] {
+        let run = |budget: &mut Budget| {
+            Engine::new()
+                .recover_method_with_evidence(
+                    slice::from_ref(&snapshot),
+                    SourceTarget::JAVA_8,
+                    &request,
+                    &evidence,
+                    budget,
+                )
+                .expect("the valid method request is answered")
+        };
+        let mut complete_budget = budget();
+        let complete = run(&mut complete_budget);
+        let body = complete.recovery();
+        assert!(body.produced(), "{:?}", body.stop());
+        assert!(matches!(body.execution, ExecutionReport::Complete { .. }));
+        assert_eq!(body.quality, Quality::Structured);
+        assert!(!body.text.contains("@bytecode"));
+        let needed = complete_budget.usage().ir_items;
+        assert!(needed > 0);
+        let mut exact = Budget::new(Limits {
+            ir_items: needed,
+            ..task_limits(&[]).unwrap()
+        });
+        let at_limit = run(&mut exact);
+        assert!(at_limit.recovery().produced());
+        assert_eq!(exact.usage().ir_items, needed);
+        assert_eq!(at_limit.recovery().text, body.text);
+        assert_eq!(
+            at_limit.recovery().source_map.segments(),
+            body.source_map.segments()
+        );
+        if with_map {
+            assert_eq!(
+                body.evidence.state(RecoveryEvidenceKind::SourceMap),
+                EvidenceState::Complete
+            );
+            assert_eq!(
+                at_limit
+                    .recovery()
+                    .evidence
+                    .state(RecoveryEvidenceKind::SourceMap),
+                EvidenceState::Complete
+            );
+        }
+        let mut short = Budget::new(Limits {
+            ir_items: needed - 1,
+            ..task_limits(&[]).unwrap()
+        });
+        let stopped = run(&mut short);
+        let stopped = stopped.recovery();
+        if with_map {
+            assert!(
+                stopped.produced(),
+                "optional evidence cannot erase committed text"
+            );
+            assert_eq!(stopped.text, body.text);
+            assert!(stopped.source_map.len() < body.source_map.len());
+            assert!(matches!(
+                stopped.evidence.state(RecoveryEvidenceKind::SourceMap),
+                EvidenceState::Partial { .. }
+            ));
+            continue;
+        }
+        assert!(!stopped.produced());
+        assert!(
+            matches!(stopped.stop(), Some(StopReason::Budget {
+            dimension: BudgetDimension::IrItems, limit, ..
+        }) if *limit == needed - 1),
+            "{:?}",
+            stopped.stop()
+        );
+        assert!(matches!(
+            stopped.execution,
+            ExecutionReport::Partial {
+                reason: TerminationReason::BudgetExceeded {
+                    dimension: BudgetDimension::IrItems
+                },
+                ..
+            }
+        ));
+        assert!(stopped.text.is_empty());
+        assert!(stopped.source_map.is_empty());
+        assert!(short.usage().ir_items < needed);
+    }
 }
 
 #[test]
-fn a_partial_dimension_allocation_does_not_enter_the_initializer_candidate_path() {
-    let snapshot = open(MULTI_ARRAY_FIXTURE);
-    let request = method_request(&snapshot, b"multiArray", b"(I)[[I");
-    let mut tight = Budget::new(Limits {
-        // `multianewarray` allocates only part of the descriptor's dimensions and is not a
-        // one-dimensional initializer candidate. Its static `DeferredEffects.mark()` owner
-        // now costs one naming-scan item, and the field-copy proof
-        // (`recover-chained-field-assignment`) scans this body's instructions beside it; leave no
-        // room beyond those for candidate effects.
-        ir_items: u64::MAX,
-        ..task_limits(&[]).expect("the task defaults are bounded")
-    });
-    let recovered = Engine::new()
-        .recover_method_with_evidence(
-            slice::from_ref(&snapshot),
-            jarde::SourceTarget::JAVA_8,
-            &request,
-            &RecoveryEvidenceRequest::all(),
-            &mut tight,
-        )
-        .expect("a multianewarray method recovers under the bounded IR allowance");
-    assert!(
-        recovered.recovery().produced(),
-        "a partial-dimension allocation keeps its existing recovery path: {:?}",
-        recovered.recovery().stop()
+fn a_method_without_array_allocations_keeps_its_tight_ir_budget() {
+    assert_tight_ir_boundary(
+        NO_ARRAY_FIXTURE,
+        b"text",
+        b"(Ljava/lang/String;)Ljava/lang/String;",
     );
-    panic!("PROBE2 ir_items={}", tight.usage().ir_items);
+}
+
+#[test]
+fn a_multidimensional_allocation_keeps_its_tight_ir_budget() {
+    // The frozen method allocates both dimensions; its 0xc5 opcode is not a
+    // one-dimensional initializer candidate regardless of how many dimensions it fills.
+    assert_tight_ir_boundary(MULTI_ARRAY_FIXTURE, b"multiArray", b"(I)[[I");
+}
+
+#[test]
+#[ignore = "requires a JDK to compile and run complete unedited Java 8 classes"]
+fn complete_initializer_class_matches_original_jvm_trace() {
+    use std::{fs, process::Command};
+    struct TempDir(std::path::PathBuf);
+    impl Drop for TempDir {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+    let path =
+        std::env::temp_dir().join(format!("jarde-array-budget-oracle-{}", std::process::id()));
+    fs::create_dir(&path).unwrap();
+    let dir = TempDir(path);
+    let snapshot = open(FIXTURE);
+    let source = class_source(&snapshot, &RecoveryEvidenceRequest::all(), &mut budget());
+    assert!(matches!(source.execution, ExecutionReport::Complete { .. }));
+    let mut outputs = Vec::new();
+    for generated in [false, true] {
+        let path = dir.0.join(if generated { "generated" } else { "original" });
+        fs::create_dir(&path).unwrap();
+        fs::write(
+            path.join("ArrayInitializerRunner.java"),
+            include_str!("fixtures/p3-array-initializers/ArrayInitializerRunner.java"),
+        )
+        .unwrap();
+        if generated {
+            fs::write(path.join("ArrayInitializerProbe.java"), &source.text).unwrap();
+        } else {
+            fs::write(path.join("ArrayInitializerProbe.class"), FIXTURE).unwrap();
+        }
+        let mut compile = Command::new("javac");
+        compile.current_dir(&path).args([
+            "--release",
+            "8",
+            "-Xlint:-options",
+            "-cp",
+            ".",
+            "-d",
+            ".",
+            "ArrayInitializerRunner.java",
+        ]);
+        if generated {
+            compile.arg("ArrayInitializerProbe.java");
+        }
+        let compile = compile.output().expect("javac is available");
+        assert!(
+            compile.status.success(),
+            "{}\n{}",
+            source.text,
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let run = Command::new("java")
+            .current_dir(&path)
+            .args(["-Xverify:all", "-cp", ".", "ArrayInitializerRunner"])
+            .output()
+            .expect("java is available");
+        assert!(
+            run.status.success(),
+            "{}",
+            String::from_utf8_lossy(&run.stderr)
+        );
+        assert!(run.stderr.is_empty());
+        outputs.push(run.stdout);
+    }
+    assert_eq!(String::from_utf8_lossy(&outputs[0]).lines().count(), 14);
+    assert_eq!(
+        outputs[0], outputs[1],
+        "all array values, effects and exception traces agree"
+    );
 }

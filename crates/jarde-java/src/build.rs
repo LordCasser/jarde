@@ -39342,6 +39342,7 @@ mod tests {
             assert_eq!(spell_class_operand(&JvmBytes(raw)), None);
         }
     }
+    mod array_initializer_budget_tests;
     mod field_test_copy_tests;
     mod loop3_constructor_store_tests;
     mod loop5_catch_binding_tests;
