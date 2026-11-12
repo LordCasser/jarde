@@ -1346,9 +1346,7 @@ fn class_file(
 /// `iconst_1; pop; return`: a body whose recovery produces a statement.
 const PLAIN_BODY: &[u8] = &[0x04, 0x57, 0xb1];
 
-/// `iconst_1; dup; iadd; ireturn`: a valid value flow whose duplicate is not a verified chained
-/// assignment. It remains explanation-only while still allowing the class and method executions to
-/// complete.
+/// `iconst_1; dup; iadd; ireturn`: a valid constant-copy flow now recovered as Java.
 const DUPLICATE_RESULT_BODY: &[u8] = &[0x04, 0x59, 0x60, 0xac];
 
 fn duplicate_result_class() -> Vec<u8> {
@@ -1366,6 +1364,30 @@ fn duplicate_result_class() -> Vec<u8> {
         }],
     )
 }
+
+/// Verifier-valid integer-shaped Boolean arithmetic is not a Java Boolean expression.
+/// This arithmetic has neither Boolean evidence nor a presented integer type, so its Z return
+/// remains explanation-only rather than accepting the ordinary integer low-bit conversion.
+fn boolean_arithmetic_class(name: &[u8], code: &[u8]) -> Vec<u8> {
+    class_file(
+        name,
+        b"java/lang/Object",
+        &[],
+        CLASS_FLAGS,
+        &[],
+        &[MethodSpec {
+            flags: PUBLIC_STATIC_METHOD,
+            name: b"arithmetic",
+            descriptor: b"(Z)Z",
+            code: Some(code),
+        }],
+    )
+}
+
+const BOOLEAN_ARITHMETIC_CASES: &[(&str, &[u8])] = &[
+    ("p/BooleanArithmetic", &[0x1a, 0x04, 0x60, 0xac]),
+    ("q/RenamedArithmetic", &[0x00, 0x1a, 0x04, 0x60, 0xac]),
+];
 
 /// `new` with an incomplete index: a body whose own decode stops inside it, which is what makes the
 /// analysis of that member non-`Complete`.
@@ -6071,54 +6093,175 @@ fn a_method_table_that_stops_keeps_its_prefix_and_claims_no_more() {
 /// bytecode it quotes — stays in the text instead of being dropped.
 #[test]
 fn an_explanation_only_member_is_marked_and_its_text_is_kept() {
+    for &(name, code) in BOOLEAN_ARITHMETIC_CASES {
+        let snapshot = open(boolean_arithmetic_class(name.as_bytes(), code));
+        let report = bridge_class_source(
+            &snapshot,
+            name,
+            EnvironmentPolicy::SingleClass,
+            &RecoveryEvidenceRequest::all(),
+        );
+        let essential = class_source_of(&snapshot, name, EnvironmentPolicy::SingleClass);
+        assert_eq!(essential.text, report.text);
+
+        let explanation_only: Vec<&ClassSourceMethod> = report
+            .methods
+            .iter()
+            .filter(|method| {
+                matches!(
+                    &method.outcome,
+                    ClassSourceOutcome::Recovered { report, .. }
+                        if report.content == RecoveryContent::ExplanationOnly
+                )
+            })
+            .collect();
+        assert_eq!(
+            explanation_only.len(),
+            1,
+            "unspellable Boolean arithmetic remains explanation-only"
+        );
+        for method in explanation_only {
+            let ClassSourceOutcome::Recovered {
+                report: run,
+                analysis,
+            } = &method.outcome
+            else {
+                unreachable!("filtered above")
+            };
+            assert!(run.produced());
+            assert!(matches!(
+                analysis.execution,
+                ExecutionReport::Complete { .. }
+            ));
+            assert!(matches!(run.execution, ExecutionReport::Complete { .. }));
+            assert!(run.stop().is_none());
+            let return_bci = u32::try_from(code.len() - 1).unwrap();
+            assert!(
+                method
+                    .text
+                    .lines()
+                    .filter_map(|line| line.trim().strip_prefix("// @bytecode "))
+                    .flat_map(str::split_whitespace)
+                    .any(|bci| bci.parse::<u32>() == Ok(return_bci)),
+                "{}",
+                method.text
+            );
+            assert!(!run.source_map.of_bci(return_bci).is_empty());
+            assert!(
+                !run.text
+                    .lines()
+                    .any(|line| line.trim_start().starts_with("return "))
+            );
+            assert!(
+                only_marker(&method.text).contains("produced no statement"),
+                "{}",
+                method.text
+            );
+            assert!(
+                method.text.contains("// @bytecode "),
+                "the refusal the artifact quotes is kept:\n{}",
+                method.text
+            );
+        }
+        // The recovery runs of those members completed: what they could not do is produce a statement,
+        // which the content plane and the marker state rather than the execution plane.
+        assert_eq!(
+            report.execution,
+            ExecutionReport::Complete {
+                usage: report.usage.clone()
+            }
+        );
+        assert!(braces_balance(&report.text) == 0, "{}", report.text);
+    }
+}
+
+#[test]
+fn the_supported_duplicate_result_is_not_marked_explanation_only() {
     let snapshot = open(duplicate_result_class());
-    let report = class_source_of(
+    let report = bridge_class_source(
         &snapshot,
         "p/DuplicateResult",
         EnvironmentPolicy::SingleClass,
+        &RecoveryEvidenceRequest::all(),
     );
-
-    let explanation_only: Vec<&ClassSourceMethod> = report
-        .methods
-        .iter()
-        .filter(|method| {
-            matches!(
-                &method.outcome,
-                ClassSourceOutcome::Recovered { report, .. }
-                    if report.content == RecoveryContent::ExplanationOnly
-            )
-        })
-        .collect();
-    assert_eq!(
-        explanation_only.len(),
-        1,
-        "the unsupported duplicate shape remains explanation-only"
-    );
-    for method in explanation_only {
-        let ClassSourceOutcome::Recovered { report: run, .. } = &method.outcome else {
-            unreachable!("filtered above")
-        };
-        assert!(run.produced());
-        assert!(
-            only_marker(&method.text).contains("produced no statement"),
-            "{}",
-            method.text
-        );
-        assert!(
-            method.text.contains("// @bytecode "),
-            "the refusal the artifact quotes is kept:\n{}",
-            method.text
-        );
+    assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+    assert_eq!(report.methods.len(), 1);
+    let method = &report.methods[0];
+    let ClassSourceOutcome::Recovered {
+        report: run,
+        analysis,
+    } = &method.outcome
+    else {
+        panic!("{:?}", method.outcome);
+    };
+    assert!(matches!(
+        analysis.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    assert!(run.produced());
+    assert!(matches!(run.execution, ExecutionReport::Complete { .. }));
+    assert!(run.stop().is_none());
+    assert_eq!(run.representation, Representation::Java);
+    assert_eq!(run.content, RecoveryContent::ContainsStatements);
+    assert_eq!(run.quality, Quality::Structured);
+    assert!(markers(&method.text).is_empty(), "{}", method.text);
+    assert!(!method.text.contains("@bytecode"));
+    for bci in 0..4 {
+        assert!(!run.source_map.of_bci(bci).is_empty(), "BCI {bci}");
     }
-    // The recovery runs of those members completed: what they could not do is produce a statement,
-    // which the content plane and the marker state rather than the execution plane.
-    assert_eq!(
-        report.execution,
-        ExecutionReport::Complete {
-            usage: report.usage.clone()
-        }
+}
+
+#[test]
+#[ignore = "requires a JDK for complete-class replay and verifier-valid refusal controls"]
+fn explanation_and_duplicate_fixtures_have_verified_jvm_behavior() {
+    let scratch = BridgeProjectionScratch::new();
+    let run = |directory: &Path| {
+        let result = Command::new("java")
+            .args(["-Xverify:all", "-cp"])
+            .arg(directory)
+            .arg("Runner")
+            .output()
+            .unwrap();
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert!(result.stderr.is_empty());
+        String::from_utf8(result.stdout).unwrap()
+    };
+    for &(name, code) in BOOLEAN_ARITHMETIC_CASES {
+        let directory = scratch.child(name.rsplit('/').next().unwrap());
+        let class_path = directory.join(format!("{name}.class"));
+        fs::create_dir_all(class_path.parent().unwrap()).unwrap();
+        fs::write(class_path, boolean_arithmetic_class(name.as_bytes(), code)).unwrap();
+        fs::write(directory.join("Runner.java"), format!("public class Runner {{ public static void main(String[] a) {{ System.out.println({0}.arithmetic(false)); System.out.println({0}.arithmetic(true)); }} }}", name.replace('/', "."))).unwrap();
+        compile_java_8(&directory, "Runner.java", &directory);
+        assert_eq!(run(&directory), "true\nfalse\n");
+    }
+    let bytes = duplicate_result_class();
+    let report = class_source_of(
+        &open(bytes.clone()),
+        "p/DuplicateResult",
+        EnvironmentPolicy::SingleClass,
     );
-    assert!(braces_balance(&report.text) == 0, "{}", report.text);
+    for generated in [false, true] {
+        let directory = scratch.child(if generated {
+            "duplicate-generated"
+        } else {
+            "duplicate-original"
+        });
+        fs::create_dir(directory.join("p")).unwrap();
+        if generated {
+            fs::write(directory.join("DuplicateResult.java"), &report.text).unwrap();
+            compile_java_8(&directory, "DuplicateResult.java", &directory);
+        } else {
+            fs::write(directory.join("p/DuplicateResult.class"), &bytes).unwrap();
+        }
+        fs::write(directory.join("Runner.java"), "public class Runner { public static void main(String[] a) { System.out.println(p.DuplicateResult.duplicate()); } }").unwrap();
+        compile_java_8(&directory, "Runner.java", &directory);
+        assert_eq!(run(&directory), "2\n");
+    }
 }
 
 /// Two definitions of one name are two candidates and no presentation; one of them, named by its
