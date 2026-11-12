@@ -1913,6 +1913,16 @@
       "path": "tests/fixtures/constructor-direct-array-arguments/tf3-no-debug/TestFinally3$TestCls.class"
     },
     {
+      "blake3": "43e0a51d3a0529def1904b902c58eac3cd36b18001ba2be022f337394294effb",
+      "bytes": 718,
+      "path": "tests/fixtures/copy-boundary-effects/ChainEffects.java"
+    },
+    {
+      "blake3": "dca72f742adcce1d6bca59ddb6762610bfac9be4d3e65a079de16d90dc39bbae",
+      "bytes": 786,
+      "path": "tests/fixtures/copy-boundary-effects/RenamedChainEffects.java"
+    },
+    {
       "blake3": "665e803b39422f8a8f120e116e9bb95ef28221f09d212ccf3f01b37e1b172cfd",
       "bytes": 197,
       "path": "tests/fixtures/dt22-nested-annotation/Dollar$A.class"
@@ -7038,6 +7048,16 @@
       "path": "tests/fixtures/p3-reference-cast/v8/ReferenceCastProbe.class"
     },
     {
+      "blake3": "9d53647409861de11bf8fc57f57b09bfa81baa5d92549db44982205cbc7b3f0d",
+      "bytes": 1328,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/contract/SlotRefusalDriver.java"
+    },
+    {
+      "blake3": "10b61a3831a91a64c029fa74453f92f4b4645e784ca6a8005643acff8a6a4ef3",
+      "bytes": 1488,
+      "path": "tests/fixtures/p3-reference-slot-lifetimes/contract/loopBodyReuse.refusal.txt"
+    },
+    {
       "blake3": "495f7e5a68bc0da33a2b9cdb88fa16a00a79666a7faf21ead26adaed4f515a39",
       "bytes": 1715,
       "path": "tests/fixtures/p3-reference-slot-lifetimes/debug/different-name/javac23/ArrayThenList.baseline.java"
@@ -8356,6 +8376,11 @@
       "blake3": "a275b1ccc8d1a67001b531e8468278320b526d3f44c4b9c3ca0160323779206f",
       "bytes": 1048,
       "path": "tests/fixtures/preserve-local-scope-refusals/ScopeRefusalsEscape.java"
+    },
+    {
+      "blake3": "6f14a8ab6bbdc3265a2e0e0b0aa59751f6efd385e7b0eb937ff3316589653bd6",
+      "bytes": 3763,
+      "path": "tests/fixtures/preserve-local-scope-refusals/SharedCatchDriver.java"
     },
     {
       "blake3": "f5f77e367aecdafcf8309d652324785994141c1ad0ac12ba11ba4254d9f284b7",
@@ -10798,9 +10823,19 @@
       "path": "tests/fixtures/recover-conditional-return-finally-copies/LooplessFinally.java"
     },
     {
+      "blake3": "550be64caecd74f3248f42ae12983b356f482ccf203234dc5e0cde4a51acc90f",
+      "bytes": 3538,
+      "path": "tests/fixtures/recover-conditional-return-finally-copies/LooplessFinallyContractProbe.java"
+    },
+    {
       "blake3": "29019282c834dcdeaae7b446813cd7a9af53bdf8d60aef44bf276afe44905803",
       "bytes": 1926,
       "path": "tests/fixtures/recover-conditional-return-finally-copies/LooplessFinallyProbe.java"
+    },
+    {
+      "blake3": "90dd1a1af99b42e6e0c80fc840f04e4806bd62523b188d3993a41e752bf8e2f1",
+      "bytes": 837,
+      "path": "tests/fixtures/recover-conditional-return-finally-copies/contract.stdout"
     },
     {
       "blake3": "c66df9a10e124d0de70033581c2df498ba99044a0daeba3877e613d6afabd45b",
@@ -11836,6 +11871,166 @@
       "blake3": "758ac7562cf14f8b9ebf4fa4cb7a86c48c50bc33fb31750f157087d42f90251e",
       "bytes": 891,
       "path": "tests/fixtures/recover-loop-test-copy-store/ProbeControls.java"
+    },
+    {
+      "blake3": "9dec0d76d6de3f2018a4adb0e905495be6759d039786b6445424f615636d699e",
+      "bytes": 559,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/AliasFinallyCopy.java"
+    },
+    {
+      "blake3": "0051b3f49c1e48c7ab506a70ec3f26ae7fd263026636ef83874ca5f9427ffd20",
+      "bytes": 374,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/AliasState.java"
+    },
+    {
+      "blake3": "a96287d2749fca4663ff395597683d083677be12af9ad90533ceae92e5bd4902",
+      "bytes": 439,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/BoundaryChangedCloseTarget.java"
+    },
+    {
+      "blake3": "7588665c1ed20833862d615c501c1bf7d22780559771d4f1ea290a6a0157edea",
+      "bytes": 455,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/BoundaryChangedRethrow.java"
+    },
+    {
+      "blake3": "4eccf2c9527b3d8f0569d07252ee46da96393a7f6242ca37043e1d9d3ec74c0f",
+      "bytes": 4730,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/BoundaryControlDriver.java"
+    },
+    {
+      "blake3": "a4e3e29ad364347c0406b25620136c206096db6551b4efbf2838d4eaf5b90dac",
+      "bytes": 432,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/BoundaryOtherReceiver.java"
+    },
+    {
+      "blake3": "c292b20ccd542f3421f50d267c4e992a08cc05da06be0aaf8e0051af2fa99676",
+      "bytes": 440,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/BoundaryProtectedCleanup.java"
+    },
+    {
+      "blake3": "7c38074375548a0bd9beef3c572d957b37979022a30161ea24621d393ddc8b90",
+      "bytes": 426,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/BoundaryReassignedReceiver.java"
+    },
+    {
+      "blake3": "d32d5c21e686ebc8253c54989c8eeccec4ddb6d8b3e56f789f2ab4d5bb5dd6a2",
+      "bytes": 281,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/BoundaryResource.java"
+    },
+    {
+      "blake3": "ad843d58aec4a80032d4e08fab7fdb93ee09947f6ebd0fc5e17fc3fdb83d178b",
+      "bytes": 414,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/BoundarySkippedNormalCleanup.java"
+    },
+    {
+      "blake3": "56f46a939ab0fdbb744a1c943fb5faea57f6a19ca38f0ed2b251c83e67820f71",
+      "bytes": 513,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/BreakFinallyCopy.java"
+    },
+    {
+      "blake3": "ad47ee25f52b88fb37de33e8c5e3bf9e6b9e325a4fdd71f9959e855f00b75f6e",
+      "bytes": 519,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/ContinueFinallyCopy.java"
+    },
+    {
+      "blake3": "202a1c4df3508bd9c45edff1a74a403ba23042f895efbe246044f013622354de",
+      "bytes": 753,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/ContractResource.java"
+    },
+    {
+      "blake3": "2b5132cf550b4b6d5022dcbf415cc96dca0483c4d9e0610d12e50e2e237e7ced",
+      "bytes": 2673,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/ControlDriver.java"
+    },
+    {
+      "blake3": "78b1932dc089578caaedf04b1e1ca6d357ea514737abe217fc023077ceb2b5d0",
+      "bytes": 440,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/EarlyReturnFinallyCopy.java"
+    },
+    {
+      "blake3": "1b3a086e478f8d3ec630618c6609b7c318118bd5d426dd86c10d68e9664f5107",
+      "bytes": 515,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/ExplicitBodyFinallyCopy.java"
+    },
+    {
+      "blake3": "5e19de83e2f5d9b4f97ad37d25125b270a05991e65570137058032ae270b6ac4",
+      "bytes": 439,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/PlainFinallyCopy.java"
+    },
+    {
+      "blake3": "5ea3ea3e13316401a93fa7a9895c2d73d217be5fb7d0d58e0a32202177d092c0",
+      "bytes": 3236,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/PlainFinallyCopyDriver.java"
+    },
+    {
+      "blake3": "8fe0fd2c3fc2f4ca777f67f1bbeedf278483c62bc2513fd44bf01a91904ab40b",
+      "bytes": 3280,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/derivative-audit.json"
+    },
+    {
+      "blake3": "ad540e4462906c4f9c695d8d1a352509d096490ff789a98c12b8577188c3cfc8",
+      "bytes": 1305,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/AliasFinallyCopy.java.txt"
+    },
+    {
+      "blake3": "9fde4846a2d24a4ab06bf6e5a8abd54b7f344fbaa7c9f11646ffc89705118701",
+      "bytes": 1355,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/BoundaryChangedCloseTarget.java.txt"
+    },
+    {
+      "blake3": "94eedf01dd01cf801fdf98bf31b258a13ef6e1e5c62c37ae43c092d401d876b6",
+      "bytes": 1335,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/BoundaryChangedRethrow.java.txt"
+    },
+    {
+      "blake3": "64f396f01c85d72a6a968be71f3cca82e9ce2ced0c78f04dd6f44198bada4a9c",
+      "bytes": 1330,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/BoundaryOtherReceiver.java.txt"
+    },
+    {
+      "blake3": "63466e0ab92d169adbce10d3044164eb274fee750e6b46db58e8ecc9ccedc67c",
+      "bytes": 1345,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/BoundaryProtectedCleanup.java.txt"
+    },
+    {
+      "blake3": "fcf5a86c08efb6fd02be56990b1b9c47c1a254db784860d78b4a0affd5c332c1",
+      "bytes": 1355,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/BoundaryReassignedReceiver.java.txt"
+    },
+    {
+      "blake3": "a2dc9e19355104fd4e81be9670bc22f01354b7a9303ddb2cfa25871b71caa291",
+      "bytes": 1365,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/BoundarySkippedNormalCleanup.java.txt"
+    },
+    {
+      "blake3": "033682f722a469b212e8bffd4be4a746fb5f3aca7a586154491e52d9f58bc18b",
+      "bytes": 1343,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/BreakFinallyCopy.java.txt"
+    },
+    {
+      "blake3": "14007a88564da2b7f847659dc591cb3c0b5ab7a912ad9ecf54cd4dd1907a8ad5",
+      "bytes": 1548,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/ContinueFinallyCopy.java.txt"
+    },
+    {
+      "blake3": "1f7ebcbfd02b0bbb0e5a571483290135675ca296ea1a5d2e6d957ead8e2213d7",
+      "bytes": 1338,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/EarlyReturnFinallyCopy.java.txt"
+    },
+    {
+      "blake3": "77fc36f4517013c3c534f4977700939771a1d3dd090d31a56151c9adc5ba4242",
+      "bytes": 1620,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/expected/ExplicitBodyFinallyCopy.java.txt"
+    },
+    {
+      "blake3": "5b42471629a893ec732236e881e92490c88d4da627c4d6497797a397b080e935",
+      "bytes": 914,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/v8-javac8/ProbeControls.class"
+    },
+    {
+      "blake3": "a7f660c91ad9fe4f2c9f9c8776fca3381b9dff2aafc6e626cb30c5cfd73e43a4",
+      "bytes": 911,
+      "path": "tests/fixtures/recover-loop-test-copy-store/contract/v8/ProbeControls.class"
     },
     {
       "blake3": "e55980c788fb1801601cc1aca0af926bf091d52cf906c60ef5b341d108e881a9",
