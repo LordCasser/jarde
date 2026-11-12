@@ -2101,7 +2101,8 @@ struct EngineSource {
 /// the one module an explicit bulk operation owns — and no run can show that something does not exist,
 /// so they read the source. The scope is the engine the decisions are about: `crates/*/src` and the
 /// facade's `src/`. The walk includes inline tests and test-only child modules under those roots.
-/// The exact `#[cfg(test)]` capacity-test child (`CAPACITY_TESTS`) has its own checked exemption.
+/// The exact capacity-test child (`CAPACITY_TESTS`) and bulk drain-test child (`BULK_TESTS`)
+/// have separately checked test-only boundaries; neither is skipped by this walk.
 /// Integration-test directories, fixtures, fuzz targets and dependencies are outside this walk;
 /// a cache hidden in a local variable is outside the needles this guard recognizes.
 fn engine_sources() -> Vec<EngineSource> {
@@ -2161,8 +2162,9 @@ fn collect_sources(directory: &Path, into: &mut Vec<EngineSource>) {
 /// explicit bulk operation, and task 4.2 builds that lifetime. The claim they hold from here on is
 /// therefore "the bulk module is the only place this engine schedules", not "nothing in this engine
 /// spawns": dropping the three scheduler needles would have retired the rule that keeps every other
-/// entry point sequential, which is the rule task 5.3 is about. [`BULK_MODULE`] is the whole
-/// exemption; every other file keeps the old scope — `crates/*/src` and `src/`, one spawn site at a
+/// entry point sequential, which is the rule task 5.3 is about. [`BULK_MODULE`] is the only
+/// production exemption. The checked [`BULK_TESTS`] child may use scoped test workers only;
+/// every other file keeps the old scope — `crates/*/src` and `src/`, one spawn site at a
 /// time, the CLI's `src` included.
 ///
 /// Like every source guard in this repository they are coarse, and their blind spots are stated
@@ -2205,6 +2207,94 @@ const MACHINERY: [&str; 5] = [
 /// "one module is allowed to schedule" and "a scheduler is built" stay two separate facts a reader
 /// can tell apart.
 const BULK_MODULE: &str = "src/bulk.rs";
+
+/// Only this child may use scoped workers to exercise deterministic worker-panic/drain behavior.
+/// It is not a production scheduler exemption, and all other machinery/cache scans still apply.
+const BULK_TESTS: &str = "src/bulk/tests.rs";
+const BULK_TEST_DECLARATION: &str = "#[cfg(all(test, feature = \"test-support\"))]\nmod tests;";
+
+/// Match the current explicit boundary, just as the capacity-test declaration check does below.
+/// This remains a coarse source guard, not a Rust parser or an arbitrary module-graph proof.
+fn bulk_tests_are_test_only(parent: &str) -> bool {
+    parent.matches(BULK_TEST_DECLARATION).count() == 1 && parent.matches("mod tests").count() == 1
+}
+
+fn bulk_test_scope_hits(path: &str, text: &str, test_only: bool) -> Vec<String> {
+    if path == BULK_TESTS && test_only {
+        machinery_hits(text, &["thread::scope"])
+    } else {
+        Vec::new()
+    }
+}
+
+/// Remove only the separately reported, checked test scopes, never the whole test source.
+fn guarded_machinery_hits(path: &str, text: &str, test_only: bool) -> Vec<String> {
+    let test_scopes = bulk_test_scope_hits(path, text, test_only);
+    machinery_hits(text, &MACHINERY)
+        .into_iter()
+        .filter(|hit| !test_scopes.contains(hit))
+        .collect()
+}
+
+#[test]
+fn bulk_test_scope_boundary_is_exact_and_keeps_other_machinery_visible() {
+    assert!(bulk_tests_are_test_only(BULK_TEST_DECLARATION));
+    for parent in [
+        "mod tests;".to_string(),
+        "#[cfg(feature = \"test-support\")]\nmod tests;".to_string(),
+        "#[cfg(any(test, feature = \"test-support\"))]\nmod tests;".to_string(),
+        format!("{BULK_TEST_DECLARATION}\nmod tests;"),
+        format!("{BULK_TEST_DECLARATION}\n{BULK_TEST_DECLARATION}"),
+    ] {
+        assert!(!bulk_tests_are_test_only(&parent), "{parent}");
+        assert_eq!(
+            guarded_machinery_hits(
+                BULK_TESTS,
+                "std::thread::scope(|s| s);",
+                bulk_tests_are_test_only(&parent),
+            ),
+            vec!["1: thread::scope".to_string()]
+        );
+    }
+    let scope = "std::thread::scope(|s| s);";
+    assert!(guarded_machinery_hits(BULK_TESTS, scope, true).is_empty());
+    assert_eq!(
+        bulk_test_scope_hits(BULK_TESTS, scope, true),
+        vec!["1: thread::scope".to_string()]
+    );
+    assert!(!may_schedule(BULK_TESTS));
+    for path in [
+        "src/bulk/test.rs",
+        "src/bulk/tests/mod.rs",
+        "src/bulk/tests.rs.bak",
+        "src/bulk_scheduler.rs",
+        "crates/jarde-cli/src/bulk/tests.rs",
+    ] {
+        assert!(bulk_test_scope_hits(path, scope, true).is_empty());
+        assert_eq!(
+            guarded_machinery_hits(path, scope, true),
+            vec!["1: thread::scope".to_string()],
+            "{path}"
+        );
+    }
+    for needle in MACHINERY {
+        if needle != "thread::scope" {
+            assert_eq!(
+                guarded_machinery_hits(BULK_TESTS, needle, true),
+                vec![format!("1: {needle}")]
+            );
+        }
+    }
+    // Even on the same line as an allowed scope, the other machinery remains visible.
+    assert_eq!(
+        guarded_machinery_hits(BULK_TESTS, "thread::scope rayon", true),
+        vec!["1: rayon".to_string()]
+    );
+    assert_eq!(
+        machinery_hits("FactsCache::current(1)", &CACHE_CONSTRUCTIONS),
+        vec!["1: FactsCache::current(".to_string()]
+    );
+}
 
 /// How a file reaches the bulk module, in the spellings a caller would write: the module's own name,
 /// the absolute path from the crate root, and the declaration itself.
@@ -3324,7 +3414,8 @@ fn a_cancelled_direct_run_is_never_published_as_complete() {
 /// stronger than the old absence:
 ///
 /// * the index and the scheduler needles are absent from **every** engine source outside
-///   [`BULK_MODULE`], in exactly the spellings 2.1/2.2 fixed. Task 5.3 narrows the *scope* of that
+///   [`BULK_MODULE`], except separately checked scoped test workers in [`BULK_TESTS`]. All other
+///   machinery in that child is still checked, in the spellings 2.1/2.2 fixed. Task 5.3 narrows that
 ///   claim instead of deleting it: an explicit bulk operation is the one place this engine may
 ///   schedule, and an ordinary entry that started a batch of its own would have to put a spawn site
 ///   outside that module to do it. The sibling claim — *who* calls it — is
@@ -3362,6 +3453,23 @@ fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
     //     file an explicit bulk operation owns. The exempt file's own hits are collected separately
     //     and printed rather than tolerated: the claim is "this is the only place that may schedule",
     //     and which of the needles it really uses is a fact a reader of this run should see.
+    let bulk_parent = sources
+        .iter()
+        .find(|source| source.path == BULK_MODULE)
+        .expect("the production bulk module is present");
+    assert!(
+        bulk_tests_are_test_only(&bulk_parent.text),
+        "bulk test scopes require the unique exact test-only child declaration"
+    );
+    assert!(sources.iter().any(|source| source.path == BULK_TESTS));
+    for source in &sources {
+        assert!(
+            !source.text.contains("bulk/tests.rs") && !source.text.contains("bulk::tests"),
+            "unexpected alternate bulk test reference in {}",
+            source.path
+        );
+    }
+    let mut test_harness_scopes = Vec::new();
     let mut outside_the_bulk_module = Vec::new();
     let mut inside_the_bulk_module = Vec::new();
     for source in &sources {
@@ -3370,7 +3478,12 @@ fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
             "{} is empty, so it proves nothing",
             source.path
         );
-        let hits = machinery_hits(&source.text, &MACHINERY);
+        test_harness_scopes.extend(
+            bulk_test_scope_hits(&source.path, &source.text, true)
+                .into_iter()
+                .map(|hit| format!("{}:{hit}", source.path)),
+        );
+        let hits = guarded_machinery_hits(&source.path, &source.text, true);
         if hits.is_empty() {
             continue;
         }
@@ -3396,8 +3509,8 @@ fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
          entry is `Engine::{BULK_ENTRY}`; if it is not, the record is out of date."
     );
     println!(
-        "engine machinery outside `{BULK_MODULE}`: none — the five needles of 2.1/2.2 are absent from \
-         {} file(s) under `crates/*/src` and `src/`",
+        "production machinery outside `{BULK_MODULE}`: none — scanned {} source files; \
+         separately checked test-harness scopes: {test_harness_scopes:?}",
         sources.len()
     );
     if sources.iter().any(|source| may_schedule(&source.path)) {
