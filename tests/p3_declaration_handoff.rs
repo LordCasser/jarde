@@ -37,7 +37,7 @@
 //! * a body that **still** has fallbacks keeps its quality: the declaration diagnostic disappears
 //!   from that body's envelope, and its fallbacks, quality, representation and content do not move.
 //!
-//! The numbers this file pins were measured on the pre-handoff tree as well as after it, member by
+//! The original read/decode/IR tuples were measured on the pre-handoff tree as well as after it, member by
 //! member; the only field they differ in is `elapsed_millis`, the wall-clock reading every usage
 //! snapshot carries and the one field the repository's own fingerprint comparison normalizes away.
 //!
@@ -1140,7 +1140,9 @@ fn an_ordinary_member_charges_the_same_reads_and_bytes_as_before_the_handoff() {
         // A16's shape: one header attempt, one body attempt, one read — whatever the class declares.
         assert_eq!(usage.class_headers, 1, "{label}");
         assert_eq!(usage.method_bodies, 1, "{label}");
-        assert_eq!(usage.entry_bytes, 0, "{label}: no entry was materialized");
+        // Standalone analysis materializes the root as intermediate class input, charging
+        // EntryBytes once; only the final recovery artifact consumes OutputBytes.
+        assert_eq!(usage.entry_bytes, SCOPE.len() as u64, "{label}");
         assert_eq!(usage.result_items, 0, "{label}");
         assert_eq!(
             recovered
@@ -1152,10 +1154,98 @@ fn an_ordinary_member_charges_the_same_reads_and_bytes_as_before_the_handoff() {
             vec![ReadReason::DriverMethodBody],
             "{label}: the request read one thing, the driver member's own body"
         );
-        assert!(
-            usage.output_bytes > 0,
-            "{label}: and the artifact was written"
+        // Analysis finishes before the recovery artifact is written; inspect the final report
+        // for output accounting rather than that earlier usage snapshot.
+        assert_eq!(
+            usage.output_bytes, 0,
+            "{label}: analysis returns no artifact"
         );
+        let ExecutionReport::Complete { usage: final_usage } = &report.execution else {
+            panic!("{label}: recovery must complete: {:?}", report.execution);
+        };
+        assert!(
+            final_usage.output_bytes > 0,
+            "{label}: the artifact was written"
+        );
+    }
+}
+
+#[test]
+fn ordinary_members_respect_the_exact_standalone_entry_byte_boundary() {
+    let engine = Engine::new();
+    let scope = fixture(&engine, SCOPE);
+    let entry_bytes = SCOPE.len() as u64;
+    for (name, descriptor) in [
+        (b"receiver".as_slice(), b"(J)J".as_slice()),
+        (b"simple".as_slice(), b"()I".as_slice()),
+    ] {
+        let unconstrained = recover(&engine, &scope, name, descriptor);
+        let mut exact = Budget::new(Limits {
+            entry_bytes,
+            ..limits()
+        });
+        let recovered = recover_with(
+            &engine,
+            &scope,
+            name,
+            descriptor,
+            AnalysisStage::ALL.to_vec(),
+            &mut exact,
+        );
+        assert!(matches!(
+            recovered.analysis().execution,
+            ExecutionReport::Complete { .. }
+        ));
+        let ExecutionReport::Complete { usage: final_usage } = &recovered.recovery().execution
+        else {
+            panic!(
+                "recovery must complete: {:?}",
+                recovered.recovery().execution
+            );
+        };
+        assert!(recovered.recovery().produced());
+        assert!(declaration(recovered.recovery()).presented());
+        assert_eq!(recovered.recovery().text, unconstrained.recovery().text);
+        assert_eq!(usage(&recovered).entry_bytes, entry_bytes);
+        assert_eq!(usage(&recovered).read_bytes, entry_bytes);
+        assert_eq!(usage(&recovered).output_bytes, 0);
+        assert!(final_usage.output_bytes > 0);
+        assert_eq!(final_usage.output_bytes, exact.usage().output_bytes);
+
+        let mut below = Budget::new(Limits {
+            entry_bytes: entry_bytes - 1,
+            ..limits()
+        });
+        let stopped = recover_with(
+            &engine,
+            &scope,
+            name,
+            descriptor,
+            AnalysisStage::ALL.to_vec(),
+            &mut below,
+        );
+        assert!(matches!(
+            stopped.analysis().execution,
+            ExecutionReport::Partial {
+                reason: TerminationReason::BudgetExceeded {
+                    dimension: BudgetDimension::EntryBytes,
+                },
+                ..
+            }
+        ));
+        assert!(stopped.analysis().reads.is_empty());
+        assert!(!stopped.recovery().produced());
+        assert!(stopped.recovery().declaration.is_none());
+        assert!(stopped.facts().method().declaring_class().is_none());
+        assert!(stopped.recovery().source_map.segments().is_empty());
+        assert_eq!(stopped.recovery().text, "");
+        assert_eq!(stopped.recovery().content, RecoveryContent::NotProduced);
+        let stopped_usage = below.usage();
+        assert_eq!(stopped_usage.entry_bytes, 0);
+        assert_eq!(stopped_usage.read_bytes, 0);
+        assert_eq!(stopped_usage.class_bytes, 0);
+        assert_eq!(stopped_usage.method_bodies, 0);
+        assert_eq!(stopped_usage.output_bytes, 0);
     }
 }
 
