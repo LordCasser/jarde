@@ -1491,3 +1491,28 @@ For same-block category-1 copies whose existing proof closes every consumer, the
 
 - **WHEN** consumer closure crosses an unproved block/phi, a genuinely nested or unresolved protected region, or an unproved intervening call/write boundary
 - **THEN** the existing refusal and physical evidence SHALL remain explicit. Source evidence for each relevant read, store, copy and consumer SHALL name its real physical method and instruction, including refusal origins. These tests do not claim all-instruction source coverage: GOTO opcodes are excluded from their universal mapping assertion. The observed missing try-exit GOTO segments are a separately reported limitation, not a proof that every possible unmapped GOTO is harmless. Same-origin metamorphic variants are not an independent holdout corpus.
+
+### Requirement: CURRENT — Shared initializer recovery and counted-header ownership remain separate proofs
+
+A proved same-block category-1 shared initializer SHALL preserve one evaluation and the physical order of its stores and effects. This explicitly supersedes only the old shared-value fallback expectations for `SharedStoreInput.find` and `ComputedForControls.shared` in `recover-proved-computed-for-initializers`; its historical artifacts remain unchanged. `Structured` quality alone is not semantic evidence and MUST NOT authorize a `for` projection. The independent CFG/local-use header proof remains necessary.
+
+#### Scenario: Shared result precedes a proved header assignment
+
+- **WHEN** a once-evaluated call/subtraction result is copied to a static field and then the unique induction local, whose outside access is only the proved return leaf
+- **THEN** recovery SHALL preserve the saved result, field store and local initialization order, including throwing-call and failing-array observations, and MAY place only the proved local assignment in the `for` header. It MUST NOT repeat the call, recompute the producer, reread the mutable field as the saved value, or duplicate the update.
+
+#### Scenario: Shared call and outside uses retain a while loop
+
+- **WHEN** a single call feeds one saved local and the induction calculation, an independent effect follows initialization, and both locals remain observed after the loop
+- **THEN** recovery SHALL retain once-only call, both stores and the following effect in physical order and present the loop as `while`; post-loop uses, extra consumers, alias mutation and intervening effects MUST NOT acquire header ownership from shared-value support.
+
+#### Scenario: Unchanged scope refusals remain independently visible
+
+- **WHEN** the frozen computed-controls `find` or `scoped` method still crosses its unproved quoted region
+- **THEN** each SHALL independently retain its explanation-only refusal and evidence parity. The complete frozen class is not required to compile while these refusals remain: its actual missing-return compiler failures SHALL be recorded, never repaired or hidden by extracted recovered bodies.
+
+#### Scenario: Whole outputs and original physical methods bound validation claims
+
+- **WHEN** these initializer contracts are validated
+- **THEN** the frozen shared-store whole class and renamed, revalued, shifted and combined source-built controls SHALL compile as complete unmodified Engine output in classpaths isolated from their original classes; original and recovered executions under `-Xverify:all` SHALL match explicit expected values, effect counts/order and abrupt results. Physical source maps and default/all evidence parity SHALL remain intact.
+- **AND** an additional computed-controls input derivative MAY remove only the unrelated refused original method records, with constant pool, fields, retained method records and class attributes verified unchanged and no retained dependency on the removed members. Its complete unmodified Engine output SHALL be compared with that exact-byte derivative, and results MUST be labeled derived-input evidence, never a full frozen-class JVM pass. Same-origin generated variants are not an independent holdout corpus.

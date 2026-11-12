@@ -232,7 +232,7 @@ fn for_proof_obeys_the_request_budget_and_cancellation() {
 }
 
 #[test]
-fn shared_stack_initializer_refuses_a_for_header_with_complete_physical_sources() {
+fn shared_stack_initializer_keeps_once_only_value_and_proved_header() {
     let default = class_source_report(SHARED_STACK_INPUT, "SharedStoreInput", None);
     let evidence = RecoveryEvidenceRequest::all();
     let all = class_source_report(SHARED_STACK_INPUT, "SharedStoreInput", Some(&evidence));
@@ -253,19 +253,64 @@ fn shared_stack_initializer_refuses_a_for_header_with_complete_physical_sources(
         default_body.source_map, body.source_map,
         "evidence mode changed body mappings"
     );
-    assert_eq!(body.quality, Quality::Fallback);
-    assert_eq!(body.content, RecoveryContent::ExplanationOnly);
-    assert_eq!(body.syntax_status, SyntaxStatus::NotJava);
-    assert!(!method.text.contains("for ("), "{}", method.text);
+    assert_eq!(default_body.quality, body.quality);
+    assert_eq!(default_body.content, body.content);
+    assert_eq!(default_body.syntax_status, body.syntax_status);
+    assert_eq!(default_body.representation, body.representation);
+    assert_structured_for(method, body);
     assert!(
         method
             .text
-            .contains("copy at BCI 5 has no proved local assignment"),
+            .contains("for (local3 = saved0; local3 >= arg2; local3 = local3 - 1)"),
         "{}",
         method.text
     );
-    assert!(method.text.contains("the counted loop's preceding local initialisation did not produce one Java header clause"), "{}", method.text);
+    assert_eq!(method.text.matches("limit()").count(), 1);
+    assert_eq!(method.text.matches("limit() - 1").count(), 1);
+    assert_eq!(
+        method
+            .text
+            .matches("SharedStoreInput.savedField = saved0;")
+            .count(),
+        1
+    );
+    assert!(
+        method.text.find("limit() - 1").unwrap()
+            < method
+                .text
+                .find("SharedStoreInput.savedField = saved0;")
+                .unwrap()
+    );
+    assert!(
+        method
+            .text
+            .find("SharedStoreInput.savedField = saved0;")
+            .unwrap()
+            < method.text.find("for (").unwrap()
+    );
+    for (bci, text) in [
+        (0, "limit()"),
+        (5, "saved0"),
+        (6, "SharedStoreInput.savedField = saved0"),
+        (9, "local3 = saved0"),
+        (24, "local3 = local3 - 1"),
+    ] {
+        assert!(
+            !call_order_text_spans(method, bci, text).is_empty(),
+            "BCI {bci} lost {text}: {}",
+            method.text
+        );
+    }
     assert_physical_method_coverage(SHARED_STACK_INPUT, "find", "([III)I", method, body);
+    assert!(
+        body.source_map.of_bci(27).iter().any(|segment| {
+            let text = segment.text(&body.text);
+            text.contains("for (local3 = saved0;")
+                && text.contains("return local3;")
+                && !text.contains("return -1;")
+        }),
+        "the physical backedge must own the for body, not the later miss return"
+    );
 }
 
 #[test]
@@ -562,7 +607,7 @@ fn computed_initializer_call_order_matches_physical_store_anchors() {
 }
 
 #[test]
-fn computed_for_controls_keep_fallback_boundaries_and_evidence_parity() {
+fn computed_for_controls_separate_shared_recovery_from_scope_and_header_proofs() {
     let default = class_source_report(COMPUTED_FOR_CONTROLS, "ComputedForControls", None);
     let all = class_source_report(
         COMPUTED_FOR_CONTROLS,
@@ -622,7 +667,6 @@ fn computed_for_controls_keep_fallback_boundaries_and_evidence_parity() {
     }
 
     for (name, descriptor, refusal) in [
-        ("shared", "(I)I", "no proved local assignment"),
         ("find", "([III)I", "crosses a quoted fallback region"),
         ("scoped", "(IZ)I", "crosses a quoted fallback region"),
     ] {
@@ -645,6 +689,50 @@ fn computed_for_controls_keep_fallback_boundaries_and_evidence_parity() {
             body.text
         );
     }
+
+    let shared = class_method(&default, "shared", "(I)I");
+    let body = recovered_body(shared);
+    assert_eq!(body.quality, Quality::Structured);
+    assert_eq!(body.content, RecoveryContent::ContainsStatements);
+    assert!(!shared.text.contains("@bytecode") && !shared.text.contains("for ("));
+    assert!(shared.text.contains("while (local2 >= arg0)"));
+    let order = [
+        "int saved0 = f();",
+        "local1 = saved0;",
+        "local2 = saved0 - 1;",
+        "g();",
+        "while (",
+        "return local1 * 100 + local2;",
+    ];
+    let positions = order.map(|text| {
+        assert_eq!(shared.text.matches(text).count(), 1, "{text}");
+        shared.text.find(text).unwrap()
+    });
+    assert!(positions.windows(2).all(|pair| pair[0] < pair[1]));
+    for (bci, text) in [
+        (0, "f()"),
+        (3, "saved0"),
+        (4, "local1 = saved0"),
+        (7, "local2 = saved0 - 1"),
+        (8, "g()"),
+        (16, "local2 = local2 - 1"),
+    ] {
+        assert!(
+            !call_order_text_spans(shared, bci, text).is_empty(),
+            "BCI {bci} lost {text}: {}",
+            shared.text
+        );
+    }
+    assert_physical_method_coverage(COMPUTED_FOR_CONTROLS, "shared", "(I)I", shared, body);
+    assert!(
+        body.source_map.of_bci(19).iter().any(|segment| {
+            let text = segment.text(&body.text);
+            text.contains("while (local2 >= arg0)")
+                && text.contains("local2 = local2 - 1;")
+                && !text.contains("return local1")
+        }),
+        "the physical backedge must own the while body, not the later shared-value return"
+    );
 
     for (name, descriptor) in [("observedAfter", "(I)I"), ("externalWrite", "(I)I")] {
         let method = class_method(&default, name, descriptor);
@@ -987,4 +1075,399 @@ fn long_float_and_double_array_comparisons_keep_their_counted_for_headers() {
         );
         assert_physical_method_coverage(bytes, name, descriptor, method, body);
     }
+}
+
+// Retain aggregate baseline assertions while independently exposing later controls.
+#[test]
+fn hidden_find_refusal_is_independently_exposed() {
+    let report = class_source_report(COMPUTED_FOR_CONTROLS, "ComputedForControls", None);
+    let method = class_method(&report, "find", "([III)I");
+    assert_eq!(
+        recovered_body(method).quality,
+        Quality::Fallback,
+        "{}",
+        method.text
+    );
+    assert!(
+        method.text.contains("crosses a quoted fallback region"),
+        "{}",
+        method.text
+    );
+}
+#[test]
+fn hidden_scoped_refusal_is_independently_exposed() {
+    let report = class_source_report(COMPUTED_FOR_CONTROLS, "ComputedForControls", None);
+    let method = class_method(&report, "scoped", "(IZ)I");
+    assert_eq!(
+        recovered_body(method).quality,
+        Quality::Fallback,
+        "{}",
+        method.text
+    );
+    assert!(
+        method.text.contains("crosses a quoted fallback region"),
+        "{}",
+        method.text
+    );
+}
+
+fn latch_javac(dir: &std::path::Path, names: &[&str]) {
+    let output = std::process::Command::new("javac")
+        .args(["--release", "8", "-g:none", "-cp"])
+        .arg(dir)
+        .arg("-d")
+        .arg(dir)
+        .args(names.iter().map(|name| dir.join(name)))
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+fn latch_whole_class_oracle(bytes: &[u8], name: &str, driver: &str, case: &str) {
+    let root = std::env::temp_dir().join(format!(
+        "jarde-latch-{case}-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let original = root.join("original");
+    let recovered = root.join("recovered");
+    for dir in [&original, &recovered] {
+        std::fs::create_dir_all(dir).unwrap();
+    }
+    std::fs::write(original.join(format!("{name}.class")), bytes).unwrap();
+    let plain = class_source_report(bytes, name, None);
+    let all = class_source_report(bytes, name, Some(&RecoveryEvidenceRequest::all()));
+    assert_eq!(plain.text, all.text, "evidence changed whole class");
+    for method in &plain.methods {
+        let evidenced = class_method(
+            &all,
+            &String::from_utf8_lossy(&method.item.name.raw().0),
+            &String::from_utf8_lossy(&method.item.descriptor.raw().0),
+        );
+        if let ClassSourceOutcome::Recovered { report, .. } = &method.outcome {
+            let evidence_report = recovered_body(evidenced);
+            assert_eq!(report.source_map, evidence_report.source_map);
+            assert_eq!(report.quality, evidence_report.quality);
+            assert_eq!(report.content, evidence_report.content);
+            assert_eq!(report.syntax_status, evidence_report.syntax_status);
+            assert_eq!(report.representation, evidence_report.representation);
+        }
+    }
+    std::fs::write(root.join("source-map-report.txt"), format!("{all:#?}")).unwrap();
+    std::fs::write(recovered.join(format!("{name}.java")), &plain.text).unwrap();
+    println!("LATCH CASE {case}: {}\n{}", root.display(), plain.text);
+    latch_javac(&recovered, &[&format!("{name}.java")]);
+    let mut observations = Vec::new();
+    for dir in [&original, &recovered] {
+        std::fs::write(dir.join("LatchDriver.java"), driver).unwrap();
+        latch_javac(dir, &["LatchDriver.java"]);
+        let output = std::process::Command::new("java")
+            .args(["-Xverify:all", "-cp"])
+            .arg(dir)
+            .arg("LatchDriver")
+            .output()
+            .unwrap();
+        std::fs::write(dir.join("stdout.txt"), &output.stdout).unwrap();
+        std::fs::write(dir.join("stderr.txt"), &output.stderr).unwrap();
+        assert!(
+            output.status.success(),
+            "{case}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stderr.is_empty());
+        observations.push(output.stdout);
+    }
+    assert_eq!(observations[0], observations[1], "{case}");
+}
+
+#[test]
+#[ignore = "requires javac and java; explicit whole-class JVM gate"]
+fn shared_latch_source_variants_preserve_ownership_and_semantics() {
+    let mut unshifted_copy_bci = None;
+    for (case, name, delta, shifted) in [
+        ("base", "LatchInputs", 1, false),
+        ("renamed", "RenamedInputs", 1, false),
+        ("revalued", "LatchInputs", 2, false),
+        ("shifted", "LatchInputs", 1, true),
+        ("combined", "RenamedInputs", 2, true),
+    ] {
+        let prefix = if shifted { "prefix();" } else { "" };
+        let source = format!(
+            r#"final class {name} {{
+static int calls, value, saved, events; static boolean boom, mutateBoom; static final RuntimeException FAILURE=new IllegalStateException("chosen");
+static void prefix() {{ events=events+1; }}
+static int limit() {{ calls=calls+1; if(boom) throw FAILURE; return value; }}
+static void mutate() {{ saved=99; events=events+10; if(mutateBoom) throw FAILURE; }}
+static int find(int[] a,int target,int lower) {{ {prefix} int i; for(i=saved=limit()-{delta};i>=lower;i--) {{ if(a[i]==target) return i; }} return -1; }}
+static int shared(int lower) {{ {prefix} int held; int i=(held=limit())-{delta}; mutate(); while(i>=lower) {{ i--; }} return held*100+i; }}
+static int alias(int lower) {{ {prefix} int i=saved=limit()-{delta}; mutate(); while(i>=lower) {{ i--; }} return i; }}
+static int extra(int lower) {{ {prefix} int i=saved=limit()-{delta}; while(i>=lower) {{ i--; }} return i; }}
+static int ownership(int[] a,int target,int lower) {{ {prefix} int i=saved=limit()-{delta}; mutate(); while(i>=lower) {{ if(a[i]==target) return i; i--; }} return -1; }}
+}}"#
+        );
+        let driver = format!(
+            r#"public class LatchDriver {{
+static void reset() {{ {name}.calls=0; {name}.value={delta}+2; {name}.saved=77; {name}.events=0; {name}.boom=false; {name}.mutateBoom=false; }}
+static void check(int actual,int expected,int saved,int events) {{ if(actual!=expected || {name}.saved!=saved || {name}.calls!=1 || {name}.events!=events) throw new AssertionError(actual+":"+{name}.saved+":"+{name}.calls+":"+{name}.events); System.out.println(actual+":"+saved+":"+events); }}
+public static void main(String[] args) {{
+reset(); check({name}.find(new int[]{{7,8,9}},9,0),2,2,{shift});
+reset(); check({name}.find(new int[]{{7,8,9}},6,0),-1,2,{shift});
+reset(); check({name}.find(null,6,3),-1,2,{shift});
+reset(); try {{ {name}.find(null,6,0); throw new AssertionError(); }} catch(NullPointerException e) {{ check(0,0,2,{shift}); }}
+reset(); try {{ {name}.find(new int[0],6,0); throw new AssertionError(); }} catch(ArrayIndexOutOfBoundsException e) {{ check(0,0,2,{shift}); }}
+reset(); {name}.boom=true; try {{ {name}.find(null,6,0); throw new AssertionError(); }} catch(IllegalStateException e) {{ if(e!={name}.FAILURE || !"chosen".equals(e.getMessage())) throw new AssertionError(); check(0,0,77,{shift}); }}
+reset(); check({name}.shared(0),({delta}+2)*100-1,99,{mutate});
+reset(); {name}.mutateBoom=true; try {{ {name}.shared(0); throw new AssertionError(); }} catch(RuntimeException e) {{ if(e!={name}.FAILURE) throw new AssertionError(); check(0,0,99,{mutate}); }}
+reset(); check({name}.alias(0),-1,99,{mutate});
+reset(); check({name}.alias(100),2,99,{mutate});
+reset(); check({name}.extra(0),-1,2,{shift});
+reset(); check({name}.ownership(new int[]{{7,8,9}},9,0),2,99,{mutate});
+}} }}"#,
+            shift = usize::from(shifted),
+            mutate = 10 + usize::from(shifted)
+        );
+        let renamed = case == "renamed" || case == "combined";
+        let rename = |value: String| {
+            if renamed {
+                value
+                    .replace("limit", "bound")
+                    .replace("saved", "kept")
+                    .replace("find", "seek")
+                    .replace("shared", "joint")
+            } else {
+                value
+            }
+        };
+        let source = rename(source);
+        let driver = rename(driver);
+        let find_name = if renamed { "seek" } else { "find" };
+        let shared_name = if renamed { "joint" } else { "shared" };
+        let root =
+            std::env::temp_dir().join(format!("jarde-latch-input-{case}-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        std::fs::write(root.join(format!("{name}.java")), source).unwrap();
+        latch_javac(&root, &[&format!("{name}.java")]);
+        let bytes = std::fs::read(root.join(format!("{name}.class"))).unwrap();
+        let report = class_source_report(&bytes, name, None);
+        let find = class_method(&report, find_name, "([III)I");
+        assert!(find.text.contains("for ("), "{case}: {}", find.text);
+        for (method, descriptor) in [
+            (shared_name, "(I)I"),
+            ("alias", "(I)I"),
+            ("extra", "(I)I"),
+            ("ownership", "([III)I"),
+        ] {
+            let member = class_method(&report, method, descriptor);
+            assert!(
+                member.text.contains("while (") && !member.text.contains("for ("),
+                "{case}: {}",
+                member.text
+            );
+            assert_physical_method_coverage(
+                &bytes,
+                method,
+                descriptor,
+                member,
+                recovered_body(member),
+            );
+        }
+        assert_physical_method_coverage(&bytes, find_name, "([III)I", find, recovered_body(find));
+        let mut budget = task_budget(&[]).unwrap();
+        let physical = inspect_method_bytecode(
+            &bytes,
+            MethodSelector {
+                name: JvmBytes(find_name.as_bytes().to_vec()),
+                descriptor: JvmBytes(b"([III)I".to_vec()),
+            },
+            &mut budget,
+        )
+        .unwrap();
+        assert!(physical.stopped_at.is_none());
+        let copies: Vec<_> = physical
+            .instructions
+            .iter()
+            .filter(|i| i.opcode == 0x59)
+            .collect();
+        assert_eq!(copies.len(), 1);
+        let copy_bci = copies[0].bci;
+        let base = *unshifted_copy_bci.get_or_insert(copy_bci);
+        assert_eq!(
+            copy_bci,
+            base + if shifted { 3 } else { 0 },
+            "the observable prefix must actually shift the shared copy"
+        );
+        std::fs::write(root.join("physical-bytecode.txt"), format!("{physical:#?}")).unwrap();
+        latch_whole_class_oracle(&bytes, name, &driver, case);
+    }
+}
+
+// This derivative changes the ORIGINAL input inventory, never recovered text.
+// Refused find/scoped remain covered independently on the complete frozen class.
+fn computed_controls_retained_method_derivative() -> Vec<u8> {
+    fn u2(bytes: &[u8], at: &mut usize) -> usize {
+        let value = usize::from(u16::from_be_bytes(bytes[*at..*at + 2].try_into().unwrap()));
+        *at += 2;
+        value
+    }
+    fn attributes(bytes: &[u8], at: &mut usize) {
+        let count = u2(bytes, at);
+        for _ in 0..count {
+            *at += 2;
+            let length = u32::from_be_bytes(bytes[*at..*at + 4].try_into().unwrap()) as usize;
+            *at += 4 + length;
+            assert!(*at <= bytes.len());
+        }
+    }
+    let bytes = COMPUTED_FOR_CONTROLS;
+    assert_eq!(&bytes[..4], &[0xca, 0xfe, 0xba, 0xbe]);
+    let mut at = 8;
+    let count = u2(bytes, &mut at);
+    let mut utf8 = vec![None; count];
+    let mut classes = vec![0; count];
+    let mut names = vec![(0, 0); count];
+    let mut refs = Vec::new();
+    let mut index = 1;
+    while index < count {
+        let tag = bytes[at];
+        at += 1;
+        match tag {
+            1 => {
+                let length = u2(bytes, &mut at);
+                utf8[index] = Some(&bytes[at..at + length]);
+                at += length;
+            }
+            3 | 4 => at += 4,
+            5 | 6 => {
+                at += 8;
+                index += 1;
+            }
+            7 => classes[index] = u2(bytes, &mut at),
+            8 | 16 | 19 | 20 => at += 2,
+            9..=11 => {
+                let class = u2(bytes, &mut at);
+                let name = u2(bytes, &mut at);
+                if tag != 9 {
+                    refs.push((class, name));
+                }
+            }
+            12 => names[index] = (u2(bytes, &mut at), u2(bytes, &mut at)),
+            15 => at += 3,
+            17 | 18 => at += 4,
+            other => panic!("unexpected constant-pool tag {other}"),
+        }
+        index += 1;
+    }
+    at += 2;
+    let this_class = u2(bytes, &mut at);
+    at += 2;
+    let interfaces = u2(bytes, &mut at);
+    at += 2 * interfaces;
+    let fields = u2(bytes, &mut at);
+    for _ in 0..fields {
+        at += 6;
+        attributes(bytes, &mut at);
+    }
+    let methods_at = at;
+    let methods = u2(bytes, &mut at);
+    let mut retained = Vec::new();
+    let mut removed = Vec::new();
+    for _ in 0..methods {
+        let start = at;
+        at += 2;
+        let name = u2(bytes, &mut at);
+        let descriptor = u2(bytes, &mut at);
+        attributes(bytes, &mut at);
+        let identity = (utf8[name].unwrap(), utf8[descriptor].unwrap());
+        if identity == (b"find".as_slice(), b"([III)I".as_slice())
+            || identity == (b"scoped".as_slice(), b"(IZ)I".as_slice())
+        {
+            removed.push(identity);
+        } else {
+            retained.push(&bytes[start..at]);
+        }
+    }
+    assert_eq!(removed.len(), 2);
+    // Conservatively inspect every method reference in the unchanged pool,
+    // including references unused by the retained Code attributes.
+    for (class, name) in refs {
+        if utf8[classes[class]] == utf8[classes[this_class]] {
+            let (name, descriptor) = names[name];
+            assert!(!removed.contains(&(utf8[name].unwrap(), utf8[descriptor].unwrap())));
+        }
+    }
+    let suffix = &bytes[at..];
+    let mut output = bytes[..methods_at].to_vec();
+    output.extend_from_slice(&u16::try_from(retained.len()).unwrap().to_be_bytes());
+    for record in &retained {
+        output.extend_from_slice(record);
+    }
+    output.extend_from_slice(suffix);
+    assert_eq!(&output[..methods_at], &bytes[..methods_at]);
+    let mut check = methods_at + 2;
+    for record in retained {
+        assert_eq!(&output[check..check + record.len()], record);
+        check += record.len();
+    }
+    assert_eq!(&output[check..], suffix);
+    output
+}
+
+#[test]
+#[ignore = "requires javac and java; explicit frozen whole-class JVM gate"]
+fn frozen_shared_store_whole_class_matches_original_bytecode() {
+    let driver = r#"public class LatchDriver {
+static void reset(int value,boolean boom) { SharedStoreInput.limitCalls=0; SharedStoreInput.limitValue=value; SharedStoreInput.savedField=77; SharedStoreInput.throwFromLimit=boom; }
+static void check(int actual,int expected,int saved) { if(actual!=expected || SharedStoreInput.limitCalls!=1 || SharedStoreInput.savedField!=saved) throw new AssertionError(actual+":"+SharedStoreInput.limitCalls+":"+SharedStoreInput.savedField); System.out.println(actual+":"+saved+":"+SharedStoreInput.limitCalls); }
+public static void main(String[] args) {
+reset(3,false); check(SharedStoreInput.find(new int[]{8,7,8},8,0),2,2);
+reset(3,false); check(SharedStoreInput.find(new int[]{8,7,8},7,0),1,2);
+reset(3,false); check(SharedStoreInput.find(new int[]{8,7,8},6,0),-1,2);
+reset(3,false); check(SharedStoreInput.find(null,6,3),-1,2);
+reset(0,false); check(SharedStoreInput.find(null,6,0),-1,-1);
+reset(3,false); try { SharedStoreInput.find(null,6,0); throw new AssertionError(); } catch(NullPointerException e) { check(0,0,2); }
+reset(3,false); try { SharedStoreInput.find(new int[0],6,0); throw new AssertionError(); } catch(ArrayIndexOutOfBoundsException e) { check(0,0,2); }
+reset(3,true); try { SharedStoreInput.find(null,6,0); throw new AssertionError(); } catch(IllegalStateException e) { if(!"limit".equals(e.getMessage())) throw new AssertionError(); check(0,0,77); }
+reset(Integer.MIN_VALUE,false); try { SharedStoreInput.find(null,6,Integer.MAX_VALUE); throw new AssertionError(); } catch(NullPointerException e) { check(0,0,Integer.MAX_VALUE); }
+} }"#;
+    latch_whole_class_oracle(
+        SHARED_STACK_INPUT,
+        "SharedStoreInput",
+        driver,
+        "frozen-shared-store",
+    );
+}
+
+#[test]
+#[ignore = "requires javac and java; exact original-method input derivative, not a frozen-whole pass"]
+fn retained_computed_methods_match_exact_byte_input_derivative() {
+    let bytes = computed_controls_retained_method_derivative();
+    let driver = r#"public class LatchDriver {
+static void reset(int end,int mode) { ComputedForControls.end=end; ComputedForControls.mode=mode; ComputedForControls.trace=0; }
+static void check(int actual,int expected,int trace,int end) { if(actual!=expected || ComputedForControls.trace!=trace || ComputedForControls.end!=end) throw new AssertionError(actual+":"+ComputedForControls.trace+":"+ComputedForControls.end); System.out.println(actual+":"+trace+":"+end); }
+public static void main(String[] args) {
+reset(4,0); check(ComputedForControls.shared(0),399,12,2);
+reset(4,0); check(ComputedForControls.shared(5),403,12,2);
+reset(0,0); check(ComputedForControls.shared(0),-1,12,2);
+reset(-2,0); check(ComputedForControls.shared(0),-203,12,2);
+reset(4,1); try { ComputedForControls.shared(0); throw new AssertionError(); } catch(RuntimeException e) { if(e!=ComputedForControls.FAILURE) throw new AssertionError(); check(0,0,1,4); }
+reset(4,2); try { ComputedForControls.shared(0); throw new AssertionError(); } catch(RuntimeException e) { if(e!=ComputedForControls.FAILURE) throw new AssertionError(); check(0,0,12,2); }
+reset(4,0); check(ComputedForControls.observedAfter(0),-1,1,4);
+reset(4,0); check(ComputedForControls.observedAfter(5),3,1,4);
+reset(4,0); check(ComputedForControls.externalWrite(0),0,1,4);
+reset(4,0); check(ComputedForControls.externalWrite(5),5,1,4);
+reset(Integer.MAX_VALUE,0); check(ComputedForControls.shared(Integer.MAX_VALUE),2147483546,12,2);
+} }"#;
+    latch_whole_class_oracle(
+        &bytes,
+        "ComputedForControls",
+        driver,
+        "derived-computed-retained",
+    );
 }
