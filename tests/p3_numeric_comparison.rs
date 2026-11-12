@@ -551,7 +551,7 @@ fn long_compare_through_local_keeps_refusal_sources() {
 }
 
 #[test]
-fn long_compare_with_overwritten_local_keeps_refusal_sources() {
+fn long_compare_with_overwritten_local_keeps_saved_operand_sources() {
     // Keep the original lload_0 value on the operand stack, then overwrite local slot 0 before
     // lload_2/lcmp/ifne.  The compare does not read the rewritten local, so it cannot be rendered
     // from the current local expression without changing the bytecode's value flow.
@@ -563,7 +563,64 @@ fn long_compare_with_overwritten_local_keeps_refusal_sources() {
         b"long_eq",
         b"(JJ)I",
     );
-    assert_long_eq_refusal(&report, 4, 5);
+    assert!(report.produced());
+    assert_eq!(report.representation, Representation::Java);
+    assert!(report.fallbacks.is_empty());
+    assert_eq!(
+        report.evidence.state(RecoveryEvidenceKind::SourceMap),
+        EvidenceState::Complete
+    );
+    let text = body(&report);
+    let definition = text
+        .lines()
+        .find_map(|line| line.trim().strip_prefix("long "))
+        .expect("typed saved old operand");
+    let (saved, value) = definition.trim_end_matches(';').split_once(" = ").unwrap();
+    assert_eq!(value, "arg0");
+    let save_at = text.find(definition).unwrap();
+    let overwrite_at = text.find("arg0 = 0L;").unwrap();
+    let comparison_at = text.find(&format!("if ({saved} == arg2)")).unwrap();
+    assert!(
+        save_at < overwrite_at && overwrite_at < comparison_at,
+        "{text}"
+    );
+    let physical = jarde_reader::classfile::inspect_method_bytecode(
+        &patched,
+        jarde_reader::classfile::MethodSelector {
+            name: JvmBytes(b"long_eq".to_vec()),
+            descriptor: JvmBytes(b"(JJ)I".to_vec()),
+        },
+        &mut Budget::new(limits()),
+    )
+    .unwrap();
+    assert!(physical.stopped_at.is_none());
+    let class = complete_numeric_source(&engine, &fixture_bytes(&engine, &patched));
+    let member = class
+        .methods
+        .iter()
+        .find(|m| m.item.name.raw().0 == b"long_eq")
+        .unwrap();
+    assert!(
+        physical
+            .instructions
+            .windows(2)
+            .any(|w| w[0].opcode == 0x94 && w[1].opcode == 0x9a)
+    );
+    for instruction in &physical.instructions {
+        assert!(
+            !report.source_map.of_bci(instruction.bci).is_empty(),
+            "missing {instruction:?}: {text}"
+        );
+    }
+    for segment in report.source_map.segments() {
+        assert!(segment.start() < segment.end());
+        assert!(report.text.get(segment.start()..segment.end()).is_some());
+        for origin in std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
+        {
+            assert_eq!(origin.method(), Some(&member.item.identity));
+            assert!(physical.instructions.iter().any(|i| i.bci == origin.bci()));
+        }
+    }
 }
 
 struct TempDir(PathBuf);
@@ -751,4 +808,128 @@ fn jdk_execution_matches_original_for_comparisons_and_effects() {
         "java -Xverify:all failed:\n{}",
         String::from_utf8_lossy(&run.stderr)
     );
+}
+
+fn complete_numeric_source(engine: &Engine, fixture: &Fixture) -> ClassSourceReport {
+    let request = ClassSourceRequest {
+        source_target: SourceTarget::JAVA_8,
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal("NumericComparisons"),
+        },
+        environment: EnvironmentRequest {
+            snapshot: fixture.snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::SingleClass,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        },
+    };
+    match engine
+        .class_source_with_evidence(
+            slice::from_ref(&fixture.snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut Budget::new(limits()),
+        )
+        .unwrap()
+    {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("whole numeric class source: {other:?}"),
+    }
+}
+
+#[test]
+fn overwritten_long_whole_class_matches_original_runtime() {
+    for constant in [0x09, 0x0a] {
+        let bytes = long_eq_refusal_patch(FIXTURE, &[constant, 0x3f], 1, &[0x0b], 0, 0);
+        let engine = Engine::new();
+        let report = complete_numeric_source(&engine, &fixture_bytes(&engine, &bytes));
+        let scratch = TempDir::new();
+        let original = scratch.path().join("original");
+        let recovered = scratch.path().join("recovered");
+        for dir in [&original, &recovered] {
+            fs::create_dir(dir).unwrap();
+        }
+        fs::write(original.join("NumericComparisons.class"), bytes).unwrap();
+        fs::write(recovered.join("NumericComparisons.java"), &report.text).unwrap();
+        let compile = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-cp"])
+            .arg(&recovered)
+            .arg(recovered.join("NumericComparisons.java"))
+            .output()
+            .unwrap();
+        assert!(
+            compile.status.success(),
+            "whole unchanged Engine source failed:\n{}\nSOURCE:\n{}",
+            String::from_utf8_lossy(&compile.stderr),
+            report.text
+        );
+        let driver = "public class OldLongDriver { public static void main(String[] args) { long[] values = {Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE}; for(long a : values) for(long b : values) { int result = NumericComparisons.long_eq(a,b); if(result != (a == b ? 7 : 9)) throw new AssertionError(a + \":\" + b + \":\" + result); System.out.println(result); } } }";
+        let mut outputs = Vec::new();
+        for dir in [&original, &recovered] {
+            fs::write(dir.join("OldLongDriver.java"), driver).unwrap();
+            let compile = Command::new("javac")
+                .args(["--release", "8", "-g:none", "-cp"])
+                .arg(dir)
+                .arg(dir.join("OldLongDriver.java"))
+                .output()
+                .unwrap();
+            assert!(
+                compile.status.success(),
+                "{}",
+                String::from_utf8_lossy(&compile.stderr)
+            );
+            let run = Command::new("java")
+                .args(["-Xverify:all", "-cp"])
+                .arg(dir)
+                .arg("OldLongDriver")
+                .output()
+                .unwrap();
+            assert!(
+                run.status.success(),
+                "{}",
+                String::from_utf8_lossy(&run.stderr)
+            );
+            outputs.push(run.stdout);
+        }
+        assert_eq!(outputs[0], outputs[1]);
+        // Execute the complete original comparison/effect matrix in each isolated classpath.
+        // Only the source-only driver changes its lookup; Engine class output is untouched.
+        let driver = driver_source().replace("RecoveredNumericComparisons", "NumericComparisons");
+        let mut complete_outputs = Vec::new();
+        for dir in [&original, &recovered] {
+            fs::write(dir.join("NumericComparisonDriver.java"), &driver).unwrap();
+            let compile = Command::new("javac")
+                .args(["--release", "8", "-g:none", "-cp"])
+                .arg(dir)
+                .arg(dir.join("NumericComparisonDriver.java"))
+                .output()
+                .unwrap();
+            assert!(
+                compile.status.success(),
+                "{}",
+                String::from_utf8_lossy(&compile.stderr)
+            );
+            let run = Command::new("java")
+                .args(["-Xverify:all", "-cp"])
+                .arg(dir)
+                .arg("NumericComparisonDriver")
+                .output()
+                .unwrap();
+            assert!(
+                run.status.success(),
+                "{}",
+                String::from_utf8_lossy(&run.stderr)
+            );
+            complete_outputs.push(run.stdout);
+        }
+        assert_eq!(
+            complete_outputs[0], complete_outputs[1],
+            "whole comparison and call/abrupt-effect matrix"
+        );
+    }
 }

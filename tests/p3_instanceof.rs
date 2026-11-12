@@ -817,14 +817,23 @@ fn unsupported_instanceof_consumers_keep_producers_and_real_boundary_sources() {
         "(Ljava/lang/Object;)Z",
         &[1, 4, 5, 7, 8],
     );
-    assert_boundary_quote(&retained, "local", "(Ljava/lang/Object;)Z", &[5, 8]);
+    assert_old_value_physical_sources(
+        &retained,
+        &retained_old_local_patch(),
+        "local",
+        "(Ljava/lang/Object;)Z",
+        false,
+    );
     let retained_text = &boundary_member(&retained, "local", "(Ljava/lang/Object;)Z").text;
     assert!(
         retained_text.contains("instanceof java.lang.String"),
         "{retained_text}"
     );
     assert!(retained_text.contains("local1 = false;"), "{retained_text}");
+}
 
+#[test]
+fn boolean_to_int_consumer_keeps_refusal_sources_independently() {
     let int_consumer = boundary_class_source(&boolean_to_int_consumer_patch());
     assert_boundary_sources(&int_consumer, "branch", "(Ljava/lang/Object;)I", &[1, 5, 6]);
     assert_boundary_quote(&int_consumer, "branch", "(Ljava/lang/Object;)I", &[1, 5, 6]);
@@ -955,4 +964,368 @@ fn recovered_complete_class_matches_original_runtime() {
         recovered_output, original_output,
         "the complete recovered class preserves behavior"
     );
+}
+
+#[test]
+fn retained_old_local_whole_class_matches_original_runtime() {
+    for (bytes, expected) in [
+        (retained_old_local_patch(), "true\nfalse\nfalse\n"),
+        (stale_local_overwrite_patch(), "false\nfalse\nfalse\n"),
+    ] {
+        let report = boundary_class_source(&bytes);
+        let scratch = Scratch::new();
+        let original = scratch.path().join("original");
+        let recovered = scratch.path().join("recovered");
+        let driver = "public class OldValueDriver { public static void main(String[] args) { for(Object x : new Object[] {\"text\", new Object(), null}) System.out.println(InstanceOfProbe.local(x)); } }";
+        for (dir, source) in [
+            (&original, PROBE_SOURCE),
+            (&recovered, report.text.as_str()),
+        ] {
+            javac(dir, source);
+            fs::write(dir.join("OldValueDriver.java"), driver).unwrap();
+            let compile = std::process::Command::new("javac")
+                .args(["--release", "8", "-g:none", "-cp"])
+                .arg(dir)
+                .arg(dir.join("OldValueDriver.java"))
+                .output()
+                .unwrap();
+            assert!(
+                compile.status.success(),
+                "{}",
+                String::from_utf8_lossy(&compile.stderr)
+            );
+        }
+        fs::write(original.join("InstanceOfProbe.class"), bytes).unwrap();
+        let outputs: Vec<String> = [&original, &recovered]
+            .iter()
+            .map(|dir| {
+                let out = std::process::Command::new("java")
+                    .args(["-Xverify:all", "-cp"])
+                    .arg(dir)
+                    .arg("OldValueDriver")
+                    .output()
+                    .unwrap();
+                assert!(
+                    out.status.success(),
+                    "{}",
+                    String::from_utf8_lossy(&out.stderr)
+                );
+                String::from_utf8(out.stdout).unwrap()
+            })
+            .collect();
+        assert_eq!(outputs[0], expected);
+        assert_eq!(outputs[1], outputs[0]);
+        assert_eq!(
+            run_runner(&recovered),
+            run_runner(&original),
+            "whole class including calls and abrupt completion"
+        );
+    }
+}
+
+// Generated classes vary names, targets, values and instruction encodings independently and
+// together. They are same-origin invariance probes, not an independent holdout corpus.
+fn old_value_class(
+    class: &str,
+    method: &str,
+    numeric: bool,
+    wide: bool,
+    alternate: bool,
+    padding: bool,
+) -> Vec<u8> {
+    fn u16b(out: &mut Vec<u8>, n: u16) {
+        out.extend(n.to_be_bytes());
+    }
+    fn utf8(out: &mut Vec<u8>, s: &str) {
+        out.push(1);
+        u16b(out, s.len().try_into().unwrap());
+        out.extend(s.as_bytes());
+    }
+    let mut out = 0xcafebabe_u32.to_be_bytes().to_vec();
+    for n in [0, 49, 10] {
+        u16b(&mut out, n);
+    }
+    utf8(&mut out, class);
+    out.push(7);
+    u16b(&mut out, 1);
+    utf8(&mut out, "java/lang/Object");
+    out.push(7);
+    u16b(&mut out, 3);
+    utf8(&mut out, method);
+    utf8(
+        &mut out,
+        if numeric {
+            "(JJ)I"
+        } else {
+            "(Ljava/lang/Object;)Z"
+        },
+    );
+    utf8(&mut out, "Code");
+    utf8(
+        &mut out,
+        if alternate {
+            "java/lang/CharSequence"
+        } else {
+            "java/lang/String"
+        },
+    );
+    out.push(7);
+    u16b(&mut out, 8);
+    for n in [0x21, 2, 4, 0, 0, 1, 0x09, 5, 6, 1, 7] {
+        u16b(&mut out, n);
+    }
+    let mut code = Vec::new();
+    if padding {
+        code.extend([0x00, 0x00]);
+    }
+    let mut local = |ordinary: u8, generic: u8, slot: u8| {
+        if wide {
+            code.extend([0xc4, generic, 0, slot]);
+        } else {
+            code.push(ordinary);
+        }
+    };
+    if numeric {
+        local(0x1e, 0x16, 0);
+    } else {
+        local(0x2a, 0x19, 0);
+    }
+    if numeric {
+        code.push(if alternate { 0x0a } else { 0x09 });
+        if wide {
+            code.extend([0xc4, 0x37, 0, 0, 0xc4, 0x16, 0, 2]);
+        } else {
+            code.extend([0x3f, 0x20]);
+        }
+        code.extend([
+            0x94,
+            0x9a,
+            0,
+            6,
+            0x10,
+            if alternate { 11 } else { 7 },
+            0xac,
+            0x10,
+            if alternate { 13 } else { 9 },
+            0xac,
+        ]);
+    } else {
+        code.extend([0xc1, 0, 9]);
+        if wide {
+            code.extend([0xc4, 0x36, 0, 3, 0xc4, 0x15, 0, 3]);
+        } else {
+            code.extend([0x3c, 0x1b]);
+        }
+        code.push(if alternate { 0x04 } else { 0x03 });
+        if wide {
+            code.extend([0xc4, 0x36, 0, 3]);
+        } else {
+            code.push(0x3c);
+        }
+        code.push(0xac);
+    }
+    out.extend((12 + code.len() as u32).to_be_bytes());
+    for n in [6, 4] {
+        u16b(&mut out, n);
+    }
+    out.extend((code.len() as u32).to_be_bytes());
+    out.extend(code);
+    for _ in 0..3 {
+        u16b(&mut out, 0);
+    }
+    out
+}
+
+fn assert_old_value_physical_sources(
+    report: &ClassSourceReport,
+    bytes: &[u8],
+    name: &str,
+    descriptor: &str,
+    padding: bool,
+) {
+    use jarde_reader::classfile::{MethodSelector, inspect_method_bytecode};
+    let member = boundary_member(report, name, descriptor);
+    let recovered = boundary_recovered(report, name, descriptor);
+    assert_eq!(
+        recovered.evidence.state(RecoveryEvidenceKind::SourceMap),
+        EvidenceState::Complete
+    );
+    assert!(recovered.produced());
+    if !padding {
+        assert!(recovered.fallbacks.is_empty());
+    }
+    assert_eq!(
+        recovered.representation,
+        if padding {
+            Representation::Mixed
+        } else {
+            Representation::Java
+        },
+        "{}",
+        member.text
+    );
+    assert_eq!(
+        quoted_bcis(&member.text),
+        if padding { vec![0, 1] } else { vec![] }
+    );
+    let physical = inspect_method_bytecode(
+        bytes,
+        MethodSelector {
+            name: JvmBytes(name.as_bytes().to_vec()),
+            descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+        },
+        &mut budget(),
+    )
+    .unwrap();
+    assert!(physical.stopped_at.is_none());
+    for segment in recovered.source_map.segments() {
+        assert!(segment.start() < segment.end());
+        assert!(recovered.text.get(segment.start()..segment.end()).is_some());
+        for origin in std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
+        {
+            assert_eq!(origin.method(), Some(&member.item.identity));
+            assert!(physical.instructions.iter().any(|i| i.bci == origin.bci()));
+        }
+    }
+    for instruction in &physical.instructions {
+        {
+            assert!(
+                !recovered.source_map.of_bci(instruction.bci).is_empty(),
+                "missing physical {:?}: {}",
+                instruction,
+                member.text
+            );
+        }
+    }
+    let text = &member.text;
+    let ty = if descriptor == "(JJ)I" {
+        "long"
+    } else {
+        "boolean"
+    };
+    let (saved, definition) = text
+        .lines()
+        .enumerate()
+        .find_map(|(i, line)| {
+            let declaration = line.trim().strip_prefix(&format!("{ty} "))?;
+            let (name, value) = declaration.trim_end_matches(';').split_once(" = ")?;
+            (!value.contains("instanceof")).then_some((name.to_owned(), i))
+        })
+        .expect("a typed old-value definition");
+    let lines: Vec<_> = text.lines().map(str::trim).collect();
+    let overwrite = lines
+        .iter()
+        .position(|line| {
+            if descriptor == "(JJ)I" {
+                line.starts_with("arg0 = ")
+            } else {
+                line.starts_with("local") && !line.starts_with("boolean") && line.ends_with(';')
+            }
+        })
+        .unwrap();
+    let terminal = lines
+        .iter()
+        .position(|line| {
+            if descriptor == "(JJ)I" {
+                line.starts_with(&format!("if ({saved} == arg2)"))
+            } else {
+                **line == format!("return {saved};")
+            }
+        })
+        .unwrap();
+    assert!(definition < overwrite && overwrite < terminal, "{text}");
+}
+
+#[test]
+fn old_value_renamed_revalued_and_wide_classes_match_whole_jvm_output() {
+    for numeric in [false, true] {
+        for renamed in [false, true] {
+            for alternate in [false, true] {
+                for wide in [false, true] {
+                    for padding in [false, true] {
+                        let class = if renamed {
+                            "ChangedOldOperand"
+                        } else {
+                            "OldOperand"
+                        };
+                        let method = if renamed { "evaluate" } else { "compute" };
+                        let descriptor = if numeric {
+                            "(JJ)I"
+                        } else {
+                            "(Ljava/lang/Object;)Z"
+                        };
+                        let bytes =
+                            old_value_class(class, method, numeric, wide, alternate, padding);
+                        let report = class_source_named(
+                            &open(&bytes),
+                            class,
+                            RecoveryEvidenceRequest::all(),
+                        );
+                        eprintln!(
+                            "variant numeric={numeric} renamed={renamed} alternate={alternate} wide={wide} padding={padding}: {}",
+                            report.text
+                        );
+                        assert_old_value_physical_sources(
+                            &report, &bytes, method, descriptor, padding,
+                        );
+                        let scratch = Scratch::new();
+                        let original = scratch.path().join("original");
+                        let recovered = scratch.path().join("recovered");
+                        for dir in [&original, &recovered] {
+                            fs::create_dir(dir).unwrap();
+                        }
+                        fs::write(original.join(format!("{class}.class")), &bytes).unwrap();
+                        fs::write(recovered.join(format!("{class}.java")), &report.text).unwrap();
+                        let body = if numeric {
+                            format!(
+                                "long[] xs = {{Long.MIN_VALUE,-1,0,1,Long.MAX_VALUE}}; for(long a:xs) for(long b:xs) {{ int result = {class}.{method}(a,b); if(result != (a == b ? {} : {})) throw new AssertionError(); System.out.println(result); }}",
+                                if alternate { 11 } else { 7 },
+                                if alternate { 13 } else { 9 }
+                            )
+                        } else {
+                            format!(
+                                "Object[] xs = {{\"text\",new Object(),null,new StringBuilder(\"x\")}}; for(Object x:xs) {{ boolean result = {class}.{method}(x); if(result != (x instanceof {})) throw new AssertionError(); System.out.println(result); }}",
+                                if alternate { "CharSequence" } else { "String" }
+                            )
+                        };
+                        let driver = format!(
+                            "public class OldOperandDriver {{ public static void main(String[] args) {{ {body} }} }}"
+                        );
+                        let mut outputs = Vec::new();
+                        for dir in [&original, &recovered] {
+                            fs::write(dir.join("OldOperandDriver.java"), &driver).unwrap();
+                            let mut command = std::process::Command::new("javac");
+                            command
+                                .args(["--release", "8", "-g:none", "-cp"])
+                                .arg(dir)
+                                .arg(dir.join("OldOperandDriver.java"));
+                            if dir == &recovered {
+                                command.arg(dir.join(format!("{class}.java")));
+                            }
+                            let compile = command.output().unwrap();
+                            assert!(
+                                compile.status.success(),
+                                "{}\n{}",
+                                String::from_utf8_lossy(&compile.stderr),
+                                report.text
+                            );
+                            let run = std::process::Command::new("java")
+                                .args(["-Xverify:all", "-cp"])
+                                .arg(dir)
+                                .arg("OldOperandDriver")
+                                .output()
+                                .unwrap();
+                            assert!(
+                                run.status.success(),
+                                "{}",
+                                String::from_utf8_lossy(&run.stderr)
+                            );
+                            outputs.push(run.stdout);
+                        }
+                        assert_eq!(outputs[0], outputs[1]);
+                    }
+                }
+            }
+        }
+    }
 }
