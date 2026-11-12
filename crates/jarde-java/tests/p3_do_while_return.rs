@@ -17,6 +17,7 @@ use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
 use jarde_reader::budget::{Budget, CancellationToken, Limits};
+use jarde_reader::classfile::{DescriptorKind, descriptor_facts};
 use jarde_reader::model::{
     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
     PhysicalVariant,
@@ -50,6 +51,40 @@ fn limits() -> Limits {
         nested_depth: 16,
         dependency_depth: 8,
         elapsed_millis: u64::MAX,
+    }
+}
+
+// These fixture helpers recover static methods: the descriptor supplies every parameter slot.
+fn static_method_facts(owner: &str, name: &str, descriptor: &str) -> MethodFacts {
+    let parameter_slots = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Method)
+        .expect("fixture method descriptor is valid")
+        .parameter_slots()
+        .expect("method descriptor states its parameter slots");
+    MethodFacts::new(name, descriptor, parameter_slots)
+        .with_access_flags(0x0009)
+        .with_declaring_class(DeclaringClass::new(owner, 0x0021))
+}
+
+#[test]
+fn static_fixture_facts_preserve_descriptor_slot_layout() {
+    for (descriptor, slots, positions) in [
+        ("()Ljava/lang/String;", 0, vec![]),
+        ("(I)I", 1, vec![0]),
+        ("(JD)J", 4, vec![0, 2]),
+        ("([J[[DI)V", 3, vec![0, 1, 2]),
+        ("(ZJ[D)I", 4, vec![0, 1, 3]),
+    ] {
+        let facts = static_method_facts("Fixture", "method", descriptor);
+        assert_eq!(facts.parameters(), slots, "{descriptor}");
+        assert!(
+            !facts.has_receiver(),
+            "static method has no receiver: {descriptor}"
+        );
+        assert_eq!(
+            facts.parameter_types().keys().copied().collect::<Vec<_>>(),
+            positions,
+            "{descriptor}"
+        );
     }
 }
 
@@ -114,11 +149,7 @@ fn recover_class_method(
         &mut budget,
     )
     .expect("fixture method analysis completes");
-    let facts = RecoveryFacts::new(
-        MethodFacts::new(name, descriptor, 1)
-            .with_access_flags(0x0009)
-            .with_declaring_class(DeclaringClass::new(owner, 0x0021)),
-    );
+    let facts = RecoveryFacts::new(static_method_facts(owner, name, descriptor));
     let mut budget = recovery_budget.unwrap_or(budget);
     recover(
         &RecoveryRequest::new(
@@ -197,7 +228,7 @@ fn the_do_while_false_return_bodies_recover() {
     assert!(report.produced(), "{:?}", report.outcome);
     assert!(!report.text.contains("@bytecode"), "{}", report.text);
     assert!(
-        report.text.contains("return \"d\" + arg0;") && report.text.contains("return \"d3\";"),
+        report.text.contains("return \"d\" + local0;") && report.text.contains("return \"d3\";"),
         "{}",
         report.text
     );
@@ -216,12 +247,12 @@ fn double_return_body_owns_both_leaves() {
     assert!(report.produced(), "{:?}", report.outcome);
     assert!(!report.text.contains("@bytecode"), "{}", report.text);
     assert!(
-        report.text.contains("return \"a\" + arg0;"),
+        report.text.contains("return \"a\" + local0;"),
         "{}",
         report.text
     );
     assert!(
-        report.text.contains("return \"b\" + arg0;"),
+        report.text.contains("return \"b\" + local0;"),
         "{}",
         report.text
     );
