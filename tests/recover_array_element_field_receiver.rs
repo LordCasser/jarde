@@ -342,8 +342,8 @@ const RN_WRITE_LOOP: &str = "    static int writeLoop(RN$Item[] arg0, java.lang.
 
 /// `RP`: an array no fact states — a conditional and a two-branch merge — keeps the field identity
 /// refusal, with the very message the pre-change run wrote.
-const RP_MERGED: &str = "    static java.lang.String merged(RP$Sub[] arg0, RP$Item[] arg1, boolean arg2) {\n        // jarde: not recovered: the recovery run for `merged([LRP$Sub;[LRP$Item;Z)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method merged([LRP$Sub;[LRP$Item;Z)Ljava/lang/String;\n        // @declaration a static method of `RP`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 0 4 8 1\n        // the two values joined at BCI 9 do not have a conditional Java type this run can prove\n        // @bytecode 9\n        // the value at BCI 9 is the entry state of stack depth 0, which no instruction produced\n        // @bytecode 12\n        // the array instruction at BCI 12 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text\n        // @bytecode 13 12\n        // the field access at BCI 13 is not one this run proved names the member its own receiver's type declares, and a field instruction is presented only where the member it names is proven\n        // @bytecode 16 12\n        // the value at BCI 16 comes from the field access at BCI 13, which this run did not prove names the member its receiver's type declares\n    }\n";
-const RP_BRANCHY: &str = "    static java.lang.String branchy(RP$Sub[] arg0, RP$Item[] arg1, boolean arg2) {\n        // @method branchy([LRP$Sub;[LRP$Item;Z)Ljava/lang/String;\n        // @declaration a static method of `RP`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        RP$Sub[] local3;\n        if (arg2) {\n            local3 = arg0;\n        } else {\n            local3 = arg1;\n        }\n        // @bytecode 13\n        // the array instruction at BCI 13 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text\n        // @bytecode 14 13\n        // the field access at BCI 14 is not one this run proved names the member its own receiver's type declares, and a field instruction is presented only where the member it names is proven\n        // @bytecode 17 13\n        // the value at BCI 17 comes from the field access at BCI 14, which this run did not prove names the member its receiver's type declares\n    }\n";
+const RP_MERGED: &str = "    static java.lang.String merged(RP$Sub[] arg0, RP$Item[] arg1, boolean arg2) {\n        // @method merged([LRP$Sub;[LRP$Item;Z)Ljava/lang/String;\n        // @declaration a static method of `RP`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        RP$Item[] local3 = arg2 ? arg0 : arg1;\n        // @bytecode 12\n        // the array instruction at BCI 12 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text\n        // @bytecode 13 12\n        // the field access at BCI 13 is not one this run proved names the member its own receiver's type declares, and a field instruction is presented only where the member it names is proven\n        // @bytecode 16 12\n        // the value at BCI 16 comes from the field access at BCI 13, which this run did not prove names the member its receiver's type declares\n    }\n";
+const RP_BRANCHY: &str = "    static java.lang.String branchy(RP$Sub[] arg0, RP$Item[] arg1, boolean arg2) {\n        // @method branchy([LRP$Sub;[LRP$Item;Z)Ljava/lang/String;\n        // @declaration a static method of `RP`, member flags 0x0008\n        // recovered from bytecode; presentation is not claimed to compile\n        RP$Item[] local3;\n        if (arg2) {\n            local3 = arg0;\n        } else {\n            local3 = arg1;\n        }\n        // @bytecode 13\n        // the array instruction at BCI 13 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text\n        // @bytecode 14 13\n        // the field access at BCI 14 is not one this run proved names the member its own receiver's type declares, and a field instruction is presented only where the member it names is proven\n        // @bytecode 17 13\n        // the value at BCI 17 comes from the field access at BCI 14, which this run did not prove names the member its receiver's type declares\n    }\n";
 
 /// The one sentence a kept refusal carries, on both negative shapes.
 const FIELD_IDENTITY_REFUSAL: &str =
@@ -713,13 +713,45 @@ fn an_array_no_fact_states_keeps_the_field_identity_refusal() {
                 leg.label
             );
         }
-        // `merged`'s whole body is quoted (the conditional itself is unproved); `branchy`'s two
-        // assignments are statements of their own and stay written, and only the field read the
-        // merged local's element would be a receiver of stays refused.
+        let bytes = leg
+            .files
+            .iter()
+            .find(|(name, _)| *name == "RP.class")
+            .unwrap()
+            .1;
+        let physical = array_physical_anchors(
+            &report,
+            bytes,
+            "merged",
+            "([LRP$Sub;[LRP$Item;Z)Ljava/lang/String;",
+        );
+        for instruction in [(9, 0x4e), (12, 0x32), (13, 0xb4), (16, 0xb0)] {
+            assert!(physical.contains(&instruction));
+        }
+        let body = recovered(&report, "merged");
+        for bci in [9, 12, 13, 16] {
+            assert!(
+                body.source_map
+                    .segments()
+                    .iter()
+                    .any(|s| s.origin().bcis().contains(&bci)),
+                "missing physical assignment/refusal anchor {bci}"
+            );
+        }
+        for name in ["merged", "branchy"] {
+            assert!(!text_of(&report, name).contains(".label"));
+            assert!(
+                !text_of(&report, name)
+                    .lines()
+                    .any(|line| line.trim_start().starts_with("return "))
+            );
+        }
+        // Assignment typing does not prove the merged array element's field identity.
+        // Both bodies contain statements, while the element field read remains refused.
         assert_eq!(
             recovered(&report, "merged").content,
-            RecoveryContent::ExplanationOnly,
-            "{}: `merged` presents no statement",
+            RecoveryContent::ContainsStatements,
+            "{}: `merged` presents the proved conditional assignment",
             leg.label
         );
         assert_eq!(
@@ -988,5 +1020,328 @@ fn the_enum_text_stays_uncompilable_on_its_constant_shape() {
             "the enum text must stay uncompilable while its constants render as blank declarations:\n{}",
             fs::read_to_string(&source).expect("the text reads")
         );
+    }
+}
+
+// These independent classes keep the root bytes fixed while changing only selected Headers.
+// A call consumer fixes the stored local to Base[]; no component field proof is involved.
+fn array_u16(out: &mut Vec<u8>, n: u16) {
+    out.extend(n.to_be_bytes());
+}
+fn array_u32(out: &mut Vec<u8>, n: u32) {
+    out.extend(n.to_be_bytes());
+}
+fn array_utf8(out: &mut Vec<u8>, s: &str) {
+    out.push(1);
+    array_u16(out, s.len() as u16);
+    out.extend(s.as_bytes());
+}
+fn array_class(out: &mut Vec<u8>, name: u16) {
+    out.push(7);
+    array_u16(out, name);
+}
+fn array_pair(out: &mut Vec<u8>, tag: u8, a: u16, b: u16) {
+    out.push(tag);
+    array_u16(out, a);
+    array_u16(out, b);
+}
+fn array_method(out: &mut Vec<u8>, name: u16, desc: u16, code: &[u8]) {
+    for n in [9, name, desc, 1, 7] {
+        array_u16(out, n);
+    }
+    array_u32(out, 12 + code.len() as u32);
+    array_u16(out, 2);
+    array_u16(out, 4);
+    array_u32(out, code.len() as u32);
+    out.extend(code);
+    array_u16(out, 0);
+    array_u16(out, 0);
+}
+fn array_header(name: &str, parent: &str) -> Vec<u8> {
+    let mut out = Vec::new();
+    array_u32(&mut out, 0xcafebabe);
+    for n in [0, 49, 5] {
+        array_u16(&mut out, n);
+    }
+    array_utf8(&mut out, name);
+    array_class(&mut out, 1);
+    array_utf8(&mut out, parent);
+    array_class(&mut out, 3);
+    for n in [0x21, 2, 4, 0, 0, 0, 0] {
+        array_u16(&mut out, n);
+    }
+    out
+}
+fn array_root(
+    root: &str,
+    base: &str,
+    child: &str,
+    shifted: bool,
+    reversed: bool,
+) -> (Vec<u8>, String) {
+    let desc = format!("([L{child};[L{base};Z)[L{base};");
+    let mut out = Vec::new();
+    array_u32(&mut out, 0xcafebabe);
+    for n in [0, 49, 12] {
+        array_u16(&mut out, n);
+    }
+    array_utf8(&mut out, root);
+    array_class(&mut out, 1);
+    array_utf8(&mut out, "java/lang/Object");
+    array_class(&mut out, 3);
+    array_utf8(&mut out, "choose");
+    array_utf8(&mut out, &desc);
+    array_utf8(&mut out, "Code");
+    array_utf8(&mut out, "take");
+    array_utf8(&mut out, &format!("([L{base};)[L{base};"));
+    array_pair(&mut out, 12, 8, 9);
+    array_pair(&mut out, 10, 2, 10);
+    for n in [0x21, 2, 4, 0, 0, 2] {
+        array_u16(&mut out, n);
+    }
+    let mut code = Vec::new();
+    if shifted {
+        code.extend([0xc4, 0x15, 0, 2]);
+    } else {
+        code.push(0x1c);
+    }
+    let branch = code.len();
+    code.extend([0x99, 0, 0]);
+    let load = |code: &mut Vec<u8>, slot: u8| {
+        if shifted {
+            code.extend([0xc4, 0x19, 0, slot]);
+        } else {
+            code.push(0x2a + slot);
+        }
+    };
+    load(&mut code, u8::from(reversed));
+    let jump = code.len();
+    code.extend([0xa7, 0, 0]);
+    let other = code.len();
+    load(&mut code, u8::from(!reversed));
+    let join = code.len();
+    code[branch + 1..branch + 3].copy_from_slice(&((other - branch) as u16).to_be_bytes());
+    code[jump + 1..jump + 3].copy_from_slice(&((join - jump) as u16).to_be_bytes());
+    if shifted {
+        code.extend([0xc4, 0x3a, 0, 3]);
+    } else {
+        code.push(0x4e);
+    }
+    load(&mut code, 3);
+    code.extend([0xb8, 0, 11, 0xb0]);
+    array_method(&mut out, 5, 6, &code);
+    array_method(&mut out, 8, 9, &[0x2a, 0xb0]);
+    array_u16(&mut out, 0);
+    (out, desc)
+}
+fn array_physical_anchors(
+    report: &ClassSourceReport,
+    bytes: &[u8],
+    name: &str,
+    desc: &str,
+) -> Vec<(u32, u8)> {
+    use jarde_reader::classfile::{MethodSelector, inspect_method_bytecode};
+    let physical = inspect_method_bytecode(
+        bytes,
+        MethodSelector {
+            name: JvmBytes(name.as_bytes().to_vec()),
+            descriptor: JvmBytes(desc.as_bytes().to_vec()),
+        },
+        &mut budget(),
+    )
+    .unwrap();
+    assert!(physical.stopped_at.is_none());
+    let method = method_of(report, name);
+    let body = recovered(report, name);
+    assert!(!body.source_map.is_empty());
+    for segment in body.source_map.segments() {
+        assert!(segment.start() < segment.end());
+        assert!(body.text.get(segment.start()..segment.end()).is_some());
+        for origin in std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
+        {
+            assert_eq!(origin.method(), Some(&method.item.identity));
+            assert!(physical.instructions.iter().any(|i| i.bci == origin.bci()));
+        }
+    }
+    physical
+        .instructions
+        .iter()
+        .map(|i| (i.bci, i.opcode))
+        .collect()
+}
+#[test]
+fn selected_array_headers_control_conditional_store_typing_without_component_field_proof() {
+    for shifted in [false, true] {
+        for reversed in [false, true] {
+            let family = if shifted { "Relocated" } else { "Selection" };
+            let root = format!("{family}Root");
+            let base = format!("{family}Base");
+            let child = format!("{family}Child");
+            let (bytes, desc) = array_root(&root, &base, &child, shifted, reversed);
+            let parent_bytes = array_header(&base, "java/lang/Object");
+            let child_bytes = array_header(&child, &base);
+            let unrelated_bytes = array_header(&child, "java/lang/Object");
+            let root_path = format!("{root}.class");
+            let base_path = format!("{base}.class");
+            let child_path = format!("{child}.class");
+            let duplicate_path = child_path.clone();
+            let mut full_identity = None;
+            for headers in ["full", "missing", "unrelated", "ambiguous"] {
+                let mut entries = vec![(root_path.as_bytes(), bytes.as_slice())];
+                if headers != "missing" {
+                    entries.push((base_path.as_bytes(), parent_bytes.as_slice()));
+                    entries.push((
+                        child_path.as_bytes(),
+                        if headers == "unrelated" {
+                            unrelated_bytes.as_slice()
+                        } else {
+                            child_bytes.as_slice()
+                        },
+                    ));
+                }
+                if headers == "ambiguous" {
+                    entries.push((duplicate_path.as_bytes(), unrelated_bytes.as_slice()));
+                }
+                let report =
+                    class_source_of(&open(&zip_of(&entries)), &root, EnvironmentPolicy::PlainJar);
+                if let Some(identity) = &full_identity {
+                    assert_eq!(&report.class.class_bytes, identity);
+                } else {
+                    full_identity = Some(report.class.class_bytes.clone());
+                }
+                let body = recovered(&report, "choose");
+                let physical = array_physical_anchors(&report, &bytes, "choose", &desc);
+                assert!(physical.iter().any(|(_, op)| *op == 0x99));
+                eprintln!(
+                    "{family} reversed={reversed} headers={headers}: {}",
+                    body.text
+                );
+                if headers == "full" {
+                    assert_eq!(body.content, RecoveryContent::ContainsStatements);
+                    assert!(!body.text.contains("@bytecode"), "{}", body.text);
+                    assert!(
+                        body.text.contains(&format!("{base}[] local3 = arg2 ?")),
+                        "{}",
+                        body.text
+                    );
+                    let selected = body
+                        .artifact
+                        .binding()
+                        .unwrap()
+                        .dependencies()
+                        .iter()
+                        .find(|d| {
+                            d.definition
+                                .location
+                                .entry()
+                                .is_some_and(|e| e.raw_name.0 == child_path.as_bytes())
+                        })
+                        .expect("selected physical Child Header");
+                    assert_eq!(
+                        selected.definition.class_bytes.digest.0,
+                        blake3::hash(&child_bytes).to_hex().to_string()
+                    );
+                } else {
+                    assert!(
+                        !body.text.contains(" ? "),
+                        "unsupported conditional: {}",
+                        body.text
+                    );
+                    assert!(
+                        !body.text.contains(&format!("{base}[] local3 =")),
+                        "unsupported base assignment: {}",
+                        body.text
+                    );
+                    assert!(
+                        body.text
+                            .contains("conditional Java type this run can prove"),
+                        "must reach conditional typing: {}",
+                        body.text
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn complete_array_selection_output_compiles_and_preserves_identity_and_null() {
+    for shifted in [false, true] {
+        for reversed in [false, true] {
+            let family = if shifted {
+                "WideRuntime"
+            } else {
+                "NarrowRuntime"
+            };
+            let root = format!("{family}Root");
+            let base = format!("{family}Base");
+            let child = format!("{family}Child");
+            let (bytes, _) = array_root(&root, &base, &child, shifted, reversed);
+            let parent_bytes = array_header(&base, "java/lang/Object");
+            let child_bytes = array_header(&child, &base);
+            let root_path = format!("{root}.class");
+            let base_path = format!("{base}.class");
+            let child_path = format!("{child}.class");
+            let entries = [
+                (root_path.as_bytes(), bytes.as_slice()),
+                (base_path.as_bytes(), parent_bytes.as_slice()),
+                (child_path.as_bytes(), child_bytes.as_slice()),
+            ];
+            let report =
+                class_source_of(&open(&zip_of(&entries)), &root, EnvironmentPolicy::PlainJar);
+            assert!(!report.text.contains("@bytecode"), "{}", report.text);
+            assert!(!report.text.contains("not recovered"), "{}", report.text);
+            let temp = TempDir::new("whole-array-selection");
+            let harness = format!(
+                "public class Check {{ public static void main(String[] ignored) {{ {child}[] a = new {child}[1]; {base}[] b = new {base}[2]; for (boolean flag : new boolean[] {{true, false}}) {{ for (int mask = 0; mask < 4; mask++) {{ {child}[] x = (mask & 1) == 0 ? a : null; {base}[] y = (mask & 2) == 0 ? b : null; {base}[] expected = {} ? {} : {}; if ({root}.choose(x, y, flag) != expected) throw new AssertionError(); System.out.print(\"ok/\"); }} }} }} }}",
+                "flag",
+                if reversed { "y" } else { "x" },
+                if reversed { "x" } else { "y" }
+            );
+            let mut answers = Vec::new();
+            for mode in ["original", "recovered"] {
+                let directory = temp.path().join(mode);
+                fs::create_dir(&directory).unwrap();
+                fs::write(directory.join(&base_path), &parent_bytes).unwrap();
+                fs::write(directory.join(&child_path), &child_bytes).unwrap();
+                fs::write(directory.join("Check.java"), &harness).unwrap();
+                let mut command = Command::new("javac");
+                command
+                    .args(["--release", "8", "-Xlint:-options", "-cp"])
+                    .arg(&directory)
+                    .arg("-d")
+                    .arg(&directory)
+                    .arg(directory.join("Check.java"));
+                if mode == "original" {
+                    fs::write(directory.join(&root_path), &bytes).unwrap();
+                } else {
+                    // Whole unedited Engine output, including all declarations and comments.
+                    let source = directory.join(format!("{root}.java"));
+                    fs::write(&source, &report.text).unwrap();
+                    command.arg(source);
+                }
+                let compiled = command.output().expect("javac on PATH");
+                assert!(
+                    compiled.status.success(),
+                    "{mode}: {}\n{}",
+                    String::from_utf8_lossy(&compiled.stderr),
+                    report.text
+                );
+                let ran = Command::new("java")
+                    .args(["-Xverify:all", "-cp"])
+                    .arg(&directory)
+                    .arg("Check")
+                    .output()
+                    .expect("java on PATH");
+                assert!(
+                    ran.status.success(),
+                    "{mode}: {}",
+                    String::from_utf8_lossy(&ran.stderr)
+                );
+                answers.push(ran.stdout);
+            }
+            assert_eq!(answers[0], b"ok/ok/ok/ok/ok/ok/ok/ok/");
+            assert_eq!(answers[0], answers[1]);
+        }
     }
 }

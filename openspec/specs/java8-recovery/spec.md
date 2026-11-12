@@ -1460,3 +1460,10 @@ Java恢复 SHALL 支持已证明闭合的普通具名catch重试：每次尝试�
 
 - **WHEN** 真实 Java 源码保存 new Object 或 StringBuilder 并返回 Object，或保存显式 String 转换结果
 - **THEN** 恢复产物保留真实生产者与转换语义，正常值及异常顺序经独立编译和执行证明；显式转换的生产者还切换为真实 Object，逐项验证 ClassCastException 主异常、关闭事件及有/无 close 抑制异常（仅 JVM 版本相关的 ClassCastException 消息归一化）。无效 verifier mutant 不得作为 JVM 语义对照。更广的不兼容写入拒绝边界由现有 reference-constraint 与 incompatible-write 目标独立验证。
+
+#### Scenario: Array conditional assignment and component field identity have separate proofs
+
+- **WHEN** a two-arm array conditional feeds one physical store, its consumers determine the base-array target, and selected dependency Headers prove both arms assignable to that target
+- **THEN** the assignment MAY be presented as a statement with its physical origins; a subsequent element field read lacking component receiver identity proof MUST keep its array, field and return refusal evidence and MUST NOT become a successful field read merely because the assignment type is proved
+- **AND** identical root bytes with missing, unrelated or ambiguous hierarchy Headers MUST NOT publish an unsupported base-array conditional assignment; renamed families, shifted instructions and reversed arms MUST retain the same evidence boundary
+- **AND** a fully recovered array choose/store/return control without the refused field access MUST compile as whole unedited Engine output and preserve each branch's reference identity and null selection compared with the original bytecode
