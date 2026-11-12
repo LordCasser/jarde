@@ -39,6 +39,7 @@
 
 mod loop_transfer;
 mod nested_parameter_snapshot;
+mod source_local_snapshot;
 pub(crate) use loop_transfer::project_dead_loop_transfer_handler;
 
 use jarde_reader::model::JvmBytes;
@@ -27426,7 +27427,9 @@ impl<'a> Builder<'a> {
                     if self.slot_name_denotes_the_same_value(slot, old, reader) {
                         continue;
                     }
-                } else if !self.nested_parameter_snapshot(value, producer, reader)? {
+                } else if !self.nested_parameter_snapshot(value, producer, reader)?
+                    && !self.source_local_snapshot(value, producer, reader)?
+                {
                     continue;
                 }
             }
@@ -39280,6 +39283,7 @@ mod tests {
     mod loop5_catch_binding_tests;
     mod nested_parameter_snapshot_tests;
     mod reference_constraints_tests;
+    mod source_local_snapshot_tests;
     use crate::names::{AliasReason, SlotEvidence};
 
     #[test]
