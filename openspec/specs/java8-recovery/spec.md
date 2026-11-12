@@ -1467,3 +1467,27 @@ Java恢复 SHALL 支持已证明闭合的普通具名catch重试：每次尝试�
 - **THEN** the assignment MAY be presented as a statement with its physical origins; a subsequent element field read lacking component receiver identity proof MUST keep its array, field and return refusal evidence and MUST NOT become a successful field read merely because the assignment type is proved
 - **AND** identical root bytes with missing, unrelated or ambiguous hierarchy Headers MUST NOT publish an unsupported base-array conditional assignment; renamed families, shifted instructions and reversed arms MUST retain the same evidence boundary
 - **AND** a fully recovered array choose/store/return control without the refused field access MUST compile as whole unedited Engine output and preserve each branch's reference identity and null selection compared with the original bytecode
+
+### Requirement: CURRENT — Sequential local copies retain evaluation and exception order
+
+For same-block category-1 copies whose existing proof closes every consumer, the system SHALL present the producer once and preserve the order of the physical local stores and later consumers. Two consecutive local stores may reuse the first stored local; a non-consecutive addition/store consumer closure may use one saved value at the producer. This narrowly supersedes the shared-value and embedded-local-assignment refusal expectations in historical `recover-crossing-array-read-values` only for independently proved sequential forms. Its historical proposal, design, tasks, spec and evidence remain unchanged. A local assignment such as `k = 2` MUST NOT be treated as an unproved external effect merely because it occurs inside the original expression.
+
+#### Scenario: A shared protected read preserves old locals on failure
+
+- **WHEN** a same-block array read feeds a consecutive pair of local stores inside a protected region, including a supported observable index call
+- **THEN** the read and index call SHALL execute once; the second store SHALL use the first stored value; actual null and out-of-bounds failures SHALL preserve both nonzero preexisting locals. Complete unmodified Engine class source SHALL compile in an isolated classpath and match both the original class and explicit expected results under `-Xverify:all`, including debug/no-debug, renamed, revalued, shifted and combined source-built variants and a read-before-alias-mutation control.
+
+#### Scenario: A proved embedded local store keeps its physical position
+
+- **WHEN** an array-read expression contains an independently proved local assignment before the read
+- **THEN** the assignment SHALL remain before that read, so a failing read retains the new assigned local and the old accumulator. An independently proved effectful call feeding that assignment SHALL occur once in its original order; if the call throws, neither dependent local assignment may execute. This permission does not authorize moving an arbitrary call or write across another producer or consumer.
+
+#### Scenario: Additional loop consumers do not grant header ownership
+
+- **WHEN** a supported addition feeds an induction assignment and a later accumulation in the same loop body
+- **THEN** the result SHALL be evaluated once, assigned to the induction local before accumulation, and retained in a `while` body. The independent `for`-header proof remains required. Changed steps, shared tail effects and post-loop uses keep their separately tested boundaries; a throwing step keeps its actual supported-or-refused contract rather than receiving a blanket extra-consumer refusal.
+
+#### Scenario: Unproved control flow and physical origins remain explicit
+
+- **WHEN** consumer closure crosses an unproved block/phi, a genuinely nested or unresolved protected region, or an unproved intervening call/write boundary
+- **THEN** the existing refusal and physical evidence SHALL remain explicit. Source evidence for each relevant read, store, copy and consumer SHALL name its real physical method and instruction, including refusal origins. These tests do not claim all-instruction source coverage: GOTO opcodes are excluded from their universal mapping assertion. The observed missing try-exit GOTO segments are a separately reported limitation, not a proof that every possible unmapped GOTO is harmless. Same-origin metamorphic variants are not an independent holdout corpus.
