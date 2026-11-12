@@ -1190,21 +1190,85 @@ fn effectful_capture_source_inlines_its_local_capture_once_with_call_time_semant
 }
 
 #[test]
-fn phi_merged_capture_source_is_refused_without_hiding_its_helper() {
+fn phi_merged_capture_locals_inline_with_creation_time_values() {
+    for (class, method, yes, no, inverted, debug) in [
+        ("CapturePhi", "merged", 2_i32, 3_i32, false, false),
+        ("RenamedCapture", "select", 11, -7, true, true),
+    ] {
+        let branch = if inverted {
+            format!("if (!choose) captured = {no}; else captured = {yes};")
+        } else {
+            format!("if (choose) captured = {yes}; else captured = {no};")
+        };
+        let source = format!(
+            "import java.util.function.*; public final class {class} {{\n\
+             static IntUnaryOperator {method}(boolean choose) {{ int captured; {branch} return value -> value + captured; }}\n}}\n"
+        );
+        // Both closures exist before either runs. Alternating calls must retain their own
+        // branch-selected capture, including Java int overflow at the arithmetic boundaries.
+        let runner = format!(
+            "public class Runner {{ public static void main(String[] args) {{\n\
+             java.util.function.IntUnaryOperator yes = {class}.{method}(true);\n\
+             java.util.function.IntUnaryOperator no = {class}.{method}(false);\n\
+             for (int value : new int[] {{0, -5, Integer.MAX_VALUE, Integer.MIN_VALUE}}) {{\n\
+               System.out.println(yes.applyAsInt(value)); System.out.println(no.applyAsInt(value));\n\
+               System.out.println(yes.applyAsInt(value));\n\
+             }} }} }}\n"
+        );
+        let mut expected = String::new();
+        for value in [0_i32, -5, i32::MAX, i32::MIN] {
+            for captured in [yes, no, yes] {
+                expected.push_str(&format!("{}\n", value.wrapping_add(captured)));
+            }
+        }
+        assert_phi_capture_replay(class, method, &source, &runner, &expected, debug);
+    }
+}
+
+#[test]
+fn phi_capture_branch_effects_happen_once_at_creation_not_at_invocation() {
+    let source = "import java.util.function.*; public final class CaptureTiming {\n\
+        static int calls;\n\
+        static int next(int value) { calls = calls + 1; return value; }\n\
+        static IntUnaryOperator merged(boolean choose) { int captured;\n\
+          if (choose) captured = next(5); else captured = next(9);\n\
+          return value -> value + captured;\n\
+        }\n}\n";
+    let runner = "public class Runner { public static void main(String[] args) {\n\
+        java.util.function.IntUnaryOperator yes = CaptureTiming.merged(true);\n\
+        java.util.function.IntUnaryOperator no = CaptureTiming.merged(false);\n\
+        System.out.println(CaptureTiming.calls); CaptureTiming.calls = 99;\n\
+        System.out.println(yes.applyAsInt(1)); System.out.println(no.applyAsInt(1));\n\
+        System.out.println(yes.applyAsInt(-8)); System.out.println(no.applyAsInt(-8));\n\
+        System.out.println(CaptureTiming.calls);\n\
+    } }\n";
+    assert_phi_capture_replay(
+        "CaptureTiming",
+        "merged",
+        source,
+        runner,
+        "2\n6\n10\n-3\n1\n99\n",
+        false,
+    );
+}
+
+fn assert_phi_capture_replay(
+    class: &str,
+    method: &str,
+    source: &str,
+    runner: &str,
+    expected: &str,
+    debug: bool,
+) {
     let scratch = Scratch::new();
-    let original = scratch.child("captured-lambda-phi-negative");
-    fs::write(
-        original.join("CapturePhi.java"),
-        "import java.util.function.*;\n\
-         public final class CapturePhi {\n\
-           static IntUnaryOperator merged(boolean choose) { int base; if (choose) base = 2; else base = 3; return x -> x + base; }\n\
-         }\n",
-    )
-    .unwrap();
+    let original = scratch.child("phi-capture-original");
+    fs::write(original.join(format!("{class}.java")), source).unwrap();
+    fs::write(original.join("Runner.java"), runner).unwrap();
     let compile = Command::new("javac")
-        .args(["--release", "8", "-g:none", "-d"])
+        .args(["--release", "8", if debug { "-g" } else { "-g:none" }, "-d"])
         .arg(&original)
-        .arg(original.join("CapturePhi.java"))
+        .arg(original.join(format!("{class}.java")))
+        .arg(original.join("Runner.java"))
         .output()
         .unwrap();
     assert!(
@@ -1212,18 +1276,96 @@ fn phi_merged_capture_source_is_refused_without_hiding_its_helper() {
         "{}",
         String::from_utf8_lossy(&compile.stderr)
     );
-    let snapshot = open(&fs::read(original.join("CapturePhi.class")).unwrap());
-    let recovered = class_source(&snapshot, "CapturePhi", &RecoveryEvidenceRequest::all());
-    assert!(recovered.text.contains("lambda$merged$0"));
+    let bytes = fs::read(original.join(format!("{class}.class"))).unwrap();
+    let helper = lambda_helper_name(&bytes, method);
+    let snapshot = open(&bytes);
+    let recovered = class_source(&snapshot, class, &RecoveryEvidenceRequest::all());
+    let essential = class_source(&snapshot, class, &RecoveryEvidenceRequest::essential());
+    assert_eq!(recovered.text, essential.text);
+    assert!(matches!(
+        recovered.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    assert!(matches!(
+        essential.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    // A helper-name substring alone also matches the omission comment. Assert the actual
+    // committed inline/omission state, not the obsolete blanket Phi-refusal premise.
     assert!(
-        recovered.diagnostics.iter().any(|diagnostic| {
-            diagnostic.code == "lambda_helper_projection_refused"
-                && diagnostic.message.contains("lambda$merged$0")
-                && diagnostic.message.contains("could not take its projection")
-        }),
-        "the refused site must keep its physical companion, with the reason located: {:?}",
+        recovered
+            .text
+            .contains("lambda companion body inlined at invokedynamic@"),
+        "{}",
+        recovered.text
+    );
+    assert!(
+        recovered
+            .text
+            .contains(&format!("omitted physical lambda helper \"{helper}\"")),
+        "{}",
+        recovered.text
+    );
+    assert!(
+        !recovered.text.contains(&format!("{helper}(")),
+        "{}",
+        recovered.text
+    );
+    assert!(
+        !recovered.text.contains(&format!("{helper}$jarde(")),
+        "{}",
+        recovered.text
+    );
+    assert!(!recovered.text.contains("@bytecode"), "{}", recovered.text);
+    assert!(
+        !recovered.text.contains("jarde_refused_body();"),
+        "{}",
+        recovered.text
+    );
+    assert!(
+        !recovered
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "lambda_helper_projection_refused"),
+        "{:?}",
         recovered.diagnostics
     );
+    let emitted = scratch.child("phi-capture-emitted");
+    // No source rewriting, removed comments, helper stubs or borrowing original class files.
+    fs::write(emitted.join(format!("{class}.java")), &recovered.text).unwrap();
+    fs::write(emitted.join("Runner.java"), runner).unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&emitted)
+        .arg(emitted.join(format!("{class}.java")))
+        .arg(emitted.join("Runner.java"))
+        .output()
+        .unwrap();
+    assert!(
+        compile.status.success(),
+        "{}\n{}",
+        recovered.text,
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    for directory in [&original, &emitted] {
+        let run = Command::new("java")
+            .args(["-Xverify:all", "-cp"])
+            .arg(directory)
+            .arg("Runner")
+            .output()
+            .unwrap();
+        assert!(
+            run.status.success(),
+            "{}",
+            String::from_utf8_lossy(&run.stderr)
+        );
+        assert!(
+            run.stderr.is_empty(),
+            "{}",
+            String::from_utf8_lossy(&run.stderr)
+        );
+        assert_eq!(String::from_utf8(run.stdout).unwrap(), expected);
+    }
 }
 
 #[test]
