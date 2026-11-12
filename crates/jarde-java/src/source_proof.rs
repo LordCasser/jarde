@@ -6214,19 +6214,27 @@ fn reference_relation<H: RecoveryHeaders>(
                 // the presented type's own absence, a chain the header walk delegated to another
                 // declared domain, or a parent the rows themselves stated. A chain that never
                 // leaves the runtime domain's own namespace keeps that namespace as its only
-                // authority — a name it cannot resolve stays Missing (the single-sided platform
-                // refusal stands).
+                // authority for positive edges; a missing nonterminal row stays Missing (the
+                // single-sided platform refusal stands).
                 let consult_platform = platform_allowed
                     && (platform || depth == 0 || &loader != &runtime.load_domain.loader);
-                let parents = if consult_platform {
-                    if !platform_search_is_closed(&loader, budget)? {
-                        unknown = true;
-                        continue;
-                    }
+                let parents = if platform_allowed {
                     crate::assignability::platform_parents(runtime.profile.java_release, &name)
+                        .filter(|parents| {
+                            // An absent terminal row can exhaust a non-target branch without
+                            // proving any positive edge in this namespace. Never use this
+                            // exception for the target itself or a nonterminal platform row.
+                            consult_platform || (name != target && parents.is_empty())
+                        })
                 } else {
                     None
                 };
+                if (consult_platform || parents.is_some())
+                    && !platform_search_is_closed(&loader, budget)?
+                {
+                    unknown = true;
+                    continue;
+                }
                 let Some(parents) = parents else {
                     missing = true;
                     continue;

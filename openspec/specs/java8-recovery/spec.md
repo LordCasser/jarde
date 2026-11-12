@@ -1425,3 +1425,19 @@ Java恢复 SHALL 支持已证明闭合的普通具名catch重试：每次尝试�
 
 - **WHEN** 同一输入以default/all恢复，或候选证明与组装遭遇预算耗尽、预取消或晚期停止
 - **THEN** 正文、质量、身份及物理来源 SHALL 不因证据选择改变；停止 SHALL 保留准确原因与已消耗用量，MUST NOT 留下半份循环、重复owner或在取消后继续试探发布
+
+### Requirement: Missing terminal platform rows close only negative reference branches
+
+引用关系证明在既有支持的 Java release 与完整封闭的 initiating-loader 搜索链下，若缺失的非目标节点具有既有平台契约中的空父节点集合，系统 SHALL 将该分支视为已穷尽；仅在全部分支已穷尽且无 Missing、Ambiguous 或 Unknown 时返回 Incompatible。该规则 MUST NOT 新增正向 widening、覆盖已选择的物理 Header、跨越既有层级深度界或吞掉预算与取消停止。
+
+#### Scenario: A physical override ends at an absent terminal platform node
+- **WHEN** 选定的物理 ArrayList Header 只继承缺失的 Object，目标为 List，且平台配置与完整 loader 搜索链符合既有闭合条件
+- **THEN** 引用关系 SHALL 为 Incompatible，已选择 Header 的来源摘要保持不变，输出 MUST NOT 合成到 List 的不安全 cast
+
+#### Scenario: Missing nonterminal nodes do not authorize a positive widening
+- **WHEN** 同一命名空间中的物理用户类经缺失的非终端平台节点才可能到达目标，或缺失节点就是目标本身
+- **THEN** 本终端分支规则 MUST NOT 授权 PlatformContract 或正向 widening；既有准入与拒绝继续适用
+
+#### Scenario: Incomplete or bounded walks remain uncertain
+- **WHEN** 其它分支仍缺失、歧义、未知，loader 搜索链不封闭，或终端节点到达既有固定深度边界
+- **THEN** 系统 MUST 保留对应的不确定性，不得仅因一个终端分支穷尽就声称 Incompatible；执行预算与取消仍按原停止契约交付
