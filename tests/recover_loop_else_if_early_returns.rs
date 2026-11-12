@@ -25,11 +25,11 @@
 //! real javac 8 is present, with that one too, runs both under `-Xverify:all` and compares every
 //! answer with the fixture's own class files. `LR2` — this change's own anchor, the same bsearch
 //! shape over an array — is replayed as a **whole class**, which compiles because every member of
-//! it recovers; the patrol's `BS`/`CB`/`CB2`/`LB` still keep a refused member (the reserved
-//! `jarde_refused_body()` symbol a refused body writes — `LB`'s four negatives, and one quote
-//! inside `BS`), so their replay compiles the recovered **method's** text in a unit with the
-//! fixture's own call sequence and compares the answer with the fixture class's own run. Their
-//! `main`s recovered with `recover-array-initializer-value-positions`, which admitted the
+//! it recovers. The historical BS/CB/CB2/LB selected-method replay is supplemental evidence,
+//! not whole-class proof. The explicit two-pointer gates compile the unmodified whole `BS`
+//! presentation on both frozen compiler legs and compare main, returned arrays, mutated inputs
+//! and failures. LB still keeps its four negative members. The fixture `main`s recovered with
+//! `recover-array-initializer-value-positions`, which admitted the
 //! initialization dance passed as a **non-final** argument (`bsearch(new int[]{1, 3, 5, 7}, 5)`:
 //! the value's reader is the invocation, one step past the run that produces the other argument),
 //! so those drivers are replayed there
@@ -181,6 +181,14 @@ fn open(bytes: &[u8]) -> ArtifactSnapshot {
 
 /// One class-source presentation over the snapshot's own root container.
 fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport {
+    class_source_requested(snapshot, name, Some(&evidence()))
+}
+
+fn class_source_requested(
+    snapshot: &ArtifactSnapshot,
+    name: &str,
+    requested: Option<&RecoveryEvidenceRequest>,
+) -> ClassSourceReport {
     let request = ClassSourceRequest {
         source_target: jarde::SourceTarget::JAVA_8,
         class: ClassRef::Name {
@@ -198,15 +206,17 @@ fn class_source_of(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceReport
             loader: LoaderId("app".to_owned()),
         },
     };
-    match Engine::new()
-        .class_source_with_evidence(
+    let result = if let Some(requested) = requested {
+        Engine::new().class_source_with_evidence(
             slice::from_ref(snapshot),
             &request,
-            &evidence(),
+            requested,
             &mut budget(),
         )
-        .expect("a legal class-source request is answered")
-    {
+    } else {
+        Engine::new().class_source(slice::from_ref(snapshot), &request, &mut budget())
+    };
+    match result.expect("a legal class-source request is answered") {
         OperationOutcome::Performed(report) => report,
         other => panic!("one committed sample answers one definition: {other:?}"),
     }
@@ -344,13 +354,7 @@ fn the_ladder_recovers_where_the_patrol_recorded_the_refusal() {
             leg.label,
             text_of(&report, "bsearch")
         );
-        // The members beside it are untouched: the patrol's own twoPtr defect stays where it was.
-        assert!(
-            text_of(&report, "twoPtr").contains("@bytecode 24 17 23"),
-            "`BS.twoPtr` keeps the patrol's recorded quote on {}:\n{}",
-            leg.label,
-            text_of(&report, "twoPtr")
-        );
+        assert_saved_pointer_order(method_of(&report, "twoPtr"));
 
         let snapshot = open(&leg.fixture("CB"));
         let report = presented(&snapshot, "CB");
@@ -734,10 +738,8 @@ fn every_stripped_anchor_answers_what_its_class_answers() {
             );
         }
 
-        // The patrol's anchors: the fixture's `main` is refused (a `void` body that wrote no
-        // statement carries the reserved `jarde_refused_body()` marker, so the whole-class strip
-        // cannot compile by design). The recovered **method's** text is compiled beside the
-        // fixture's own call sequence instead, and compared with the values its class prints.
+        // Historical supplemental selected-method replay. This does not establish whole-class
+        // compilation or cover BS.twoPtr; the dedicated unmodified whole-BS gates below do.
         let cases: [(&str, &[&str], &str, Vec<String>); 4] = [
             (
                 "BS",
@@ -791,6 +793,359 @@ fn every_stripped_anchor_answers_what_its_class_answers() {
                     methods.join("+")
                 );
             }
+        }
+    }
+}
+
+// Candidate22 calibration: expose each compiler leg and CB independently of stale twoPtr.
+fn independent_ladder_exposure(index: usize, class: &str, method: &str, expected: &str) {
+    let leg = &LEGS[index];
+    let report = presented(&open(&leg.fixture(class)), class);
+    assert_eq!(text_of(&report, method), expected, "{}", leg.label);
+    assert!(!report.text.contains(OVERLAP));
+    assert!(!text_of(&report, method).contains("@bytecode"));
+}
+#[test]
+fn independent_bs_release8() {
+    independent_ladder_exposure(0, "BS", "bsearch", BS_BSEARCH);
+}
+#[test]
+fn independent_bs_real8() {
+    independent_ladder_exposure(1, "BS", "bsearch", BS_BSEARCH);
+}
+#[test]
+fn independent_cb_release8() {
+    independent_ladder_exposure(0, "CB", "loopElseIfRet", CB_LOOP_ELSE_IF_RET);
+}
+#[test]
+fn independent_cb_real8() {
+    independent_ladder_exposure(1, "CB", "loopElseIfRet", CB_LOOP_ELSE_IF_RET);
+}
+
+const TWO_POINTER_DRIVER: &str = r#"public class TwoPointerDriver {
+static void check(int[] input, int[] compacted, int[] mutated) {
+int[] result=BS.twoPtr(input);
+if (!java.util.Arrays.equals(result,compacted) || !java.util.Arrays.equals(input,mutated)) throw new AssertionError(java.util.Arrays.toString(result)+":"+java.util.Arrays.toString(input));
+System.out.println(java.util.Arrays.toString(result)+":"+java.util.Arrays.toString(input));
+}
+static void search(int[] input,int key,int expected) { int got=BS.bsearch(input,key); if(got!=expected) throw new AssertionError(got+":"+expected);System.out.println(got); }
+public static void main(String[] args) {
+check(new int[]{},new int[]{},new int[]{});
+check(new int[]{0,0,0},new int[]{},new int[]{0,0,0});
+check(new int[]{1,-2,3},new int[]{1,-2,3},new int[]{1,-2,3});
+check(new int[]{0,1,0,2,3,0},new int[]{1,2,3},new int[]{1,2,3,2,3,0});
+check(new int[]{0,-7,0,9},new int[]{-7,9},new int[]{-7,9,0,9});
+try {BS.twoPtr(null);throw new AssertionError("missing NPE");} catch(NullPointerException expected) {System.out.println("NPE");}
+search(new int[]{},1,-1);
+search(new int[]{1,3,5,7,9},1,0);search(new int[]{1,3,5,7,9},5,2);search(new int[]{1,3,5,7,9},9,4);
+search(new int[]{1,3,5,7,9},0,-1);search(new int[]{1,3,5,7,9},4,-3);search(new int[]{1,3,5,7,9},10,-6);
+} }"#;
+
+fn whole_bs_gate(index: usize) {
+    let leg = &LEGS[index];
+    let root = std::env::var_os("JARDE_TWO_POINTER_EVIDENCE")
+        .map(PathBuf::from)
+        .expect("explicit evidence directory required")
+        .join(format!("frozen-leg-{index}"));
+    let original = root.join("original");
+    let recovered = root.join("recovered");
+    fs::create_dir_all(&original).unwrap();
+    fs::create_dir_all(&recovered).unwrap();
+    original_classes(leg, "BS", &original);
+    let snapshot = open(&leg.fixture("BS"));
+    let report = presented(&snapshot, "BS");
+    pointer_evidence_parity(&snapshot, "BS", &report);
+    fs::write(root.join("report.txt"), format!("{report:#?}")).unwrap();
+    for name in ["twoPtr", "bsearch"] {
+        pointer_physical_map(leg.family("BS")[0].1, method_of(&report, name), &root);
+    }
+    assert_saved_pointer_order(method_of(&report, "twoPtr"));
+    fs::write(recovered.join("BS.java"), &report.text).unwrap();
+    // Exact whole Engine class_source, with no stripping, stubs or member extraction.
+    let mut observations = Vec::new();
+    for dir in [&original, &recovered] {
+        if dir == &recovered {
+            compile_with(Path::new("javac"), true, &recovered, "BS", &report.text);
+        }
+        assert_eq!(run(dir, "BS").trim_end(), "2/-3/[1, 2, 3]/102334155");
+        fs::write(dir.join("TwoPointerDriver.java"), TWO_POINTER_DRIVER).unwrap();
+        let output = Command::new("javac")
+            .args(["--release", "8", "-cp"])
+            .arg(dir)
+            .arg("-d")
+            .arg(dir)
+            .arg(dir.join("TwoPointerDriver.java"))
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let output = run(dir, "TwoPointerDriver");
+        fs::write(dir.join("stdout.txt"), &output).unwrap();
+        observations.push(output);
+    }
+    let a = &observations[0];
+    let b = &observations[1];
+    fs::write(root.join("original.stdout"), a).unwrap();
+    fs::write(root.join("recovered.stdout"), b).unwrap();
+    assert_eq!(a, b);
+}
+#[test]
+#[ignore = "explicit unmodified whole-class JVM gate with retained evidence"]
+fn whole_bs_release8_matches_frozen_class() {
+    whole_bs_gate(0);
+}
+#[test]
+#[ignore = "explicit unmodified whole-class JVM gate with retained evidence"]
+fn whole_bs_real8_matches_frozen_class() {
+    whole_bs_gate(1);
+}
+
+fn recovered_pointer_body(method: &ClassSourceMethod) -> &RecoveryReport {
+    match &method.outcome {
+        ClassSourceOutcome::Recovered { report, .. } => report,
+        other => panic!("expected recovered member: {other:?}"),
+    }
+}
+
+fn assert_saved_pointer_order(method: &ClassSourceMethod) {
+    let body = recovered_pointer_body(method);
+    assert!(body.produced());
+    assert_eq!(body.quality, jarde_jvm::ir::Quality::Structured);
+    assert_eq!(body.representation, jarde_jvm::ir::Representation::Java);
+    assert_eq!(body.content, RecoveryContent::ContainsStatements);
+    assert!(body.fallbacks.is_empty());
+    assert!(!method.text.contains("@bytecode"));
+    assert!(!method.text.contains("jarde: not recovered"));
+    let lines: Vec<_> = method.text.lines().map(str::trim).collect();
+    let (save_index, saved, advanced) = lines
+        .iter()
+        .enumerate()
+        .find_map(|(index, line)| {
+            let (saved, advanced) = line
+                .strip_prefix("int ")?
+                .strip_suffix(';')?
+                .split_once(" = ")?;
+            if lines.get(index + 1) == Some(&format!("{advanced} = {advanced} + 1;").as_str()) {
+                Some((index, saved, advanced))
+            } else {
+                None
+            }
+        })
+        .expect("saved old destination index immediately precedes increment");
+    assert_ne!(saved, advanced);
+    let write = lines
+        .get(save_index + 2)
+        .expect("array write follows saved index and increment");
+    assert!(
+        write.contains(&format!("[{saved}] = ")) && write.ends_with("];"),
+        "{write}"
+    );
+    assert_eq!(
+        method
+            .text
+            .matches(&format!("{advanced} = {advanced} + 1;"))
+            .count(),
+        1
+    );
+    assert!(method.text.contains("java.util.Arrays.copyOf("));
+}
+
+fn pointer_physical_map(bytes: &[u8], member: &ClassSourceMethod, directory: &Path) {
+    use jarde_reader::classfile::{MethodSelector, inspect_method_bytecode};
+    let name = String::from_utf8_lossy(&member.item.name.raw().0);
+    let descriptor = String::from_utf8_lossy(&member.item.descriptor.raw().0);
+    let physical = inspect_method_bytecode(
+        bytes,
+        MethodSelector {
+            name: JvmBytes(name.as_bytes().to_vec()),
+            descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+        },
+        &mut budget(),
+    )
+    .unwrap();
+    assert!(physical.stopped_at.is_none());
+    let body = recovered_pointer_body(member);
+    let bcis: std::collections::BTreeSet<_> = physical.instructions.iter().map(|i| i.bci).collect();
+    for segment in body.source_map.segments() {
+        assert!(segment.start() < segment.end() && segment.end() <= body.text.len());
+        assert!(
+            body.text.is_char_boundary(segment.start())
+                && body.text.is_char_boundary(segment.end())
+        );
+        for origin in std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
+        {
+            assert_eq!(origin.method(), Some(&member.item.identity));
+            assert!(bcis.contains(&origin.bci()));
+        }
+    }
+    let mut unmapped_gotos = Vec::new();
+    for instruction in &physical.instructions {
+        let segments = body.source_map.of_bci(instruction.bci);
+        if segments.is_empty() && matches!(instruction.opcode, 0xa7 | 0xc8) {
+            unmapped_gotos.push(instruction.bci);
+        } else {
+            assert!(
+                !segments.is_empty(),
+                "{name}: missing physical BCI {} opcode {}",
+                instruction.bci,
+                instruction.opcode
+            );
+        }
+    }
+    fs::write(directory.join(format!("{name}-physical.txt")),format!("{physical:#?}\nUnmapped GOTO BCIs (not full instruction coverage): {unmapped_gotos:?}\n")).unwrap();
+}
+
+fn two_pointer_source_matrix(case: &str, name: &str, removed: i32, shifted: bool) {
+    let root =
+        PathBuf::from(std::env::var_os("JARDE_TWO_POINTER_EVIDENCE").expect("evidence directory"))
+            .join(case);
+    let original = root.join("original");
+    let recovered = root.join("recovered");
+    fs::create_dir_all(&original).unwrap();
+    fs::create_dir_all(&recovered).unwrap();
+    let prefix = if shifted { "events=events+100;" } else { "" };
+    let source = format!(
+        r#"public class {name} {{
+static int events, seen, mode;
+static int[] destination(int[] a) {{ events=events*10+1; if(mode==1) throw new IllegalStateException("destination"); return a; }}
+static int read(int[] a,int index,int advanced) {{ events=events*10+2; seen=advanced; if(mode==2) throw new IllegalArgumentException("read"); return a[index]; }}
+static int[] compact(int[] a) {{ {prefix} int w=0; for(int r=0;r<a.length;r++) {{ if(a[r]!={removed}) a[w++]=a[r]; }} return java.util.Arrays.copyOf(a,w); }}
+static int ordered(int[] dst,int[] src,int start,int index) {{ {prefix} int w=start; destination(dst)[w++]=read(src,index,w); return w; }}
+static int search(int[] a,int key) {{ {prefix} int lo=0,hi=a.length-1;while(lo<=hi) {{int mid=(lo+hi)>>>1;int v=a[mid];if(v<key) lo=mid+1;else if(v>key) hi=mid-1;else return mid;}} return -(lo+1); }}
+}}"#
+    );
+    let rename = |text: String| {
+        if name == "RenamedPointers" {
+            [
+                ("compact", "filterValues"),
+                ("ordered", "storeValue"),
+                ("search", "locate"),
+                ("destination", "targetArray"),
+                ("read", "loadValue"),
+                ("events", "trace"),
+                ("seen", "observed"),
+                ("mode", "failureMode"),
+            ]
+            .into_iter()
+            .fold(text, |text, (old, new)| text.replace(old, new))
+        } else {
+            text
+        }
+    };
+    let source = rename(source);
+    compile_with(Path::new("javac"), true, &original, name, &source);
+    let bytes = fs::read(original.join(format!("{name}.class"))).unwrap();
+    let report = presented(
+        &open(&zip_of(&[(format!("{name}.class").as_bytes(), &bytes)])),
+        name,
+    );
+    pointer_evidence_parity(
+        &open(&zip_of(&[(format!("{name}.class").as_bytes(), &bytes)])),
+        name,
+        &report,
+    );
+    fs::write(root.join("report.txt"), format!("{report:#?}")).unwrap();
+    for method in ["compact", "ordered", "search"] {
+        pointer_physical_map(
+            &bytes,
+            method_of(&report, &rename(method.to_owned())),
+            &root,
+        );
+    }
+    let initial = if shifted { 100 } else { 0 };
+    let driver = format!(
+        r#"public class MatrixDriver {{
+static void reset(int mode) {{ {name}.events=0;{name}.seen=-77;{name}.mode=mode; }}
+static void state(int events,int seen) {{ if({name}.events!=events || {name}.seen!=seen) throw new AssertionError({name}.events+":"+{name}.seen); System.out.println(events+":"+seen); }}
+static void ordered(int[] dst,int[] src,int start,int index,int mode,String expected,int events,int seen) {{ reset(mode);try {{ int out={name}.ordered(dst,src,start,index);if(!expected.equals("ok") || out!=start+1) throw new AssertionError("unexpected success"); }} catch(RuntimeException e) {{if(!e.getClass().getSimpleName().equals(expected)) throw new AssertionError(e);}} state(events,seen);System.out.println(java.util.Arrays.toString(dst)); }}
+public static void main(String[] args) {{
+reset(0);int[] a={{{removed},7,{removed},9}};int[] r={name}.compact(a);if(!java.util.Arrays.equals(r,new int[]{{7,9}})||!java.util.Arrays.equals(a,new int[]{{7,9,{removed},9}}))throw new AssertionError();System.out.println(java.util.Arrays.toString(a));state({initial},-77);
+reset(0);if({name}.compact(new int[0]).length!=0)throw new AssertionError();state({initial},-77);
+reset(0);try{{{name}.compact(null);throw new AssertionError();}}catch(NullPointerException e){{state({initial},-77);}}
+ordered(new int[2],new int[]{{8}},0,0,0,"ok",{initial}*100+12,1);
+ordered(new int[2],new int[]{{8}},1,0,0,"ok",{initial}*100+12,2);
+ordered(null,new int[]{{8}},0,0,0,"NullPointerException",{initial}*100+12,1);
+ordered(new int[0],new int[]{{8}},0,0,0,"ArrayIndexOutOfBoundsException",{initial}*100+12,1);
+ordered(new int[2],null,0,0,0,"NullPointerException",{initial}*100+12,1);
+ordered(new int[2],new int[0],0,0,0,"ArrayIndexOutOfBoundsException",{initial}*100+12,1);
+ordered(null,null,0,0,1,"IllegalStateException",{initial}*10+1,-77);
+ordered(null,null,0,0,2,"IllegalArgumentException",{initial}*100+12,1);
+ordered(new int[2],new int[]{{8}},2147483647,0,0,"ArrayIndexOutOfBoundsException",{initial}*100+12,-2147483648);
+for(int key=0;key<=6;key++) {{reset(0);int value={name}.search(new int[]{{1,3,5}},key);int expected=java.util.Arrays.binarySearch(new int[]{{1,3,5}},key);if(value!=expected)throw new AssertionError();System.out.println(value);state({initial},-77);}}
+reset(0);if({name}.search(new int[0],1)!=-1)throw new AssertionError();state({initial},-77);
+reset(0);try{{{name}.search(null,1);throw new AssertionError();}}catch(NullPointerException e){{state({initial},-77);}}
+}} }}"#
+    );
+    let driver = rename(driver);
+    let mut observations = Vec::new();
+    for dir in [&original, &recovered] {
+        if dir == &recovered {
+            compile_with(Path::new("javac"), true, &recovered, name, &report.text);
+        }
+        fs::write(dir.join("MatrixDriver.java"), &driver).unwrap();
+        let output = Command::new("javac")
+            .args(["--release", "8", "-cp"])
+            .arg(dir)
+            .arg("-d")
+            .arg(dir)
+            .arg(dir.join("MatrixDriver.java"))
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let output = run(dir, "MatrixDriver");
+        fs::write(dir.join("stdout.txt"), &output).unwrap();
+        observations.push(output);
+    }
+    assert_eq!(observations[0], observations[1]);
+}
+#[test]
+#[ignore = "explicit whole-class source-built same-origin matrix"]
+fn two_pointer_matrix_base() {
+    two_pointer_source_matrix("base", "PointerInputs", 0, false);
+}
+#[test]
+#[ignore = "explicit whole-class source-built same-origin matrix"]
+fn two_pointer_matrix_renamed() {
+    two_pointer_source_matrix("renamed", "RenamedPointers", 0, false);
+}
+#[test]
+#[ignore = "explicit whole-class source-built same-origin matrix"]
+fn two_pointer_matrix_revalued() {
+    two_pointer_source_matrix("revalued", "PointerInputs", -3, false);
+}
+#[test]
+#[ignore = "explicit whole-class source-built same-origin matrix"]
+fn two_pointer_matrix_shifted() {
+    two_pointer_source_matrix("shifted", "PointerInputs", 0, true);
+}
+#[test]
+#[ignore = "explicit whole-class source-built same-origin matrix"]
+fn two_pointer_matrix_combined() {
+    two_pointer_source_matrix("combined", "RenamedPointers", -3, true);
+}
+
+fn pointer_evidence_parity(snapshot: &ArtifactSnapshot, name: &str, report: &ClassSourceReport) {
+    let default = class_source_requested(snapshot, name, None);
+    let all = class_source_requested(snapshot, name, Some(&RecoveryEvidenceRequest::all()));
+    assert_eq!(default.text, report.text);
+    assert_eq!(all.text, report.text);
+    for method in &report.methods {
+        let name = String::from_utf8_lossy(&method.item.name.raw().0);
+        let body = recovered_pointer_body(method);
+        for other in [&default, &all] {
+            let candidate = recovered_pointer_body(method_of(other, &name));
+            assert_eq!(body.source_map, candidate.source_map);
+            assert_eq!(body.quality, candidate.quality);
+            assert_eq!(body.content, candidate.content);
+            assert_eq!(body.representation, candidate.representation);
+            assert_eq!(body.syntax_status, candidate.syntax_status);
         }
     }
 }

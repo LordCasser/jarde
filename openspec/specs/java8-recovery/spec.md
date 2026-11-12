@@ -1516,3 +1516,24 @@ A proved same-block category-1 shared initializer SHALL preserve one evaluation 
 - **WHEN** these initializer contracts are validated
 - **THEN** the frozen shared-store whole class and renamed, revalued, shifted and combined source-built controls SHALL compile as complete unmodified Engine output in classpaths isolated from their original classes; original and recovered executions under `-Xverify:all` SHALL match explicit expected values, effect counts/order and abrupt results. Physical source maps and default/all evidence parity SHALL remain intact.
 - **AND** an additional computed-controls input derivative MAY remove only the unrelated refused original method records, with constant pool, fields, retained method records and class attributes verified unchanged and no retained dependency on the removed members. Its complete unmodified Engine output SHALL be compared with that exact-byte derivative, and results MUST be labeled derived-input evidence, never a full frozen-class JVM pass. Same-origin generated variants are not an independent holdout corpus.
+
+### Requirement: Two-pointer compaction preserves the old destination index
+
+A proved saved category-1 index consumed by an int-array store SHALL retain the pre-increment index, the increment and the subsequent read/write evaluation order. This supersedes only the stale `BS.twoPtr` quoted-fallback expectation in the early-return ladder regression. It does not expand the ladder join proof, exceptional-edge admission, ownership or cleanup scope.
+
+#### Scenario: Frozen two-pointer class is verified without source repair
+
+- **WHEN** the exact frozen `BS` bytes from both historical compiler legs are presented
+- **THEN** the two-pointer method SHALL contain statements with Java/Structured quality and no fallback, saving the old destination index before increment and array write without depending on a particular generated temporary name
+- **AND** the complete unmodified Engine class source SHALL compile and execute in a classpath isolated from the original class under JVM verification, matching the original main output, compacted result, mutated input, null exception and bsearch hit/miss/insertion behavior. Any unrelated whole-class compilation failure MUST remain an explicit limitation, not be repaired or hidden by method extraction.
+
+#### Scenario: Effects and physical evidence remain in their original order
+
+- **WHEN** complete source-built rename, value, offset and combined variants exercise the same proved index relation with destination/read effects and abrupt completion
+- **THEN** original and recovered classes SHALL agree on saved index, updated index observations, destination contents, effect order and exceptions, including failed destination evaluation, failed RHS evaluation and array checks
+- **AND** source origins SHALL refer to real instructions and exact physical methods with bounded text spans. Any unmapped structural GOTO instructions MUST be disclosed, never described as full instruction coverage. Same-origin variants are not an independent holdout corpus.
+
+#### Scenario: Early-return ladder boundaries remain unchanged
+
+- **WHEN** the adjacent BS/CB/CB2/LR2 anchors and LB controls are validated
+- **THEN** both compiler legs SHALL be exposed independently, all existing ladder snapshots and LB refusal contracts SHALL remain unchanged, and a positive two-pointer result MUST NOT imply new exception, multi-level ladder or ownership admission.
