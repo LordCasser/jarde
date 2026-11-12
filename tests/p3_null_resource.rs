@@ -343,17 +343,29 @@ fn evidence_selection_and_stops_keep_the_existing_body_contract() {
     };
     let charged = usage.output_bytes;
     let text_bytes = u64::try_from(ample.recovery().text.len()).expect("artifact length fits u64");
-    assert!(charged > text_bytes, "the run charges analysis before text");
-    let output_limit = charged - text_bytes;
+    let ExecutionReport::Complete {
+        usage: analysis_usage,
+    } = &ample.analysis().execution
+    else {
+        panic!("direct method analysis completes before emission");
+    };
+    assert_eq!(
+        analysis_usage.output_bytes, 0,
+        "analysis does not emit text"
+    );
+    assert_eq!(charged, text_bytes, "only emitted text charges output");
+    assert!(text_bytes > 0);
+    let output_limit = text_bytes - 1;
+    let mut limited_budget = Budget::new(Limits {
+        output_bytes: output_limit,
+        ..limits()
+    });
     let stopped = Engine::new()
         .recover_method(
             slice::from_ref(&sample.snapshot),
             jarde::SourceTarget::JAVA_8,
             &body_request,
-            &mut Budget::new(Limits {
-                output_bytes: output_limit,
-                ..limits()
-            }),
+            &mut limited_budget,
         )
         .expect("an exhausted budget is reported as a stopped run");
     assert!(
@@ -367,6 +379,13 @@ fn evidence_selection_and_stops_keep_the_existing_body_contract() {
         "outcome={:?}, charged={charged}, text_bytes={text_bytes}, output_limit={output_limit}",
         stopped.recovery().outcome
     );
+    assert!(limited_budget.usage().output_bytes <= output_limit);
+    if let Some(StopReason::Budget { written, .. }) = stopped.recovery().stop() {
+        assert!(
+            limited_budget.usage().output_bytes >= *written,
+            "no output refund"
+        );
+    }
     assert_eq!(stopped.recovery().content, RecoveryContent::NotProduced);
     assert!(stopped.recovery().text.is_empty());
     assert!(stopped.recovery().source_map.is_empty());

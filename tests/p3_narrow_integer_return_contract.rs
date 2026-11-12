@@ -174,9 +174,31 @@ fn tight_output_budget_and_precancellation_publish_no_partial_cast() {
     assert!(full_report.text.contains("(byte)"));
     let emitted = u64::try_from(full_report.text.len()).expect("text fits u64");
     let output_used = full_budget.usage().output_bytes;
-    assert!(output_used > emitted);
+    let ExecutionReport::Complete {
+        usage: analysis_usage,
+    } = &full.analysis().execution
+    else {
+        panic!("direct method analysis completes before emission");
+    };
+    assert_eq!(
+        analysis_usage.output_bytes, 0,
+        "analysis does not emit text"
+    );
+    assert_eq!(output_used, emitted, "only emitted text charges output");
+    let cut_start = full_report
+        .text
+        .find("(byte)")
+        .expect("target expression is emitted");
+    let span = full_report
+        .source_map
+        .segments()
+        .iter()
+        .filter(|segment| segment.start() <= cut_start && segment.end() > cut_start)
+        .min_by_key(|segment| segment.end() - segment.start())
+        .expect("target expression is source-mapped");
+    let output_limit = u64::try_from(cut_start + 1).expect("output coordinate fits u64");
     let mut limited = Budget::new(Limits {
-        output_bytes: output_used - emitted,
+        output_bytes: output_limit,
         ..task_limits(&[]).expect("bounded defaults")
     });
     let stopped = engine
@@ -199,6 +221,18 @@ fn tight_output_budget_and_precancellation_publish_no_partial_cast() {
             ..
         })
     ));
+
+    let Some(StopReason::Budget { written, .. }) = stopped.stop() else {
+        panic!("the mapped expression hits an output stop");
+    };
+    assert!(*written >= span.start() as u64 && *written < span.end() as u64);
+    assert!(limited.usage().output_bytes <= output_limit);
+    assert!(limited.usage().output_bytes >= *written, "no output refund");
+    eprintln!(
+        "METHOD_OUTPUT_CUT limit={output_limit} span={}..{} written={written}",
+        span.start(),
+        span.end()
+    );
 
     let token = jarde::budget::CancellationToken::new();
     token.cancel();

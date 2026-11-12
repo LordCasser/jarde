@@ -714,12 +714,19 @@ fn compound_recovery_keeps_output_evidence_and_cancellation_stops() {
 
     let emitted = u64::try_from(full_report.text.len()).expect("the artifact length fits u64");
     let complete_output = full_budget.usage().output_bytes;
-    assert!(
-        complete_output > emitted,
-        "analysis output precedes the artifact"
+    let ExecutionReport::Complete {
+        usage: analysis_usage,
+    } = &full.analysis().execution
+    else {
+        panic!("direct method analysis completes before emission");
+    };
+    assert_eq!(
+        analysis_usage.output_bytes, 0,
+        "analysis does not emit text"
     );
+    assert_eq!(complete_output, emitted, "only emitted text charges output");
     let mut output_budget = Budget::new(Limits {
-        output_bytes: complete_output - emitted,
+        output_bytes: emitted - 1,
         ..task_limits(&[]).expect("the task defaults are bounded")
     });
     let stopped_output = engine
@@ -745,6 +752,15 @@ fn compound_recovery_keeps_output_evidence_and_cancellation_stops() {
         ),
         "the body stop keeps its budget dimension: {:?}",
         stopped_report.stop()
+    );
+
+    let Some(StopReason::Budget { written, .. }) = stopped_report.stop() else {
+        panic!("the body hits an output stop");
+    };
+    assert!(output_budget.usage().output_bytes < emitted);
+    assert!(
+        output_budget.usage().output_bytes >= *written,
+        "no output refund"
     );
 
     let mut map_budget = Budget::new(Limits {

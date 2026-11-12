@@ -746,14 +746,33 @@ fn entry_split_output_byte_stops_hit_each_prefix_copy_without_publishing_text() 
 
     let max_output = full_budget.usage().output_bytes;
     assert!(max_output > 1);
+    let ExecutionReport::Complete {
+        usage: analysis_usage,
+    } = &full.analysis().execution
+    else {
+        panic!("direct method analysis completes before emission");
+    };
+    assert_eq!(
+        analysis_usage.output_bytes, 0,
+        "analysis does not emit text"
+    );
+    // Entry-split recovery clones the prefix assignment and its Local operand.
+    // The builder charges both copies of the source name before emitting either span.
+    let prefix_name = spans[0]
+        .2
+        .split_whitespace()
+        .next()
+        .expect("assignment target");
+    let copied_name_bytes = u64::try_from(prefix_name.len()).expect("name length fits u64") * 2;
+    assert_eq!(
+        max_output,
+        full_report.text.len() as u64 + copied_name_bytes,
+        "output accounts for cloned source names and emitted text"
+    );
+    assert_eq!(essential_budget.usage().output_bytes, max_output);
     for (copy_index, span) in spans.iter().enumerate() {
-        // Reading the standalone class charges the same output budget before IR publication.
-        // Start above that known cost; the accepted cut must still be inside the emitter span.
-        let mut low = POSITIVE.len() as u64 + 1;
-        assert!(
-            max_output > low,
-            "the completed run includes class-read and emitter bytes"
-        );
+        // Search output quotas, not input lengths; `written` is the emitter coordinate.
+        let mut low = 1;
         let mut high = max_output;
         let mut found = None;
         for _ in 0..32 {
