@@ -1820,7 +1820,7 @@ fn a_body_the_graph_accounts_for_names_the_copy_nothing_reaches() {
     let facts = facts_of(
         HISTORICAL_V52,
         b"finallyPath",
-        3,
+        2,
         vec![None, Some("arg1".to_string()), None, None],
     );
     let mut budget = Budget::new(limits());
@@ -1836,6 +1836,21 @@ fn a_body_the_graph_accounts_for_names_the_copy_nothing_reaches() {
         .iter()
         .find(|member| member.name.raw().0 == b"finallyPath")
         .expect("the fixture declares finallyPath");
+    // This instance method has one int argument plus its receiver, not three parameters.
+    assert_eq!(member.access_flags & jarde_java::facts::ACC_STATIC, 0);
+    let descriptor_slots = jarde_reader::classfile::descriptor_facts(
+        &member.descriptor.raw().0,
+        jarde_reader::classfile::DescriptorKind::Method,
+    )
+    .expect("the fixture descriptor is valid")
+    .parameter_slots()
+    .expect("the method descriptor states its parameter slots");
+    assert_eq!(descriptor_slots, 1);
+    assert_eq!(facts.method().parameters(), descriptor_slots + 1);
+    assert_eq!(
+        facts.method().parameter_types().get(&1),
+        Some(&jarde_java::ast::Type::Int)
+    );
     let code = method_code_facts(HISTORICAL_V52, member, &mut decode_budget).expect("it decodes");
     let starts: Vec<u32> = code
         .instructions
