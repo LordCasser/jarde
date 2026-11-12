@@ -25,7 +25,7 @@
 //! | `two-origins-one-identity` | the same nested bytes at two entries (one STORED, one DEFLATED), so one class file is reachable under two physical origins |
 //! | `many-method-class` | 64 generated members in one class beside the widest committed classes (24 and 19): the large `M` the task asks for, and the sample a slow consumer is run over |
 //! | `damaged-tail` | a class entry whose bytes are a truncated class file, a nested container whose tail (its central directory) was cut off, and a nested entry that is not a container at all — beside two classes that still recover |
-//! | `deep-expression` | a generated straight-line class with a 16-level `+` tree and a 64-level one — the layer's own rendering ceiling, and one past it — beside the committed nested-evaluation sample whose two members are refusals |
+//! | `deep-expression` | a generated straight-line class with a 16-level `+` tree and a 64-level one — the layer's own rendering ceiling, and one past it — beside the committed nested-evaluation sample whose pre-write values are preserved |
 //!
 //! The corpus is *regenerable* in the strict sense: every builder is a total function of the
 //! committed bytes, every test calls the builders again, and
@@ -105,8 +105,8 @@ const BOOLEAN_CONTEXTS: &[u8] =
 /// `ModLike` (P3 nested arithmetic): one member whose body is a five-fold nested arithmetic tree.
 const MOD_LIKE: &[u8] = include_bytes!("fixtures/p3-nested-arithmetic/v8/ModLike.class");
 
-/// `NestedEval` (P3 nested evaluation): two members evaluated after a write, whose runs state a
-/// refusal — quoted inside an artifact that is still delivered as produced.
+/// `NestedEval` (P3 nested evaluation): nestedLocal and nestedCall preserve their pre-write
+/// values in saved bindings before updating the parameter; nestedPlain is the no-write control.
 const NESTED_EVAL: &[u8] = include_bytes!("fixtures/p3-nested-eval/v8/NestedEval.class");
 
 // ---------------------------------------------------------------------------------------------
@@ -675,6 +675,21 @@ impl Billing {
 //   direct arm's amounts, which is this file's retention claim holding. The arms' work deltas
 //   (+6913 IrItems, +104047 AnalysisSteps) sit within +2/−181 of the six rows' sums (they were
 //   exact sums in earlier rounds; the per-request delivery granularity now differs slightly).
+// 2026-11-12 snapshot-proof reconciliation, on unchanged corpus bytes and both fixed seeds.
+// Historical pins at 52c6bc31 match the pre-admission 98bf8474 engine exactly. Admission 11826868
+// adds AnalysisSteps +34/+181/+10/+322/+10/+106 in flat/nested/two-origins/many/damaged/deep.
+// Only deep adds 45 IrItems and removes 133 OutputBytes. The direct/shared arm changes are
+// +45 IR/+663 analysis/-133 output: 656 nested-proof checks and 15 temporary proof entries,
+// then nestedLocal's existing binding/model/evidence work adds 7 analysis/30 IR. Its complete
+// text shrinks 374 to 241 bytes when saved0 and the return replace the stale-value quote.
+// nestedCall already had its saved call before that admission; its output does not change.
+// The subsequent source-local fallback adds AnalysisSteps +10/+66/+6/+66/+6/+6, or 160 per arm:
+// 136 entry attempts and 8 each of producer-read, write and SSA identity checks. It changes no
+// text, physical identity, IR or output here. Later cumulative milestones add no counted work.
+// Independent original/retained/bulk recordings and charge-site probes reconcile every member;
+// each case's work delta equals its member sum, not an allocation of bulk setup/header costs.
+// All other exact read, physical and delivery dimensions stand. The recorder remains ignored
+// in ordinary tests and is executed separately; these counts are not timing or correctness scores.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     ///
@@ -701,7 +716,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 17,
         ir_items: 2950,
-        analysis_steps: 9068,
+        analysis_steps: 9112,
         result_items: 37,
         output_bytes: 3653,
     };
@@ -728,7 +743,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 26,
         ir_items: 4991,
-        analysis_steps: 14008,
+        analysis_steps: 14255,
         result_items: 66,
         output_bytes: 5624,
     };
@@ -753,7 +768,7 @@ impl Billing {
         class_headers: 4,
         method_bodies: 12,
         ir_items: 2365,
-        analysis_steps: 6262,
+        analysis_steps: 6278,
         result_items: 43,
         output_bytes: 2634,
     };
@@ -850,7 +865,7 @@ impl Billing {
         // 2026-11-08 task 5.2: +568, this run's own measured charge after the `RegionSummary`
         // derived view landed in production (the reason [`Billing::FLAT_MIXED`] records, over
         // this case's 181 bodies); `ir_items` stands and no text or outcome moved.
-        analysis_steps: 83309,
+        analysis_steps: 83697,
         result_items: 122,
         output_bytes: 23333,
     };
@@ -871,7 +886,7 @@ impl Billing {
         // 2026-11-08 task 5.2: +60, this run's own measured charge after the `RegionSummary`
         // derived view landed in production (the reason [`Billing::FLAT_MIXED`] records); every
         // other dimension stands and no text or outcome moved.
-        analysis_steps: 6258,
+        analysis_steps: 6274,
         result_items: 35,
         output_bytes: 2634,
     };
@@ -889,10 +904,10 @@ impl Billing {
         class_bytes: 753,
         class_headers: 0,
         method_bodies: 7,
-        ir_items: 3366,
-        analysis_steps: 6499,
+        ir_items: 3411,
+        analysis_steps: 6611,
         result_items: 18,
-        output_bytes: 1723,
+        output_bytes: 1590,
     };
 
     /// Arm A — the per-member path without a store — over the whole corpus: 187 requests, one fresh
@@ -945,16 +960,16 @@ impl Billing {
         // read/delivery side of the method-level demand-driven recovery: +121 archive entries,
         // +1667 entry bytes and +121 result items; −16 output bytes (the four `Scope`/`Holder`
         // rows' sum). `class_bytes`, `class_headers` and `method_bodies` stand.
-        ir_items: 42567,
+        ir_items: 42612,
         // +44 with `recover-loop-body-try-catch`, the same three candidate proofs
         // [`Billing::MANY_METHOD_CLASS`] records; retention still changes only reads.
         // 2026-11-08 task 5.2: +886 AnalysisSteps, this run's own measured charge after the
         // `RegionSummary` derived view landed in production — exactly the six case rows' own
         // +75/+102/+60/+568/+60/+21 sum, because the arms run the same bodies. `ir_items` and
         // every read dimension stand.
-        analysis_steps: 125223,
+        analysis_steps: 126046,
         result_items: 1499,
-        output_bytes: 39601,
+        output_bytes: 39468,
     };
 
     /// Arm B — the same requests, each carrying the one store that started empty. Pinned for the same
@@ -993,14 +1008,14 @@ impl Billing {
         // 2026-11-07 maintenance batch: the same work moves as the direct arm (+6913 IrItems,
         // +104047 AnalysisSteps, −16 output bytes); every read dimension of this row stands —
         // retention answered the new reads, which is the row's own claim holding.
-        ir_items: 42567,
+        ir_items: 42612,
         // +44 with `recover-loop-body-try-catch`, the same three candidate proofs
         // [`Billing::MANY_METHOD_CLASS`] records; retention still changes only reads.
         // 2026-11-08 task 5.2: +886 AnalysisSteps, the same work the direct arm records; every
         // read dimension of this row stands, which is this row's retention claim holding.
-        analysis_steps: 125223,
+        analysis_steps: 126046,
         result_items: 26,
-        output_bytes: 39601,
+        output_bytes: 39468,
     };
 }
 // ---------------------------------------------------------------------------------------------
@@ -1349,7 +1364,7 @@ fn every_case_holds_the_shape_it_is_named_for() {
     );
 
     // `deep-expression`: the generated class really holds one chain the layer renders and one past
-    // its rendering ceiling; the committed nested-evaluation sample really carries its refusals.
+    // its rendering ceiling; the committed sample preserves both pre-write values explicitly.
     // All of them are read through the operation.
     let case = &cases[5];
     let run = run_case(case, 1, Duration::ZERO);
@@ -1398,21 +1413,38 @@ fn every_case_holds_the_shape_it_is_named_for() {
         "the committed sample's nested expression keeps its grouping: {:?}",
         nested_plain.text
     );
-    let nested_local = member(b"nestedLocal");
     let refusal = "the slot's name would read the value the body wrote in between";
-    assert!(
-        nested_local
+    for (name, body) in [
+        (
+            b"nestedLocal".as_slice(),
+            "{\n    int saved0 = arg0;\n    arg0 = arg0 + 1;\n    return saved0 + 1 + arg0;\n}\n",
+        ),
+        (
+            b"nestedCall".as_slice(),
+            "{\n    int saved0 = tick(arg0);\n    arg0 = arg0 + 1;\n    return saved0 + arg0;\n}\n",
+        ),
+    ] {
+        let saved = member(name);
+        let text = saved.text.as_deref().expect("the saved-value body is text");
+        assert!(
+            text.ends_with(body) && !text.contains("@bytecode") && !text.contains(refusal),
+            "capture, update and return stay ordered without a quoted fallback: {text}"
+        );
+        assert_eq!(
+            saved.outcome,
+            BulkMethodOutcome::Produced,
+            "the body shape and the Produced outcome are separate assertions"
+        );
+    }
+    assert_eq!(
+        member(b"nestedCall")
             .text
             .as_deref()
-            .is_some_and(|text| text.contains(refusal)),
-        "and its refusal is delivered *inside* an artifact that states it: {:?}",
-        nested_local.text
-    );
-    assert_eq!(
-        nested_local.outcome,
-        BulkMethodOutcome::Produced,
-        "`Produced` says the artifact holds at least one statement, not that every byte of the \
-         member was placed: this member's text is one statement and one quoted refusal"
+            .expect("the call body is text")
+            .matches("tick(arg0)")
+            .count(),
+        1,
+        "the pre-write call is evaluated exactly once in the presented body"
     );
     assert_eq!(
         (
@@ -1421,8 +1453,8 @@ fn every_case_holds_the_shape_it_is_named_for() {
             run.report.summary.outcomes.not_produced,
         ),
         (6, 1, 0),
-        "the case's dispositions: the past-ceiling member is the explanation, and the committed \
-         sample's two refusals are quoted inside artifacts that are still produced"
+        "the case's dispositions: the past-ceiling member is the explanation; both saved-value \
+         members retain their Produced outcomes"
     );
     assert_eq!(
         run.report.summary.status(),
