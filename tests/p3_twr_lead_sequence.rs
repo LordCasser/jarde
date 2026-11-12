@@ -51,6 +51,16 @@ fn class_source(bytes: &[u8]) -> ClassSourceReport {
 }
 
 fn class_source_with_header_cap(bytes: &[u8], header_cap: u64) -> ClassSourceReport {
+    match class_source_outcome_with_header_cap(bytes, header_cap) {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("an ample class-source request completes: {other:?}"),
+    }
+}
+
+fn class_source_outcome_with_header_cap(
+    bytes: &[u8],
+    header_cap: u64,
+) -> OperationOutcome<ClassSourceReport> {
     let engine = Engine::new();
     let mut bounded = limits();
     bounded.class_headers = header_cap;
@@ -75,7 +85,7 @@ fn class_source_with_header_cap(bytes: &[u8], header_cap: u64) -> ClassSourceRep
             loader: LoaderId("app".to_owned()),
         },
     };
-    match engine
+    engine
         .class_source_with_evidence(
             slice::from_ref(&snapshot),
             &request,
@@ -83,17 +93,6 @@ fn class_source_with_header_cap(bytes: &[u8], header_cap: u64) -> ClassSourceRep
             &mut budget,
         )
         .expect("a legal class-source request is answered")
-    {
-        OperationOutcome::Performed(report) => report,
-        OperationOutcome::Ambiguous(candidates) => panic!(
-            "one standalone fixture has {} matching definitions",
-            candidates.candidates.len()
-        ),
-        OperationOutcome::Incomplete(candidates) => panic!(
-            "an ample class-source request stopped with {} candidate(s)",
-            candidates.candidates.len()
-        ),
-    }
 }
 
 fn member<'a>(report: &'a ClassSourceReport, name: &str) -> &'a ClassSourceMethod {
@@ -156,8 +155,7 @@ fn the_older_lowerings_level_is_recovered_as_a_try_with_resources() {
 
 #[test]
 fn the_newer_lowerings_keep_their_resource_text_with_recovered_field_concats() {
-    // Compare a completed source unit. The original cap=10 is preserved separately below;
-    // S1 2.4 already stops there during selected Header proof work.
+    // Compare a completed source unit; the shared preparation also fits the original cap=10.
     let report = class_source_with_header_cap(JAVAC23, task_limits(&[]).unwrap().class_headers);
     assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
     let rendered = report.text.as_bytes();
@@ -333,17 +331,79 @@ fn one_code(bytes: &[u8]) -> (usize, usize) {
 }
 
 #[test]
-fn the_original_header_cap_still_reports_the_actual_stop() {
-    let report = class_source(JAVAC23);
-    assert!(!matches!(
-        report.execution,
-        ExecutionReport::Complete { .. }
-    ));
+fn the_original_header_cap_reuses_preparation_and_the_actual_boundary_stops() {
+    let ample = class_source_with_header_cap(JAVAC23, task_limits(&[]).unwrap().class_headers);
+    assert!(matches!(ample.execution, ExecutionReport::Complete { .. }));
+    let needed = ample
+        .usage
+        .counted_usage(CountedBudgetDimension::ClassHeaders);
+    assert!(needed > 0 && needed <= 10);
+
+    // Every member consumes the same prepared class, rather than re-reading its own header.
+    for cap in [10, needed] {
+        let report = class_source_with_header_cap(JAVAC23, cap);
+        assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+        assert_eq!(report.text, ample.text);
+        assert_eq!(
+            report
+                .usage
+                .counted_usage(CountedBudgetDimension::ClassHeaders),
+            needed
+        );
+        assert_eq!(
+            report
+                .usage
+                .counted_usage(CountedBudgetDimension::MethodBodies),
+            ample
+                .usage
+                .counted_usage(CountedBudgetDimension::MethodBodies)
+        );
+        assert_eq!(report.methods.len(), ample.methods.len());
+        for (actual, expected) in report.methods.iter().zip(&ample.methods) {
+            assert_eq!(actual.item.identity, expected.item.identity);
+            assert_eq!(actual.text, expected.text);
+            match (&actual.outcome, &expected.outcome) {
+                (
+                    ClassSourceOutcome::Recovered { report: actual, .. },
+                    ClassSourceOutcome::Recovered {
+                        report: expected, ..
+                    },
+                ) => {
+                    assert_eq!(actual.content, expected.content);
+                    assert_eq!(actual.source_map, expected.source_map);
+                    assert!(matches!(actual.execution, ExecutionReport::Complete { .. }));
+                }
+                other => panic!("the fixture's members have recovery reports: {other:?}"),
+            }
+        }
+    }
+
+    let (execution, diagnostics) = match class_source_outcome_with_header_cap(JAVAC23, needed - 1) {
+        OperationOutcome::Incomplete(candidates) => (candidates.execution, candidates.diagnostics),
+        OperationOutcome::Performed(report) => (report.execution, report.diagnostics),
+        other => panic!("a header boundary cannot make a unique class ambiguous: {other:?}"),
+    };
+    let ExecutionReport::Partial {
+        reason:
+            TerminationReason::BudgetExceeded {
+                dimension: jarde_reader::budget::BudgetDimension::ClassHeaders,
+            },
+        usage,
+    } = &execution
+    else {
+        panic!("the measured header boundary reports its actual stop: {execution:?}");
+    };
     assert_eq!(
-        report
-            .usage
-            .counted_usage(CountedBudgetDimension::ClassHeaders),
-        10
+        usage.counted_usage(CountedBudgetDimension::ClassHeaders),
+        needed - 1
     );
-    assert!(report.text.contains("budget_exceeded_class_headers"));
+    eprintln!(
+        "class header boundary: complete={needed} stopped={}",
+        usage.counted_usage(CountedBudgetDimension::ClassHeaders)
+    );
+    assert!(
+        diagnostics
+            .iter()
+            .any(|item| item.code == "budget_exceeded_class_headers")
+    );
 }

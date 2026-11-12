@@ -19,7 +19,8 @@
 //! * the **runtime**: the original frozen bytes and the recovered classes print the same lines
 //!   under `java -Xverify:all`, normal and exception-injected paths included; the recorded JADX
 //!   column (`results/three-way/run-sha256.txt`) printed the same outputs for the original class;
-//! * the **budget**: a stopped or cancelled run over a recovered body publishes nothing.
+//! * the **budget**: a stopped body publishes no partial text or map; earlier complete class
+//!   members survive a later stop, and pre-cancelled requests report cancellation.
 
 use jarde::*;
 use std::path::{Path, PathBuf};
@@ -434,13 +435,6 @@ fn the_recovered_classes_compile_and_run_the_original_paths() {
 
 #[test]
 fn a_stopped_or_cancelled_run_publishes_no_partial_pop_body() {
-    let complete = class_text(T2, "T2");
-    let mut bounded =
-        task_budget(&[
-            BudgetOverride::new("output_bytes", complete.len() as u64 - 1)
-                .expect("a legal output cap"),
-        ])
-        .expect("the task budget accepts the cap");
     let snapshot = Engine::new()
         .open(ArtifactInput::bytes(T2.to_vec()), &mut budget())
         .expect("the frozen class opens");
@@ -461,33 +455,221 @@ fn a_stopped_or_cancelled_run_publishes_no_partial_pop_body() {
             loader: LoaderId("app".to_owned()),
         },
     };
-    let stopped =
-        match Engine::new().class_source(slice::from_ref(&snapshot), &request, &mut bounded) {
-            Ok(OperationOutcome::Performed(report)) => report,
-            other => panic!("the bounded run answers: {other:?}"),
-        };
-    assert!(
-        !stopped.text.contains("local0.toString();"),
-        "a stopped run publishes no recovered discard statement: {}",
-        stopped.text
-    );
-    assert!(!matches!(
-        stopped.execution,
+    let complete = match Engine::new()
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget(),
+        )
+        .expect("the ample class request answers")
+    {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("the ample class request completes: {other:?}"),
+    };
+    assert!(matches!(
+        complete.execution,
         ExecutionReport::Complete { .. }
     ));
+    let pop = complete
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"popBody")
+        .expect("the fixture contains popBody");
+    let ClassSourceOutcome::Recovered {
+        report: complete_pop,
+        ..
+    } = &pop.outcome
+    else {
+        panic!("popBody has a recovery report");
+    };
+    let body_request = MethodAnalysisRequest {
+        environment: request
+            .environment
+            .build(slice::from_ref(&snapshot))
+            .expect("the single-class environment builds"),
+        method: pop.item.identity.clone(),
+        stages: AnalysisStage::ALL.to_vec(),
+    };
+    let direct = Engine::new()
+        .recover_method_with_evidence(
+            slice::from_ref(&snapshot),
+            SourceTarget::JAVA_8,
+            &body_request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget(),
+        )
+        .expect("the ample direct body answers");
+    assert!(matches!(
+        direct.recovery().execution,
+        ExecutionReport::Complete { .. }
+    ));
+    let discard = "local0.toString();";
+    let discard_start = direct
+        .recovery()
+        .text
+        .find(discard)
+        .expect("the direct body contains the discard");
+    let cut = discard_start + discard.len() - 1;
+    let mut body_budget =
+        task_budget(&[BudgetOverride::new("output_bytes", cut as u64).unwrap()]).unwrap();
+    let stopped_body = Engine::new()
+        .recover_method_with_evidence(
+            slice::from_ref(&snapshot),
+            SourceTarget::JAVA_8,
+            &body_request,
+            &RecoveryEvidenceRequest::all(),
+            &mut body_budget,
+        )
+        .expect("a direct emission stop is reported");
+    assert!(matches!(
+        stopped_body.analysis().execution,
+        ExecutionReport::Complete { .. }
+    ));
+    let RecoveryOutcome::Stopped(StopReason::Budget {
+        dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
+        consumed,
+        requested,
+        written,
+        limit,
+        ..
+    }) = &stopped_body.recovery().outcome
+    else {
+        panic!(
+            "the body stops inside discard emission: {:?}",
+            stopped_body.recovery().outcome
+        );
+    };
+    assert_eq!(*limit, cut as u64);
+    assert!(*written >= discard_start as u64 && *written <= cut as u64);
+    assert_eq!(*consumed, body_budget.usage().output_bytes);
+    assert!(*requested > limit - consumed);
+    assert!(matches!(
+        stopped_body.recovery().execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
+            },
+            ..
+        }
+    ));
+    eprintln!(
+        "discard output boundary: start={discard_start} cap={cut} written={written} consumed={consumed} requested={requested}"
+    );
+    assert_eq!(
+        stopped_body.recovery().content,
+        RecoveryContent::NotProduced
+    );
+    assert!(stopped_body.recovery().text.is_empty());
+    assert!(stopped_body.recovery().source_map.is_empty());
+    assert!(body_budget.usage().output_bytes > 0 && body_budget.usage().output_bytes <= cut as u64);
+
+    let body_token = CancellationToken::new();
+    body_token.cancel();
+    let cancelled_body = Engine::new()
+        .recover_method_with_evidence(
+            slice::from_ref(&snapshot),
+            SourceTarget::JAVA_8,
+            &body_request,
+            &RecoveryEvidenceRequest::all(),
+            &mut Budget::with_cancellation_token(budget().limits().clone(), body_token),
+        )
+        .expect("a pre-cancelled direct body reports its stop");
+    assert!(matches!(
+        cancelled_body.analysis().execution,
+        ExecutionReport::Cancelled { .. }
+    ));
+    assert!(matches!(
+        cancelled_body.recovery().execution,
+        ExecutionReport::Cancelled { .. }
+    ));
+    assert_eq!(
+        cancelled_body.recovery().content,
+        RecoveryContent::NotProduced
+    );
+    assert!(cancelled_body.recovery().text.is_empty());
+    assert!(cancelled_body.recovery().source_map.is_empty());
+
+    // Keep the historical text-length cap as a fixture-specific regression, not a formula for
+    // output charges. A class commits each complete member, not an all-or-nothing artifact.
+    let mut bounded =
+        task_budget(&[
+            BudgetOverride::new("output_bytes", complete.text.len() as u64 - 1).unwrap(),
+        ])
+        .unwrap();
+    let stopped = match Engine::new()
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut bounded,
+        )
+        .expect("the bounded class run answers")
+    {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("the bounded class run retains its completed members: {other:?}"),
+    };
+    assert!(matches!(
+        stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
+            },
+            ..
+        }
+    ));
+    let kept = stopped
+        .methods
+        .iter()
+        .find(|method| method.item.identity == pop.item.identity)
+        .expect("the earlier popBody survives");
+    assert_eq!(kept.text, pop.text);
+    assert!(stopped.text.contains(&kept.text));
+    let ClassSourceOutcome::Recovered {
+        report: kept_report,
+        ..
+    } = &kept.outcome
+    else {
+        panic!("the earlier popBody keeps its recovery report");
+    };
+    assert!(matches!(
+        kept_report.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    assert_eq!(kept_report.content, complete_pop.content);
+    assert_eq!(kept_report.text, complete_pop.text);
+    assert_eq!(kept_report.source_map, complete_pop.source_map);
+    assert!(!kept_report.source_map.is_empty());
+    let main = stopped
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"main")
+        .expect("the later main records its stop");
+    let ClassSourceOutcome::Recovered { report: main, .. } = &main.outcome else {
+        panic!("main has an emission stop report");
+    };
+    assert!(matches!(
+        main.outcome,
+        RecoveryOutcome::Stopped(StopReason::Budget {
+            dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
+            ..
+        })
+    ));
+    assert_eq!(main.content, RecoveryContent::NotProduced);
+    assert!(main.text.is_empty());
+    assert!(main.source_map.is_empty());
 
     let token = CancellationToken::new();
     token.cancel();
     let mut cancelled = Budget::with_cancellation_token(budget().limits().clone(), token);
     match Engine::new().class_source(slice::from_ref(&snapshot), &request, &mut cancelled) {
-        // A run that completed anyway still publishes no recovered discard statement.
-        Ok(OperationOutcome::Performed(report)) => assert!(
-            !report.text.contains("local0.toString();"),
-            "a cancelled run publishes no recovered discard statement: {}",
-            report.text
-        ),
-        // The ordinary cancelled answer: the search never executed, so nothing was published.
-        Ok(_) => {}
-        other => panic!("the cancelled run answers: {other:?}"),
+        Ok(OperationOutcome::Incomplete(candidates)) => {
+            assert!(matches!(
+                candidates.execution,
+                ExecutionReport::Cancelled { .. }
+            ));
+            assert!(candidates.candidates.is_empty());
+        }
+        other => panic!("pre-cancellation stops class binding before any body: {other:?}"),
     }
 }
