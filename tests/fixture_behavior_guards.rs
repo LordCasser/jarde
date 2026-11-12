@@ -202,10 +202,17 @@ fn anonymous_member_base_keeps_the_qualified_receiver_refusal() {
     }
     for name in ["AnonymousMemberBase$1", "AnonymousMemberBase$2"] {
         let child = class_source_of(&snapshot, name);
+        assert!(
+            !child
+                .text
+                .contains(&format!("{name}(AnonymousMemberBase$Outer x0, int value)")),
+            "`{name}` constructor uses the proved source member path for its outer parameter:\n{}",
+            child.text
+        );
         assert_eq!(
             body_statements(
                 &child,
-                &format!("{name}(AnonymousMemberBase$Outer x0, int value)")
+                &format!("{name}(AnonymousMemberBase.Outer x0, int value)")
             ),
             vec!["jarde_refused_body();"],
             "`{name}` keeps its constructor refusal:\n{}",
@@ -732,17 +739,29 @@ fn support_source() -> &'static str {
 /// envelope's `// jarde:`/`// @method`/`// @bytecode` lines are records about the body rather
 /// than statements of it, and the body ends at the first line that is a lone closing brace.
 fn body_statements(report: &ClassSourceReport, declaration: &str) -> Vec<String> {
-    let mut lines = report
-        .text
-        .lines()
-        .skip_while(|line| !line.trim_start().starts_with(declaration));
-    lines.next();
+    let mut lines = report.text.lines();
+    let matched = lines.position(|line| line.trim_start().starts_with(declaration));
+    assert!(
+        matched.is_some(),
+        "declaration selector `{declaration}` is absent from class source:\n{}",
+        report.text
+    );
     lines
         .map(str::trim)
         .take_while(|line| *line != "}")
         .filter(|line| !line.is_empty() && !line.starts_with("//"))
         .map(str::to_owned)
         .collect()
+}
+
+#[test]
+#[should_panic(
+    expected = "declaration selector `missing_body_statements_negative_control()` is absent from class source"
+)]
+fn body_statements_fails_closed_when_declaration_is_absent() {
+    let snapshot = member_base_snapshot();
+    let report = class_source_of(&snapshot, "AnonymousMemberBase");
+    let _ = body_statements(&report, "missing_body_statements_negative_control()");
 }
 
 /// A stored-only archive, built with the repository's own `rawzip` dev-dependency.
