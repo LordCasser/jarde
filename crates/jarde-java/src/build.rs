@@ -27414,6 +27414,7 @@ impl<'a> Builder<'a> {
                         || self.compounds.keeps_inline(*bci)
                         || self.postfix.owns(*bci)
                         || self.chains.owns(*bci)
+                        || self.static_prefix_return.as_ref().is_some_and(|prefix| prefix.owns(*bci))
             ) {
                 continue;
             }
@@ -27729,6 +27730,10 @@ impl<'a> Builder<'a> {
             || self.chains.owns(at)
             || self.array_initializers.owns(at)
             || self.postfix.owns(at)
+            || self
+                .static_prefix_return
+                .as_ref()
+                .is_some_and(|prefix| prefix.owns(at))
             || self.compounds.owns_copy(at)
             || self.field_copies.owns(at)
             || self.local_assignments.contains_key(&at)
