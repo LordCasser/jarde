@@ -334,6 +334,16 @@ fn class_with_locals(
     max_stack: u16,
     max_locals: u16,
 ) -> Vec<u8> {
+    class_with_descriptor(code, handlers, max_stack, max_locals, b"()V")
+}
+
+fn class_with_descriptor(
+    code: &[u8],
+    handlers: &[(u16, u16, u16, u16)],
+    max_stack: u16,
+    max_locals: u16,
+    descriptor: &[u8],
+) -> Vec<u8> {
     let mut output = 0xcafebabe_u32.to_be_bytes().to_vec();
     u16b(&mut output, 0);
     u16b(&mut output, 52);
@@ -345,7 +355,7 @@ fn class_with_locals(
     output.push(7);
     u16b(&mut output, 3);
     utf8(&mut output, b"run");
-    utf8(&mut output, b"()V");
+    utf8(&mut output, descriptor);
     utf8(&mut output, b"Code");
     u16b(&mut output, 0x21);
     u16b(&mut output, 2);
@@ -1769,45 +1779,41 @@ fn the_nested_eval_sample_crosses_the_wire_field_by_field() {
     let local = one_recovery_through_both_entry_paths(&class_path, b"nestedLocal", b"(I)I");
     let plain = one_recovery_through_both_entry_paths(&class_path, b"nestedPlain", b"(I)I");
     let call = one_recovery_through_both_entry_paths(&class_path, b"nestedCall", b"(I)I");
-    // The sample's own counter is covered by the same comparison: the equality must hold for a body
-    // written whole as well as for the refusals, or it would only be an equality about refusals.
+    // The sample's own counter is covered by the same whole-document comparison.
     one_recovery_through_both_entry_paths(&class_path, b"tick", b"(I)I");
 
-    // `nestedLocal` is `(x + 1) + ++x`: the load at BCI 0 is judged where the text that evaluates it
-    // lands (the `ireturn` at BCI 8), and the `iinc` at BCI 3 wrote slot 0 before that. The write
-    // the layer can prove is still written, the statement that would answer 17 where the original
-    // answers 16 is not, and the quote names the consumer and the read it refused.
+    // `nestedLocal` is `(x + 1) + ++x`: preserve the BCI 0 parameter value before
+    // the BCI 3 increment. This is the same typed-snapshot contract as p3_eval_context.
     let report = &local["result"]["report"];
     let text = report["text"]
         .as_str()
         .expect("the report carries its text");
+    let saved = "int saved0 = arg0;";
+    let write = "arg0 = arg0 + 1;";
+    let returned = "return saved0 + 1 + arg0;";
+    for statement in [saved, write, returned] {
+        assert_eq!(text.matches(statement).count(), 1, "{text}");
+    }
     assert!(
-        text.contains("arg0 = arg0 + 1;"),
-        "the increment at BCI 3 is a write this layer writes:\n{text}"
+        text.find(saved).unwrap() < text.find(write).unwrap()
+            && text.find(write).unwrap() < text.find(returned).unwrap(),
+        "the pre-write value must be saved before the increment and returned after it:\n{text}"
     );
     assert!(
         !text.contains("return arg0 + 1 + arg0;"),
-        "the load at BCI 0 no longer denotes what slot 0 holds at BCI 8:\n{text}"
+        "the old load must not become the post-write slot value:\n{text}"
     );
-    assert_eq!(
-        quoted_bcis(text),
-        vec![8, 0],
-        "the quote states the `ireturn` at BCI 8 and the load at BCI 0 it could not name:\n{text}"
-    );
-    assert!(
-        text.contains("BCI 8") && text.contains("BCI 0"),
-        "and the reason states both bytecode indexes in words:\n{text}"
-    );
-    assert_eq!(report["representation"], "mixed", "{report}");
-    assert_eq!(report["quality"], "fallback", "{report}");
-    assert_eq!(
-        report["outcome"], "produced",
-        "a degraded body is still an answer: {report}"
-    );
-    assert_eq!(
-        report["content"], "contains_statements",
-        "the increment is a statement written beside the quote: {report}"
-    );
+    assert!(quoted_bcis(text).is_empty(), "{text}");
+    for bci in [0, 1, 2, 3, 6, 7, 8] {
+        assert!(
+            !wire_text_of_bci(report, bci).is_empty(),
+            "the wire source map must retain physical BCI {bci}: {report}"
+        );
+    }
+    assert_eq!(report["representation"], "java", "{report}");
+    assert_eq!(report["quality"], "structured", "{report}");
+    assert_eq!(report["outcome"], "produced", "{report}");
+    assert_eq!(report["content"], "contains_statements", "{report}");
 
     // `nestedCall` saves the invocation value before the slot changes, then the return uses that
     // saved value after the increment. The original calls `tick` on the old argument exactly once.
@@ -1842,6 +1848,43 @@ fn the_nested_eval_sample_crosses_the_wire_field_by_field() {
     );
     assert_eq!(report["representation"], "java", "{report}");
     assert_eq!(report["quality"], "structured", "{report}");
+    assert_eq!(report["content"], "contains_statements", "{report}");
+}
+
+/// A neighboring terminal tree with division cannot use the bounded pure-arithmetic
+/// parameter snapshot proof. Preserve refusal coverage beside the newly structured sample.
+#[test]
+fn a_nested_division_boundary_crosses_the_wire_field_by_field() {
+    let temp = TempDir::new();
+    // (old arg0 + 1) + (updated arg0 / 2): division is outside the snapshot proof.
+    // BCI 0 loads the old parameter, BCI 3 increments it, and BCI 10 returns the sum.
+    let bytes = class_with_descriptor(
+        &[0x1a, 0x04, 0x60, 0x84, 0, 1, 0x1a, 0x05, 0x6c, 0x60, 0xac],
+        &[],
+        3,
+        1,
+        b"(I)I",
+    );
+    let path = temp.write("Test.class", &bytes);
+    let value = one_recovery_through_both_entry_paths(&path, b"run", b"(I)I");
+    let report = &value["result"]["report"];
+    let text = report["text"]
+        .as_str()
+        .expect("the report carries its text");
+    assert!(text.contains("arg0 = arg0 + 1;"), "{text}");
+    assert!(!text.contains("int saved"), "{text}");
+    assert!(!text.contains("return arg0 + 1 +"), "{text}");
+    assert_eq!(quoted_bcis(text), vec![10, 0], "{text}");
+    assert!(text.contains("BCI 10") && text.contains("BCI 0"), "{text}");
+    for bci in [0, 3, 10] {
+        assert!(
+            !wire_text_of_bci(report, bci).is_empty(),
+            "BCI {bci}: {report}"
+        );
+    }
+    assert_eq!(report["representation"], "mixed", "{report}");
+    assert_eq!(report["quality"], "fallback", "{report}");
+    assert_eq!(report["outcome"], "produced", "{report}");
     assert_eq!(report["content"], "contains_statements", "{report}");
 }
 
