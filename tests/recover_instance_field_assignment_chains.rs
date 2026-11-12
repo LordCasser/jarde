@@ -1,28 +1,6 @@
-//! `recover-instance-field-assignment-chains` in one frozen target: the copy family's **chain**
-//! shape as javac writes it for **instance** fields — `dup_x1` copies whose inserted copies serve
-//! as the stores' values while the receivers stay on the stack below them — on **both** compiler
-//! legs (javac 23.0.1 `--release 8` and real javac 8, Corretto 1.8.0_432, from the same sources).
-//!
-//! `this.a = this.b = this.c = 5` compiles to
-//! `aload_0; aload_0; aload_0; iconst_5; dup_x1; putfield c; dup_x1; putfield b; putfield a`: the
-//! value is evaluated **once**, every copy hands one store its own copy, and each copy is inserted
-//! *under* the receiver it also moves — so the store right after it is called on that receiver and
-//! the copy left below is what the next copy reads. The change presents one assignment per store,
-//! in bytecode order (which is the source's own right-to-left order), and the identity it adds to
-//! the static chain is that every store is called on the **same `this`**: the three `aload_0`s read
-//! the one value slot 0's entry state holds.
-//!
-//! The fixtures are this change's own `CP` (the three-store chain and the two-store chain, beside a
-//! `main` that exercises both), `MX` (the mixed chain — static and instance stores in one dance, a
-//! recorded boundary: those keep the refusal they had) and `NEG` (the four refusals: a cross-object
-//! chain, a copy consumed by the expression the stored value is part of, a source that would have
-//! to be saved, and a receiver a call produced).
-//!
-//! The tests pin the presented texts, keep every refusal verbatim, and the ignored replay strips
-//! the presentations the way the patrols' own stripped sources were made (comment lines dropped),
-//! compiles each anchor with the installed `javac --release 8` and, when a real javac 8 is present,
-//! with that one too, runs both under `-Xverify:all` and compares every answer with the fixture's
-//! own class files.
+//! Instance copy chains, including independently replayed historical boundaries.
+//! Recovery preserves each receiver, producer evaluation and bytecode store order.
+//! Strict JVM tests compile complete unedited Engine output on both frozen compiler legs.
 
 use jarde::class_source::ClassSourceReport;
 use jarde::*;
@@ -150,46 +128,6 @@ const NO_QUOTE_METHODS: &[(&str, &str)] = &[
 
 /// The one diagnostic the static chain's own change left on this shape, and this change removes.
 const COPY_REFUSAL: &str = "has no proved local assignment";
-
-/// The mixed chain's refusals: a dance that carries a static store beside the instance ones is a
-/// recorded boundary — the instance form's own run is the one whose every store is an instance
-/// write called on the same `this`, and nothing here improvises a second criterion for the mix.
-const MX_REFUSALS: &[(&str, &str)] = &[
-    (
-        "mixStaticRight()V",
-        "// the copy at BCI 3 has no proved local assignment",
-    ),
-    (
-        "mixStaticLeft()V",
-        "// the instruction at BCI 4 is not part of the provable subset",
-    ),
-    (
-        "mixStaticMid()V",
-        "// the instruction at BCI 4 is not part of the provable subset",
-    ),
-];
-
-/// The four refusals `NEG` keeps, verbatim: a cross-object chain (the receivers are two different
-/// values), a copy consumed by the expression the stored value is part of, a source that may not
-/// be written once per store, and a receiver a call produced.
-const NEG_REFUSALS: &[(&str, &str)] = &[
-    (
-        "cross()V",
-        "// the dependency chain from BCI 0 to final consumer 11 is not bounded",
-    ),
-    (
-        "expr()I",
-        "// the instruction at BCI 3 is not part of the provable subset",
-    ),
-    (
-        "saved()V",
-        "// the instruction at BCI 6 is not part of the provable subset",
-    ),
-    (
-        "holderChain()V",
-        "// the dependency chain from BCI 1 to final consumer 13 is not bounded",
-    ),
-];
 
 // -------------------------------------------------------------------------------------------
 // The class-source surface.
@@ -388,32 +326,97 @@ fn no_recovering_method_keeps_a_quote() {
 // The boundary and the negatives keep their refusals.
 // -------------------------------------------------------------------------------------------
 
-/// The mixed chain's three dances and the four negatives keep the text they had, and no refused
-/// method writes a field assignment its own refusal does not cover.
+/// Generic copy proofs retain each producer and store in bytecode evaluation order.
+/// The complete class and side-effect controls are replayed by the strict JVM oracles.
 #[test]
-fn the_boundary_and_the_negatives_keep_their_refusals_on_both_legs() {
+fn the_historical_boundaries_preserve_proved_evaluation_and_store_order_on_both_legs() {
     for leg in LEGS {
-        for (class, refusals) in [("MX", MX_REFUSALS), ("NEG", NEG_REFUSALS)] {
-            let snapshot = open(&leg.fixture(class));
-            let report = presented(&snapshot, class);
-            for (signature, refusal) in refusals {
+        for (class, cases) in [
+            (
+                "MX",
+                vec![
+                    (
+                        "mixStaticRight()V",
+                        vec!["MX.s = 5;", "this.b = 5;", "this.a = 5;"],
+                    ),
+                    (
+                        "mixStaticLeft()V",
+                        vec!["this.b = 6;", "this.a = 6;", "MX.s = 6;"],
+                    ),
+                    (
+                        "mixStaticMid()V",
+                        vec![
+                            "this.b = 7;",
+                            "int saved0 = 7;",
+                            "MX.s = saved0;",
+                            "this.a = saved0;",
+                        ],
+                    ),
+                ],
+            ),
+            (
+                "NEG",
+                vec![
+                    (
+                        "cross()V",
+                        vec![
+                            "NEG saved0 = NEG.o1;",
+                            "NEG saved1 = NEG.o2;",
+                            "saved1.b = 5;",
+                            "saved0.a = 5;",
+                        ],
+                    ),
+                    (
+                        "expr()I",
+                        vec!["this.b = 5;", "this.a = 5 + 1;", "return this.b;"],
+                    ),
+                    (
+                        "saved()V",
+                        vec![
+                            "int saved0 = f();",
+                            "this.c = saved0;",
+                            "this.b = saved0;",
+                            "this.a = saved0;",
+                        ],
+                    ),
+                    (
+                        "holderChain()V",
+                        vec![
+                            "NEG saved0 = this.h();",
+                            "NEG saved1 = this.h();",
+                            "saved1.b = 5;",
+                            "saved0.a = 5;",
+                        ],
+                    ),
+                ],
+            ),
+        ] {
+            let report = presented(&open(&leg.fixture(class)), class);
+            assert!(
+                quoted_bcis(&report.text).is_empty(),
+                "{}: {}",
+                leg.label,
+                report.text
+            );
+            assert!(!report.text.contains("not recovered"), "{}", report.text);
+            for (signature, statements) in cases {
                 let body = method_body(&report.text, signature);
-                assert!(
-                    body.contains(refusal),
-                    "`{class}.{signature}` on {} lost the refusal {refusal:?}:\n{body}",
-                    leg.label
-                );
-                // The refused body presents no field assignment: a copy's value or receiver
-                // written as a statement would be the effect the refusal exists to keep out of
-                // the text.
-                for line in body.lines().filter(|line| !line.contains("//")) {
-                    assert!(
-                        !line.contains("this.a =")
-                            && !line.contains("this.b =")
-                            && !line.contains("this.c ="),
-                        "`{class}.{signature}` on {} presented an assignment its own refusal does not cover: {line:?}",
-                        leg.label
+                let mut end = 0;
+                for statement in statements {
+                    assert_eq!(
+                        body.matches(statement).count(),
+                        1,
+                        "{class}.{signature}: {body}"
                     );
+                    let start = body.find(statement).unwrap();
+                    assert!(start >= end, "{class}.{signature}: out of order: {body}");
+                    end = start + statement.len();
+                }
+                if signature == "saved()V" {
+                    assert_eq!(body.matches("f()").count(), 1, "{body}");
+                }
+                if signature == "holderChain()V" {
+                    assert_eq!(body.matches("this.h()").count(), 2, "{body}");
                 }
             }
         }
@@ -437,16 +440,6 @@ fn scratch(label: &str) -> PathBuf {
     path
 }
 
-/// The comment-stripped text one class's presentation becomes.
-fn stripped(report: &ClassSourceReport) -> String {
-    report
-        .text
-        .lines()
-        .filter(|line| !line.trim_start().starts_with("//"))
-        .collect::<Vec<_>>()
-        .join("\n")
-}
-
 /// Run one committed fixture under `-Xverify:all`, answering its standard output and exit status.
 fn run_class(runner: &str, dir: &Path, class: &str) -> String {
     let run = Command::new(runner)
@@ -463,7 +456,7 @@ fn run_class(runner: &str, dir: &Path, class: &str) -> String {
     )
 }
 
-/// Compile one stripped presentation and run it under `-Xverify:all`, answering its standard
+/// Compile one complete unedited presentation and run it under `-Xverify:all`, answering its standard
 /// output and exit status.
 fn compile_and_run(compiler: &str, runner: &str, release: bool, dir: &Path, class: &str) -> String {
     let source = dir.join(format!("{class}.java"));
@@ -506,48 +499,18 @@ fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
         for &class in CLASSES {
             let snapshot = open(&leg.fixture(class));
             let report = presented(&snapshot, class);
-            let text = stripped(&report);
-            // `MX` and `NEG` are the refused classes: every one of their chain bodies is quoted, so
-            // their stripped texts are the *safe* form the soundness invariant asks for — a method a
-            // reader cannot compile, never one that compiles and behaves differently. The refusal
-            // texts are pinned by the tests above; the replay's job for them is exactly that they do
-            // not compile.
-            if class != "CP" {
-                assert!(
-                    text.contains("jarde_refused_body"),
-                    "`{class}` on {} holds no refused body marker:\n{text}",
-                    leg.label
-                );
-                let work = scratch(&format!("negative-{class}"));
-                fs::write(work.join(format!("{class}.java")), &text)
-                    .expect("the presentation is written");
-                let compiled = Command::new("/usr/bin/javac")
-                    .arg("--release")
-                    .arg("8")
-                    .arg("-nowarn")
-                    .arg("-d")
-                    .arg(&work)
-                    .arg(work.join(format!("{class}.java")))
-                    .output()
-                    .expect("the compiler runs");
-                assert!(
-                    !compiled.status.success(),
-                    "`{class}` on {} is quoted whole and its stripped text must not compile:\n{text}",
-                    leg.label
-                );
-                continue;
-            }
+            let text = report.text.clone();
             assert!(
                 !text.contains("jarde_refused_body"),
                 "`{class}` on {} still holds a refused body marker:\n{text}",
                 leg.label
             );
             let want_dir = original_dir(leg.label, leg, class);
-            let want = run_class("/usr/bin/java", &want_dir, class);
+            let want = run_class("java", &want_dir, class);
             let work = scratch(&format!("recovered-{class}"));
             fs::write(work.join(format!("{class}.java")), &text)
                 .expect("the presentation is written");
-            let got = compile_and_run("/usr/bin/javac", "/usr/bin/java", true, &work, class);
+            let got = compile_and_run("javac", "java", true, &work, class);
             assert_eq!(
                 got, want,
                 "`{class}` on {} answers differently after the round trip:\n{text}",
@@ -570,6 +533,33 @@ fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
                     leg.label
                 );
             }
+        }
+    }
+}
+
+#[path = "support/copy_boundary_oracle.rs"]
+mod boundary_oracle;
+
+const CHAIN_RUNNER: &str = r#"public class Replay { public static void main(String[] args) { NEG.main(args); for (int mode=0;mode<4;mode++) { NEG.o1=mode==1?null:new NEG(); NEG.o2=mode==2?null:mode==3?NEG.o1:new NEG(); try { new NEG().cross(); System.out.println("ok"); } catch(Throwable t) { System.out.println(t.getClass().getName()); } System.out.println((NEG.o1==null?-99:NEG.o1.a)+"/"+(NEG.o2==null?-99:NEG.o2.b)); } for(int mode=0;mode<3;mode++) { Probe p=new Probe(); p.mode=mode; try {p.holderChain();System.out.println("ok");} catch(Throwable t){System.out.println(t.getClass().getName());} System.out.println(p.calls+"/"+p.left.a+"/"+p.right.b); } } } class Probe extends NEG { int calls,mode; NEG left=new NEG(),right=new NEG(); NEG h() { calls++; if(mode==1 && calls==2) throw new IllegalStateException(); if(mode==2 && calls==1) return null; return calls==1?left:right; } }"#;
+
+#[test]
+#[ignore = "strict full unedited class JVM equality, both frozen compiler legs"]
+fn proved_chain_classes_require_full_class_equality() {
+    for (i, leg) in LEGS.iter().enumerate() {
+        for class in ["MX", "NEG"] {
+            let report = presented(&open(&leg.fixture(class)), class);
+            let replay = if class == "MX" {
+                "public class Replay { public static void main(String[] args) { MX.main(args); } }"
+            } else {
+                CHAIN_RUNNER
+            };
+            boundary_oracle::require_equal(
+                &format!("proved-chain-{i}-{class}"),
+                class,
+                leg.family(class)[0].1,
+                &report.text,
+                replay,
+            );
         }
     }
 }

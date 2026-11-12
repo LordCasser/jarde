@@ -34,7 +34,7 @@
 //! fixture that owns it.
 //!
 //! The tests pin the presented texts, keep both refusals verbatim, and the ignored replay strips the
-//! presentations the way the patrols' own stripped sources were made (comment lines dropped),
+//! complete unedited presentations,
 //! compiles each anchor with the installed `javac --release 8` and, when a real javac 8 is present,
 //! with that one too, runs both under `-Xverify:all` and compares every answer with the fixture's
 //! own class files.
@@ -194,9 +194,6 @@ const NEG_LIVE_LINE: &[&str] = &[
 /// the same refusal the shape had before this change).
 const NEG_SHORT_CHAIN: &str =
     "// the short-circuit chain from BCI 5 through 11 reaches a shared value consumer at BCI 19";
-
-/// The multi-reader control keeps the copy family's own refusal, verbatim.
-const MULTI_READER_REFUSAL: &str = "// the copy at BCI 11 has no proved local assignment";
 
 /// The one diagnostic this change exists to remove from the anchors.
 const COPY_REFUSAL: &str = "has no proved local assignment";
@@ -463,22 +460,23 @@ fn the_loop_test_presents_and_the_short_circuit_chain_keeps_its_refusal() {
             );
         }
 
-        // The multi-reader control is the copy family's own frozen shape: it must keep the refusal
-        // this change's two-reader criterion exists for.
+        // ExtraCopy replaced iconst_5 with dup. Both comparison operands must
+        // retain the same saved value; the original length computation occurs once.
         let jar = zip_of(&[(b"cf06/InnerAssignCases.class", MULTI_READER)]);
-        let snapshot = open(&jar);
-        let report = presented(&snapshot, MULTI_READER_CLASS);
+        let report = presented(&open(&jar), MULTI_READER_CLASS);
         assert!(
-            report.text.contains(MULTI_READER_REFUSAL),
-            "the multi-reader control on {} lost its refusal:\n{}",
-            leg.label,
+            !report.text.contains("@bytecode") && !report.text.contains("not recovered"),
+            "{}",
             report.text
         );
+        let body = method_body(&report.text, "lengthBranch(Ljava/lang/String;)I");
+        assert_eq!(body.matches("arg0.length()").count(), 1, "{body}");
         assert!(
-            !report.text.contains("local1 ="),
-            "the multi-reader control on {} was presented:\n{}",
-            leg.label,
-            report.text
+            body.contains("int saved0 = arg0.length();")
+                && body.contains("int local1 = saved0;")
+                && body.contains("if (saved0 > saved0)")
+                && body.contains("return local1;"),
+            "{body}"
         );
     }
 }
@@ -500,16 +498,6 @@ fn scratch(label: &str) -> PathBuf {
     path
 }
 
-/// The comment-stripped text one class's presentation becomes.
-fn stripped(report: &ClassSourceReport) -> String {
-    report
-        .text
-        .lines()
-        .filter(|line| !line.trim_start().starts_with("//"))
-        .collect::<Vec<_>>()
-        .join("\n")
-}
-
 /// Run one committed fixture under `-Xverify:all`, answering its standard output and exit status.
 fn run_class(runner: &str, dir: &Path, class: &str) -> String {
     let run = Command::new(runner)
@@ -526,7 +514,7 @@ fn run_class(runner: &str, dir: &Path, class: &str) -> String {
     )
 }
 
-/// Compile one stripped presentation and run it under `-Xverify:all`, answering its standard
+/// Compile one complete unedited presentation and run it under `-Xverify:all`, answering its standard
 /// output and exit status.
 fn compile_and_run(compiler: &str, runner: &str, release: bool, dir: &Path, class: &str) -> String {
     let source = dir.join(format!("{class}.java"));
@@ -569,8 +557,8 @@ fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
         for &class in CLASSES {
             let snapshot = open(&leg.fixture(class));
             let report = presented(&snapshot, class);
-            let text = stripped(&report);
-            // `NEG` is the negatives' own class: every body it holds is quoted, so its stripped text
+            let text = report.text.clone();
+            // `NEG` is the negatives' own class: every body it holds is quoted, so its unedited text
             // is the *safe* form the soundness invariant asks for — a method whose body a reader
             // cannot compile, never one that compiles and behaves differently. The refusal texts are
             // pinned by the tests above; the replay's job for it is exactly that it does not compile.
@@ -578,7 +566,7 @@ fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
                 let work = scratch(&format!("negative-{class}"));
                 fs::write(work.join(format!("{class}.java")), &text)
                     .expect("the presentation is written");
-                let compiled = Command::new("/usr/bin/javac")
+                let compiled = Command::new("javac")
                     .arg("--release")
                     .arg("8")
                     .arg("-nowarn")
@@ -589,7 +577,7 @@ fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
                     .expect("the compiler runs");
                 assert!(
                     !compiled.status.success(),
-                    "`{class}` on {} is quoted whole and its stripped text must not compile:\n{text}",
+                    "`{class}` on {} is quoted whole and its unedited text must not compile:\n{text}",
                     leg.label
                 );
                 continue;
@@ -600,11 +588,11 @@ fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
                 leg.label
             );
             let want_dir = original_dir(leg.label, leg, class);
-            let want = run_class("/usr/bin/java", &want_dir, class);
+            let want = run_class("java", &want_dir, class);
             let work = scratch(&format!("recovered-{class}"));
             fs::write(work.join(format!("{class}.java")), &text)
                 .expect("the presentation is written");
-            let got = compile_and_run("/usr/bin/javac", "/usr/bin/java", true, &work, class);
+            let got = compile_and_run("javac", "java", true, &work, class);
             assert_eq!(
                 got, want,
                 "`{class}` on {} answers differently after the round trip:\n{text}",
@@ -628,5 +616,37 @@ fn the_recovered_text_compiles_and_runs_identically_on_both_legs() {
                 );
             }
         }
+    }
+}
+
+#[path = "support/copy_boundary_oracle.rs"]
+mod boundary_oracle;
+
+const MULTI_RUNNER: &str = r#"public class Replay { public static void main(String[] args) { for(String s:new String[]{null,"","a","abcde","abcdef","abcdefghij"}) { try { System.out.println(cf06.InnerAssignCases.lengthBranch(s)); } catch(Throwable t){System.out.println(t.getClass().getName());} } for(String a:new String[]{null,"","a"}) for(String b:new String[]{null,"","b"}) {try {System.out.println(new cf06.InnerAssignCases().run(a,b));}catch(Throwable t){System.out.println(t.getClass().getName());}} } }"#;
+
+#[test]
+#[ignore = "strict full unedited class equality for ExtraCopy and rejection for shortChain"]
+fn conditional_boundaries_require_their_full_class_contracts() {
+    let report = presented(
+        &open(&zip_of(&[(b"cf06/InnerAssignCases.class", MULTI_READER)])),
+        MULTI_READER_CLASS,
+    );
+    boundary_oracle::require_equal(
+        "multi-reader",
+        MULTI_READER_CLASS,
+        MULTI_READER,
+        &report.text,
+        MULTI_RUNNER,
+    );
+    for (i, leg) in LEGS.iter().enumerate() {
+        let report = presented(&open(&leg.fixture("NEG")), "NEG");
+        let replay = "public class Replay { public static void main(String[] args) { NEG.main(args); for(int x:new int[]{Integer.MIN_VALUE,-2,-1,0,9,10,11,Integer.MAX_VALUE}) System.out.println(NEG.shortChain(x)); } }";
+        boundary_oracle::require_rejected(
+            &format!("short-chain-{i}"),
+            "NEG",
+            leg.family("NEG")[0].1,
+            &report.text,
+            replay,
+        );
     }
 }

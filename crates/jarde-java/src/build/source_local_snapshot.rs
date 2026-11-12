@@ -236,7 +236,7 @@ impl Builder<'_> {
                     || self.conditional_values.contains_key(written)
                     || self.postfix.snapshot_at(*written).is_some()
                     || self.short_circuit_operands.contains(written)
-                    || self.copy_inputs.contains(written)
+                    || self.copy_inputs.contains_key(written)
                 {
                     return Ok(false);
                 }

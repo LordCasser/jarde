@@ -915,9 +915,35 @@ fn declarations(
         if plan.this_aliases.contains_key(variable) {
             continue;
         }
-        // A parameter's declaration is the signature, not the body, and a variable this layer has no
-        // name for is one whose writes are already reported as a fallback of their own.
-        if variable.slot() < parameters || names.text(*variable).is_none() {
+        // A parameter's declaration is fixed by the signature. An unproved write cannot be
+        // repaired by declaring a different local type, nor may a saved value or a dependent
+        // effect survive after that write disappears. Use the existing method-wide declaration
+        // closure before building any statements; read-only parameters have no write decision.
+        if variable.slot() < parameters {
+            if let Some(Type::Reference(declared)) = parameter_types.get(&variable.slot())
+                && let Some(Decided::Unknown(reason)) = plan.decided.get(variable)
+            {
+                poll(budget, variable_uses.first().map(|use_| use_.bci))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(variable_uses.len()).unwrap_or(u64::MAX),
+                    variable_uses.first().map(|use_| use_.bci),
+                )?;
+                if let Some(write) = variable_uses.iter().find(|use_| use_.written.is_some()) {
+                    plan.incomplete.entry(Vec::new()).or_insert_with(|| {
+                        format!(
+                            "the reference parameter in local {} has fixed type `{declared}`, but its physical writes, including BCI {}, are not proved compatible: {}",
+                            variable.slot(),
+                            write.bci,
+                            reason.message(variable.slot(), write.bci)
+                        )
+                    });
+                }
+            }
+            continue;
+        }
+        if names.text(*variable).is_none() {
             continue;
         }
         let Some(owner) = common_owner(variable_uses) else {
@@ -3970,7 +3996,10 @@ fn legalize_reference_locals(
             .filter(|candidate| feasible[*candidate])
             .copied()
             .collect();
-        if choice.is_empty() {
+        // A parameter has no inferred declaration to defer to a later use: the signature
+        // fixes its only candidate. Missing hierarchy facts cannot authorize a physical write
+        // into that type, even when it is the sole surviving candidate.
+        if choice.is_empty() && variable.slot() >= parameters {
             choice.extend(minima.iter());
         }
         if let [name] = choice.as_slice() {
@@ -10412,7 +10441,7 @@ pub(crate) fn build(
         accessors: Vec::new(),
         deferred: Vec::new(),
         binding_plans: BTreeMap::new(),
-        copy_inputs: BTreeSet::new(),
+        copy_inputs: BTreeMap::new(),
         forward_conditional_carries: BTreeMap::new(),
         guarded_return_exits,
         binding_rejections: BTreeMap::new(),
@@ -11809,8 +11838,8 @@ struct Builder<'a> {
     /// constructor for a construction site), so the declaration is written before the old deferred
     /// value could be rendered at its consumer.
     binding_plans: BTreeMap<u32, BindingPlan>,
-    /// Inputs of unclaimed, frame-proved stack copies; these require one producer evaluation.
-    copy_inputs: BTreeSet<ValueId>,
+    /// Inputs of unclaimed, frame-proved stack copies and their proved inline-local state.
+    copy_inputs: BTreeMap<ValueId, CopyInput>,
     /// Complete same-value carry certificates; no unproved Phi use changes its consumer count.
     forward_conditional_carries: BTreeMap<ValueId, ForwardConditionalCarry>,
     /// Producer positions whose final consumer or dependency closure could not be proved. They
@@ -12027,6 +12056,14 @@ struct SwitchBreakTarget {
     join: Option<CanonicalBlockId>,
     loop_depth: usize,
     switch_depth: usize,
+}
+
+/// A copy demand is not an inline proof. Only the closed reader walk may promote a load,
+/// and its ordinary renderer still checks the local identity at each actual use point.
+#[derive(Clone, Copy, Debug)]
+enum CopyInput {
+    Requested,
+    StableLocal,
 }
 
 #[derive(Clone, Debug)]
@@ -27295,7 +27332,9 @@ impl<'a> Builder<'a> {
                         1,
                         Some(instruction.bci()),
                     )?;
-                    self.copy_inputs.insert(*input);
+                    self.copy_inputs
+                        .entry(*input)
+                        .or_insert(CopyInput::Requested);
                 }
             }
         }
@@ -27405,7 +27444,7 @@ impl<'a> Builder<'a> {
                 continue;
             };
             if let Some(Operation::Load { slot }) = self.operations.get(producer)
-                && !self.copy_inputs.contains(&value)
+                && !self.copy_inputs.contains_key(&value)
             {
                 let slot = *slot;
                 let Some(reader) = self.terminal_consumer(value, 0, None)? else {
@@ -27433,7 +27472,7 @@ impl<'a> Builder<'a> {
                     continue;
                 }
             }
-            if self.copy_inputs.contains(&value) {
+            if self.copy_inputs.contains_key(&value) {
                 if std::env::var("JARDE_TRACE_BINDINGS").is_ok() {
                     eprintln!(
                         "TRACE copy-input candidate value={value:?} producer={producer} anchor={anchor}"
@@ -27446,18 +27485,21 @@ impl<'a> Builder<'a> {
                     // `arg0.flag = arg1;` keeps its argument slots — it grows no saved
                     // declarations for slots nothing overwrote). A load this run cannot state a
                     // read for is skipped outright, as the non-copy load branch above skips it.
-                    let renders_in_place = match self.operations.get(producer) {
-                        Some(Operation::Load { slot }) => match local_read(instruction, *slot) {
-                            Some(old) => readers.iter().all(|reader| {
-                                self.slot_name_denotes_the_same_value(*slot, old, *reader)
-                            }),
-                            None => true,
-                        },
-                        _ => false,
-                    };
-                    if !renders_in_place {
-                        candidates.push((value, producer, anchor));
+                    if let Some(Operation::Load { slot }) = self.operations.get(producer) {
+                        let Some(old) = local_read(instruction, *slot) else {
+                            continue;
+                        };
+                        if readers.iter().all(|reader| {
+                            self.slot_name_denotes_the_same_value(*slot, old, *reader)
+                        }) {
+                            // Preserve the proof in the existing demand owner. Being an input
+                            // alone is not enough: every reader must close in this block and
+                            // still denote the exact value read by this Load.
+                            self.copy_inputs.insert(value, CopyInput::StableLocal);
+                            continue;
+                        }
                     }
+                    candidates.push((value, producer, anchor));
                 } else {
                     // No complete same-region consumer closure: the value is not this branch's
                     // candidate. Skipping it leaves every consumer the handling it would have
@@ -27719,7 +27761,9 @@ impl<'a> Builder<'a> {
         if depth > MAX_VALUE_DEPTH {
             return false;
         }
-        if self.bindings.contains_key(&value) {
+        if self.bindings.contains_key(&value)
+            || matches!(self.copy_inputs.get(&value), Some(CopyInput::StableLocal))
+        {
             return true;
         }
         let Definition::Instruction { bci, .. } = self.ssa.value(value).def() else {
@@ -27808,7 +27852,7 @@ impl<'a> Builder<'a> {
                     let Some((_, output)) = one_stack_output(instruction) else {
                         return Ok(None);
                     };
-                    if output != root && self.copy_inputs.contains(&output) {
+                    if output != root && self.copy_inputs.contains_key(&output) {
                         readers.insert(at);
                     } else {
                         charge(self.budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
@@ -27939,7 +27983,7 @@ impl<'a> Builder<'a> {
         let supported = match self.operations.get(producer) {
             Some(Operation::Invoke(_) | Operation::Load { .. }) => true,
             Some(Operation::Shift { .. } | Operation::Bitwise { .. } | Operation::Negate) => {
-                self.copy_inputs.contains(&value)
+                self.copy_inputs.contains_key(&value)
             }
             Some(Operation::Field { .. }) => self
                 .fields
@@ -27950,7 +27994,7 @@ impl<'a> Builder<'a> {
             ) if !self.enums.owns(producer) => true,
             Some(Operation::NewArray { .. }) => true,
             Some(Operation::Arithmetic { op }) => {
-                self.copy_inputs.contains(&value)
+                self.copy_inputs.contains_key(&value)
                     || matches!(op, ArithmeticOp::Divide | ArithmeticOp::Remainder)
             }
             Some(Operation::PrimitiveConversion { .. }) => true,
@@ -27962,7 +28006,7 @@ impl<'a> Builder<'a> {
             // the class file ran (`fneg` of the canonical NaN is the recorded case). Saving the
             // operand into the existing non-final named value keeps the operation at run time.
             Some(Operation::Push(constant)) => {
-                (self.copy_inputs.contains(&value)
+                (self.copy_inputs.contains_key(&value)
                     && match constant {
                         ConstantValue::String(_) | ConstantValue::Class { .. } => true,
                         ConstantValue::Float(bits) => !ConstantValue::float_is_finite(*bits),
@@ -28206,7 +28250,7 @@ impl<'a> Builder<'a> {
             // Following the saved value to the join would falsely move its input across it.
             return Ok(Some(reader));
         }
-        if self.copy_inputs.contains(&output) {
+        if self.copy_inputs.contains_key(&output) {
             return Ok(Some(reader));
         }
         self.terminal_consumer(output, depth + 1, None)
@@ -31029,14 +31073,23 @@ impl<'a> Builder<'a> {
         // whatever the slot holds by then).
         let left = self.render_value(operands[0].1, at, depth + 1)?;
         let right = self.render_value(operands[1].1, at, depth + 1)?;
-        Ok(Expr::direct(
+        let expression = Expr::direct(
             ExprKind::Binary {
                 op: arithmetic_op(*op),
                 left: Box::new(left),
                 right: Box::new(right),
             },
             bci,
-        ))
+        );
+        // The AST's binary numeric promotion is the owner of Java operand legality.
+        // A JVM int-shaped boolean Load is not a Java arithmetic operand, even when
+        // a stable stack copy proves that rereading the local preserves its value.
+        if expression.presented.is_none() {
+            return Err(format!(
+                "the arithmetic at BCI {bci} reads operands whose Java numeric type this run cannot state"
+            ).into());
+        }
+        Ok(expression)
     }
 
     fn render_value_definition(
@@ -34955,7 +35008,13 @@ impl<'a> Builder<'a> {
                 // refused text stood for unmapped (`refused_checkcast_quote_retains_the_stack_
                 // copy_origin`).
                 let held_by_a_proved_binding = self.bindings.contains_key(input);
-                if (rides_with_a_named_call || held_by_a_proved_binding) && !into.contains(&bci) {
+                // Sequential copies publish no statement of their own. If the consumer
+                // refuses after inline admission, its quote owns the same copy origin
+                // that a successful render would attach with `derived_from`.
+                let inline_copy = self.sequential_copy(instruction);
+                if (rides_with_a_named_call || held_by_a_proved_binding || inline_copy)
+                    && !into.contains(&bci)
+                {
                     if let Some(budget) = budget {
                         poll(budget, Some(bci))?;
                     }
@@ -47044,7 +47103,7 @@ mod tests {
             accessors: Vec::new(),
             deferred: Vec::new(),
             binding_plans: BTreeMap::new(),
-            copy_inputs: BTreeSet::new(),
+            copy_inputs: BTreeMap::new(),
             forward_conditional_carries: BTreeMap::new(),
             guarded_return_exits: BTreeMap::new(),
             binding_rejections: BTreeMap::new(),

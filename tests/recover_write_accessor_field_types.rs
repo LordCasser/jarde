@@ -20,11 +20,9 @@
 //! 3. the category-2 instance sister (`LongAssignmentResult`, EM-07 `Assignment`) renders
 //!    **byte-identical** to its frozen pre-change record — the path whose descriptor gate was
 //!    generalized to a table key;
-//! 4. negatives keep refusing, per member: a descriptor outside the closed table (`V`, or a
-//!    parameter/return pair spelling two types), real javac 8's **static** field accessor shape
-//!    (receiver-less `access$002(I)I`), and each broken structure (copy opcode, receiver load,
-//!    field owner, synthetic flag, BCI layout, exception table) — while the *other eight*
-//!    accessors of the same patched class stay recovered;
+//! 4. invalid descriptors, unproved conversions and unsafe structures keep explicit refusals.
+//!    Generic frame-proved copy semantics additionally handle static accessors and harmless
+//!    synthetic-flag/NOP changes, checked by complete unedited class JVM execution oracles;
 //! 5. the identifier-generalization control (`WB`: fields `tally`/`bag`/`grid`, writer class
 //!    `Writer`, one `L…;` arm and one `[…` arm) recovers on a `javac --release 8` leg compiled
 //!    in-test, so no table arm is pinned to the anchor's own identifiers.
@@ -448,89 +446,222 @@ fn the_instance_long_assignment_sister_renders_byte_identical() {
 // ---------------------------------------------------------------------------------------------
 
 #[test]
-fn a_descriptor_outside_the_closed_table_keeps_its_refusal() {
-    // `V` is no field type of the closed set, and a parameter/return pair spelling two different
-    // types is not the accessor's one-field-type form. Both are frozen as equal-length pool
-    // patches of the anchor's own `(LWA;Z)Z`.
-    for (name, patched_member, refusal) in [
+fn invalid_descriptor_and_boolean_int_conversion_keep_their_refusals() {
+    let report = source_of(&probe_jar("probes/WA-void.class"), "WA");
+    assert!(!report.text.contains("arg0.flag = arg1;"));
+    assert!(
+        report.text.contains(
+            "is not a method descriptor, so this presentation writes no declaration for it"
+        )
+    );
+    assert_accessors_recovered(&report, &["access$002"], "void descriptor");
+
+    // Generic copy recovery can retain the independently valid field write. It must not
+    // invent a boolean-to-int Java conversion or claim that the return has recovered.
+    let report = source_of(&probe_jar("probes/WA-mismatch.class"), "WA");
+    let text = member_text(&report, "access$002");
+    assert!(text.contains("arg0.flag = arg1;"), "{text}");
+    assert!(
+        !text.contains("return arg1;") && !text.contains("return (int)"),
+        "{text}"
+    );
+    assert!(
+        text.contains("is presented as `boolean`") && text.contains("descriptor returns `int`"),
+        "{text}"
+    );
+    let quoted: Vec<u32> = text
+        .lines()
+        .filter_map(|line| line.trim().strip_prefix("// @bytecode "))
+        .flat_map(|line| line.split_whitespace().filter_map(|word| word.parse().ok()))
+        .collect();
+    assert!(
+        quoted.contains(&2) && quoted.contains(&6),
+        "the refused return retains both copy and return origins: {text}"
+    );
+    assert_accessors_recovered(&report, &["access$002"], "mismatched return");
+}
+
+/// Compile the complete, unedited public Engine class-source output in its own directory.
+/// Original and recompiled runs have disjoint classpaths: no original class can fill a hole.
+fn assert_complete_class_oracle(
+    jar: &[u8],
+    report: &ClassSourceReport,
+    class: &str,
+    harness: &str,
+    expected: &str,
+) {
+    let temp = TestDirectory::new("generic-accessor-oracle");
+    let original = temp.path().join("original");
+    let recovered = temp.path().join("recovered");
+    std::fs::create_dir(&original).unwrap();
+    std::fs::create_dir(&recovered).unwrap();
+    std::fs::write(original.join("input.jar"), jar).unwrap();
+    std::fs::write(recovered.join(format!("{class}.java")), &report.text).unwrap();
+    for dir in [&original, &recovered] {
+        std::fs::write(dir.join("AccessorOracle.java"), harness).unwrap();
+        let mut command = Command::new("javac");
+        command.args(["--release", "8", "-classpath", ".", "AccessorOracle.java"]);
+        if dir == &recovered {
+            command.arg(format!("{class}.java"));
+        }
+        let result = command.current_dir(dir).output().expect("javac runs");
+        assert!(
+            result.status.success(),
+            "complete source compilation failed: {}\n{}",
+            String::from_utf8_lossy(&result.stderr),
+            report.text
+        );
+    }
+    let run = |dir: &Path, cp: &str| {
+        let result = Command::new("java")
+            .args(["-Xverify:all", "-cp", cp, "AccessorOracle", class])
+            .current_dir(dir)
+            .output()
+            .expect("java runs");
+        assert!(
+            result.status.success(),
+            "full-class oracle failed: {}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert!(
+            result.stderr.is_empty(),
+            "unexpected JVM stderr: {:?}",
+            result.stderr
+        );
+        String::from_utf8(result.stdout).unwrap()
+    };
+    let original_output = run(&original, ".:input.jar");
+    assert_eq!(original_output, expected, "independent original behavior");
+    assert_eq!(
+        run(&recovered, "."),
+        original_output,
+        "complete unedited class preserves fields, results, identity and exceptions"
+    );
+}
+
+const ACCESSOR_ORACLE: &str = r#"
+import java.lang.reflect.*;
+public class AccessorOracle {
+    public static void main(String[] args) throws Exception {
+        Class<?> c = Class.forName(args[0]);
+        c.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
+        if (args[0].equals("ST")) {
+            Method m = c.getDeclaredMethod("access$002", int.class);
+            m.setAccessible(true);
+            Field f = c.getDeclaredField("sc"); f.setAccessible(true);
+            for (int v : new int[] {Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE}) {
+                Object result = m.invoke(null, v);
+                if (!result.equals(v) || f.getInt(null) != v) throw new AssertionError();
+                System.out.println(result + ":" + f.getInt(null));
+            }
+            m = c.getDeclaredMethod("access$102", String.class); m.setAccessible(true);
+            f = c.getDeclaredField("sr"); f.setAccessible(true);
+            for (String v : new String[] {null, new String("identity")}) {
+                if (m.invoke(null, v) != v || f.get(null) != v) throw new AssertionError();
+                System.out.println(v);
+            }
+        } else {
+            Object receiver = c.getConstructor().newInstance();
+            Method m = c.getDeclaredMethod("access$002", c, boolean.class); m.setAccessible(true);
+            Field f = c.getDeclaredField("flag"); f.setAccessible(true);
+            for (boolean v : new boolean[] {false, true, false}) {
+                Object result = m.invoke(null, receiver, v);
+                if (!result.equals(v) || f.getBoolean(receiver) != v) throw new AssertionError();
+                System.out.println(result + ":" + f.getBoolean(receiver));
+                try { m.invoke(null, null, v); throw new AssertionError("missing NPE"); }
+                catch (InvocationTargetException e) {
+                    if (!(e.getCause() instanceof NullPointerException)) throw e;
+                    System.out.println("NPE");
+                }
+            }
+        }
+    }
+}
+"#;
+
+#[test]
+fn the_static_field_accessors_recover_through_generic_copy_semantics() {
+    let jar = st_jar();
+    let report = source_of(&jar, "ST");
+    for (name, descriptor, statement) in [
+        ("access$002", "(I)I", "ST.sc = arg0;"),
         (
-            "probes/WA-void.class",
-            "access$002",
-            "is not a method descriptor, so this presentation writes no declaration for it",
-        ),
-        (
-            "probes/WA-mismatch.class",
-            "access$002",
-            "not recovered: the recovery run for `access$002(LWA;Z)I` produced no statement",
+            "access$102",
+            "(Ljava/lang/String;)Ljava/lang/String;",
+            "ST.sr = arg0;",
         ),
     ] {
-        let report = source_of(&probe_jar(name), "WA");
+        let text = member_text(&report, name);
         assert!(
-            !report.text.contains("arg0.flag = arg1;"),
-            "{name}: the patched accessor must not recover:\n{}",
-            report.text
+            text.contains(&format!("// @method {name}{descriptor}")),
+            "{text}"
         );
         assert!(
-            report.text.contains(refusal),
-            "{name}: the patched member `{patched_member}` keeps a loud refusal ({refusal}):\n{}",
-            report.text
+            text.contains(statement) && text.contains("return arg0;"),
+            "{text}"
         );
-        // The refusal is per member: the eight untouched accessors of the same class still recover.
-        assert_accessors_recovered(&report, &["access$002"], name);
+        assert!(
+            !text.contains("@bytecode") && !text.contains("not recovered"),
+            "{text}"
+        );
     }
+    assert!(
+        !report.text.contains("arg0."),
+        "no invented receiver: {}",
+        report.text
+    );
+    assert!(report.text.contains("ST.access$002(arg1);"));
+    assert!(report.text.contains("ST.access$102(arg1);"));
+    assert_complete_class_oracle(
+        &jar,
+        &report,
+        "ST",
+        ACCESSOR_ORACLE,
+        "7|q\n-2147483648:-2147483648\n-1:-1\n0:0\n1:1\n2147483647:2147483647\nnull\nidentity\n",
+    );
 }
 
 #[test]
-fn the_static_field_accessor_shape_of_real_javac_8_keeps_its_refusal() {
-    // Real javac 8 writes a receiver-less `access$002(I)I` (`iload_0; dup; putstatic; ireturn`)
-    // for a nested class writing a **static** private field. The wrapper's structural criteria
-    // (`has_receiver == false`, the receiver-first parameter shape, `Field{is_static: false}`)
-    // refuse it unchanged, so the member is presented with its own descriptor and quoted loudly.
-    let report = source_of(&st_jar(), "ST");
-    for marker in [
-        "access$002(I)I",
-        "access$102(Ljava/lang/String;)Ljava/lang/String;",
-    ] {
+fn synthetic_flag_and_nop_layout_do_not_block_generic_copy_semantics() {
+    for name in ["probes/WA-unsynth.class", "probes/WA-bcishift.class"] {
+        // The original companion is essential: the old single-entry probe deliberately
+        // lacks the inner-class evidence needed to render a compilable main method.
+        let jar = jar_of(&[
+            (b"WA.class", fixture(name).as_slice()),
+            (b"WA$S.class", fixture("wa/WA$S.class").as_slice()),
+        ]);
+        let report = source_of(&jar, "WA");
+        let text = member_text(&report, "access$002");
         assert!(
-            report.text.contains(&format!("// @method {marker}")),
-            "the static helper keeps its own descriptor {marker}:\n{}",
-            report.text
+            text.contains("arg0.flag = arg1;") && text.contains("return arg1;"),
+            "{name}: {text}"
         );
-        assert!(
-            report.text.contains(&format!(
-                "not recovered: the recovery run for `{marker}` produced no statement"
-            )),
-            "the static shape keeps its loud refusal for {marker}:\n{}",
-            report.text
+        assert!(!text.contains("not recovered"), "{name}: {text}");
+        if name.contains("unsynth") {
+            assert!(!text.contains("@bytecode"), "{text}");
+            assert!(text.contains("member flags 0x0008"), "{text}");
+        }
+        // A quoted NOP is not treated as proof of complete structural recovery. The full
+        // source oracle below still requires all executable semantics to be preserved.
+        assert_accessors_recovered(&report, &["access$002"], name);
+        assert_complete_class_oracle(
+            &jar,
+            &report,
+            "WA",
+            ACCESSOR_ORACLE,
+            "true123.0x45c6.0\nfalse:false\nNPE\ntrue:true\nNPE\nfalse:false\nNPE\n",
         );
     }
-    // No receiver write is invented for the receiver-less accessor.
-    assert!(
-        !report.text.contains("arg0.") && !report.text.contains(".sc = "),
-        "a receiver-less accessor produces no receiver statement:\n{}",
-        report.text
-    );
-    // The nested writer's own body keeps the physical call — the refusal does not collapse it
-    // into a field write the run cannot prove.
-    assert!(
-        report.text.contains("ST.access$002(arg1);"),
-        "`ST$S.w` still calls its accessor physically:\n{}",
-        report.text
-    );
 }
 
 #[test]
 fn every_broken_structure_keeps_its_refusal_while_the_table_still_generalizes() {
-    // The generalization may move type facts only. Six structure breaks, each an equal-length
-    // patch of the anchor's own boolean accessor (offsets measured in the fixture README): the
-    // copy opcode, the receiver load, the field's owner, the synthetic flag, the BCI layout, and
-    // the exception table.
+    // Keep the unsafe or unproved shapes refused: invalid copy, null receiver, wrong
+    // field owner, and exception handler. Flag/NOP-only changes have separate JVM oracles.
     for name in [
         "probes/WA-dupbreak.class",
         "probes/WA-nullrecv.class",
         "probes/WA-wrongowner.class",
-        "probes/WA-unsynth.class",
-        "probes/WA-bcishift.class",
         "probes/WA-handler.class",
     ] {
         let report = source_of(&probe_jar(name), "WA");

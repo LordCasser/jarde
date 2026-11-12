@@ -246,56 +246,203 @@ fn shift_recovery_stops_cleanly_at_resource_limits_and_before_work() {
         report
     };
 
-    let mut source_limits = complete.limits.clone();
-    source_limits.ir_items = complete.usage.ir_items.saturating_sub(1);
-    let mut source_budget = Budget::new(source_limits);
-    let OperationOutcome::Performed(source_stopped) = source_with_evidence(
-        SLICE,
-        "ShiftSlice",
-        &RecoveryEvidenceRequest::all(),
-        &mut source_budget,
-    ) else {
-        panic!("source-map exhaustion is reported with class source")
-    };
-    assert!(
-        source_stopped.methods.iter().any(|method| {
-            matches!(
-                &method.outcome,
-                ClassSourceOutcome::Recovered { report, .. }
-                    if matches!(
-                        report.evidence.state(RecoveryEvidenceKind::SourceMap),
-                        EvidenceState::Partial { delivered } if delivered > 0
-                    )
-            )
-        }),
-        "source exhaustion must retain its partial source-map state"
-    );
+    let class_needed = complete.usage.ir_items;
+    assert!(class_needed > 0);
+    for limit in [class_needed, class_needed - 1] {
+        let mut limits = complete.limits.clone();
+        limits.ir_items = limit;
+        let mut budget = Budget::new(limits);
+        let OperationOutcome::Performed(report) = source_with_evidence(
+            SLICE,
+            "ShiftSlice",
+            &RecoveryEvidenceRequest::all(),
+            &mut budget,
+        ) else {
+            panic!("late class IR exhaustion preserves a class report")
+        };
+        assert!(budget.usage().ir_items <= limit);
+        if limit == class_needed {
+            assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+            assert_eq!(report.text, complete.text);
+            assert_eq!(budget.usage().ir_items, class_needed);
+        } else {
+            assert!(
+                matches!(
+                    report.execution,
+                    ExecutionReport::Partial {
+                        reason: TerminationReason::BudgetExceeded {
+                            dimension: BudgetDimension::IrItems
+                        },
+                        ..
+                    }
+                ),
+                "{:?}",
+                report.execution
+            );
+        }
+    }
 
-    let mut ir_limits = complete.limits.clone();
-    // The allowance is one this class's own shape pins: the last method's **analysis** completes
-    // (1150 cumulative IR items) and its **recovery** runs out before it produces (1218). The
-    // field-copy proof (`recover-chained-field-assignment`) charges the same `IrItems` dimension
-    // for every method, so both ends moved by its own scan and the allowance moves with them.
-    ir_limits.ir_items = 1_180;
-    let mut ir_budget = Budget::new(ir_limits);
-    let OperationOutcome::Performed(ir_stopped) = source_with_evidence(
-        SLICE,
-        "ShiftSlice",
-        &RecoveryEvidenceRequest::all(),
-        &mut ir_budget,
-    ) else {
-        panic!("IR exhaustion is reported with class source")
+    // Class assembly can charge after a member's source map. A class-wide N-1
+    // therefore cannot identify that member's evidence or source-commit boundary.
+    // Exercise those boundaries directly through the public method entry point.
+    let engine = Engine::new();
+    let snapshot = engine
+        .open(
+            ArtifactInput::bytes(SLICE.to_vec()),
+            &mut task_budget(&[]).unwrap(),
+        )
+        .unwrap();
+    let header = engine
+        .inspect_header(
+            &snapshot,
+            ClassTarget::Root,
+            &mut task_budget(&[]).unwrap(),
+            InspectionMode::Strict,
+        )
+        .unwrap();
+    let domain = LoadDomain {
+        loader: LoaderId("app".to_owned()),
+        parent_loader: None,
+        delegation: DelegationPolicy::ParentFirst,
+        roots: vec![LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        }],
+        module_mode: ModuleMode::ClassPath,
+        external_override: RuntimeUncertainty::None,
+        runtime_transformation: RuntimeUncertainty::None,
     };
-    assert!(matches!(
-        ir_stopped.methods.last().map(|method| &method.outcome),
-        Some(ClassSourceOutcome::Recovered { report, analysis })
-            if report.text.is_empty()
-                && matches!(report.outcome, RecoveryOutcome::Stopped(_))
-                && matches!(report.execution, ExecutionReport::Partial {
-                    reason: TerminationReason::BudgetExceeded { dimension: BudgetDimension::IrItems }, ..
-                })
-                && matches!(analysis.execution, ExecutionReport::Complete { .. })
-    ));
+    let request = MethodAnalysisRequest {
+        environment: ResolutionEnvironment {
+            runtime: RuntimeView {
+                physical: PhysicalView {
+                    snapshot: snapshot.id().clone(),
+                    scope: PhysicalScope::SnapshotAll,
+                },
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                load_domain: domain.clone(),
+            },
+            domains: vec![domain],
+            providers: Vec::new(),
+        },
+        method: PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: snapshot.id().clone(),
+                },
+                class_bytes: header.source.class_bytes.clone(),
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(b"callTarget".to_vec()),
+            descriptor: JvmBytes(b"(II)I".to_vec()),
+        },
+        stages: AnalysisStage::ALL.to_vec(),
+    };
+    let recover = |evidence: &RecoveryEvidenceRequest, budget: &mut Budget| {
+        engine
+            .recover_method_with_evidence(
+                slice::from_ref(&snapshot),
+                SourceTarget::JAVA_8,
+                &request,
+                evidence,
+                budget,
+            )
+            .expect("bounded method recovery returns its outcome")
+    };
+    for (evidence, has_map) in [
+        (RecoveryEvidenceRequest::essential(), false),
+        (
+            RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+            true,
+        ),
+    ] {
+        let mut measured = task_budget(&[]).unwrap();
+        let full = recover(&evidence, &mut measured);
+        let full_report = full.recovery();
+        assert!(full_report.produced());
+        assert!(matches!(
+            full_report.execution,
+            ExecutionReport::Complete { .. }
+        ));
+        assert_eq!(full_report.representation, Representation::Java);
+        assert!(full_report.text.contains("<<"));
+        assert_eq!(!full_report.source_map.is_empty(), has_map);
+        if has_map {
+            assert_eq!(
+                full_report.evidence.state(RecoveryEvidenceKind::SourceMap),
+                EvidenceState::Complete
+            );
+        }
+        let needed = measured.usage().ir_items;
+        assert!(needed > 0);
+        for limit in [needed, needed - 1] {
+            let mut limits = task_limits(&[]).unwrap();
+            limits.ir_items = limit;
+            let mut bounded = Budget::new(limits);
+            let rerun = recover(&evidence, &mut bounded);
+            let report = rerun.recovery();
+            assert!(
+                matches!(rerun.analysis().execution, ExecutionReport::Complete { .. }),
+                "the boundary is after analysis: {:?}",
+                rerun.analysis().execution
+            );
+            assert!(bounded.usage().ir_items <= limit);
+            if limit == needed {
+                assert!(report.produced(), "{report:?}");
+                assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+                assert_eq!(report.text, full_report.text);
+                assert_eq!(
+                    report.source_map.segments(),
+                    full_report.source_map.segments()
+                );
+                assert_eq!(bounded.usage().ir_items, needed);
+            } else {
+                assert!(
+                    matches!(
+                        report.execution,
+                        ExecutionReport::Partial {
+                            reason: TerminationReason::BudgetExceeded {
+                                dimension: BudgetDimension::IrItems
+                            },
+                            ..
+                        }
+                    ),
+                    "{report:?}"
+                );
+                if has_map {
+                    assert!(
+                        report.produced(),
+                        "committed text survives evidence exhaustion"
+                    );
+                    assert_eq!(report.text, full_report.text);
+                    let delivered = report.source_map.segments().len();
+                    assert!(delivered > 0 && delivered < full_report.source_map.segments().len());
+                    assert!(
+                        matches!(report.evidence.state(RecoveryEvidenceKind::SourceMap),
+                        EvidenceState::Partial { delivered: count } if count == delivered as u64)
+                    );
+                    assert_eq!(
+                        report.source_map.segments(),
+                        &full_report.source_map.segments()[..delivered]
+                    );
+                } else {
+                    assert!(!report.produced());
+                    assert!(report.text.is_empty());
+                    assert!(report.source_map.is_empty());
+                    assert!(matches!(
+                        report.stop(),
+                        Some(StopReason::Budget {
+                            dimension: BudgetDimension::IrItems,
+                            ..
+                        })
+                    ));
+                }
+            }
+        }
+    }
 
     let mut work_limits = complete.limits.clone();
     work_limits.analysis_steps = 1;

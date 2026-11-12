@@ -315,8 +315,40 @@ fn an_undiscarded_check_refuses_on_the_getclass_spelling() {
         report.text
     );
     assert!(
-        report.text.contains("not recovered: the recovery run"),
+        report
+            .text
+            .contains("reference parameter in local 1 has fixed type `N1x`")
+            && report.text.contains("not proved compatible"),
         "the undiscarded shape refuses loudly:\n{}",
         report.text
+    );
+    // Inspect the actual patched member through the same public class-source entry. The
+    // root family text alone must not hide a partial body containing the copied prefix.
+    let stat_report = source_of(&jar, "N1x$Stat");
+    let method = stat_report
+        .methods
+        .iter()
+        .find(|method| {
+            method.item.name.raw().0 == b"use" && method.item.descriptor.raw().0 == b"(LN1x;)I"
+        })
+        .expect("the patched Stat.use physical member is retained");
+    let ClassSourceOutcome::Recovered { report: body, .. } = &method.outcome else {
+        panic!(
+            "the patched use member has a recovery report: {:?}",
+            method.outcome
+        );
+    };
+    assert_eq!(
+        body.content,
+        RecoveryContent::ExplanationOnly,
+        "{}",
+        body.text
+    );
+    assert_eq!(body.representation, jarde_jvm::ir::Representation::Mixed);
+    assert_eq!(body.quality, jarde_jvm::ir::Quality::Fallback);
+    assert!(
+        !body.text.contains("saved0") && !body.text.contains("arg1 ="),
+        "the actual copy-prefix body must be refused as a whole:\n{}",
+        body.text
     );
 }

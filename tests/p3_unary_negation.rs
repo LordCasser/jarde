@@ -135,6 +135,24 @@ fn recover_with_budget(
     descriptor: &[u8],
     budget: &mut Budget,
 ) -> RecoveryReport {
+    recover_with_selection(
+        engine,
+        fixture,
+        name,
+        descriptor,
+        &RecoveryEvidenceRequest::all(),
+        budget,
+    )
+}
+
+fn recover_with_selection(
+    engine: &Engine,
+    fixture: &Fixture,
+    name: &[u8],
+    descriptor: &[u8],
+    evidence: &RecoveryEvidenceRequest,
+    budget: &mut Budget,
+) -> RecoveryReport {
     let request = MethodAnalysisRequest {
         environment: environment(&fixture.snapshot),
         method: PhysicalMethodId {
@@ -155,7 +173,7 @@ fn recover_with_budget(
             slice::from_ref(&fixture.snapshot),
             jarde::SourceTarget::JAVA_8,
             &request,
-            &RecoveryEvidenceRequest::all(),
+            evidence,
             budget,
         )
         .expect("a legal recovery request is answered")
@@ -254,36 +272,62 @@ fn negation_and_its_consumer_keep_distinct_source_origins() {
 fn negation_emission_still_honors_the_output_budget() {
     let engine = Engine::new();
     let fixture = fixture(&engine);
-    let produced = recover(&engine, &fixture, b"negInt", b"(I)I");
-    let charged = match produced.execution {
-        ExecutionReport::Complete { usage } => usage.output_bytes,
-        other => panic!("the ample run completes: {other:?}"),
-    };
-    let artifact = u64::try_from(produced.text.len()).expect("the artifact length fits u64");
-    assert!(
-        charged > artifact,
-        "the run charged envelope and artifact output"
+    // Essential excludes post-commit evidence; total output usage is the actual
+    // source-commit boundary, not envelope bytes inferred by subtracting text length.
+    let evidence = RecoveryEvidenceRequest::essential();
+    let mut measured = Budget::new(limits());
+    let produced = recover_with_selection(
+        &engine,
+        &fixture,
+        b"negInt",
+        b"(I)I",
+        &evidence,
+        &mut measured,
     );
-    let mut constrained = limits();
-    constrained.output_bytes = charged - artifact;
-    let mut budget = Budget::new(constrained);
-    let report = recover_with_budget(&engine, &fixture, b"negInt", b"(I)I", &mut budget);
-    assert!(
-        matches!(
-            report.outcome,
-            RecoveryOutcome::Stopped(StopReason::Budget {
-                dimension: jarde_reader::budget::BudgetDimension::OutputBytes,
-                ..
-            })
-        ),
-        "a tight output budget remains observable: {:?}",
-        report.outcome
-    );
-    assert!(
-        report.text.is_empty(),
-        "a stopped emission has no partial text"
-    );
-    assert!(report.source_map.segments().is_empty());
+    assert!(produced.produced());
+    assert!(matches!(
+        produced.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    assert!(produced.text.contains("return -arg0;"));
+    let needed = measured.usage().output_bytes;
+    assert!(needed > 0);
+    for limit in [needed, needed - 1] {
+        let mut constrained = limits();
+        constrained.output_bytes = limit;
+        let mut budget = Budget::new(constrained);
+        let report = recover_with_selection(
+            &engine,
+            &fixture,
+            b"negInt",
+            b"(I)I",
+            &evidence,
+            &mut budget,
+        );
+        if limit == needed {
+            assert!(report.produced(), "{report:?}");
+            assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+            assert_eq!(report.text, produced.text);
+            assert_eq!(budget.usage().output_bytes, needed);
+        } else {
+            assert!(
+                matches!(
+                    report.outcome,
+                    RecoveryOutcome::Stopped(StopReason::Budget {
+                        dimension: BudgetDimension::OutputBytes,
+                        ..
+                    })
+                ),
+                "{report:?}"
+            );
+            assert!(
+                report.text.is_empty(),
+                "a stopped emission has no partial text"
+            );
+            assert!(report.source_map.is_empty());
+        }
+        assert!(budget.usage().output_bytes <= limit);
+    }
 }
 
 #[test]

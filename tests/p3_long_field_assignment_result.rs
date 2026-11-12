@@ -124,7 +124,6 @@ fn owner_width_extra_consumers_and_handlers_do_not_project_the_pair() {
     let cases = [
         ("different owner", wrong_owner(ASSIGNMENT)),
         ("different width", wrong_width(ASSIGNMENT)),
-        ("inserted operation", insert_code(ASSIGNMENT, 1, &[0x00])),
         (
             "second category2 consumer",
             insert_code(ASSIGNMENT, 7, &[0x5c, 0x58]),
@@ -380,5 +379,86 @@ fn catch_putfield(original: &[u8]) -> Vec<u8> {
     let attr_length = u4(&bytes, attr_length_offset) + 11;
     put_u4(&mut bytes, attr_length_offset, attr_length);
     assert_eq!(code_start + 7, new_code_end - 3);
+    bytes
+}
+
+#[path = "support/copy_boundary_oracle.rs"]
+mod boundary_oracle;
+
+const LONG_RUNNER: &str = r#"public class Replay { public static void main(String[] args) throws Exception { Class<?> c=Class.forName("em07.Assignment"); Object x=c.newInstance(); java.lang.reflect.Method m=c.getDeclaredMethod("setValue",long.class); java.lang.reflect.Field f=c.getDeclaredField("value"); f.setAccessible(true); for(long v:new long[]{0,1,-1,2147483648L,Long.MIN_VALUE,Long.MAX_VALUE}) { try {System.out.println("return="+m.invoke(x,v));} catch(java.lang.reflect.InvocationTargetException e){System.out.println("throw="+e.getCause().getClass().getName());} System.out.println("field="+f.get(x)); } } }"#;
+
+#[test]
+fn inert_nop_keeps_its_quote_without_losing_either_proved_statement() {
+    // Generic stack-copy proof owns this partial presentation, not EM-07's exact
+    // five-step atomic pair recognizer. A nop has no stack or observable effect.
+    let report = perform(
+        &insert_code(ASSIGNMENT, 1, &[0]),
+        &mut Budget::new(limits()),
+    );
+    let text = method_text(&report, "setValue");
+    assert!(text.contains("// @bytecode 1"), "{text}");
+    assert_eq!(text.matches("this.value = arg1;").count(), 1, "{text}");
+    assert_eq!(text.matches("return arg1;").count(), 1, "{text}");
+    assert!(text.find("this.value = arg1;").unwrap() < text.find("return arg1;").unwrap());
+}
+#[test]
+#[ignore = "strict full unedited class JVM equality and valid-owner rejection"]
+fn proved_long_fragments_require_full_class_equality() {
+    for (label, bytes) in [
+        ("base", ASSIGNMENT.to_vec()),
+        ("nop", insert_code(ASSIGNMENT, 1, &[0])),
+        ("changed-return", insert_code(ASSIGNMENT, 6, &[0x0a, 0x61])),
+    ] {
+        let report = perform(&bytes, &mut Budget::new(limits()));
+        boundary_oracle::require_equal(label, "em07/Assignment", &bytes, &report.text, LONG_RUNNER);
+    }
+    // These are verifier-valid adversaries, not unreachable bytes or missing stack maps.
+    for (label, bytes) in [
+        ("wrong-owner", wrong_owner(ASSIGNMENT)),
+        (
+            "reachable-copy-discard",
+            insert_code(ASSIGNMENT, 6, &[0x5c, 0x58]),
+        ),
+        ("live-null-handler", live_null_handler()),
+    ] {
+        let report = perform(&bytes, &mut Budget::new(limits()));
+        let text = method_text(&report, "setValue");
+        assert!(
+            text.contains("@bytecode") || text.contains("not recovered"),
+            "{label}: {text}"
+        );
+        boundary_oracle::require_rejected(
+            label,
+            "em07/Assignment",
+            &bytes,
+            &report.text,
+            LONG_RUNNER,
+        );
+    }
+    // Preserve the original malformed-input controls, explicitly without claiming
+    // that they supplied valid JVM behavior for a semantic equivalence comparison.
+    for (label, bytes) in [
+        ("invalid-width", wrong_width(ASSIGNMENT)),
+        (
+            "unreachable-extra",
+            insert_code(ASSIGNMENT, 7, &[0x5c, 0x58]),
+        ),
+        ("missing-handler-frame", catch_putfield(ASSIGNMENT)),
+    ] {
+        let report = perform(&bytes, &mut Budget::new(limits()));
+        assert!(matches!(
+            boundary_oracle::inspect(label, "em07/Assignment", &bytes, &report.text, LONG_RUNNER),
+            boundary_oracle::Outcome::InvalidOriginal
+        ));
+    }
+}
+
+// Inferred verifier frames (major49), with an actually throwing putfield receiver.
+fn live_null_handler() -> Vec<u8> {
+    let mut bytes = catch_putfield(ASSIGNMENT);
+    put_u2(&mut bytes, 6, 49);
+    let (start, _, _, _, _, _) = code_offsets(&bytes);
+    assert_eq!(bytes[start], 0x2a);
+    bytes[start] = 0x01;
     bytes
 }

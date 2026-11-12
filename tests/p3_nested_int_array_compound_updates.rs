@@ -88,9 +88,8 @@ const TYPED_CONTROL_LEGS: &[(&str, &str, &[u8], bool)] = &[
         true,
     ),
 ];
-// Consumer-control class bytes are analyzed only; the long-return control is not executed. Extra
-// consumers stay quoted, while its non-int return keeps an explicit typed store/load baseline
-// without claiming a returned `+=` form.
+// Extra consumers stay quoted. The long-return control keeps an explicit typed sequence
+// without claiming a returned `+=` form; its full unedited class is replayed below.
 const CONSUMER_CONTROL_LEGS: &[(&str, &str, &[u8], &[u32])] = &[
     (
         "v8",
@@ -621,12 +620,12 @@ fn returned_int_array_updates_keep_extra_consumer_and_non_int_return_boundaries(
                 scalar.text
             );
             assert!(
-                scalar.text.contains("return (long) saved2;"),
+                scalar.text.contains("return (long) saved0;"),
                 "the long return consumes the typed saved int result without claiming `return +=`:\n{}",
                 scalar.text
             );
             assert!(
-                scalar.text.contains("saved0[saved1] = saved2;"),
+                scalar.text.contains("arg0[arg1] = saved0;"),
                 "the original array store remains explicit:\n{}",
                 scalar.text
             );
@@ -916,5 +915,75 @@ fn returned_int_array_updates_compile_and_execute_as_a_complete_class() {
             run.stderr, EXPECTED_STDERR,
             "{leg} stderr differs from oracle"
         );
+    }
+}
+
+#[test]
+#[ignore = "requires JDK; recompiles the whole long-return control and compares verified execution"]
+fn long_return_controls_match_original_complete_classes() {
+    const HARNESS: &str = r#"public class Runner {
+        public static void main(String[] args) {
+            int[] values = {Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE};
+            for (int value : values) for (int delta : values)
+            for (int index : new int[] {-1, 0, 1}) for (boolean missing : new boolean[] {false, true}) {
+                int[] a = missing ? null : new int[] {value};
+                try { System.out.print(ReturnedIntArrayUpdates.scalar(a, index, delta)); }
+                catch (RuntimeException e) { System.out.print(e.getClass().getName()); }
+                System.out.println("/" + (a == null ? "null" : Integer.toString(a[0])));
+            }
+        }
+    }"#;
+    for (leg, variant, bytes, _) in CONSUMER_CONTROL_LEGS {
+        if *variant != "long-return" {
+            continue;
+        }
+        let original = Scratch::new(&format!("original-long-{leg}"));
+        let generated = Scratch::new(&format!("generated-long-{leg}"));
+        let original_classes = original.path().join("classes");
+        fs::create_dir(&original_classes).unwrap();
+        fs::write(
+            original_classes.join("ReturnedIntArrayUpdates.class"),
+            bytes,
+        )
+        .unwrap();
+        fs::write(original.path().join("Runner.java"), HARNESS).unwrap();
+        let compile = Command::new(javac_tool())
+            .args(["--release", "8", "-Xlint:-options", "-classpath"])
+            .arg(&original_classes)
+            .arg("-d")
+            .arg(&original_classes)
+            .arg(original.path().join("Runner.java"))
+            .output()
+            .unwrap();
+        assert!(
+            compile.status.success(),
+            "{leg}: {}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let report = class_source_named(bytes, "ReturnedIntArrayUpdates");
+        fs::write(
+            generated.path().join("ReturnedIntArrayUpdates.java"),
+            &report.text,
+        )
+        .unwrap();
+        fs::write(generated.path().join("Runner.java"), HARNESS).unwrap();
+        let compile = compile_sources(generated.path(), "ReturnedIntArrayUpdates.java");
+        assert!(
+            compile.status.success(),
+            "{leg}: {}\n{}",
+            String::from_utf8_lossy(&compile.stderr),
+            report.text
+        );
+        let expected = run_verified(&original_classes);
+        let actual = run_verified(&generated.path().join("classes"));
+        assert!(
+            expected.status.success() && actual.status.success(),
+            "{leg}: original={} generated={}",
+            String::from_utf8_lossy(&expected.stderr),
+            String::from_utf8_lossy(&actual.stderr)
+        );
+        assert!(!expected.stdout.is_empty());
+        assert_eq!(actual.stdout, expected.stdout, "{leg}");
+        assert_eq!(actual.stderr, expected.stderr, "{leg}");
     }
 }
