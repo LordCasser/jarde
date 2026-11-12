@@ -1,7 +1,7 @@
 //! `bind-prefixed-load-roots` 1.2/1.3: the prefix contract of the load-root model.
 //!
 //! A container root declares a physical container (its origin) and a raw entry prefix, and a
-//! class name is looked up as `prefix + internal_name + ".class"`, byte for byte. This file holds
+//! class name is looked up as raw prefix + the JVM name's lossless UTF-8 spelling + ".class". This file holds
 //! the evidence that the composition is exact — no trimming, no URL decoding, no case folding, no
 //! `.`/`..`/backslash folding, no directory entry required — and that the *binding* half of the
 //! lookup walks the very same declared positions: the candidate's own `this_class` has to agree
@@ -684,14 +684,13 @@ fn raw_name_bytes_are_matched_exactly_and_not_normalized() {
     );
 }
 
-/// Non-UTF-8 and multi-byte bytes travel through the prefix and the name without transcoding.
+/// Raw prefixes are preserved, while class names require canonical scalar MUTF-8.
 ///
-/// One class sits under a prefix whose bytes are not UTF-8 at all; the declared position spells
-/// those very bytes and binds it. A prefix that spells the same *character* the UTF-8 way reaches
-/// nothing — there is no decoding, so there is no spelling that "means the same" — and the same
-/// holds for an overlong spelling of a multi-byte name.
+/// Archive prefixes are arbitrary bytes and are never decoded. A JVM internal name is a
+/// different contract: valid MUTF-8 is mapped losslessly to UTF-8, and malformed encodings
+/// cannot claim either a binding or a Missing verdict for a path the engine never searched.
 #[test]
-fn raw_non_utf8_and_multibyte_bytes_are_not_transcoded() {
+fn raw_prefixes_are_preserved_and_malformed_names_are_refused() {
     let raw_prefix: &[u8] = b"WEB-INF/\xffclasses/";
     let utf8_prefix: &[u8] = b"WEB-INF/\xc3\xbfclasses/";
     let class = class_bytes(b"p/S", 52);
@@ -765,19 +764,49 @@ fn raw_non_utf8_and_multibyte_bytes_are_not_transcoded() {
     );
     assert_eq!(multibyte.state, Some(ResolutionState::Resolved));
     assert_eq!(resolved_entry(&multibyte).raw_name.0, b"\xc3\xbc/A.class");
-    let overlong = resolve(
-        std::slice::from_ref(&snapshot),
-        &class_request(
-            single_loader(&snapshot, vec![container_root(&snapshot, b"")]),
-            "app",
-            b"\xc1\xbc/A",
-        ),
-    );
-    assert_eq!(
-        overlong.state,
-        Some(ResolutionState::Missing),
-        "an overlong spelling of the same character is another name"
-    );
+    // C1 BC is an invalid overlong spelling of U+007C, not another spelling of ü.
+    // The three-byte overlong form of ü is invalid too. No permissive decoder, replacement
+    // character, or direct raw-entry fallback may turn any of these requests into a verdict.
+    for malformed in [
+        b"\xc1\xbc/A".as_slice(),
+        b"\xe0\x83\xbc/A",
+        b"\xf0\x90\x90\x80/A", // standard UTF-8 is not JVM MUTF-8 for supplementary scalars
+        b"\xed\xa0\x81/A",     // unpaired high surrogate has no scalar archive spelling
+        b"\0/A",               // a raw NUL is not the modified UTF-8 NUL encoding
+    ] {
+        for prefix in [b"".as_slice(), raw_prefix, utf8_prefix] {
+            let report = resolve(
+                std::slice::from_ref(&snapshot),
+                &class_request(
+                    single_loader(&snapshot, vec![container_root(&snapshot, prefix)]),
+                    "app",
+                    malformed,
+                ),
+            );
+            assert!(
+                report.state.is_none() && report.resolved.is_none(),
+                "{report:?}"
+            );
+            assert!(
+                report.reads.is_empty(),
+                "invalid names must fail before reading a candidate: {report:?}"
+            );
+            assert_eq!(
+                diagnostic_codes(&report),
+                vec!["class_entry_name_unrepresentable"]
+            );
+            assert_eq!(report.diagnostics[0].severity, DiagnosticSeverity::Error);
+            assert!(matches!(report.execution, ExecutionReport::Failed {
+                reason: TerminationReason::Error { ref code }, ..
+            } if code == "class_entry_name_unrepresentable"));
+            assert_eq!(
+                report.target,
+                SymbolRef::Class {
+                    owner: JvmBytes(malformed.to_vec())
+                }
+            );
+        }
+    }
 }
 
 /// A candidate whose header declares another name than the path it was found under is refused at
