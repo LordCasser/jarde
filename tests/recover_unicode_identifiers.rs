@@ -11,7 +11,7 @@
 //! Frozen behaviors:
 //! 1. the anchor (`UT`, the unicode-identifier patrol's fixture) renders `变量`/`描述`/`方法`/
 //!    `内部类`/`名字` in its declarations, with no `is not a Java identifier` marker and no `__`
-//!    stand-in, on **both** legs; the whole class, stripped of the presentation comments, compiles
+//!    stand-in, on **both** legs; the complete unedited class compiles
 //!    and prints `变量=1/42/中文` under `-Xverify:all` — the exact line the frozen class prints;
 //! 2. `Loc` (a Chinese local name out of the `LocalVariableTable`) is spelled as declared *and* as
 //!    used, which is the naming table's half of the same predicate;
@@ -19,7 +19,8 @@
 //!    length, README recipe — still aliases, and declaration and uses share the alias: the widening
 //!    is Java's *letters and digits*, not "every non-ASCII character";
 //! 4. the ASCII presentations retain their current frozen text except F1's two proved for headers,
-//!    with SB's separately proved iterator foreach recorded in its golden,
+//!    with SB's separately proved iterator foreach recorded in its golden and RG's exact
+//!    Missing-relation diagnostic suffix,
 //!    including the class whose own name is no identifier at all (`com/example/package-info`, whose hyphen the class-declaration
 //!    line spells as the pool states it — a boundary this change neither widens nor closes).
 
@@ -204,15 +205,6 @@ fn classes_of(root: &Path) -> Vec<(String, Vec<u8>)> {
     entries
 }
 
-/// The class-source text as the compile-and-run protocol reads it: every `//` comment line dropped,
-/// which is the strip the patrol's own manual fix was made by.
-fn stripped(text: &str) -> String {
-    text.lines()
-        .filter(|line| !line.trim_start().starts_with("//"))
-        .map(|line| format!("{line}\n"))
-        .collect()
-}
-
 /// Compiles one presented class with `javac --release 8 -encoding UTF-8` and runs it under
 /// `java -Xverify:all`, returning the run's exact stdout. The compilation is asserted, so a text
 /// that is not Java fails here rather than silently comparing outputs.
@@ -315,8 +307,8 @@ fn the_cjk_declarations_are_presented_as_the_pool_states_them() {
     }
 }
 
-/// The anchor's whole text, stripped of the comments the compile-and-run protocol drops, is Java
-/// that both javac legs accept and that prints exactly what the frozen class prints.
+/// The anchor's complete unedited text is Java that both javac legs accept and that prints
+/// exactly what the original class prints.
 #[test]
 fn the_anchor_round_trips_through_both_javac_legs() {
     for (label, jar) in [
@@ -324,7 +316,7 @@ fn the_anchor_round_trips_through_both_javac_legs() {
         ("toolchain", compile_with_path_javac("utrt", UT_SOURCE)),
     ] {
         let report = source_of(&jar, "UT");
-        let printed = compile_and_run(&format!("{label}-run"), "UT", &stripped(&report.text));
+        let printed = compile_and_run(&format!("{label}-run"), "UT", &report.text);
         assert_eq!(
             printed, "变量=1/42/中文\n",
             "{label}: the recovered behavior"
@@ -373,7 +365,8 @@ fn a_letter_name_is_spelled_and_a_punctuation_name_keeps_its_alias() {
     );
 }
 
-/// The ASCII presentations retain their frozen text except F1's two proved array-length/+2 headers.
+/// The ASCII presentations retain their frozen text except F1's two proved array-length/+2 headers
+/// and RG's exact Missing-relation diagnostic suffix. No refusal or executable line is relaxed.
 /// The widening stays bounded (`README.md` records which binary rendered each frozen text, and
 /// that the standalone class bytes go in through the same single-entry jar shape the per-class CLI sweep
 /// reads them with).
@@ -438,12 +431,60 @@ fn the_ascii_presentations_match_the_frozen_proved_loop_projections() {
                 expected = expected.replacen(before, after, 1);
             }
             expected
+        } else if label == "RG" {
+            // This single-entry jar omits both nested headers. Keep the refusal; only its
+            // diagnostic now exposes the already-known Missing relation. Do not normalize
+            // arbitrary diagnostics or update the frozen corpus to hide output changes.
+            let before = "and this layer has no safe reference conversion evidence\n";
+            let after = "and this layer has no safe reference conversion evidence (relation: Some(Missing))\n";
+            assert_eq!(frozen.matches(before).count(), 1);
+            let method = report
+                .methods
+                .iter()
+                .find(|method| method.item.name.raw().0 == b"main")
+                .unwrap();
+            let ClassSourceOutcome::Recovered {
+                report: run,
+                analysis,
+            } = &method.outcome
+            else {
+                panic!("{:?}", method.outcome);
+            };
+            assert!(matches!(
+                analysis.execution,
+                ExecutionReport::Complete { .. }
+            ));
+            assert!(matches!(run.execution, ExecutionReport::Complete { .. }));
+            assert!(run.produced());
+            assert!(run.stop().is_none());
+            assert_eq!(run.content, RecoveryContent::ExplanationOnly);
+            assert!(
+                method
+                    .text
+                    .contains("produced no statement (explanation only)")
+            );
+            assert!(method.text.contains("jarde_refused_body();"));
+            for bci in [29, 80, 83] {
+                assert!(
+                    run.text
+                        .lines()
+                        .filter_map(|line| line.trim().strip_prefix("// @bytecode "))
+                        .flat_map(str::split_whitespace)
+                        .any(|token| token.parse::<u32>() == Ok(bci)),
+                    "missing quoted BCI {bci}"
+                );
+                assert!(
+                    !run.source_map.of_bci(bci).is_empty(),
+                    "missing source BCI {bci}"
+                );
+            }
+            frozen.replacen(before, after, 1)
         } else {
             frozen.to_owned()
         };
         assert_eq!(
             report.text, expected,
-            "{label}: only F1's two exact for headers may differ from the current golden"
+            "{label}: only the explicitly proved loop/diagnostic differences are permitted"
         );
     }
     // The boundary this change states and does not close: the hyphenated name is no identifier, and
