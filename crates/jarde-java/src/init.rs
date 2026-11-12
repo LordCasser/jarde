@@ -1209,8 +1209,11 @@ fn verify_metered(
     // `refuse-unconsumed-construction-invokes` froze for the CST counterexample, and the invocation
     // that is not an argument's value dependency is refused earlier still — before this check, by
     // the argument-effect scan above — so that counterexample's code and BCI never move.
-    let discarded = if member.is_none()
-        && written.is_empty()
+    // A selected member target has already passed verify_member above. Its expression can
+    // occupy the same statement position; membership does not invalidate the proved discard.
+    // Physical arguments still pass the unchanged no-invocation gate, so a checked qualifier
+    // copy is not admitted merely because the member relation is known.
+    let discarded = if written.is_empty()
         && let [pop] = readers.as_slice()
         && discards_the_instance(ssa, block, at, *pop)
         && arguments_without_invocations(ssa, operations, &operands, &nested_sites)
