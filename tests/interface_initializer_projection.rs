@@ -464,18 +464,88 @@ fn default_and_all_evidence_use_the_same_atomic_projection() {
 
 #[test]
 fn ir_budget_stop_keeps_the_whole_group_unprojected_and_retains_clinit() {
+    for (label, bytes, order) in [
+        (
+            "original",
+            ORIGINAL,
+            ["CONSTANT", "FIRST", "SECOND", "TOTAL"],
+        ),
+        (
+            "reordered",
+            REORDERED,
+            ["CONSTANT", "SECOND", "FIRST", "TOTAL"],
+        ),
+    ] {
+        let complete = class_source(bytes, "InterfaceInitProbe");
+        let at = |cap| {
+            let mut limits = complete.limits.clone();
+            limits.ir_items = cap;
+            class_source_outcome(
+                bytes,
+                "InterfaceInitProbe",
+                &RecoveryEvidenceRequest::all(),
+                &mut Budget::new(limits),
+            )
+        };
+        // Measure the proof's actual boundary, not the whole request's final IR total.
+        // Later class-source stages spend IR after the initializer group has committed.
+        let (mut low, mut high) = (0, complete.usage.ir_items);
+        while low < high {
+            let mid = low + (high - low) / 2;
+            let proved = matches!(at(mid), OperationOutcome::Performed(ref report)
+                if matches!(report.initializer_proof, ClassSourceInitializerProof::Proved { .. }));
+            if proved {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        let exact = low;
+        assert!(exact > 0 && exact <= complete.usage.ir_items);
+        let OperationOutcome::Performed(at_exact) = at(exact) else {
+            panic!("{label}: exact proof boundary must publish its report")
+        };
+        assert_eq!(at_exact.initializer_proof, complete.initializer_proof);
+        assert_projected(&at_exact, &order);
+
+        let OperationOutcome::Performed(report) = at(exact - 1) else {
+            panic!("{label}: stopping inside the proof keeps the class report available")
+        };
+        assert!(matches!(
+            report.execution,
+            ExecutionReport::Partial {
+                reason: TerminationReason::BudgetExceeded {
+                    dimension: BudgetDimension::IrItems
+                },
+                ..
+            }
+        ));
+        assert!(
+            matches!(report.initializer_proof, ClassSourceInitializerProof::Refused { ref reason }
+            if reason.contains("initializer proof stopped")),
+            "{label}: {:?}",
+            report.initializer_proof
+        );
+        assert_no_runtime_initializers(&report);
+        println!("{label}: initializer proof IR boundary N={exact}; N-1 refuses atomically");
+    }
+}
+
+#[test]
+fn later_ir_stop_preserves_the_complete_committed_initializer_group() {
     let complete = class_source(ORIGINAL, "InterfaceInitProbe");
+    let total = complete.usage.ir_items;
+    assert!(total > 0);
     let mut limits = complete.limits.clone();
-    limits.ir_items = complete.usage.ir_items.saturating_sub(1);
-    let mut constrained = Budget::new(limits);
+    limits.ir_items = total - 1;
     let outcome = class_source_outcome(
         ORIGINAL,
         "InterfaceInitProbe",
         &RecoveryEvidenceRequest::all(),
-        &mut constrained,
+        &mut Budget::new(limits),
     );
     let OperationOutcome::Performed(report) = outcome else {
-        panic!("a proof-stage budget stop keeps the class report available: {outcome:?}")
+        panic!("the post-commit stop retains the class report")
     };
     assert!(matches!(
         report.execution,
@@ -486,11 +556,34 @@ fn ir_budget_stop_keeps_the_whole_group_unprojected_and_retains_clinit() {
             ..
         }
     ));
-    assert!(matches!(
-        report.initializer_proof,
-        ClassSourceInitializerProof::Refused { .. }
-    ));
-    assert_no_runtime_initializers(&report);
+    assert_eq!(report.initializer_proof, complete.initializer_proof);
+    assert_projected(&report, &["CONSTANT", "FIRST", "SECOND", "TOTAL"]);
+    assert_eq!(
+        report.text, complete.text,
+        "late failure does not roll back complete source"
+    );
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|d| d.code == "budget_exceeded_ir_items")
+    );
+    let scratch = Scratch::new();
+    compare_original_and_projection(&scratch, "late-ir-stop", ORIGINAL, &report);
+
+    let mut exact_limits = complete.limits.clone();
+    exact_limits.ir_items = total;
+    let OperationOutcome::Performed(exact) = class_source_outcome(
+        ORIGINAL,
+        "InterfaceInitProbe",
+        &RecoveryEvidenceRequest::all(),
+        &mut Budget::new(exact_limits),
+    ) else {
+        panic!("exact full-request IR budget completes")
+    };
+    assert!(matches!(exact.execution, ExecutionReport::Complete { .. }));
+    assert_eq!(exact.text, complete.text);
+    assert_eq!(exact.initializer_proof, complete.initializer_proof);
 }
 
 #[test]
