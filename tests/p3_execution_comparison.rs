@@ -236,18 +236,29 @@ const LOCAL_REWRITE: Sample = Sample {
         java: "static Object make() { return LocalRewrite.make(); }",
     }],
     counter: Some("LocalRewrite.calls"),
-    // R2's substance is the count of `make` calls the now recovered `cast` text makes; the other three
-    // refusals of this sample are counted for the same reason (their control compiles wherever the
-    // text still holds the statement the count is about, and the row states where it does not).
-    measured: &["post", "saved", "conditional", "cast"],
-    inputs: None,
-    // The quotes of this sample are pinned by `tests/p3_local_rewrite.rs`, which needs no JDK.
-    quotes: &[],
+    // Every body now executes; the ordinary trace compares `make`'s call count too.
+    measured: &[],
+    // Include overflow boundaries: the snapshot must return the pre-increment value even when
+    // iinc wraps. Both individual and bulk recovery replay these exact calls against the bytes.
+    inputs: Some(&[(
+        "post",
+        &[
+            &["7"],
+            &["0"],
+            &["-1"],
+            &["Integer.MIN_VALUE"],
+            &["Integer.MAX_VALUE"],
+        ],
+    )]),
+    // No instruction of the recovered old-value return remains quoted.
+    quotes: &[("post", &[])],
     baseline: None,
     members: &[
         Member {
+            // The load's value is bound before iinc, then returned through that snapshot.
+            // `p3_local_rewrite` separately pins the snapshot statements and bytecode origins.
             name: "post",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "bump",
@@ -266,8 +277,7 @@ const LOCAL_REWRITE: Sample = Sample {
         Member {
             // Same slice, same consumer generalization: the snapshot feeds a plain `if`
             // comparison (`if (arg0++ > 0)`); the loop-condition shapes of Phase B stay
-            // refused elsewhere. `post` below keeps the P3-R1 refusal for the read it
-            // still cannot prove.
+            // refused elsewhere. `post` uses an explicit old-value binding instead.
             name: "conditional",
             expect: Expect::Executed,
         },
@@ -284,11 +294,11 @@ const LOCAL_REWRITE: Sample = Sample {
             expect: Expect::Executed,
         },
     ],
-    point: "P3-R1 (`post` refuses the read it cannot prove; `saved` and `conditional` recovered \
-            with `recover-postfix-old-value-snapshot` Phase A — the iinc snapshot presents at its \
-            consumer) with its negative controls (`bump`, `doubleIt`, `loopAcross` still write the \
-            slot name), and P3-R2 (`cast` recovers the cast and keeps one producer call: the count \
-            of `make` invocations is measured)",
+    point: "P3-R1 (`post` preserves the pre-increment value in an explicit snapshot, including \
+            integer overflow; `saved` and `conditional` present the postfix snapshot at their \
+            consumer) with its controls (`bump`, `doubleIt`, `loopAcross` still write the correct \
+            slot name), and P3-R2 (`cast` keeps one producer call: the count of `make` invocations \
+            is measured)",
 };
 
 const SCOPE_MEMBERS: &[Member] = &[
@@ -3661,9 +3671,8 @@ const RECEIVER_FIELD: Sample = Sample {
 /// * `RECEIVER_FIELD` — a body that really **reads** its receiver (`value()I` reads the instance
 ///   field, `bump()I` writes and reads it), on a class whose field a probe can inherit, beside the
 ///   `static` member whose slot 0 is a parameter and must not be spelled as a receiver;
-/// * `LOCAL_REWRITE` — the refusals whose text quotes the bytecode it could not write (`post`,
-///   `saved`, `conditional`, `cast`), with the count control that measures what the quoted text still
-///   performs;
+/// * `LOCAL_REWRITE` — the recovered old-value snapshots (`post`, `saved`, `conditional`) and
+///   cast, with original-vs-recovered return values and producer-call counts;
 /// * `GUARDED` — the guarded shapes (try-with-resources, handler bodies, synchronized bodies), several
 ///   of which are refused with a stated diagnostic code;
 /// * `MISSING_DEPENDENCY` — a body the run writes whole that is **not** a compilation unit, because
