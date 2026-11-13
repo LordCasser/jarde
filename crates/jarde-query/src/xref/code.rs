@@ -346,8 +346,7 @@ fn open(
 /// body is named by its own index, raw name and descriptor — the anchor a continuation
 /// verifies before it resumes in that member.
 fn next_position(facts: &ClassFacts, after: usize) -> Result<QueryPosition> {
-    for index in after + 1..facts.methods.len() {
-        let method = &facts.methods[index];
+    for (index, method) in facts.methods.iter().enumerate().skip(after + 1) {
         if has_code(method) {
             return Ok(QueryPosition::Method {
                 index: u32::try_from(index).map_err(|_| {
