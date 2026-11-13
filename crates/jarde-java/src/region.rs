@@ -604,14 +604,11 @@ fn compound_canonical_edges_proved<'a>(
             return Ok(false);
         }
     }
-    if exits.iter().any(|exit| {
+    Ok(!exits.iter().any(|exit| {
         exit_incoming
             .get(exit)
             .is_none_or(|sources| !sources.iter().any(|source| test_ids.contains(source)))
-    }) {
-        return Ok(false);
-    }
-    Ok(true)
+    }))
 }
 
 /// What one region is.
@@ -11209,10 +11206,7 @@ impl Walker<'_> {
                 CanonicalEdgeKind::Normal | CanonicalEdgeKind::Return { .. } => {}
             }
         }
-        if rows.is_empty() {
-            return Ok(false);
-        }
-        Ok(true)
+        Ok(!rows.is_empty())
     }
 
     /// Returns the handler edge already proved by this retry loop's owner, but only for its exact
@@ -23036,10 +23030,7 @@ impl Walker<'_> {
                 physical.push((instruction.bci, instruction.opcode));
             }
         }
-        if physical != ssa_physical {
-            return Ok(false);
-        }
-        Ok(true)
+        Ok(physical == ssa_physical)
     }
 
     /// The transfer block's own certificate: one `goto`/`jsr` transfer that only `source` reaches,

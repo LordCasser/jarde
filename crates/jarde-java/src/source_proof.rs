@@ -83,21 +83,16 @@ pub struct EnumMethodCodeCandidate {
 }
 
 pub fn may_capture_group_code(class: &ClassFacts, member_table_complete: bool) -> bool {
-    if !member_table_complete
-        || class.major_version != 52
-        || class.minor_version != 0
-        || class.access_flags & ACC_ENUM == 0
-        || class.access_flags & ACC_INTERFACE != 0
-        || class
+    member_table_complete
+        && class.major_version == 52
+        && class.minor_version == 0
+        && class.access_flags & ACC_ENUM != 0
+        && class.access_flags & ACC_INTERFACE == 0
+        && class
             .super_class
             .as_ref()
             .map(|name| name.raw().0.as_slice())
-            != Some(ENUM_SUPER)
-    {
-        return false;
-    }
-
-    true
+            == Some(ENUM_SUPER)
 }
 
 /// Copy a candidate body's bounded structural facts from the same method run.

@@ -7228,15 +7228,11 @@ pub fn prove_raw_same_class_direct_return_incoming(
     let Some(return_site) = return_site else {
         reject_raw_result_call!();
     };
-    if return_site.opcode != 0xb0
-        || return_site.stack_reads.len() != 1
-        || return_site.stack_reads[0].1.value != result_fact.value
-        || return_site.stack_reads[0].1.replaced_by.is_some()
-        || return_site.stack_reads[0].1.uses.as_slice() != [Some(*consumer_bci)]
-    {
-        reject_raw_result_call!();
-    }
-    Ok(true)
+    Ok(return_site.opcode == 0xb0
+        && return_site.stack_reads.len() == 1
+        && return_site.stack_reads[0].1.value == result_fact.value
+        && return_site.stack_reads[0].1.replaced_by.is_none()
+        && return_site.stack_reads[0].1.uses.as_slice() == [Some(*consumer_bci)])
 }
 
 pub fn charge_signature_type_proof(ty: &SignatureType, budget: &mut Budget) -> Result<u64> {
@@ -10801,10 +10797,7 @@ pub fn prove_selected_direct_generic_superclass(
         Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => return Err(error),
         Err(_) => return Ok(false),
     };
-    if proof.type_parameters.len() != 1 {
-        return Ok(false);
-    }
-    Ok(true)
+    Ok(proof.type_parameters.len() == 1)
 }
 
 /// 对已经由门面选定并读取的接口，核对现有源码种类与泛型参数数量。

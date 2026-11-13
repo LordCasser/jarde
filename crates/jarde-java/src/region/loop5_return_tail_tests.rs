@@ -186,14 +186,10 @@ fn loop5_return_tail_body(region: &Region) -> bool {
     let Region::Sequence { regions } = region else {
         return false;
     };
-    if regions.len() != 3
-        || !matches!(&regions[0], Region::Straight { blocks } if blocks.iter().map(CanonicalBlockId::bci).collect::<Vec<_>>() == vec![0])
-        || one_loop_header(&regions[1]) != Some(14)
-        || !matches!(&regions[2], Region::Straight { blocks } if blocks.iter().map(CanonicalBlockId::bci).collect::<Vec<_>>() == vec![106])
-    {
-        return false;
-    }
-    true
+    regions.len() == 3
+        && matches!(&regions[0], Region::Straight { blocks } if blocks.iter().map(CanonicalBlockId::bci).collect::<Vec<_>>() == vec![0])
+        && one_loop_header(&regions[1]) == Some(14)
+        && matches!(&regions[2], Region::Straight { blocks } if blocks.iter().map(CanonicalBlockId::bci).collect::<Vec<_>>() == vec![106])
 }
 
 fn run_loop5_try_level(

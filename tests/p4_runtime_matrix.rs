@@ -217,9 +217,9 @@ fn three_profiles_select_different_entries_and_keep_every_physical_entry() {
     // The one scan is the whole "physical 全量": manifest plus three class entries.
     assert_eq!(matrix.scan.physical_scans, 1);
     assert_eq!(matrix.physical_entries().len(), 4);
-    for index in 0..3 {
-        assert_eq!(matrix.profiles[index].containers.len(), 1);
-        assert_eq!(matrix.profiles[index].containers[0].entries.len(), 4);
+    for profile in &matrix.profiles[..3] {
+        assert_eq!(profile.containers.len(), 1);
+        assert_eq!(profile.containers[0].entries.len(), 4);
     }
 
     // Java 8 stays on the base entry and says why.

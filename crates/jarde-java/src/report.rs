@@ -1085,22 +1085,18 @@ fn same_class_field_receiver_sites(
         let [(Slot::Local(0), entry_this)] = receiver_load.reads() else {
             return Ok(false);
         };
-        if !matches!(
+        Ok(matches!(
             ssa.value(*entry_this).def(),
             Definition::Entry {
                 slot: Slot::Local(0),
                 ..
             }
-        ) || !receiver_load
+        ) && receiver_load
             .writes()
             .iter()
             .any(|(write_slot, write_value)| {
                 matches!(write_slot, Slot::Stack(_)) && write_value == receiver
-            })
-        {
-            return Ok(false);
-        }
-        Ok(true)
+            }))
     }
 
     let Some(declaration) = request.ir.declaration() else {

@@ -5824,17 +5824,14 @@ fn presented_reference_store_value(
             let Some(ssa_block) = ssa.block(block_id) else {
                 return Ok(false);
             };
-            if !presented_load_is_immediate_predecessor(
+            Ok(presented_load_is_immediate_predecessor(
                 ssa_block.instructions(),
                 *bci,
                 consumer,
                 budget,
-            )? || !presented_reference_load_is_independent_of_caught_parameter(
+            )? && presented_reference_load_is_independent_of_caught_parameter(
                 ssa, operations, paths, value, budget,
-            )? {
-                return Ok(false);
-            }
-            Ok(true)
+            )?)
         }
         Some(Operation::Invoke(target))
             if target.kind() == InvokeKind::Special && target.name() == "<init>" =>
@@ -5863,10 +5860,7 @@ fn presented_reference_store_value(
                 1,
                 Some(site.head),
             )?;
-            if run != site.expression {
-                return Ok(false);
-            }
-            Ok(true)
+            Ok(run == site.expression)
         }
         Some(Operation::Invoke(target)) if target.kind() == InvokeKind::Static => {
             if !in_protected_arm
@@ -5880,16 +5874,12 @@ fn presented_reference_store_value(
                 .map(|instruction| instruction.bci())
                 .filter(|at| *at >= *bci && *at < consumer)
                 .collect();
-            if run.len() != 1
-                || !is_java_identifier(target.name())
-                || !matches!(
+            Ok(run.len() == 1
+                && is_java_identifier(target.name())
+                && matches!(
                     return_type_bytes(&target.raw_descriptor().0),
                     Some(Type::Reference(_))
-                )
-            {
-                return Ok(false);
-            }
-            Ok(true)
+                ))
         }
         _ => Ok(false),
     }
@@ -15046,10 +15036,7 @@ fn iterator_variable_accesses_closed(
             _ => return Ok(false),
         }
     }
-    if store_count != 1 || load_count != 2 || accesses != expected {
-        return Ok(false);
-    }
-    Ok(true)
+    Ok(store_count == 1 && load_count == 2 && accesses == expected)
 }
 
 /// Finds a removable current-list declaration, or verifies the complete visible owner for an
